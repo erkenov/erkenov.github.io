@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { FloatingTools } from "./FloatingTools";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -24,8 +25,9 @@ const stats = [
 
 export function Problem() {
   return (
-    <section className="border-b border-border/40 py-24 md:py-32">
-      <div className="mx-auto max-w-6xl px-6 md:px-8">
+    <section className="relative overflow-hidden border-b border-border/40 py-24 md:py-32">
+      <FloatingTools variant="corners" />
+      <div className="relative z-10 mx-auto max-w-6xl px-6 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}

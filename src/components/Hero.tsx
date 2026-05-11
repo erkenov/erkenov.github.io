@@ -1,7 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Phone } from "lucide-react";
+import { useRef } from "react";
+import { CarLineArt } from "./CarLineArt";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -16,12 +18,25 @@ const item = {
 };
 
 export function Hero() {
-  return (
-    <section className="relative overflow-hidden border-b border-border/40">
-      <div className="grid-bg pointer-events-none absolute inset-0 opacity-60" />
-      <div className="hero-glow pointer-events-none absolute inset-0" />
+  const ref = useRef<HTMLElement>(null);
+  const { scrollY } = useScroll();
+  // Subtle parallax: grid drifts up slightly slower than the content
+  const gridY = useTransform(scrollY, [0, 800], [0, -120]);
+  const gridOpacity = useTransform(scrollY, [0, 600], [0.6, 0.1]);
 
-      <div className="relative mx-auto max-w-6xl px-6 pt-24 pb-32 md:px-8 md:pt-32 md:pb-40">
+  return (
+    <section
+      ref={ref}
+      className="relative overflow-hidden border-b border-border/40"
+    >
+      <motion.div
+        style={{ y: gridY, opacity: gridOpacity }}
+        className="grid-bg pointer-events-none absolute inset-0"
+      />
+      <div className="hero-glow pointer-events-none absolute inset-0" />
+      <CarLineArt />
+
+      <div className="relative z-10 mx-auto max-w-6xl px-6 pt-24 pb-32 md:px-8 md:pt-32 md:pb-40">
         <motion.div
           variants={stagger}
           initial="hidden"
