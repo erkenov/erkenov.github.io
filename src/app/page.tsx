@@ -1,5 +1,5 @@
 import { Header } from "@/components/Header";
-import { Hero } from "@/components/Hero";
+import { PinnedHero } from "@/components/PinnedHero";
 import { Problem } from "@/components/Problem";
 import { HowItWorks } from "@/components/HowItWorks";
 import { Capabilities } from "@/components/Capabilities";
@@ -14,7 +14,7 @@ export default function Home() {
     <>
       <Header />
       <main className="flex-1">
-        <Hero />
+        <PinnedHero />
         <Problem />
         <HowItWorks />
         <Capabilities />
