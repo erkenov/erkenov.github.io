@@ -7,7 +7,11 @@ import {
   type MotionValue,
 } from "framer-motion";
 import { useEffect, useRef } from "react";
-import { ArrowRight, Phone } from "lucide-react";
+import { ArrowRight, Phone, BrainCircuit, CalendarCheck } from "lucide-react";
+import { BackgroundBeams } from "@/components/ui/background-beams";
+import { Particles } from "@/components/ui/particles";
+import { Highlight } from "@/components/ui/hero-highlight";
+import { AnimatedBeam } from "@/components/ui/animated-beam";
 
 /**
  * Pinned, scroll-driven hero with three sequential scenes.
@@ -62,7 +66,9 @@ export function PinnedHero() {
     >
       <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden">
         {/* Ambient layers */}
-        <div className="grid-bg pointer-events-none absolute inset-0 opacity-30" />
+        <AmbientBackgroundBeams progress={scrollYProgress} />
+        <AmbientParticles progress={scrollYProgress} />
+        <div className="grid-bg pointer-events-none absolute inset-0 opacity-20" />
         <SceneGlow progress={scrollYProgress} />
 
         {/* Scenes */}
@@ -94,6 +100,44 @@ function SceneGlow({ progress }: { progress: MotionValue<number> }) {
       className="pointer-events-none absolute top-1/3 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent blur-[160px]"
       aria-hidden
     />
+  );
+}
+
+/* ============================================================== */
+/*  Ambient layers — Background Beams + Particles, scene-fading   */
+/* ============================================================== */
+
+function AmbientBackgroundBeams({ progress }: { progress: MotionValue<number> }) {
+  // Strong on scene 1, fades through scene 2, mostly gone in scene 3
+  const opacity = useTransform(progress, [0, 0.1, 0.5, 0.8], [0.7, 0.7, 0.45, 0.15]);
+  return (
+    <motion.div
+      style={{ opacity }}
+      className="pointer-events-none absolute inset-0"
+      aria-hidden
+    >
+      <BackgroundBeams />
+    </motion.div>
+  );
+}
+
+function AmbientParticles({ progress }: { progress: MotionValue<number> }) {
+  // Subtle throughout, slightly stronger in scene 1
+  const opacity = useTransform(progress, [0, 0.2, 0.7, 1], [0.6, 0.6, 0.4, 0.3]);
+  return (
+    <motion.div
+      style={{ opacity }}
+      className="pointer-events-none absolute inset-0"
+      aria-hidden
+    >
+      <Particles
+        className="absolute inset-0"
+        quantity={80}
+        color="#ff7849"
+        size={0.5}
+        staticity={40}
+      />
+    </motion.div>
   );
 }
 
@@ -163,7 +207,9 @@ function Scene1({ progress }: { progress: MotionValue<number> }) {
           style={{ letterSpacing: "-0.03em", lineHeight: 1.05 }}
         >
           The phone is ringing
-          <span className="block text-accent">while the bay is full.</span>
+          <span className="block">
+            while <Highlight className="text-text">the bay is full.</Highlight>
+          </span>
         </h1>
         <p className="mt-6 mx-auto max-w-xl text-lg text-text-muted">
           Brake job, oil change, a new customer trying you for the first time. You can&apos;t pick up.
@@ -305,9 +351,10 @@ function Scene3({ progress }: { progress: MotionValue<number> }) {
 
         {/* Right: Closing text + CTA */}
         <motion.div style={{ y: cardY }} className="relative z-10">
-          <div className="mono-label">Scene 03 — call over</div>
+          <BeamFlow />
+          <div className="mt-6 mono-label">Scene 03 — call over</div>
           <h2
-            className="mt-5 text-3xl font-bold tracking-tight md:text-5xl"
+            className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
             style={{ letterSpacing: "-0.03em", lineHeight: 1.1 }}
           >
             Job won.
@@ -592,5 +639,84 @@ function GarageScene() {
         </path>
       </g>
     </svg>
+  );
+}
+
+/* ============================================================== */
+/*  BeamFlow — Phone → AI → Calendar with animated beams           */
+/* ============================================================== */
+
+function BeamFlow() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const phoneRef = useRef<HTMLDivElement>(null);
+  const aiRef = useRef<HTMLDivElement>(null);
+  const calendarRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative flex h-24 w-full items-center justify-between gap-2 rounded-2xl border border-border bg-surface/40 px-6 py-4 backdrop-blur"
+      aria-label="Call flow: phone, then AI, then calendar"
+    >
+      <FlowNode innerRef={phoneRef} label="Call">
+        <Phone className="h-5 w-5 text-text" strokeWidth={2} />
+      </FlowNode>
+      <FlowNode innerRef={aiRef} label="AI" emphasized>
+        <BrainCircuit className="h-5 w-5 text-accent" strokeWidth={2} />
+      </FlowNode>
+      <FlowNode innerRef={calendarRef} label="Booked">
+        <CalendarCheck className="h-5 w-5 text-text" strokeWidth={2} />
+      </FlowNode>
+
+      {/* Two animated beams: phone → AI, AI → calendar */}
+      <AnimatedBeam
+        containerRef={containerRef}
+        fromRef={phoneRef}
+        toRef={aiRef}
+        duration={3}
+        delay={0}
+        gradientStartColor="#ff7849"
+        gradientStopColor="#ffd166"
+      />
+      <AnimatedBeam
+        containerRef={containerRef}
+        fromRef={aiRef}
+        toRef={calendarRef}
+        duration={3}
+        delay={1.2}
+        gradientStartColor="#ff7849"
+        gradientStopColor="#ffd166"
+      />
+    </div>
+  );
+}
+
+function FlowNode({
+  innerRef,
+  label,
+  emphasized,
+  children,
+}: {
+  innerRef: React.RefObject<HTMLDivElement | null>;
+  label: string;
+  emphasized?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col items-center gap-1.5">
+      <div
+        ref={innerRef}
+        className={`flex h-12 w-12 items-center justify-center rounded-xl border ${
+          emphasized
+            ? "border-accent/60 bg-accent/10"
+            : "border-border bg-bg/80"
+        }`}
+      >
+        {children}
+      </div>
+      <span className="font-mono text-[10px] uppercase tracking-wider text-text-dim">
+        {label}
+      </span>
+    </div>
   );
 }
