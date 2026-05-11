@@ -470,56 +470,174 @@ function ScrollHint({ progress }: { progress: MotionValue<number> }) {
 /* ============================================================== */
 
 function CarSide() {
+  // Sports-coupe side profile. Long bonnet, fast-back roofline,
+  // tucked-in greenhouse, sculpted fenders over large wheels. Drawn to
+  // suggest a 911-style premium silhouette without copying any specific
+  // licensed mark.
   return (
     <svg
-      viewBox="0 0 800 220"
-      className="w-[min(86vw,820px)] text-accent"
+      viewBox="0 0 1000 320"
+      className="w-[min(90vw,1000px)] text-accent"
       fill="none"
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden
     >
-      {/* Body */}
+      {/* --- Main body silhouette: bumper → hood → windscreen → roof → rear glass → rear deck → bumper --- */}
       <path
-        d="M 40 150
-           L 120 150
-           C 145 150 160 130 185 118
-           L 260 88
-           C 290 76 335 68 395 66
-           L 550 66
-           C 595 68 625 80 655 96
-           L 720 130
-           C 740 142 760 148 790 150"
-        strokeWidth="2"
+        d="
+          M 60 232
+          C 70 220 78 214 96 212
+          L 168 210
+          C 190 210 200 198 220 188
+          C 250 174 290 156 340 140
+          C 380 128 430 118 490 112
+          L 600 110
+          C 650 112 692 122 728 142
+          C 760 160 786 178 808 196
+          C 830 212 858 220 894 224
+          L 938 230
+          C 952 232 956 240 952 248
+        "
+        strokeWidth="2.4"
       />
-      <path d="M 60 150 L 760 150" strokeWidth="1.5" opacity="0.7" />
-      {/* Windshield + windows */}
+      {/* Sill / belt line under doors */}
       <path
-        d="M 260 88 L 280 70 Q 330 66 390 68 L 410 66"
-        strokeWidth="1.5"
-        opacity="0.7"
+        d="M 96 232 C 220 244 320 246 420 245 C 560 244 700 244 808 240"
+        strokeWidth="1.6"
+        opacity="0.75"
       />
+
+      {/* --- Greenhouse (window glass) --- */}
+      {/* A-pillar + windscreen */}
       <path
-        d="M 550 66 L 575 76 Q 615 84 640 100 L 655 96"
-        strokeWidth="1.5"
-        opacity="0.7"
+        d="M 340 140 C 360 122 388 110 432 108 L 558 108"
+        strokeWidth="1.6"
+        opacity="0.85"
       />
-      <path d="M 450 68 L 450 118" strokeWidth="1.2" opacity="0.55" />
-      {/* Door handles */}
-      <path d="M 380 130 L 430 130" strokeWidth="1.5" opacity="0.7" />
-      <path d="M 540 130 L 590 130" strokeWidth="1.5" opacity="0.7" />
-      {/* Wheels */}
-      <circle cx="180" cy="170" r="32" strokeWidth="2" />
-      <circle cx="180" cy="170" r="14" strokeWidth="1.5" opacity="0.7" />
-      <circle cx="640" cy="170" r="32" strokeWidth="2" />
-      <circle cx="640" cy="170" r="14" strokeWidth="1.5" opacity="0.7" />
-      {/* Headlight + tail-light */}
-      <path d="M 46 130 L 70 130 L 75 142 L 46 142 Z" strokeWidth="1.2" opacity="0.7" />
+      {/* Roof line (slightly arched fastback) */}
       <path
-        d="M 784 130 L 760 130 L 755 142 L 784 142 Z"
+        d="M 432 108 C 500 100 600 108 660 124"
+        strokeWidth="1.6"
+        opacity="0.85"
+      />
+      {/* C-pillar / rear glass */}
+      <path
+        d="M 660 124 C 680 132 706 138 728 142"
+        strokeWidth="1.6"
+        opacity="0.85"
+      />
+      {/* B-pillar split inside glass */}
+      <path d="M 528 110 L 528 154" strokeWidth="1.2" opacity="0.55" />
+
+      {/* --- Character / shoulder line along the doors --- */}
+      <path
+        d="M 230 196 C 360 184 520 180 690 188 C 720 190 754 196 786 204"
         strokeWidth="1.2"
-        opacity="0.7"
+        opacity="0.55"
+      />
+
+      {/* Door splits */}
+      <path d="M 348 162 L 360 232" strokeWidth="1.1" opacity="0.6" />
+      <path d="M 528 154 L 528 240" strokeWidth="1.1" opacity="0.6" />
+      <path d="M 686 178 L 696 232" strokeWidth="1.1" opacity="0.5" />
+
+      {/* Door handles — thin slots */}
+      <path d="M 420 174 L 488 172" strokeWidth="2" opacity="0.8" />
+      <path d="M 588 178 L 660 180" strokeWidth="2" opacity="0.8" />
+
+      {/* Side mirror */}
+      <path
+        d="M 358 142 L 376 134 L 374 152 L 358 154 Z"
+        strokeWidth="1.2"
+        opacity="0.75"
+      />
+
+      {/* --- Fender arches (bulge above wheels) --- */}
+      <path
+        d="M 130 248 C 142 196 230 188 250 244"
+        strokeWidth="1.2"
+        opacity="0.55"
+      />
+      <path
+        d="M 700 244 C 720 196 808 196 824 246"
+        strokeWidth="1.2"
+        opacity="0.55"
+      />
+
+      {/* --- Front wheel — large, 5-spoke --- */}
+      <circle cx="200" cy="252" r="56" strokeWidth="2.6" />
+      <circle cx="200" cy="252" r="44" strokeWidth="1.2" opacity="0.5" />
+      <circle cx="200" cy="252" r="18" strokeWidth="1.5" opacity="0.85" />
+      {/* 5-spoke pattern */}
+      {[0, 72, 144, 216, 288].map((deg) => (
+        <line
+          key={`fs-${deg}`}
+          x1="200"
+          y1="252"
+          x2={200 + Math.cos((deg * Math.PI) / 180) * 44}
+          y2={252 + Math.sin((deg * Math.PI) / 180) * 44}
+          strokeWidth="2.2"
+          opacity="0.85"
+        />
+      ))}
+      {/* Brake caliper hint */}
+      <path
+        d="M 220 222 a 28 28 0 0 1 0 60"
+        strokeWidth="1.4"
+        opacity="0.45"
+      />
+
+      {/* --- Rear wheel --- */}
+      <circle cx="772" cy="252" r="56" strokeWidth="2.6" />
+      <circle cx="772" cy="252" r="44" strokeWidth="1.2" opacity="0.5" />
+      <circle cx="772" cy="252" r="18" strokeWidth="1.5" opacity="0.85" />
+      {[0, 72, 144, 216, 288].map((deg) => (
+        <line
+          key={`rs-${deg}`}
+          x1="772"
+          y1="252"
+          x2={772 + Math.cos((deg * Math.PI) / 180) * 44}
+          y2={252 + Math.sin((deg * Math.PI) / 180) * 44}
+          strokeWidth="2.2"
+          opacity="0.85"
+        />
+      ))}
+      <path
+        d="M 792 222 a 28 28 0 0 1 0 60"
+        strokeWidth="1.4"
+        opacity="0.45"
+      />
+
+      {/* --- Front lighting — angular projector --- */}
+      <path
+        d="M 76 212 L 116 206 L 124 220 L 84 224 Z"
+        strokeWidth="1.4"
+        opacity="0.85"
+      />
+      <path d="M 84 218 L 116 213" strokeWidth="1" opacity="0.5" />
+
+      {/* --- Rear lighting --- */}
+      <path
+        d="M 902 218 L 942 222 L 936 234 L 908 230 Z"
+        strokeWidth="1.4"
+        opacity="0.85"
+      />
+
+      {/* --- Air intake hint on the lower bonnet --- */}
+      <path
+        d="M 124 224 L 168 224"
+        strokeWidth="1.2"
+        opacity="0.5"
+      />
+
+      {/* --- Ground shadow line — dashed --- */}
+      <path
+        d="M 20 304 L 980 304"
+        strokeWidth="1"
+        strokeDasharray="4 10"
+        opacity="0.35"
       />
     </svg>
   );
