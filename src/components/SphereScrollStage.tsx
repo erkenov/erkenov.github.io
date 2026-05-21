@@ -652,9 +652,15 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
             }
           }
 
-          // y position: smoothly interpolate from current section's y to next section's y
-          // across the segment, with the smooth-step centered at 0.5. Avoids the visible
-          // JUMP that happens when y hard-switches at the segment midpoint.
+          // y position: SAME pattern as x — stay at section i's y while sphere
+          // shrinks (first half of segment), snap to section i+1's y as sphere
+          // expands at destination (second half). The "jump" at segP=0.5 is
+          // invisible because sphereScale is ~0 at that moment.
+          //
+          // Previously used smoothstep which made the cell visibly LINGER near
+          // its starting y as it expanded — looked like it reformed at the wrong
+          // side. Hard switch matches user mental model: cell shrinks where it
+          // was, cell appears where it's going.
           let yPos = 0;
           if (p <= 0) yPos = sectionY(0);
           else if (p >= 1) yPos = sectionY(N - 1);
@@ -664,11 +670,7 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
             if (i2 > N - 2) i2 = N - 2;
             const ci2 = i2 * segmentSpan;
             const segP2 = (p - ci2) / segmentSpan;
-            const yFrom = sectionY(i2);
-            const yTo = sectionY(i2 + 1);
-            // smooth-step ease (3t^2 - 2t^3) — slow at start/end, fast in middle
-            const ease = segP2 * segP2 * (3 - 2 * segP2);
-            yPos = yFrom + (yTo - yFrom) * ease;
+            yPos = segP2 < 0.5 ? sectionY(i2) : sectionY(i2 + 1);
           }
 
           sphereOpacityRef.current = sphereOpacity;
