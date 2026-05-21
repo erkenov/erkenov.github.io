@@ -229,9 +229,6 @@ function TrailLayer({
     const tail = Math.max(0, 2 * segP - 1);
     const head = Math.min(1, 2 * segP);
 
-    // Upward-wrap logic no longer needed — mobile cells are centered now,
-    // every segment goes prevY=0 → nextY=0, no upward direction to wrap.
-    const goingUpWrap = false;
 
     // Dragon path shape: desktop uses horizontal motion + vertical sin swoop.
     // Mobile (cells centered): tall vertical arc so dragon flows top→bottom of
@@ -244,11 +241,8 @@ function TrailLayer({
       const localT = params[i * 2];           // 0..1, position-along-dragon offset
       const phase = params[i * 2 + 1];
 
-      // Particle u: maps localT to [tail, head]. On upward-wrap segments the
-      // tail/head are PHASE-LOCAL (one phase active at a time → no double dragon).
-      const u = goingUpWrap
-        ? phaseTail + localT * (phaseHead - phaseTail)
-        : tail + localT * (head - tail);
+      // Particle u: maps localT to [tail, head] of the dragon body extent.
+      const u = tail + localT * (head - tail);
 
       // Base X interpolation + center bend (desktop horizontal motion)
       const linearX = prevX + (nextX - prevX) * u;
@@ -256,17 +250,9 @@ function TrailLayer({
       const bendAmount = -linearX * bendStrength * BEND;
       const x = linearX + bendAmount;
 
-      // Y position. On upward-wrap segments use the phase-local interpolation
-      // (already only one phase active per segP, so no double-dragon).
-      let y;
-      if (goingUpWrap) {
-        // Recompute particle u in PHASE-LOCAL space
-        const phaseU = phaseTail + localT * (phaseHead - phaseTail);
-        y = yPhaseStart + (yPhaseEnd - yPhaseStart) * phaseU;
-      } else {
-        const linearY = prevY + (nextY - prevY) * u;
-        y = linearY - Math.sin(u * Math.PI) * LOOP_HEIGHT * 0.75;
-      }
+      // Y position: linear lerp between cell positions + downward sin arc
+      const linearY = prevY + (nextY - prevY) * u;
+      const y = linearY - Math.sin(u * Math.PI) * LOOP_HEIGHT * 0.75;
 
       // Per-particle wiggle for organic feel (scale by trail extent so it doesn't wiggle when bunched)
       const extent = head - tail;
