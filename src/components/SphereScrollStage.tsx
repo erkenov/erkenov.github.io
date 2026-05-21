@@ -39,7 +39,7 @@ if (typeof window !== "undefined") {
 //   sage outer shell, terracotta inner cell, sun-gold dragon, warm cream lighting
 const ACCENT = "#7ea687";          // sage — outer dust shell, primary brand
 const ACCENT_BRIGHT = "#F2C94C";   // sun gold — dragon particles + graph nodes
-const DRAGON_DEEP = "#3B7E2D";     // saturated TREE LEAF green for dragon (was sun gold; now leaves blowing in wind)
+const DRAGON_DEEP = "#E89F1F";     // saturated sun gold — dragon trail (reverted from tree-leaf per round 11 feedback)
 const CELL_CORE = "#C76B58";       // terracotta red — inner cell base (earthy complement to sage)
 const CELL_GLOW = "#E88B7A";       // warmer red — cell emissive (red core glowing brighter from within)
 const KEY_LIGHT = "#F5E9CC";       // warm cream directional key light
@@ -176,7 +176,7 @@ function TrailLayer({
   const matRef = useRef<THREE.PointsMaterial>(null);
   const COUNT = 700;
   const positions = useMemo(() => new Float32Array(COUNT * 3), []);
-  const leafSprite = getLeafSprite();
+  const sprite = getSoftSprite();   // reverted from leaf to soft round dot
 
   // Each particle has its own position-along-trail [0..1] and a wiggle phase
   const params = useMemo(() => {
@@ -259,14 +259,14 @@ function TrailLayer({
       <pointsMaterial
         ref={matRef}
         color={DRAGON_DEEP}
-        size={0.07}
+        size={0.025}
         sizeAttenuation
         transparent
         opacity={0}
         depthWrite={false}
         blending={THREE.NormalBlending}
-        map={leafSprite}
-        alphaTest={0.05}
+        map={sprite}
+        alphaTest={0.01}
       />
     </points>
   );
@@ -359,12 +359,20 @@ function Sphere({ pulseRef, xRef, scaleRef, sphereOpacityRef, streamOpacityRef }
       groupRef.current.rotation.x = Math.sin(t * 0.05) * 0.12;
     }
 
-    // Sphere opacity — molecule visual
+    // Sphere opacity + size — dust/nodes are BIG when cell is peaked, SMALL when transforming to dragon
     const o = sphereOpacityRef.current;
-    if (dustMatRef.current) dustMatRef.current.opacity = 0.7 * o;
-    if (nodeMatRef.current) nodeMatRef.current.opacity = 1.0 * o;
-    if (lineMatRef.current) lineMatRef.current.opacity = 0;              // removed
-    if (glowMatRef.current) (glowMatRef.current as THREE.MeshStandardMaterial).opacity = 0.85 * o;
+    if (dustMatRef.current) {
+      dustMatRef.current.opacity = 0.85 * o;
+      // size ranges 0.022 (transforming) -> 0.05 (fully peaked)
+      dustMatRef.current.size = 0.022 + o * 0.028;
+    }
+    if (nodeMatRef.current) {
+      nodeMatRef.current.opacity = 1.0 * o;
+      // graph nodes bigger when cell is fully formed
+      nodeMatRef.current.size = 0.035 + o * 0.025;
+    }
+    if (lineMatRef.current) lineMatRef.current.opacity = 0;
+    if (glowMatRef.current) (glowMatRef.current as THREE.MeshStandardMaterial).opacity = 0.95 * o;
   });
 
   return (
