@@ -116,6 +116,11 @@ function ScrollVideo({
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
+    // Force preload — `preload="auto"` is just a hint, and Chrome often
+    // downgrades it under data-saver / conservative heuristics on production
+    // sites, leaving readyState at 0 (HAVE_NOTHING) until the user clicks.
+    // Calling .load() explicitly bypasses that heuristic.
+    video.load();
     // We scrub via currentTime; never let the element auto-play
     video.pause();
     const onCanPlay = () => video.pause();
