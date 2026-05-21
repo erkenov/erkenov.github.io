@@ -136,9 +136,9 @@ function TrailLayer({
     }
     pa.needsUpdate = true;
 
-    // Crossfade opacity
-    const target = Math.min(1, streamOpacityRef.current);
-    matRef.current.opacity = matRef.current.opacity * 0.4 + target * 0.6;
+    // Gentle crossfade — softer transitions per "more subtle" feedback
+    const target = Math.min(0.9, streamOpacityRef.current);
+    matRef.current.opacity = matRef.current.opacity * 0.85 + target * 0.15;
   });
 
   return (
@@ -149,7 +149,7 @@ function TrailLayer({
       <pointsMaterial
         ref={matRef}
         color={ACCENT_BRIGHT}
-        size={0.055}
+        size={0.04}
         sizeAttenuation
         transparent
         opacity={0}
@@ -247,12 +247,12 @@ function Sphere({ pulseRef, xRef, scaleRef, sphereOpacityRef, streamOpacityRef }
       groupRef.current.rotation.x = Math.sin(t * 0.05) * 0.12;
     }
 
-    // Sphere opacity (cohesive form fades during transitions, stream takes over)
+    // Sphere opacity — brighter saturated values per Shamil feedback
     const o = sphereOpacityRef.current;
-    if (dustMatRef.current) dustMatRef.current.opacity = 0.55 * o;
+    if (dustMatRef.current) dustMatRef.current.opacity = 0.75 * o;       // was 0.55
     if (nodeMatRef.current) nodeMatRef.current.opacity = 1.0 * o;
-    if (lineMatRef.current) lineMatRef.current.opacity = 0.18 * o;
-    if (glowMatRef.current) glowMatRef.current.opacity = 0.05 * o;
+    if (lineMatRef.current) lineMatRef.current.opacity = 0.32 * o;       // was 0.18 — more visible network
+    if (glowMatRef.current) glowMatRef.current.opacity = 0.10 * o;       // was 0.05
   });
 
   return (
@@ -343,42 +343,55 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
           // In-section vs transition window:
           // local in [0, 1-transitionFrac]  -> in section: sphere fully visible at sectionX(sectionIdx)
           // local in [1-transitionFrac, 1]  -> transition: sphere fades, trail emerges
-          const cutoff = 1 - transitionFrac;
+          // Each section is broken into:
+          //   - REFORM phase  (0.00 .. 0.20):  sphere fades IN from prev snake (0->1)
+          //   - PEAK phase    (0.20 .. 0.30):  sphere fully visible
+          //   - DISSOLVE phase(0.30 .. 1.00):  sphere fades out, snake to next section emerges gradually
+          // Result: transformation starts ON THE FIRST SCROLL, is gradual through most
+          // of the section, with a brief sphere-peak moment in between.
           let sphereOpacity: number;
-          let trans: number;       // 0..1, transition progress (0 = sphere visible, 1 = arrived at next)
+          let trans: number;
           let currentX: number;
 
-          if (local <= cutoff) {
-            // In-section: sphere fully visible, no trail
+          const reformEnd = 0.20;
+          const peakEnd = 0.30;
+
+          // Sphere x always at current section's home (sphere doesn't drift during section)
+          currentX = sectionX(sectionIdx);
+
+          // Trail prev/next: snake flies from PREV section's x toward THIS section's x
+          // during REFORM phase; from THIS section toward NEXT during DISSOLVE phase.
+          const prevIdx = Math.max(0, sectionIdx - 1);
+          const nextIdx = Math.min(sectionCount - 1, sectionIdx + 1);
+
+          if (local < reformEnd) {
+            // REFORMING: sphere is being rebuilt at this section's x from incoming snake
+            const t = local / reformEnd;             // 0..1
+            sphereOpacity = Math.pow(t, 0.7);         // ease-in
+            trans = 1 - t;                            // snake fading out as sphere appears
+            prevXRef.current = sectionX(prevIdx);
+            nextXRef.current = sectionX(sectionIdx);
+          } else if (local < peakEnd) {
+            // PEAK: fully formed
             sphereOpacity = 1;
             trans = 0;
-            currentX = sectionX(sectionIdx);
+            prevXRef.current = sectionX(prevIdx);
+            nextXRef.current = sectionX(sectionIdx);
           } else {
-            // Transition: drive trans 0..1 across the last `transitionFrac` of this section
-            const tLocal = (local - cutoff) / transitionFrac;  // 0..1
-            // Sphere dies on a curve (faster at start of transition)
-            sphereOpacity = Math.max(0, 1 - Math.pow(tLocal, 0.6) * 1.5);
-            trans = tLocal;
-            // x stays at section's home while the sphere is still partially visible,
-            // then accelerates toward next section's x. This gives "stays at L,
-            // dissolves into snake, snake reaches R, sphere reforms at R."
-            const nextIdx = Math.min(sectionCount - 1, sectionIdx + 1);
-            const fromX = sectionX(sectionIdx);
-            const toX = sectionX(nextIdx);
-            // sphere itself stays at fromX (we're dissolving, sphere doesn't move)
-            currentX = fromX;
-            prevXRef.current = fromX;
-            nextXRef.current = toX;
+            // DISSOLVING: sphere dies gradually across the remaining 70% of the section
+            const t = (local - peakEnd) / (1 - peakEnd);   // 0..1 across the long tail
+            sphereOpacity = Math.pow(1 - t, 0.8);          // gradual ease-out
+            trans = Math.pow(t, 0.85);                      // snake emerges gradually
+            prevXRef.current = sectionX(sectionIdx);
+            nextXRef.current = sectionX(nextIdx);
           }
 
-          // At the very last bit, sphere needs to re-emerge at the next section's x
-          // (handled naturally on next frame because local will wrap into the new section)
-
-          sphereOpacityRef.current = sphereOpacity;
+          // Boost: keep sphere a touch brighter than raw opacity (so it never reads as ghost-faint)
+          sphereOpacityRef.current = Math.min(1, sphereOpacity * 1.1 + 0.05);
           xRef.current = currentX;
           transitionProgressRef.current = trans;
-          // Stream/trail opacity = 1 during transition, 0 in section
-          streamOpacityRef.current = (1 - sphereOpacity);
+          // Snake opacity inverse — but with smoothing baked into trail layer
+          streamOpacityRef.current = Math.max(0, 1 - sphereOpacity);
 
           // Scale: peaks toward mid-page, smaller at edges
           scaleRef.current = 0.75 + Math.sin(p * Math.PI) * 0.3;
