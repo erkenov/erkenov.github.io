@@ -39,15 +39,14 @@ if (typeof window !== "undefined") {
 //   sage outer shell, terracotta inner cell, sun-gold dragon, warm cream lighting
 const ACCENT = "#7ea687";          // sage — outer dust shell, primary brand
 const ACCENT_BRIGHT = "#F2C94C";   // sun gold — dragon particles + graph nodes
-const DRAGON_DEEP = "#E89F1F";     // deeper saturated sun — used for dragon trail (avoids burn-to-white)
+const DRAGON_DEEP = "#3B7E2D";     // saturated TREE LEAF green for dragon (was sun gold; now leaves blowing in wind)
 const CELL_CORE = "#C76B58";       // terracotta red — inner cell base (earthy complement to sage)
 const CELL_GLOW = "#E88B7A";       // warmer red — cell emissive (red core glowing brighter from within)
 const KEY_LIGHT = "#F5E9CC";       // warm cream directional key light
 const AMBIENT_TINT = "#F8F1DE";    // warm ambient (replaces stark white)
 
 /* ------------------------------------------------------------------ */
-/* Soft circular sprite — kills the "cube/square" look on particles.   */
-/* Module-level singleton; created once on first call client-side.     */
+/* Soft circular sprite — for dust + graph nodes inside the cell       */
 /* ------------------------------------------------------------------ */
 let _softSprite: THREE.Texture | null = null;
 function getSoftSprite(): THREE.Texture | null {
@@ -70,6 +69,58 @@ function getSoftSprite(): THREE.Texture | null {
   tex.magFilter = THREE.LinearFilter;
   tex.needsUpdate = true;
   _softSprite = tex;
+  return tex;
+}
+
+/* ------------------------------------------------------------------ */
+/* Leaf-shape sprite — for the dragon (tree leaves blowing in wind).   */
+/* Pointed almond / leaf silhouette with soft glow edges + central     */
+/* vein hint. Tilted ~25° to suggest blowing direction.                */
+/* ------------------------------------------------------------------ */
+let _leafSprite: THREE.Texture | null = null;
+function getLeafSprite(): THREE.Texture | null {
+  if (typeof window === "undefined") return null;
+  if (_leafSprite) return _leafSprite;
+  const size = 128;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  ctx.clearRect(0, 0, size, size);
+
+  // Tilt the leaf 25° so all blowing leaves face the same wind direction (stylized)
+  ctx.translate(size / 2, size / 2);
+  ctx.rotate((25 * Math.PI) / 180);
+
+  // Soft glow edges via shadow
+  ctx.shadowBlur = 14;
+  ctx.shadowColor = "rgba(255,255,255,0.6)";
+
+  // Main leaf shape — pointed almond
+  ctx.fillStyle = "rgba(255,255,255,1)";
+  ctx.beginPath();
+  const w = 46;   // half length tip-to-tip
+  const h = 14;   // half thickness
+  ctx.moveTo(-w, 0);
+  ctx.bezierCurveTo(-w * 0.45, -h * 1.4, w * 0.45, -h * 1.4, w, 0);
+  ctx.bezierCurveTo(w * 0.45, h * 1.4, -w * 0.45, h * 1.4, -w, 0);
+  ctx.closePath();
+  ctx.fill();
+
+  // Reset shadow, draw central vein darker for leaf detail
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = "rgba(0,0,0,0.25)";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(-w * 0.85, 0);
+  ctx.lineTo(w * 0.85, 0);
+  ctx.stroke();
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.minFilter = THREE.LinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  tex.needsUpdate = true;
+  _leafSprite = tex;
   return tex;
 }
 
@@ -125,7 +176,7 @@ function TrailLayer({
   const matRef = useRef<THREE.PointsMaterial>(null);
   const COUNT = 700;
   const positions = useMemo(() => new Float32Array(COUNT * 3), []);
-  const sprite = getSoftSprite();
+  const leafSprite = getLeafSprite();
 
   // Each particle has its own position-along-trail [0..1] and a wiggle phase
   const params = useMemo(() => {
@@ -208,14 +259,14 @@ function TrailLayer({
       <pointsMaterial
         ref={matRef}
         color={DRAGON_DEEP}
-        size={0.025}
+        size={0.07}
         sizeAttenuation
         transparent
         opacity={0}
         depthWrite={false}
         blending={THREE.NormalBlending}
-        map={sprite}
-        alphaTest={0.01}
+        map={leafSprite}
+        alphaTest={0.05}
       />
     </points>
   );
