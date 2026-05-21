@@ -162,12 +162,16 @@ function TrailLayer({
   streamOpacityRef,
   prevXRef,
   nextXRef,
+  prevYRef,
+  nextYRef,
   transitionProgressRef,
   segProgressRef,
 }: {
   streamOpacityRef: React.MutableRefObject<number>;
   prevXRef: React.MutableRefObject<number>;
   nextXRef: React.MutableRefObject<number>;
+  prevYRef: React.MutableRefObject<number>;
+  nextYRef: React.MutableRefObject<number>;
   /** 0..1 — triangle envelope (peak in middle of segment) */
   transitionProgressRef: React.MutableRefObject<number>;
   /** 0..1 raw segment progress (0 = at prev cell, 1 = at next cell) */
@@ -213,6 +217,8 @@ function TrailLayer({
 
     const prevX = prevXRef.current;
     const nextX = nextXRef.current;
+    const prevY = prevYRef.current;
+    const nextY = nextYRef.current;
     const trans = transitionProgressRef.current;  // 0 at section center, 1 mid-segment
     const segP = segProgressRef.current;          // 0..1 raw segment progress
 
@@ -236,20 +242,20 @@ function TrailLayer({
       // the emerging cell instead of retreating backward.
       const u = tail + localT * (head - tail);
 
-      // Base linear interpolation between sphere positions
+      // Base linear interpolation between sphere positions (X + Y)
       const linearX = prevX + (nextX - prevX) * u;
+      const linearY = prevY + (nextY - prevY) * u;
 
-      // Bend toward center: parabolic, peaks at u=0.5
-      const bendStrength = u * (1 - u) * 4;   // 0 at ends, 1 at u=0.5
-      // Bend direction depends on whether we're going left->right or right->left
-      // For LR direction (prev<next), bend pulls UP-AND-IN: toward x=0
-      // We always pull toward 0 (center)
+      // Bend toward viewport center on X (parabolic, peaks at u=0.5)
+      const bendStrength = u * (1 - u) * 4;
       const bendAmount = -linearX * bendStrength * BEND;
       const x = linearX + bendAmount;
 
-      // Y: dragon SWOOPS down then back up (looping motion).
-      // Use a sin from 0->π so y goes 0 -> negative -> 0 across the trail
-      const y = -Math.sin(u * Math.PI) * LOOP_HEIGHT;
+      // Y: linear interpolation between cell positions PLUS a downward swoop
+      // (the loop). On desktop (prevY = nextY = 0), y is pure sin-arc as before.
+      // On mobile (prevY differs from nextY), the dragon's y migrates between
+      // section cells while also swooping below the path midpoint.
+      const y = linearY - Math.sin(u * Math.PI) * LOOP_HEIGHT * 0.75;
 
       // Per-particle wiggle for organic feel (scale by trail extent so it doesn't wiggle when bunched)
       const extent = head - tail;
@@ -495,9 +501,12 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
   const scaleRef = useRef(0.9);
   const sphereOpacityRef = useRef(1);    // start FULLY visible
   const streamOpacityRef = useRef(0);
-  // For snake trail: where sphere WAS and where it's going
+  // For snake trail: where sphere WAS and where it's going (X + Y so dragon
+  // works on mobile vertical layout as well as desktop horizontal layout)
   const prevXRef = useRef(-0.9);
   const nextXRef = useRef(0.9);
+  const prevYRef = useRef(0);
+  const nextYRef = useRef(0);
   const transitionProgressRef = useRef(0);
   const segProgressRef = useRef(0);
   const [mounted, setMounted] = useState(false);
@@ -581,18 +590,22 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
           let toX = sectionX(0);
 
           let currentSegP = 0;
+          let fromY = 0;
+          let toY = 0;
           if (p <= 0) {
             // Page top: peaked at section 0
             sphereScale = 1;
             sphereOpacity = 1;
             xPos = sectionX(0);
             fromX = toX = xPos;
+            fromY = toY = sectionY(0);
           } else if (p >= 1) {
             // Page bottom: peaked at section N-1
             sphereScale = 1;
             sphereOpacity = 1;
             xPos = sectionX(N - 1);
             fromX = toX = xPos;
+            fromY = toY = sectionY(N - 1);
           } else {
             // Centers now at i / (N-1). Find which segment we're in.
             let i = Math.floor(p / segmentSpan);
@@ -605,6 +618,8 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
             // Direction is CONSTANT through this segment — from i to i+1
             fromX = sectionX(i);
             toX = sectionX(i + 1);
+            fromY = sectionY(i);
+            toY = sectionY(i + 1);
 
             // Peak bands now very narrow — transformation begins on FIRST scroll
             const peakLeftEnd = 0.02;
@@ -623,21 +638,16 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
               xPos = sectionX(i + 1);
               trans = 0;
             } else {
-              // Transition (segP in [0.10, 0.90])
+              // Transition: sphere shrinks AGGRESSIVELY (higher exponent), giving
+              // dragon a wider visible window in the middle of the segment.
               const tNorm = (segP - peakLeftEnd) / (peakRightStart - peakLeftEnd);  // 0..1
-              // Sphere phase: shrinks to dot at tNorm=0.5, expands back at tNorm=1
-              // Use cosine: 1 at endpoints, 0 in the middle
-              const sphereVisible = (1 - Math.cos((tNorm < 0.5 ? tNorm * 2 : (1 - tNorm) * 2) * Math.PI)) / 2;
-              // Above formula: tNorm=0 -> sphereVisible 1, tNorm=0.5 -> 0, tNorm=1 -> 1
-              // But invert because we want PEAK at extremes, DOT at middle
-              // Actually re-derive: we want sphereScale=1 at tNorm=0 and tNorm=1, sphereScale=0 at tNorm=0.5
-              const triangle = 1 - Math.abs(tNorm - 0.5) * 2;   // 0 at ends, 1 at middle
-              const compressed = 1 - triangle;                   // 1 at ends, 0 at middle
-              sphereScale = Math.max(0.05, Math.pow(compressed, 1.2));
-              sphereOpacity = Math.max(0.05, Math.pow(compressed, 0.9));
-              // Snake (dragon) emerges in middle of segment
-              trans = triangle;
-              // Sphere x: stays at fromX for first half, snaps to toX for second half
+              const triangle = 1 - Math.abs(tNorm - 0.5) * 2;     // 0 at ends, 1 at middle
+              const compressed = 1 - triangle;                     // 1 at ends, 0 at middle
+              // Steeper exponent on shrink (was 1.2 / 0.9) — cell collapses fast
+              sphereScale = Math.max(0.0, Math.pow(compressed, 2.4));
+              sphereOpacity = Math.max(0.0, Math.pow(compressed, 1.8));
+              // Dragon visibility widened: square-root makes triangle plateau-ish near peak
+              trans = Math.min(1, Math.sqrt(triangle) * 1.05);
               xPos = tNorm < 0.5 ? sectionX(i) : sectionX(i + 1);
             }
           }
@@ -670,6 +680,8 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
           streamOpacityRef.current = trans;
           prevXRef.current = fromX;
           nextXRef.current = toX;
+          prevYRef.current = fromY;
+          nextYRef.current = toY;
           pulseRef.current = sphereOpacity * 0.5;
         },
       },
@@ -705,6 +717,8 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
               streamOpacityRef={streamOpacityRef}
               prevXRef={prevXRef}
               nextXRef={nextXRef}
+              prevYRef={prevYRef}
+              nextYRef={nextYRef}
               transitionProgressRef={transitionProgressRef}
               segProgressRef={segProgressRef}
             />
