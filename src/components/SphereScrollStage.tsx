@@ -638,7 +638,7 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
       tween.scrollTrigger?.kill();
       tween.kill();
     };
-  }, { scope: stageRef });
+  }, { scope: stageRef, dependencies: [isMobile, sectionCount] });
 
   return (
     <div ref={stageRef} className="relative">
