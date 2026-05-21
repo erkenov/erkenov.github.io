@@ -511,21 +511,23 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
 
   useEffect(() => {
     setMounted(true);
-    const check = () => setIsMobile(window.innerWidth < 768);
+    const check = () => {
+      const mob = window.innerWidth < 768;
+      setIsMobile(mob);
+      // Also set initial position refs right away so the very first
+      // rendered frame puts the cell at the correct viewport location
+      // — without waiting for the first scroll event to update it.
+      xRef.current = mob ? 0 : -0.9;
+      yRef.current = mob ? 0.25 : 0;
+    };
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Helper: where the cell parks at each section.
-  // Desktop: alternating LEFT/RIGHT (x ±0.9, y 0) — cell sits next to L/R text column.
-  // Mobile:  alternating UP/DOWN slightly (x 0, y ±0.25) — cell sits above/below
-  //          the full-width text, gives section-to-section rhythm without going
-  //          off the narrow viewport.
-  const sectionX = (idx: number) =>
-    isMobile ? 0 : (idx % 2 === 0 ? -0.9 : 0.9);
-  const sectionY = (idx: number) =>
-    isMobile ? (idx % 2 === 0 ? 0.25 : -0.25) : 0;
+  // sectionX/sectionY positions are computed INSIDE onUpdate (below) so they
+  // always read the current window width — no closure-staleness from SSR
+  // capturing isMobile=false on the server.
 
   // Transition window width in progress-units (page scroll 0..1).
   // Each section spans 1/sectionCount. Transition takes up the LAST `transitionFrac`
@@ -546,6 +548,12 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
         onUpdate: (self) => {
           const p = self.progress;
           const N = sectionCount;
+          // Read viewport fresh — closure-free so it works under SSR initial render
+          const mob = typeof window !== "undefined" && window.innerWidth < 768;
+          const sectionX = (idx: number) =>
+            mob ? 0 : (idx % 2 === 0 ? -0.9 : 0.9);
+          const sectionY = (idx: number) =>
+            mob ? (idx % 2 === 0 ? 0.25 : -0.25) : 0;
           // SEGMENT-BETWEEN-CENTERS MODEL:
           // Section centers at p = (i+0.5)/N.
           // For each segment between center i and center i+1, the dragon flies
@@ -634,20 +642,23 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
             }
           }
 
-          // y position: derive from which section we're "at" (or transitioning between)
-          // by using the same xPos logic but on the sectionY helper
+          // y position: smoothly interpolate from current section's y to next section's y
+          // across the segment, with the smooth-step centered at 0.5. Avoids the visible
+          // JUMP that happens when y hard-switches at the segment midpoint.
           let yPos = 0;
           if (p <= 0) yPos = sectionY(0);
           else if (p >= 1) yPos = sectionY(N - 1);
           else {
-            // We're in some segment i -> i+1. Sphere y matches whichever side
-            // it's parked on (mirrors xPos logic).
             let i2 = Math.floor(p / segmentSpan);
             if (i2 < 0) i2 = 0;
             if (i2 > N - 2) i2 = N - 2;
             const ci2 = i2 * segmentSpan;
             const segP2 = (p - ci2) / segmentSpan;
-            yPos = segP2 < 0.5 ? sectionY(i2) : sectionY(i2 + 1);
+            const yFrom = sectionY(i2);
+            const yTo = sectionY(i2 + 1);
+            // smooth-step ease (3t^2 - 2t^3) — slow at start/end, fast in middle
+            const ease = segP2 * segP2 * (3 - 2 * segP2);
+            yPos = yFrom + (yTo - yFrom) * ease;
           }
 
           sphereOpacityRef.current = sphereOpacity;
