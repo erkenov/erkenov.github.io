@@ -112,29 +112,38 @@ function ScrollVideo({
   ariaLabel,
 }: ScrollVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const readyRef = useRef(false);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    const onLoaded = () => {
-      readyRef.current = true;
+    // We scrub via currentTime; never let the element auto-play
+    video.pause();
+    const onCanPlay = () => video.pause();
+    video.addEventListener("canplay", onCanPlay);
+    video.addEventListener("play", onCanPlay);
+    return () => {
+      video.removeEventListener("canplay", onCanPlay);
+      video.removeEventListener("play", onCanPlay);
     };
-    video.addEventListener("loadedmetadata", onLoaded);
-    return () => video.removeEventListener("loadedmetadata", onLoaded);
   }, []);
 
   useMotionValueEvent(progress, "change", (latest) => {
     const video = videoRef.current;
-    if (!video || !readyRef.current) return;
+    if (!video) return;
+    // Gate directly on duration being known — more reliable than a "ready" flag
+    // (loadedmetadata may have fired before this component mounted)
     if (!Number.isFinite(video.duration) || video.duration <= 0) return;
     const localProgress =
       (latest - windowStart) / Math.max(0.0001, windowEnd - windowStart);
     const clamped = Math.max(0, Math.min(1, localProgress));
-    // Only update when meaningfully different to avoid thrash
     const targetTime = video.duration * clamped;
     if (Math.abs(video.currentTime - targetTime) > 0.03) {
-      video.currentTime = targetTime;
+      try {
+        video.currentTime = targetTime;
+      } catch {
+        // Browser may throw if data for that frame isn't buffered yet.
+        // Ignore — the next scroll tick will retry.
+      }
     }
   });
 
