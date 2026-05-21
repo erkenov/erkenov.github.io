@@ -106,37 +106,54 @@ function TrailLayer({
 
     const prevX = prevXRef.current;
     const nextX = nextXRef.current;
-    const trans = transitionProgressRef.current;  // 0 at section center, 1 at boundary
+    const trans = transitionProgressRef.current;  // 0 at section center, 1 mid-segment
 
-    // Head of trail moves from prevPos toward nextPos as trans goes 0->1
-    // Tail lags behind. Each particle's position = lerp(prevX, nextX, particle.t * trans)
+    // Dragon path: bends inward toward viewport center (x=0) at midpoint
+    // and loops slightly — gives the "loop around the text" feeling without
+    // requiring DOM-coordinate awareness.
+    // For each particle position-along-trail u (0..1):
+    //   - linear x from prevX to nextX
+    //   - PLUS an inward bend: at u=0.5 the path is pulled toward x=0 by amount BEND
+    //   - PLUS a vertical loop component: a sine in y so the path swoops down then up
+    const BEND = 0.55;            // how far the path bends toward center
+    const LOOP_HEIGHT = 0.9;      // vertical sweep of the dragon loop
+
     for (let i = 0; i < COUNT; i++) {
-      const localT = params[i * 2];           // 0..1
+      const localT = params[i * 2];           // 0..1, position along dragon
       const phase = params[i * 2 + 1];
 
-      // Position along the trail (head leads, tail lags)
+      // Particle u = its position along the dragon * trans
+      // (at trans=0 all particles are near the head, the sphere position;
+      //  at trans=1 they span the full trail from prev to next)
       const u = localT * trans;
-      const x = prevX + (nextX - prevX) * u;
 
-      // Y: starts at sphere height (0), drops as we move along the trail
-      // gives the "downward arc" feel — snake flows down
-      const y = -u * 1.4;
+      // Base linear interpolation between sphere positions
+      const linearX = prevX + (nextX - prevX) * u;
 
-      // Wiggle perpendicular to motion + ambient sway
-      const wiggle = Math.sin(t * 3 + phase + u * 6) * 0.08 * trans;
-      const dx = (nextX - prevX);
-      // perpendicular vector in screen-plane: rotate 90deg = (-dy, dx) where dy=-1.4 here
-      const perpX = -(-1.4);  // = 1.4 — but normalize
-      const perpY = dx;
-      const perpMag = Math.hypot(perpX, perpY) || 1;
+      // Bend toward center: parabolic, peaks at u=0.5
+      const bendStrength = u * (1 - u) * 4;   // 0 at ends, 1 at u=0.5
+      // Bend direction depends on whether we're going left->right or right->left
+      // For LR direction (prev<next), bend pulls UP-AND-IN: toward x=0
+      // We always pull toward 0 (center)
+      const bendAmount = -linearX * bendStrength * BEND;
+      const x = linearX + bendAmount;
 
-      pos[i * 3]     = x + (perpX / perpMag) * wiggle;
-      pos[i * 3 + 1] = y + (perpY / perpMag) * wiggle * 0.5;
-      pos[i * 3 + 2] = (Math.sin(phase + t * 1.2) * 0.2);  // z wobble for depth
+      // Y: dragon SWOOPS down then back up (looping motion).
+      // Use a sin from 0->π so y goes 0 -> negative -> 0 across the trail
+      const y = -Math.sin(u * Math.PI) * LOOP_HEIGHT;
+
+      // Per-particle wiggle for organic feel
+      const wiggle = Math.sin(t * 3 + phase + u * 6) * 0.06 * trans;
+      // Z depth wobble
+      const zWobble = Math.sin(phase + t * 1.2 + u * 4) * 0.25;
+
+      pos[i * 3]     = x + wiggle;
+      pos[i * 3 + 1] = y + wiggle * 0.4;
+      pos[i * 3 + 2] = zWobble;
     }
     pa.needsUpdate = true;
 
-    // Gentle crossfade — softer transitions per "more subtle" feedback
+    // Gentle crossfade
     const target = Math.min(0.9, streamOpacityRef.current);
     matRef.current.opacity = matRef.current.opacity * 0.85 + target * 0.15;
   });
@@ -357,8 +374,11 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
           //   0.50 - 0.90: dragon compresses to dot at sectionX(i+1), sphere reforming
           //   segP > 0.90: sphere PEAKED at sectionX(i+1)
 
-          const firstCenter = 0.5 / N;
-          const lastCenter = (N - 0.5) / N;
+          // Spread centers to page edges so section 0's peak is at p=0
+          // and section N-1's peak is at p=1 — first scroll triggers transformation immediately.
+          const firstCenter = 0;
+          const lastCenter = 1;
+          const segmentSpan = 1 / (N - 1);   // length of one segment in p-units
 
           let sphereScale = 1;
           let sphereOpacity = 1;
@@ -367,35 +387,33 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
           let fromX = sectionX(0);
           let toX = sectionX(0);
 
-          if (p <= firstCenter) {
-            // Before first center: peaked at section 0
+          if (p <= 0) {
+            // Page top: peaked at section 0
             sphereScale = 1;
             sphereOpacity = 1;
             xPos = sectionX(0);
             fromX = toX = xPos;
-          } else if (p >= lastCenter) {
-            // After last center: peaked at section N-1
+          } else if (p >= 1) {
+            // Page bottom: peaked at section N-1
             sphereScale = 1;
             sphereOpacity = 1;
             xPos = sectionX(N - 1);
             fromX = toX = xPos;
           } else {
-            // Find which segment we're in
-            // p in [center_i, center_{i+1}) for some i in 0..N-2
-            // i = floor((p * N) - 0.5)
-            let i = Math.floor(p * N - 0.5);
+            // Centers now at i / (N-1). Find which segment we're in.
+            let i = Math.floor(p / segmentSpan);
             if (i < 0) i = 0;
             if (i > N - 2) i = N - 2;
-            const ci = (i + 0.5) / N;
-            const ciNext = (i + 1.5) / N;
-            const segP = (p - ci) / (ciNext - ci);   // 0..1 across this segment
+            const ci = i * segmentSpan;
+            const segP = (p - ci) / segmentSpan;   // 0..1 across this segment
 
             // Direction is CONSTANT through this segment — from i to i+1
             fromX = sectionX(i);
             toX = sectionX(i + 1);
 
-            const peakLeftEnd = 0.10;
-            const peakRightStart = 0.90;
+            // Peak bands now very narrow — transformation begins on FIRST scroll
+            const peakLeftEnd = 0.02;
+            const peakRightStart = 0.98;
 
             if (segP < peakLeftEnd) {
               // Still at section i, sphere peaked
