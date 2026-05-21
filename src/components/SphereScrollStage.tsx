@@ -229,8 +229,13 @@ function TrailLayer({
     const tail = Math.max(0, 2 * segP - 1);
     const head = Math.min(1, 2 * segP);
 
-    const BEND = 0.55;            // how far the path bends toward center
-    const LOOP_HEIGHT = 0.9;      // vertical sweep of the dragon loop
+    // Dragon path shape — desktop uses horizontal motion + vertical sin swoop.
+    // On mobile we travel mostly vertically (prev/next y diverge) so a big
+    // swoop adds visual confusion — dragon ends up below its destination cell
+    // making the cell look like it's "above" the trajectory. Shrink loop on mobile.
+    const isMobileNow = typeof window !== "undefined" && window.innerWidth < 768;
+    const BEND = isMobileNow ? 0 : 0.55;
+    const LOOP_HEIGHT = isMobileNow ? 0 : 0.9;
 
     for (let i = 0; i < COUNT; i++) {
       const localT = params[i * 2];           // 0..1, position-along-dragon offset
