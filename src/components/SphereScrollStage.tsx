@@ -64,40 +64,81 @@ interface SphereInnerProps {
 }
 
 /* ------------------------------------------------------------------ */
-/* StreamLayer — downward-flowing particles, visible during transitions */
+/* TrailLayer — snake-like particle trail between sphere positions     */
+/*                                                                     */
+/*  Particles distributed along a path from "previous sphere position" */
+/*  to "next sphere position" with a downward arc + sine wiggle that   */
+/*  gives the snake-of-light feel. Only visible during boundary        */
+/*  transitions (not random snowfall).                                 */
 /* ------------------------------------------------------------------ */
-function StreamLayer({ streamOpacityRef }: { streamOpacityRef: React.MutableRefObject<number> }) {
+function TrailLayer({
+  streamOpacityRef,
+  prevXRef,
+  nextXRef,
+  transitionProgressRef,
+}: {
+  streamOpacityRef: React.MutableRefObject<number>;
+  prevXRef: React.MutableRefObject<number>;
+  nextXRef: React.MutableRefObject<number>;
+  /** 0..1 during a transition (sphere disappearing -> reappearing), else 0 */
+  transitionProgressRef: React.MutableRefObject<number>;
+}) {
   const ref = useRef<THREE.Points>(null);
   const matRef = useRef<THREE.PointsMaterial>(null);
-  const COUNT = 600;
+  const COUNT = 220;
+  const positions = useMemo(() => new Float32Array(COUNT * 3), []);
 
-  const { positions, velocities } = useMemo(() => {
-    const positions = new Float32Array(COUNT * 3);
-    const velocities = new Float32Array(COUNT);
+  // Each particle has its own position-along-trail [0..1] and a wiggle phase
+  const params = useMemo(() => {
+    const arr = new Float32Array(COUNT * 2);
     for (let i = 0; i < COUNT; i++) {
-      positions[i * 3]     = (Math.random() - 0.5) * 5;     // x: wider spread
-      positions[i * 3 + 1] = Math.random() * 5 - 2;         // y: random start
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 2;     // z: depth
-      velocities[i] = 1.8 + Math.random() * 1.6;            // 3x faster — more "streaming"
+      arr[i * 2] = i / (COUNT - 1);                  // t along trail
+      arr[i * 2 + 1] = Math.random() * Math.PI * 2;  // wiggle phase
     }
-    return { positions, velocities };
+    return arr;
   }, []);
 
-  useFrame(({ clock }, delta) => {
+  useFrame(({ clock }) => {
     if (!ref.current || !matRef.current) return;
+    const t = clock.getElapsedTime();
     const pa = ref.current.geometry.attributes.position as THREE.BufferAttribute;
     const pos = pa.array as Float32Array;
+
+    const prevX = prevXRef.current;
+    const nextX = nextXRef.current;
+    const trans = transitionProgressRef.current;  // 0 at section center, 1 at boundary
+
+    // Head of trail moves from prevPos toward nextPos as trans goes 0->1
+    // Tail lags behind. Each particle's position = lerp(prevX, nextX, particle.t * trans)
     for (let i = 0; i < COUNT; i++) {
-      pos[i * 3 + 1] -= velocities[i] * delta;
-      if (pos[i * 3 + 1] < -3) {
-        pos[i * 3 + 1] = 3 + Math.random() * 0.5;
-        pos[i * 3]     = (Math.random() - 0.5) * 5;
-      }
+      const localT = params[i * 2];           // 0..1
+      const phase = params[i * 2 + 1];
+
+      // Position along the trail (head leads, tail lags)
+      const u = localT * trans;
+      const x = prevX + (nextX - prevX) * u;
+
+      // Y: starts at sphere height (0), drops as we move along the trail
+      // gives the "downward arc" feel — snake flows down
+      const y = -u * 1.4;
+
+      // Wiggle perpendicular to motion + ambient sway
+      const wiggle = Math.sin(t * 3 + phase + u * 6) * 0.08 * trans;
+      const dx = (nextX - prevX);
+      // perpendicular vector in screen-plane: rotate 90deg = (-dy, dx) where dy=-1.4 here
+      const perpX = -(-1.4);  // = 1.4 — but normalize
+      const perpY = dx;
+      const perpMag = Math.hypot(perpX, perpY) || 1;
+
+      pos[i * 3]     = x + (perpX / perpMag) * wiggle;
+      pos[i * 3 + 1] = y + (perpY / perpMag) * wiggle * 0.5;
+      pos[i * 3 + 2] = (Math.sin(phase + t * 1.2) * 0.2);  // z wobble for depth
     }
     pa.needsUpdate = true;
-    // Fast crossfade — sharper transitions
+
+    // Crossfade opacity
     const target = Math.min(1, streamOpacityRef.current);
-    matRef.current.opacity = matRef.current.opacity * 0.5 + target * 0.5;
+    matRef.current.opacity = matRef.current.opacity * 0.4 + target * 0.6;
   });
 
   return (
@@ -108,7 +149,7 @@ function StreamLayer({ streamOpacityRef }: { streamOpacityRef: React.MutableRefO
       <pointsMaterial
         ref={matRef}
         color={ACCENT_BRIGHT}
-        size={0.025}
+        size={0.055}
         sizeAttenuation
         transparent
         opacity={0}
@@ -260,13 +301,26 @@ interface StageProps {
 export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & { sectionCount?: number }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const pulseRef = useRef(0);
-  const xRef = useRef(0);
+  const xRef = useRef(-0.9);             // start LEFT (section 0 is even -> left)
   const scaleRef = useRef(0.9);
-  const sphereOpacityRef = useRef(1);
+  const sphereOpacityRef = useRef(1);    // start FULLY visible
   const streamOpacityRef = useRef(0);
+  // For snake trail: where sphere WAS and where it's going
+  const prevXRef = useRef(-0.9);
+  const nextXRef = useRef(0.9);
+  const transitionProgressRef = useRef(0);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
+
+  // Helper: which x-position each section sits at (alternating L / R)
+  const sectionX = (idx: number) => (idx % 2 === 0 ? -0.9 : 0.9);
+
+  // Transition window width in progress-units (page scroll 0..1).
+  // Each section spans 1/sectionCount. Transition takes up the LAST `transitionFrac`
+  // of each section into the next. (So sphere is visible most of the section, then
+  // dissolves into the trail near the end, then snaps to next section's x.)
+  const transitionFrac = 0.3;
 
   useGSAP(() => {
     if (!stageRef.current) return;
@@ -280,40 +334,57 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
         scrub: 0.6,
         onUpdate: (self) => {
           const p = self.progress;
-          // Section boundaries: progress p has `sectionCount` sections.
-          // We want sphere visible IN sections, stream visible AT boundaries.
-          // sectionIdx = floor(p * sectionCount); localProgress = (p * sectionCount) % 1
           const sectionFloat = p * sectionCount;
-          const local = sectionFloat - Math.floor(sectionFloat);
-          // Sharper bell curve so sphere fully dies at boundaries
-          // Use sin^2 so the in-section plateau is wider, edges sharper
-          const raw = Math.sin(local * Math.PI);
-          const insideSection = Math.pow(raw, 0.6); // raise plateau, sharpen drop-off
-          // Sphere fully dies at boundaries (min 0 not 0.15)
-          sphereOpacityRef.current = insideSection;
-          // Stream PEAKS at boundaries — boosted intensity
-          const boundaryProx = 1 - insideSection;
-          streamOpacityRef.current = boundaryProx * 1.4; // overshoot — clamped by material max
+          let sectionIdx = Math.floor(sectionFloat);
+          // Clamp to last section at p===1
+          if (sectionIdx >= sectionCount) sectionIdx = sectionCount - 1;
+          const local = sectionFloat - sectionIdx;  // 0..1 within section
 
-          // x: oscillate between -0.9 and +0.9 in a piecewise-sine that matches section count
-          // so sphere lands LEFT or RIGHT inside each section, smoothly moves between
-          const sectionIdx = Math.floor(sectionFloat);
-          const isLeftSection = sectionIdx % 2 === 0;
-          const targetX = isLeftSection ? -0.9 : 0.9;
-          // smooth-step toward target as we enter the middle of the section
-          const nextLeft = (sectionIdx + 1) % 2 === 0;
-          const nextTargetX = nextLeft ? -0.9 : 0.9;
-          // ease: stay at targetX during section body, slide to next during boundary
-          const ease = local < 0.3 ? 0
-                     : local > 0.7 ? 1
-                     : (local - 0.3) / 0.4;
-          xRef.current = targetX + (nextTargetX - targetX) * ease;
+          // In-section vs transition window:
+          // local in [0, 1-transitionFrac]  -> in section: sphere fully visible at sectionX(sectionIdx)
+          // local in [1-transitionFrac, 1]  -> transition: sphere fades, trail emerges
+          const cutoff = 1 - transitionFrac;
+          let sphereOpacity: number;
+          let trans: number;       // 0..1, transition progress (0 = sphere visible, 1 = arrived at next)
+          let currentX: number;
 
-          // Scale: peaks in the middle of the page
-          scaleRef.current = 0.7 + Math.sin(p * Math.PI) * 0.35;
+          if (local <= cutoff) {
+            // In-section: sphere fully visible, no trail
+            sphereOpacity = 1;
+            trans = 0;
+            currentX = sectionX(sectionIdx);
+          } else {
+            // Transition: drive trans 0..1 across the last `transitionFrac` of this section
+            const tLocal = (local - cutoff) / transitionFrac;  // 0..1
+            // Sphere dies on a curve (faster at start of transition)
+            sphereOpacity = Math.max(0, 1 - Math.pow(tLocal, 0.6) * 1.5);
+            trans = tLocal;
+            // x stays at section's home while the sphere is still partially visible,
+            // then accelerates toward next section's x. This gives "stays at L,
+            // dissolves into snake, snake reaches R, sphere reforms at R."
+            const nextIdx = Math.min(sectionCount - 1, sectionIdx + 1);
+            const fromX = sectionX(sectionIdx);
+            const toX = sectionX(nextIdx);
+            // sphere itself stays at fromX (we're dissolving, sphere doesn't move)
+            currentX = fromX;
+            prevXRef.current = fromX;
+            nextXRef.current = toX;
+          }
 
-          // Pulse: gentle baseline + spikes at section centers (when in-section)
-          pulseRef.current = insideSection * 0.5;
+          // At the very last bit, sphere needs to re-emerge at the next section's x
+          // (handled naturally on next frame because local will wrap into the new section)
+
+          sphereOpacityRef.current = sphereOpacity;
+          xRef.current = currentX;
+          transitionProgressRef.current = trans;
+          // Stream/trail opacity = 1 during transition, 0 in section
+          streamOpacityRef.current = (1 - sphereOpacity);
+
+          // Scale: peaks toward mid-page, smaller at edges
+          scaleRef.current = 0.75 + Math.sin(p * Math.PI) * 0.3;
+
+          // Pulse: baseline + emphasized in-section
+          pulseRef.current = sphereOpacity * 0.45;
         },
       },
     });
@@ -341,7 +412,12 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
               sphereOpacityRef={sphereOpacityRef}
               streamOpacityRef={streamOpacityRef}
             />
-            <StreamLayer streamOpacityRef={streamOpacityRef} />
+            <TrailLayer
+              streamOpacityRef={streamOpacityRef}
+              prevXRef={prevXRef}
+              nextXRef={nextXRef}
+              transitionProgressRef={transitionProgressRef}
+            />
           </Canvas>
         )}
       </div>
