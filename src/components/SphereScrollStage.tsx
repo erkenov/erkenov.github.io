@@ -35,9 +35,13 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-const ACCENT = "#7ea687";        // sage — primary
-const ACCENT_BRIGHT = "#C9A876"; // warm amber — secondary (replaces pale-sage/white)
-const KEY_LIGHT = "#F5E9CC";     // warm-cream key light (replaces #ffffff)
+// Cell-Dragon palette (locked 2026-05-21):
+//   sage outer shell, sun-gold inner glow + dragon, warm cream lighting
+const ACCENT = "#7ea687";        // sage — outer dust shell, primary brand
+const ACCENT_BRIGHT = "#F2C94C"; // SUN GOLD — dragon particles + graph nodes (was amber, too brown)
+const CELL_GLOW = "#FAE3A8";     // soft sun — cell's emissive interior ("leaf with sun shining through")
+const KEY_LIGHT = "#F5E9CC";     // warm cream directional key light
+const AMBIENT_TINT = "#F8F1DE";  // warm ambient (replaces stark white — fixes "uncolored" parts)
 
 function fibonacciSphere(count: number, radius: number): Float32Array {
   const arr = new Float32Array(count * 3);
@@ -281,18 +285,18 @@ function Sphere({ pulseRef, xRef, scaleRef, sphereOpacityRef, streamOpacityRef }
 
   return (
     <group ref={groupRef}>
-      {/* INNER SOLID SPHERE — molecule nucleus with proper shading for 3D depth */}
+      {/* INNER CELL — sage base with warm sun-gold glowing from inside */}
       <mesh ref={glowRef}>
         <sphereGeometry args={[0.55, 64, 64]} />
         <meshStandardMaterial
           ref={glowMatRef as unknown as React.RefObject<THREE.MeshStandardMaterial>}
           color={ACCENT}
-          roughness={0.4}
-          metalness={0.15}
-          emissive={ACCENT}
-          emissiveIntensity={0.15}
+          roughness={0.45}
+          metalness={0.1}
+          emissive={CELL_GLOW}
+          emissiveIntensity={0.55}
           transparent
-          opacity={0.85}
+          opacity={0.9}
         />
       </mesh>
 
@@ -485,9 +489,9 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
             gl={{ alpha: true, antialias: true }}
             style={{ background: "transparent" }}
           >
-            <ambientLight intensity={0.4} />
+            <ambientLight intensity={0.45} color={AMBIENT_TINT} />
             <directionalLight position={[2, 3, 4]} intensity={1.2} color={KEY_LIGHT} />
-            <directionalLight position={[-3, -1, 2]} intensity={0.5} color={ACCENT} />
+            <directionalLight position={[-3, -1, 2]} intensity={0.6} color={ACCENT} />
             <Sphere
               pulseRef={pulseRef}
               xRef={xRef}
