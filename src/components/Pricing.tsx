@@ -7,11 +7,12 @@ const ease = [0.16, 1, 0.3, 1] as const;
 
 const includes = [
   "AI receptionist trained on YOUR services and pricing",
-  "Own dedicated phone number (or use your existing one)",
+  "Dedicated phone number (or use your existing one)",
   "After-hours, overflow, and missed-call coverage",
-  "Calendar integration (Google / Outlook / shop software)",
+  "Calendar integration (Google / Outlook / your existing tool)",
   "Customer SMS confirmations and follow-ups",
-  "Monthly call recordings and summary report",
+  "GoHighLevel CRM under your brand",
+  "Monthly call recordings + summary report",
   "Bilingual English + Spanish",
   "First week free — cancel anytime in the trial",
 ];
@@ -73,16 +74,16 @@ export function Pricing() {
             <div className="rounded-2xl border border-border bg-surface p-8">
               <div className="mono-label">The math</div>
               <p className="mt-4 text-sm leading-relaxed text-text-muted">
-                Average independent shop misses{" "}
+                Most small businesses miss{" "}
                 <span className="text-text">8 to 15 callers a week</span> outside business hours.
-                If even one becomes a $500 brake job, the system has paid for itself for a month.
+                If even one becomes a $500 transaction, the system has paid for itself for the month.
               </p>
             </div>
             <div className="rounded-2xl border border-border bg-surface p-8">
               <div className="mono-label">If you grow</div>
               <p className="mt-4 text-sm leading-relaxed text-text-muted">
                 Two locations? Three? Pricing scales linearly — one flat rate per location. No
-                surprise tier upgrades when call volume spikes in summer.
+                surprise tier upgrades when call volume spikes seasonally.
               </p>
             </div>
           </div>

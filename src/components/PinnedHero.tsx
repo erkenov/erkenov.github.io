@@ -3,35 +3,36 @@
 import {
   motion,
   useMotionValue,
+  useMotionValueEvent,
   useTransform,
   type MotionValue,
 } from "framer-motion";
 import { useEffect, useRef } from "react";
-import { ArrowRight, Phone, BrainCircuit, CalendarCheck } from "lucide-react";
+import { ArrowRight, Phone, Eye } from "lucide-react";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import { Particles } from "@/components/ui/particles";
 import { Highlight } from "@/components/ui/hero-highlight";
-import { AnimatedBeam } from "@/components/ui/animated-beam";
 
 /**
  * Pinned, scroll-driven hero with three sequential scenes.
  *
- *  Scene 1 (0.00 – 0.33): "Call comes in" — car approaches on a road,
- *      headline appears.
- *  Scene 2 (0.33 – 0.66): "Sam picks up" — inside the garage, phone
- *      ringing, AI greeting card visible.
- *  Scene 3 (0.66 – 1.00): "Job booked" — confirmation card, calendar
- *      slot, CTA buttons.
+ *   Scene 1 (0.00 – 0.33): "The phone rings" — universal business pain.
+ *   Scene 2 (0.33 – 0.66): "The system answers" — restrained voice-agent reveal.
+ *   Scene 3 (0.66 – 1.00): "The work lands" — laptop rotates open to show
+ *                          a structured CRM record of what just happened.
  *
- *  The whole section is 280vh tall; the inner content is sticky and
- *  fills the viewport during scroll, so each scene gets roughly one
- *  screen-height to play out.
+ *   Each scene's visual centerpiece is a pre-rendered MP4 clip whose
+ *   `currentTime` is mapped to local scroll progress within the scene
+ *   window (Dstafin / Apple AirPods Pro scrollytelling technique).
+ *
+ *   If video files are not present yet (`public/hero/scene-{1,2,3}.mp4`),
+ *   the scene falls back to a poster gradient + the existing text overlay,
+ *   so the site never visually breaks.
+ *
+ *   Positioning: see vault/05-decisions/2026-05-21-website-positioning-and-mvp-rebuild.md
  */
 export function PinnedHero() {
   const ref = useRef<HTMLElement>(null);
-  // Track scroll progress manually — Framer's useScroll with target/offset
-  // can be unreliable in dev mode with sticky inner containers. This direct
-  // measurement is dead simple and resilient.
   const scrollYProgress = useMotionValue(0);
 
   useEffect(() => {
@@ -62,13 +63,13 @@ export function PinnedHero() {
     <section
       ref={ref}
       className="relative h-[280vh] bg-bg"
-      aria-label="What happens when a customer calls your shop"
+      aria-label="What happens when a customer contacts your business"
     >
       <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden">
-        {/* Ambient layers */}
+        {/* Ambient layers — softer than before; the video is the focus now */}
         <AmbientBackgroundBeams progress={scrollYProgress} />
         <AmbientParticles progress={scrollYProgress} />
-        <div className="grid-bg pointer-events-none absolute inset-0 opacity-20" />
+        <div className="grid-bg pointer-events-none absolute inset-0 opacity-10" />
         <SceneGlow progress={scrollYProgress} />
 
         {/* Scenes */}
@@ -87,13 +88,78 @@ export function PinnedHero() {
 }
 
 /* ============================================================== */
+/*  Scroll-driven video — scrubs video.currentTime via progress   */
+/* ============================================================== */
+
+interface ScrollVideoProps {
+  src: string;
+  /** Scene's start/end as global scroll progress (0..1) */
+  windowStart: number;
+  windowEnd: number;
+  progress: MotionValue<number>;
+  poster?: string;
+  className?: string;
+  ariaLabel?: string;
+}
+
+function ScrollVideo({
+  src,
+  windowStart,
+  windowEnd,
+  progress,
+  poster,
+  className,
+  ariaLabel,
+}: ScrollVideoProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const readyRef = useRef(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const onLoaded = () => {
+      readyRef.current = true;
+    };
+    video.addEventListener("loadedmetadata", onLoaded);
+    return () => video.removeEventListener("loadedmetadata", onLoaded);
+  }, []);
+
+  useMotionValueEvent(progress, "change", (latest) => {
+    const video = videoRef.current;
+    if (!video || !readyRef.current) return;
+    if (!Number.isFinite(video.duration) || video.duration <= 0) return;
+    const localProgress =
+      (latest - windowStart) / Math.max(0.0001, windowEnd - windowStart);
+    const clamped = Math.max(0, Math.min(1, localProgress));
+    // Only update when meaningfully different to avoid thrash
+    const targetTime = video.duration * clamped;
+    if (Math.abs(video.currentTime - targetTime) > 0.03) {
+      video.currentTime = targetTime;
+    }
+  });
+
+  return (
+    <video
+      ref={videoRef}
+      src={src}
+      poster={poster}
+      muted
+      playsInline
+      preload="auto"
+      // Never `autoPlay` — we scrub via currentTime instead
+      className={className}
+      aria-label={ariaLabel}
+    />
+  );
+}
+
+/* ============================================================== */
 /*  Ambient glow that shifts hue across the three scenes           */
 /* ============================================================== */
 
 function SceneGlow({ progress }: { progress: MotionValue<number> }) {
-  // Accent → softer → deeper accent as scenes progress
   const x = useTransform(progress, [0, 0.5, 1], ["20%", "50%", "80%"]);
-  const opacity = useTransform(progress, [0, 0.2, 0.8, 1], [0, 0.25, 0.25, 0.1]);
+  const opacity = useTransform(progress, [0, 0.2, 0.8, 1], [0, 0.2, 0.2, 0.08]);
   return (
     <motion.div
       style={{ left: x, opacity }}
@@ -103,13 +169,8 @@ function SceneGlow({ progress }: { progress: MotionValue<number> }) {
   );
 }
 
-/* ============================================================== */
-/*  Ambient layers — Background Beams + Particles, scene-fading   */
-/* ============================================================== */
-
 function AmbientBackgroundBeams({ progress }: { progress: MotionValue<number> }) {
-  // Strong on scene 1, fades through scene 2, mostly gone in scene 3
-  const opacity = useTransform(progress, [0, 0.1, 0.5, 0.8], [0.7, 0.7, 0.45, 0.15]);
+  const opacity = useTransform(progress, [0, 0.1, 0.5, 0.8], [0.45, 0.45, 0.3, 0.1]);
   return (
     <motion.div
       style={{ opacity }}
@@ -122,8 +183,7 @@ function AmbientBackgroundBeams({ progress }: { progress: MotionValue<number> })
 }
 
 function AmbientParticles({ progress }: { progress: MotionValue<number> }) {
-  // Subtle throughout, slightly stronger in scene 1
-  const opacity = useTransform(progress, [0, 0.2, 0.7, 1], [0.6, 0.6, 0.4, 0.3]);
+  const opacity = useTransform(progress, [0, 0.2, 0.7, 1], [0.4, 0.4, 0.25, 0.2]);
   return (
     <motion.div
       style={{ opacity }}
@@ -132,7 +192,7 @@ function AmbientParticles({ progress }: { progress: MotionValue<number> }) {
     >
       <Particles
         className="absolute inset-0"
-        quantity={80}
+        quantity={60}
         color="#ff7849"
         size={0.5}
         staticity={40}
@@ -142,77 +202,54 @@ function AmbientParticles({ progress }: { progress: MotionValue<number> }) {
 }
 
 /* ============================================================== */
-/*  Scene 1 — the call comes in                                    */
+/*  Scene 1 — The phone rings                                      */
 /* ============================================================== */
 
 function Scene1({ progress }: { progress: MotionValue<number> }) {
-  // Visible 0.0 → 0.33, then fades out by 0.4
   const opacity = useTransform(progress, [0, 0.05, 0.3, 0.4], [1, 1, 1, 0]);
   const yText = useTransform(progress, [0, 0.3], [0, -60]);
-  // Car drifts in from the left side
-  const carX = useTransform(progress, [0, 0.25], ["-60%", "0%"]);
-  const carScale = useTransform(progress, [0, 0.3], [0.8, 1.05]);
-  const roadOpacity = useTransform(progress, [0, 0.05], [0, 1]);
+  const videoOpacity = useTransform(progress, [0, 0.05, 0.3, 0.4], [0.85, 1, 1, 0]);
+  const videoScale = useTransform(progress, [0, 0.3], [1.02, 1]);
 
   return (
     <motion.div
       style={{ opacity }}
       className="absolute inset-0 flex flex-col items-center justify-center px-6"
     >
-      {/* Road perspective lines */}
-      <motion.svg
-        style={{ opacity: roadOpacity }}
-        viewBox="0 0 1200 400"
-        className="absolute bottom-0 w-full max-w-7xl"
-        aria-hidden
-      >
-        <defs>
-          <linearGradient id="road1" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(255,120,73,0.0)" />
-            <stop offset="80%" stopColor="rgba(255,120,73,0.18)" />
-            <stop offset="100%" stopColor="rgba(255,120,73,0.0)" />
-          </linearGradient>
-        </defs>
-        {/* Receding road lines */}
-        <path d="M 600 100 L 200 400" stroke="url(#road1)" strokeWidth="1.5" />
-        <path d="M 600 100 L 400 400" stroke="url(#road1)" strokeWidth="1.5" />
-        <path d="M 600 100 L 600 400" stroke="url(#road1)" strokeWidth="1.5" />
-        <path d="M 600 100 L 800 400" stroke="url(#road1)" strokeWidth="1.5" />
-        <path d="M 600 100 L 1000 400" stroke="url(#road1)" strokeWidth="1.5" />
-        {/* Horizon line */}
-        <path
-          d="M 0 100 L 1200 100"
-          stroke="rgba(255,120,73,0.15)"
-          strokeWidth="1"
-        />
-      </motion.svg>
-
-      {/* Car coming in from left */}
       <motion.div
-        style={{ x: carX, scale: carScale }}
-        className="absolute inset-x-0 bottom-[20%] flex justify-center"
+        style={{ opacity: videoOpacity, scale: videoScale }}
+        className="absolute inset-0 flex items-center justify-center"
         aria-hidden
       >
-        <CarSide />
+        <ScrollVideo
+          src="/hero/scene-1.mp4"
+          poster="/hero/scene-1-poster.jpg"
+          windowStart={0}
+          windowEnd={0.33}
+          progress={progress}
+          className="h-full w-full object-cover opacity-90"
+          ariaLabel="A phone ringing on a business owner's desk"
+        />
+        {/* Dark vignette so text reads cleanly */}
+        <div className="absolute inset-0 bg-gradient-to-b from-bg/40 via-transparent to-bg/80" />
       </motion.div>
 
-      {/* Text overlay */}
       <motion.div
         style={{ y: yText }}
         className="relative z-10 mx-auto max-w-4xl text-center"
       >
-        <div className="mono-label inline-block">Scene 01 — 5:47 PM</div>
+        <div className="mono-label inline-block">Scene 01 — the work hours</div>
         <h1
           className="mt-5 text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl"
           style={{ letterSpacing: "-0.03em", lineHeight: 1.05 }}
         >
-          The phone is ringing
+          The phone keeps ringing
           <span className="block">
-            while <Highlight className="text-text">the bay is full.</Highlight>
+            while you&apos;re <Highlight className="text-text">doing the work.</Highlight>
           </span>
         </h1>
         <p className="mt-6 mx-auto max-w-xl text-lg text-text-muted">
-          Brake job, oil change, a new customer trying you for the first time. You can&apos;t pick up.
+          New customers. Existing customers. Suppliers. Spam. Every call is a context switch. Every missed one is a leak.
         </p>
       </motion.div>
     </motion.div>
@@ -220,7 +257,7 @@ function Scene1({ progress }: { progress: MotionValue<number> }) {
 }
 
 /* ============================================================== */
-/*  Scene 2 — Sam picks up                                         */
+/*  Scene 2 — The system answers                                   */
 /* ============================================================== */
 
 function Scene2({ progress }: { progress: MotionValue<number> }) {
@@ -229,7 +266,11 @@ function Scene2({ progress }: { progress: MotionValue<number> }) {
     [0.28, 0.4, 0.62, 0.72],
     [0, 1, 1, 0]
   );
-  const ringScale = useTransform(progress, [0.3, 0.5], [0.9, 1.2]);
+  const videoOpacity = useTransform(
+    progress,
+    [0.28, 0.4, 0.62, 0.72],
+    [0, 1, 1, 0]
+  );
   const slideUp = useTransform(progress, [0.3, 0.5], [40, 0]);
 
   return (
@@ -237,67 +278,78 @@ function Scene2({ progress }: { progress: MotionValue<number> }) {
       style={{ opacity }}
       className="absolute inset-0 flex items-center justify-center px-6"
     >
-      <div className="relative grid w-full max-w-6xl grid-cols-1 items-center gap-12 md:grid-cols-2 md:gap-20">
-        {/* Left: Garage silhouette */}
-        <motion.div
-          style={{ scale: ringScale }}
-          className="relative flex items-center justify-center"
-        >
-          <GarageScene />
-        </motion.div>
+      <motion.div
+        style={{ opacity: videoOpacity }}
+        className="absolute inset-0 flex items-center justify-center"
+        aria-hidden
+      >
+        <ScrollVideo
+          src="/hero/scene-2.mp4"
+          poster="/hero/scene-2-poster.jpg"
+          windowStart={0.33}
+          windowEnd={0.66}
+          progress={progress}
+          className="h-full w-full object-cover opacity-90"
+          ariaLabel="The system answering the call, transcript building live"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-bg/40 via-transparent to-bg/80" />
+      </motion.div>
 
-        {/* Right: AI greeting card */}
-        <motion.div
-          style={{ y: slideUp }}
-          className="relative z-10"
+      <motion.div
+        style={{ y: slideUp }}
+        className="relative z-10 mx-auto max-w-4xl text-center"
+      >
+        <div className="mono-label inline-block">Scene 02 — same minute</div>
+        <h2
+          className="mt-5 text-3xl font-bold tracking-tight md:text-5xl lg:text-6xl"
+          style={{ letterSpacing: "-0.03em", lineHeight: 1.1 }}
         >
-          <div className="mono-label">Scene 02 — same minute</div>
-          <h2
-            className="mt-5 text-3xl font-bold tracking-tight md:text-5xl"
-            style={{ letterSpacing: "-0.03em", lineHeight: 1.1 }}
-          >
-            Sam picks up.
-            <span className="block text-accent">
-              Within two rings.
-            </span>
-          </h2>
-          <p className="mt-5 text-base text-text-muted md:text-lg">
-            Your AI receptionist answers. Knows your shop name. Asks
-            the right questions. Doesn&apos;t sound like a robot.
-          </p>
+          The system picks up.
+          <span className="block text-accent">
+            Within two rings.
+          </span>
+        </h2>
+        <p className="mt-6 mx-auto max-w-xl text-lg text-text-muted">
+          A voice agent that knows your business. Asks the right questions.
+          Sounds like a person, not a robot. Works at 2 AM the same way it works at 2 PM.
+        </p>
 
-          <div className="mt-8 rounded-2xl border border-border bg-surface/80 p-6 backdrop-blur">
-            <div className="flex items-center justify-between">
-              <div className="mono-label">Live transcript</div>
-              <div className="flex items-center gap-2 text-xs text-text-dim">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-success" />
-                On call
-              </div>
-            </div>
-            <div className="mt-4 space-y-3 text-sm">
-              <Line
-                role="ai"
-                text="Mike's Auto, this is Sam. What can I help you with?"
-              />
-              <Line role="caller" text="My brakes are making a grinding noise." />
-              <Line
-                role="ai"
-                text="Sounds urgent — that's not safe to drive on. What year and model?"
-              />
+        <div className="mx-auto mt-8 max-w-md rounded-2xl border border-border bg-surface/80 p-6 backdrop-blur text-left">
+          <div className="flex items-center justify-between">
+            <div className="mono-label">Live transcript</div>
+            <div className="flex items-center gap-2 text-xs text-text-dim">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-success" />
+              On call
             </div>
           </div>
-        </motion.div>
-      </div>
+          <div className="mt-4 space-y-3 text-sm">
+            <Line
+              role="ai"
+              text="Thanks for calling — what can I help your business with today?"
+            />
+            <Line role="caller" text="I&apos;m looking to book an appointment." />
+            <Line
+              role="ai"
+              text="Got it. What kind of service, and when works for you?"
+            />
+          </div>
+        </div>
+      </motion.div>
     </motion.div>
   );
 }
 
 /* ============================================================== */
-/*  Scene 3 — Job booked                                           */
+/*  Scene 3 — The work lands in the system                         */
 /* ============================================================== */
 
 function Scene3({ progress }: { progress: MotionValue<number> }) {
   const opacity = useTransform(
+    progress,
+    [0.62, 0.74, 0.95, 1],
+    [0, 1, 1, 1]
+  );
+  const videoOpacity = useTransform(
     progress,
     [0.62, 0.74, 0.95, 1],
     [0, 1, 1, 1]
@@ -310,12 +362,29 @@ function Scene3({ progress }: { progress: MotionValue<number> }) {
       style={{ opacity }}
       className="absolute inset-0 flex items-center justify-center px-6"
     >
-      <div className="relative grid w-full max-w-6xl grid-cols-1 items-center gap-12 md:grid-cols-2 md:gap-20">
+      <motion.div
+        style={{ opacity: videoOpacity }}
+        className="absolute inset-0 flex items-center justify-center"
+        aria-hidden
+      >
+        <ScrollVideo
+          src="/hero/scene-3.mp4"
+          poster="/hero/scene-3-poster.jpg"
+          windowStart={0.66}
+          windowEnd={1}
+          progress={progress}
+          className="h-full w-full object-cover opacity-90"
+          ariaLabel="A laptop revealing a CRM dashboard with the new contact recorded"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-bg/40 via-transparent to-bg/80" />
+      </motion.div>
+
+      <div className="relative z-10 grid w-full max-w-6xl grid-cols-1 items-center gap-12 md:grid-cols-2 md:gap-20">
         {/* Left: Booking confirmation card */}
         <motion.div style={{ y: cardY }} className="relative">
           <div className="relative mx-auto max-w-md rounded-3xl border border-border bg-surface p-8 shadow-2xl">
             <div className="flex items-center justify-between">
-              <div className="mono-label">Booking confirmed</div>
+              <div className="mono-label">Lead recorded</div>
               <motion.div
                 style={{ scale: checkScale }}
                 className="flex h-9 w-9 items-center justify-center rounded-full bg-accent"
@@ -335,15 +404,15 @@ function Scene3({ progress }: { progress: MotionValue<number> }) {
               </motion.div>
             </div>
             <div className="mt-6 space-y-2">
-              <Row label="Customer" value="James — 2019 Honda Civic" />
-              <Row label="Service" value="Brake inspection & pad replacement" />
-              <Row label="When" value="Tomorrow, 8:00 AM" />
-              <Row label="Estimated value" value="$420" highlight />
+              <Row label="Contact" value="James — new lead" />
+              <Row label="Source" value="Inbound call, 5:48 PM" />
+              <Row label="Intent" value="Service appointment" />
+              <Row label="Status" value="Booked — tomorrow 8 AM" highlight />
             </div>
             <div className="mt-6 rounded-xl border border-border bg-bg/60 p-4">
-              <div className="text-xs text-text-dim">SMS sent to customer</div>
+              <div className="text-xs text-text-dim">Confirmation sent</div>
               <div className="mt-1 text-sm text-text">
-                Confirmed for Tue 8am at Mike&apos;s Auto. Address: 123 Main St. We&apos;ll text you when ready. — Sam
+                Booked for Tue 8 AM. Address sent via SMS. Calendar updated. Owner notified.
               </div>
             </div>
           </div>
@@ -351,20 +420,19 @@ function Scene3({ progress }: { progress: MotionValue<number> }) {
 
         {/* Right: Closing text + CTA */}
         <motion.div style={{ y: cardY }} className="relative z-10">
-          <BeamFlow />
-          <div className="mt-6 mono-label">Scene 03 — call over</div>
+          <div className="mono-label">Scene 03 — the call ended</div>
           <h2
-            className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
+            className="mt-3 text-3xl font-bold tracking-tight md:text-5xl lg:text-6xl"
             style={{ letterSpacing: "-0.03em", lineHeight: 1.1 }}
           >
-            Job won.
+            The work landed.
             <span className="block text-accent">
               You never touched your phone.
             </span>
           </h2>
           <p className="mt-5 text-base text-text-muted md:text-lg">
-            One booked appointment pays for the system for the month.
-            Every additional one is pure margin.
+            One booked job pays for the whole system for a month.
+            Everything after that is margin you didn&apos;t have before.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -373,17 +441,18 @@ function Scene3({ progress }: { progress: MotionValue<number> }) {
               className="group inline-flex w-fit items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
             >
               <Phone className="h-4 w-4" strokeWidth={2.25} />
-              Hear the live demo
+              Hear it work
               <ArrowRight
                 className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
                 strokeWidth={2.25}
               />
             </a>
             <a
-              href="#pricing"
-              className="inline-flex w-fit items-center justify-center whitespace-nowrap rounded-lg border border-border bg-surface/60 px-6 py-3.5 text-base font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
+              href="#how-it-works"
+              className="inline-flex w-fit items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-border bg-surface/60 px-6 py-3.5 text-base font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
             >
-              See pricing
+              <Eye className="h-4 w-4" strokeWidth={2.25} />
+              See what I build
             </a>
           </div>
         </motion.div>
@@ -462,379 +531,5 @@ function ScrollHint({ progress }: { progress: MotionValue<number> }) {
       Scroll
       <span className="ml-2 inline-block animate-bounce">↓</span>
     </motion.div>
-  );
-}
-
-/* ============================================================== */
-/*  SVG art                                                        */
-/* ============================================================== */
-
-function CarSide() {
-  // Sports-coupe side profile. Long bonnet, fast-back roofline,
-  // tucked-in greenhouse, sculpted fenders over large wheels. Drawn to
-  // suggest a 911-style premium silhouette without copying any specific
-  // licensed mark.
-  return (
-    <svg
-      viewBox="0 0 1000 320"
-      className="w-[min(90vw,1000px)] text-accent"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      {/* --- Main body silhouette: bumper → hood → windscreen → roof → rear glass → rear deck → bumper --- */}
-      <path
-        d="
-          M 60 232
-          C 70 220 78 214 96 212
-          L 168 210
-          C 190 210 200 198 220 188
-          C 250 174 290 156 340 140
-          C 380 128 430 118 490 112
-          L 600 110
-          C 650 112 692 122 728 142
-          C 760 160 786 178 808 196
-          C 830 212 858 220 894 224
-          L 938 230
-          C 952 232 956 240 952 248
-        "
-        strokeWidth="2.4"
-      />
-      {/* Sill / belt line under doors */}
-      <path
-        d="M 96 232 C 220 244 320 246 420 245 C 560 244 700 244 808 240"
-        strokeWidth="1.6"
-        opacity="0.75"
-      />
-
-      {/* --- Greenhouse (window glass) --- */}
-      {/* A-pillar + windscreen */}
-      <path
-        d="M 340 140 C 360 122 388 110 432 108 L 558 108"
-        strokeWidth="1.6"
-        opacity="0.85"
-      />
-      {/* Roof line (slightly arched fastback) */}
-      <path
-        d="M 432 108 C 500 100 600 108 660 124"
-        strokeWidth="1.6"
-        opacity="0.85"
-      />
-      {/* C-pillar / rear glass */}
-      <path
-        d="M 660 124 C 680 132 706 138 728 142"
-        strokeWidth="1.6"
-        opacity="0.85"
-      />
-      {/* B-pillar split inside glass */}
-      <path d="M 528 110 L 528 154" strokeWidth="1.2" opacity="0.55" />
-
-      {/* --- Character / shoulder line along the doors --- */}
-      <path
-        d="M 230 196 C 360 184 520 180 690 188 C 720 190 754 196 786 204"
-        strokeWidth="1.2"
-        opacity="0.55"
-      />
-
-      {/* Door splits */}
-      <path d="M 348 162 L 360 232" strokeWidth="1.1" opacity="0.6" />
-      <path d="M 528 154 L 528 240" strokeWidth="1.1" opacity="0.6" />
-      <path d="M 686 178 L 696 232" strokeWidth="1.1" opacity="0.5" />
-
-      {/* Door handles — thin slots */}
-      <path d="M 420 174 L 488 172" strokeWidth="2" opacity="0.8" />
-      <path d="M 588 178 L 660 180" strokeWidth="2" opacity="0.8" />
-
-      {/* Side mirror */}
-      <path
-        d="M 358 142 L 376 134 L 374 152 L 358 154 Z"
-        strokeWidth="1.2"
-        opacity="0.75"
-      />
-
-      {/* --- Fender arches (bulge above wheels) --- */}
-      <path
-        d="M 130 248 C 142 196 230 188 250 244"
-        strokeWidth="1.2"
-        opacity="0.55"
-      />
-      <path
-        d="M 700 244 C 720 196 808 196 824 246"
-        strokeWidth="1.2"
-        opacity="0.55"
-      />
-
-      {/* --- Front wheel — large, 5-spoke --- */}
-      <circle cx="200" cy="252" r="56" strokeWidth="2.6" />
-      <circle cx="200" cy="252" r="44" strokeWidth="1.2" opacity="0.5" />
-      <circle cx="200" cy="252" r="18" strokeWidth="1.5" opacity="0.85" />
-      {/* 5-spoke pattern */}
-      {[0, 72, 144, 216, 288].map((deg) => (
-        <line
-          key={`fs-${deg}`}
-          x1="200"
-          y1="252"
-          x2={200 + Math.cos((deg * Math.PI) / 180) * 44}
-          y2={252 + Math.sin((deg * Math.PI) / 180) * 44}
-          strokeWidth="2.2"
-          opacity="0.85"
-        />
-      ))}
-      {/* Brake caliper hint */}
-      <path
-        d="M 220 222 a 28 28 0 0 1 0 60"
-        strokeWidth="1.4"
-        opacity="0.45"
-      />
-
-      {/* --- Rear wheel --- */}
-      <circle cx="772" cy="252" r="56" strokeWidth="2.6" />
-      <circle cx="772" cy="252" r="44" strokeWidth="1.2" opacity="0.5" />
-      <circle cx="772" cy="252" r="18" strokeWidth="1.5" opacity="0.85" />
-      {[0, 72, 144, 216, 288].map((deg) => (
-        <line
-          key={`rs-${deg}`}
-          x1="772"
-          y1="252"
-          x2={772 + Math.cos((deg * Math.PI) / 180) * 44}
-          y2={252 + Math.sin((deg * Math.PI) / 180) * 44}
-          strokeWidth="2.2"
-          opacity="0.85"
-        />
-      ))}
-      <path
-        d="M 792 222 a 28 28 0 0 1 0 60"
-        strokeWidth="1.4"
-        opacity="0.45"
-      />
-
-      {/* --- Front lighting — angular projector --- */}
-      <path
-        d="M 76 212 L 116 206 L 124 220 L 84 224 Z"
-        strokeWidth="1.4"
-        opacity="0.85"
-      />
-      <path d="M 84 218 L 116 213" strokeWidth="1" opacity="0.5" />
-
-      {/* --- Rear lighting --- */}
-      <path
-        d="M 902 218 L 942 222 L 936 234 L 908 230 Z"
-        strokeWidth="1.4"
-        opacity="0.85"
-      />
-
-      {/* --- Air intake hint on the lower bonnet --- */}
-      <path
-        d="M 124 224 L 168 224"
-        strokeWidth="1.2"
-        opacity="0.5"
-      />
-
-      {/* --- Ground shadow line — dashed --- */}
-      <path
-        d="M 20 304 L 980 304"
-        strokeWidth="1"
-        strokeDasharray="4 10"
-        opacity="0.35"
-      />
-    </svg>
-  );
-}
-
-function GarageScene() {
-  return (
-    <svg
-      viewBox="0 0 560 480"
-      className="w-full max-w-md text-accent"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      {/* Outer frame — garage opening */}
-      <path
-        d="M 30 30 L 30 450 L 530 450 L 530 30 Z"
-        strokeWidth="1.5"
-        opacity="0.5"
-      />
-      {/* Ceiling beam */}
-      <path d="M 30 80 L 530 80" strokeWidth="1" opacity="0.4" />
-      {/* Hanging lamp */}
-      <path d="M 280 80 L 280 130" strokeWidth="1" opacity="0.5" />
-      <path
-        d="M 250 130 L 310 130 L 300 155 L 260 155 Z"
-        strokeWidth="1.4"
-        opacity="0.6"
-      />
-      {/* Workbench */}
-      <path
-        d="M 80 380 L 480 380 L 480 410 L 80 410 Z"
-        strokeWidth="1.4"
-        opacity="0.6"
-      />
-      <path d="M 110 410 L 110 450" strokeWidth="1.2" opacity="0.5" />
-      <path d="M 450 410 L 450 450" strokeWidth="1.2" opacity="0.5" />
-      {/* Pegboard on the wall */}
-      <path
-        d="M 130 170 L 430 170 L 430 320 L 130 320 Z"
-        strokeWidth="1"
-        opacity="0.35"
-      />
-      {/* Tools on pegboard */}
-      {/* Wrench */}
-      <g transform="translate(170 210)">
-        <path d="M 28 -6 a8 8 0 1 0 8 8 l -5 5 -4 -4 -3 3 -3 -3 z" strokeWidth="1.2" opacity="0.65" />
-        <path d="M 28 5 L 12 22 a3 3 0 0 1 -4 -4 L 24 1" strokeWidth="1.2" opacity="0.65" />
-      </g>
-      {/* Gear */}
-      <g transform="translate(280 230)">
-        <circle cx="0" cy="0" r="18" strokeWidth="1.2" opacity="0.7" />
-        <circle cx="0" cy="0" r="6" strokeWidth="1" opacity="0.6" />
-        <path
-          d="M 0 -24 v6 M 0 18 v6 M -24 0 h6 M 18 0 h6 M -17 -17 l 4 4 M 13 13 l 4 4 M 17 -17 l -4 4 M -13 13 l -4 4"
-          strokeWidth="1"
-          opacity="0.6"
-        />
-      </g>
-      {/* Hammer */}
-      <g transform="translate(380 220) rotate(20)">
-        <path d="M -10 -8 L 14 -8 L 14 6 L -10 6 Z" strokeWidth="1.2" opacity="0.6" />
-        <path d="M 14 -2 L 32 26" strokeWidth="1.2" opacity="0.6" />
-      </g>
-      {/* Phone ringing — center front */}
-      <g transform="translate(280 350)">
-        <rect
-          x="-22"
-          y="-30"
-          width="44"
-          height="60"
-          rx="6"
-          strokeWidth="2"
-          opacity="1"
-        />
-        <path d="M -10 22 L 10 22" strokeWidth="1.5" opacity="0.8" />
-        {/* Ring waves */}
-        <path
-          d="M 30 -10 q 8 10 0 20"
-          strokeWidth="1.5"
-          opacity="0.9"
-        >
-          <animate
-            attributeName="opacity"
-            values="0.2;0.9;0.2"
-            dur="1.4s"
-            repeatCount="indefinite"
-          />
-        </path>
-        <path d="M 42 -16 q 14 16 0 32" strokeWidth="1.2" opacity="0.5">
-          <animate
-            attributeName="opacity"
-            values="0.05;0.5;0.05"
-            dur="1.4s"
-            begin="0.3s"
-            repeatCount="indefinite"
-          />
-        </path>
-        <path d="M -30 -10 q -8 10 0 20" strokeWidth="1.5" opacity="0.9">
-          <animate
-            attributeName="opacity"
-            values="0.2;0.9;0.2"
-            dur="1.4s"
-            repeatCount="indefinite"
-          />
-        </path>
-        <path d="M -42 -16 q -14 16 0 32" strokeWidth="1.2" opacity="0.5">
-          <animate
-            attributeName="opacity"
-            values="0.05;0.5;0.05"
-            dur="1.4s"
-            begin="0.3s"
-            repeatCount="indefinite"
-          />
-        </path>
-      </g>
-    </svg>
-  );
-}
-
-/* ============================================================== */
-/*  BeamFlow — Phone → AI → Calendar with animated beams           */
-/* ============================================================== */
-
-function BeamFlow() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const phoneRef = useRef<HTMLDivElement>(null);
-  const aiRef = useRef<HTMLDivElement>(null);
-  const calendarRef = useRef<HTMLDivElement>(null);
-
-  return (
-    <div
-      ref={containerRef}
-      className="relative flex h-24 w-full items-center justify-between gap-2 rounded-2xl border border-border bg-surface/40 px-6 py-4 backdrop-blur"
-      aria-label="Call flow: phone, then AI, then calendar"
-    >
-      <FlowNode innerRef={phoneRef} label="Call">
-        <Phone className="h-5 w-5 text-text" strokeWidth={2} />
-      </FlowNode>
-      <FlowNode innerRef={aiRef} label="AI" emphasized>
-        <BrainCircuit className="h-5 w-5 text-accent" strokeWidth={2} />
-      </FlowNode>
-      <FlowNode innerRef={calendarRef} label="Booked">
-        <CalendarCheck className="h-5 w-5 text-text" strokeWidth={2} />
-      </FlowNode>
-
-      {/* Two animated beams: phone → AI, AI → calendar */}
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={phoneRef}
-        toRef={aiRef}
-        duration={3}
-        delay={0}
-        gradientStartColor="#ff7849"
-        gradientStopColor="#ffd166"
-      />
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={aiRef}
-        toRef={calendarRef}
-        duration={3}
-        delay={1.2}
-        gradientStartColor="#ff7849"
-        gradientStopColor="#ffd166"
-      />
-    </div>
-  );
-}
-
-function FlowNode({
-  innerRef,
-  label,
-  emphasized,
-  children,
-}: {
-  innerRef: React.RefObject<HTMLDivElement | null>;
-  label: string;
-  emphasized?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col items-center gap-1.5">
-      <div
-        ref={innerRef}
-        className={`flex h-12 w-12 items-center justify-center rounded-xl border ${
-          emphasized
-            ? "border-accent/60 bg-accent/10"
-            : "border-border bg-bg/80"
-        }`}
-      >
-        {children}
-      </div>
-      <span className="font-mono text-[10px] uppercase tracking-wider text-text-dim">
-        {label}
-      </span>
-    </div>
   );
 }

@@ -1,11 +1,15 @@
 ---
 name: frontend-design
-description: Design system and visual taste for the Shamil Erkenov agency site. Use this skill whenever building or editing UI components, sections, or pages — it defines spacing, typography, color, motion, and component patterns that make the site look like a $10K agency build instead of a generic AI-generated template.
+description: Design system and visual taste for Erken Systems (Shamil Erkenov) — smart business systems builder. Use this skill whenever building or editing UI components, sections, or pages — it defines spacing, typography, color, motion, audience character, and component patterns that make the site look like a $10K agency build instead of a generic AI-generated template.
 ---
 
-# Frontend Design Skill — Shamil Erkenov / AI Receptionist Agency
+# Frontend Design Skill — Erken Systems (Shamil Erkenov)
 
-The site sells AI receptionist services to **independent auto repair shop owners** in the US/UK. The owner is a busy 40-to-65-year-old male, blue-collar background, allergic to corporate fluff and overly slick "AI bro" aesthetics. The site has to look **expensive but trustworthy**, not flashy.
+**Updated 2026-05-21** — repositioned from "AI receptionist for auto repair shops" → "smart business systems builder" (see `vault/05-decisions/2026-05-21-website-positioning-and-mvp-rebuild.md` for full context).
+
+The site sells **smart business systems** — voice agents, workflow automations, CRM integrations, dashboards — to **small business operators and Upwork clients** in the US/UK and EU. Visitors range from a 45-year-old service-business owner (auto repair, dental, agency, restaurant, e-commerce) to a 32-year-old solo founder. What they share: they've been pitched AI for 18+ months and are tired of hype; they want to see the future actually working at a business their size; they have budget but not endless budget; they will judge the site in 5–8 seconds. The site has to look **expensive but real** — like a working product showcase, not a marketing brochure.
+
+**One-sentence positioning:** *I build smart systems for businesses. AI is part of every system, but the system is the product.*
 
 ## Aesthetic Direction
 
@@ -14,6 +18,8 @@ The site sells AI receptionist services to **independent auto repair shop owners
 - **Industrial undertone.** Subtle metallic accents, hairline borders, mono-typography for technical accents. Think: workshop precision tool catalog meets premium SaaS dashboard.
 - **Generous whitespace.** Sections breathe. Don't pack content.
 - **Tactile, not glassy.** Avoid heavy `backdrop-blur` and translucent panels — those date fast. Use clean borders and solid surfaces.
+- **Futuristic-CONFIDENT, NOT futuristic-HYPE.** Apple Vision Pro launch vibe — restrained, expensive, real cinematography. NOT Web3-NFT-hype vibe with neon chrome and floating crystals. The "calm one in the AI hype storm" brand persona must hold at every visual beat.
+- **The product IS the visual hero.** Real workflows, real dashboards, real voice waveforms, real laptop screens. NOT abstract glowing brains, floating voxels, or generic "AI sphere" art. When a video clip plays, it shows the actual thing happening, with industrial color grading.
 
 ## Color Tokens
 

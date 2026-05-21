@@ -20,7 +20,7 @@ export function About() {
           >
             <div className="mono-label">Who builds this</div>
             <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl" style={{ letterSpacing: "-0.025em", lineHeight: 1.15 }}>
-              Built by someone who has actually been under a hood.
+              Built by an operator, not an agency.
             </h2>
           </motion.div>
 
@@ -34,18 +34,23 @@ export function About() {
             <div className="space-y-5 text-base leading-relaxed text-text-muted md:text-lg">
               <p>
                 I&apos;m <span className="text-text">Shamil Erkenov</span>. Solo operator,
-                based in Tbilisi. I&apos;ve replaced brake pads, swapped clutches, helped
-                friends rebuild houses including the plumbing. I know the difference
-                between a CV joint and a wheel bearing.
+                based in Tbilisi. Ten years running my own businesses — e-commerce
+                across Russia&apos;s major marketplaces, a perfume brand, hands-on with
+                cars and houses on the side. I&apos;ve been the person under the car, the
+                person on the phone with suppliers, the person hiring and firing.
               </p>
               <p>
-                I also build AI systems. So when this AI receptionist asks a caller
-                whether their check-engine light is solid or blinking, it&apos;s because
-                a real shop owner would. Not because a marketer told me to.
+                I&apos;m an operator who learned AI, not an AI engineer learning operations.
+                That means when I build a system for your business, I build it the way
+                I&apos;d build it for mine — focused on which automation actually saves
+                hours, which one quietly leaks money, and which one you should never
+                touch.
               </p>
               <p>
-                I work with one shop at a time during onboarding so the receptionist
-                actually sounds like <em>your</em> shop, not a generic template.
+                I work with one client at a time during onboarding so the system
+                sounds like <em>your</em> business, not a generic template. The voice
+                agent. The CRM logic. The follow-up rules. All shaped to the way you
+                already work.
               </p>
             </div>
 

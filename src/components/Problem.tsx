@@ -8,18 +8,18 @@ const ease = [0.16, 1, 0.3, 1] as const;
 const stats = [
   {
     value: "62%",
-    label: "of calls after 5pm",
-    sub: "go straight to voicemail in independent shops",
+    label: "of inbound calls after 5pm",
+    sub: "go to voicemail in small businesses without after-hours coverage",
   },
   {
     value: "$1,400",
-    label: "average lost job",
-    sub: "when a brake repair caller can't reach you",
+    label: "average lost transaction",
+    sub: "when a ready-to-buy customer can't get through on the first try",
   },
   {
     value: "3 min",
     label: "is all it takes",
-    sub: "for that caller to dial the next shop on Google",
+    sub: "for that caller to find your nearest competitor on Google",
   },
 ];
 
@@ -40,8 +40,9 @@ export function Problem() {
             Every missed call is a customer calling your competitor.
           </h2>
           <p className="mt-6 text-lg text-text-muted md:text-xl">
-            You&apos;re under a car. The phone rings. By the time you wipe your hands,
-            they&apos;ve hung up and dialled the next shop on the list. That&apos;s the job, gone.
+            You&apos;re heads-down on the actual work. The phone rings. By the time you
+            get to it, they&apos;ve hung up and dialled your nearest competitor. That&apos;s
+            the customer, gone — before they ever met you.
           </p>
         </motion.div>
 

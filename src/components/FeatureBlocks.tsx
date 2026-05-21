@@ -95,13 +95,13 @@ export function FeatureVoice() {
     <FeatureBlock
       id="ai-voice"
       kicker="01 · AI VOICE RECEPTIONIST"
-      title="Picks up every call. Sounds like your shop."
-      description="Sam answers in your shop's name, asks the right qualifying questions (year, make, model, what's wrong), and books the customer into your calendar — 24/7, in English or Spanish."
+      title="Picks up every call. Sounds like your business."
+      description="Answers in your business's name, asks the right qualifying questions, and books the customer into your calendar — 24/7, in English or Spanish. Trained on your services, your prices, and the way you actually talk."
       bullets={[
         "Trained on your service menu and pricing",
         "Handles after-hours, lunch breaks, and overflow",
         "Logs the call recording + a written transcript",
-        "Escalates angry callers with a shop-owner callback",
+        "Escalates urgent or angry callers with a direct callback",
       ]}
       mockup={<MockCallTranscript />}
     />
@@ -122,16 +122,16 @@ function MockCallTranscript() {
         </div>
       </div>
       <div className="space-y-3 p-5 text-sm">
-        <Bubble who="ai" t="Mike's Auto, this is Sam. What can I help you with?" />
-        <Bubble who="caller" t="My check-engine light came on this morning." />
-        <Bubble who="ai" t="Solid or blinking?" />
-        <Bubble who="caller" t="Solid. It's a 2020 Camry, about 58 thousand miles." />
-        <Bubble who="ai" t="OK — a solid CEL usually means it's not urgent but you should be looked at within a week. Diagnostic is $99, waived if you book the repair. Want to come in tomorrow 11 a.m. or Thursday 2 p.m.?" />
-        <Bubble who="caller" t="Thursday works." />
-        <Bubble who="ai" t="Booked for Thursday at 2 p.m. for Maria Lopez, 2020 Camry. I'll text you a confirmation right now. Anything else?" />
+        <Bubble who="ai" t="Thanks for calling — what can I help your business with today?" />
+        <Bubble who="caller" t="I'm hoping to book an appointment for later this week." />
+        <Bubble who="ai" t="Sure. What kind of service, and any preferred day?" />
+        <Bubble who="caller" t="Just a general consultation. Thursday afternoon if possible." />
+        <Bubble who="ai" t="I have Thursday at 2 p.m. open. Consultations are 30 minutes. Want me to book you in?" />
+        <Bubble who="caller" t="That works. Maria Lopez." />
+        <Bubble who="ai" t="Booked for Thursday at 2 p.m. for Maria. I'll text you a confirmation right now. Anything else?" />
       </div>
       <div className="flex items-center justify-between border-t border-border bg-bg/60 px-5 py-3 text-xs text-text-dim">
-        <span>Intent: diagnostic · Urgency: medium · Est. value: $230</span>
+        <span>Intent: consultation · Urgency: standard · Est. value: $230</span>
         <span className="text-accent">→ Booked</span>
       </div>
     </div>
@@ -149,7 +149,7 @@ export function FeatureCrm() {
       id="crm"
       kicker="02 · CRM & CONTACT TIMELINE"
       title="Every caller becomes a contact, automatically."
-      description="The AI logs every call into a GoHighLevel-powered CRM under your brand. You get a full timeline per customer — calls, texts, bookings, no-shows, repeat visits."
+      description="The system logs every call into a GoHighLevel-powered CRM under your brand. You get a full timeline per customer — calls, texts, bookings, no-shows, repeat visits. Nothing falls through the cracks."
       bullets={[
         "White-labelled GoHighLevel CRM",
         "Auto-tagged by service type and urgency",
@@ -181,21 +181,21 @@ function MockCrmDetail() {
           <div className="mt-1 font-mono text-2xl font-semibold text-accent">$2,340</div>
         </div>
         <div className="bg-surface p-4">
-          <div className="text-[10px] uppercase tracking-wider text-text-dim">Vehicle</div>
-          <div className="mt-1 text-sm">2019 Honda Civic LX</div>
+          <div className="text-[10px] uppercase tracking-wider text-text-dim">Source</div>
+          <div className="mt-1 text-sm">Inbound call · website</div>
         </div>
         <div className="bg-surface p-4">
-          <div className="text-[10px] uppercase tracking-wider text-text-dim">Next service due</div>
-          <div className="mt-1 text-sm">Brake fluid · 3 wk</div>
+          <div className="text-[10px] uppercase tracking-wider text-text-dim">Next follow-up</div>
+          <div className="mt-1 text-sm">Auto-scheduled · 3 wk</div>
         </div>
       </div>
       <div className="p-5">
         <div className="mono-label">Timeline</div>
         <div className="mt-4 space-y-3 text-sm">
-          <TimelineRow date="Today, 9:42 AM" event="AI booked Thursday 2 p.m. — brake inspection" />
-          <TimelineRow date="May 4 · 11:20 AM" event="Oil change · paid $74" />
-          <TimelineRow date="Apr 12 · 4:55 PM" event="Tire rotation · paid $40" />
-          <TimelineRow date="Apr 03 · 10:10 AM" event="First contact — AC service · paid $186" muted />
+          <TimelineRow date="Today, 9:42 AM" event="AI booked Thursday 2 p.m. — service consultation" />
+          <TimelineRow date="May 4 · 11:20 AM" event="Follow-up call · paid $74" />
+          <TimelineRow date="Apr 12 · 4:55 PM" event="Service appointment · paid $140" />
+          <TimelineRow date="Apr 03 · 10:10 AM" event="First contact — initial consultation · paid $186" muted />
         </div>
       </div>
     </div>
@@ -223,13 +223,13 @@ export function FeatureLeadGen() {
     <FeatureBlock
       id="leadgen"
       kicker="03 · LEAD GENERATION"
-      title="Finds new auto shops to add. Every morning."
-      description="A scraper monitors Google Maps and Yelp for new auto repair shops in your service area, scores them by how likely they are to need the service, and queues them for outreach."
+      title="Finds new leads in your area. Every morning."
+      description="A scraper monitors Google Maps, Yelp, and other public sources for businesses or prospects matching your ideal customer profile, scores them on fit, and queues them for outreach."
       bullets={[
-        "Targets independent shops, 3 to 15 bays",
-        "Scores by review count, ratings, and digital weakness",
-        "Drafts personalized outreach per shop",
-        "Daily run at 6 a.m. — wakes up to a fresh queue",
+        "Targets prospects matching YOUR ideal customer profile",
+        "Scores by review count, ratings, digital signals",
+        "Drafts personalized outreach per prospect",
+        "Daily run at 6 a.m. — wake up to a fresh queue",
       ]}
       mockup={<MockLeadPipeline />}
     />
@@ -238,10 +238,10 @@ export function FeatureLeadGen() {
 
 function MockLeadPipeline() {
   const cols = [
-    { name: "Discovered", count: 142, items: ["Westside Auto", "Highway 7 Garage", "PrecisionTune Birmingham"] },
+    { name: "Discovered", count: 142, items: ["Westside Wellness", "Highway 7 Garage", "PrecisionTune Clinic"] },
     { name: "Scored ≥ 70", count: 38, items: ["Easy Fix Motors", "Bay Area Auto Care", "Northside Mechanics"] },
     { name: "Outreach sent", count: 12, items: ["Quick Lube Direct", "TopGear Service", "Auto Doctors Plus"] },
-    { name: "Replied", count: 3, items: ["Westside Auto", "TopGear Service"] },
+    { name: "Replied", count: 3, items: ["Westside Wellness", "TopGear Service"] },
   ];
   return (
     <div>
@@ -305,8 +305,8 @@ function MockReport() {
       <div className="border-b border-border bg-bg/60 px-5 py-3">
         <div className="flex items-center justify-between">
           <div>
-            <div className="mono-label">May 2026 · Mike&apos;s Auto</div>
-            <div className="mt-0.5 text-sm font-medium">Monthly receptionist report</div>
+            <div className="mono-label">May 2026 · Your Business</div>
+            <div className="mt-0.5 text-sm font-medium">Monthly system report</div>
           </div>
           <BarChart3 className="h-4 w-4 text-accent" />
         </div>
@@ -322,11 +322,11 @@ function MockReport() {
         <div className="mt-3 space-y-2 text-sm">
           <div className="rounded-lg border border-border bg-bg/40 p-3">
             <div className="text-xs text-text-dim">Mon, May 6</div>
-            <div className="mt-1">Spike of 14 brake-service calls — likely a local snow forecast event.</div>
+            <div className="mt-1">Spike of 14 service calls — likely a local weather event.</div>
           </div>
           <div className="rounded-lg border border-border bg-bg/40 p-3">
             <div className="text-xs text-text-dim">Wed, May 22</div>
-            <div className="mt-1">Callback rate up 12% — Sam misheard 3 ZIP codes; prompt updated.</div>
+            <div className="mt-1">Callback rate up 12% — agent misheard 3 ZIP codes; prompt updated.</div>
           </div>
         </div>
       </div>
