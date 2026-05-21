@@ -130,13 +130,18 @@ function ScrollVideo({
   useMotionValueEvent(progress, "change", (latest) => {
     const video = videoRef.current;
     if (!video) return;
-    // Gate directly on duration being known — more reliable than a "ready" flag
-    // (loadedmetadata may have fired before this component mounted)
-    if (!Number.isFinite(video.duration) || video.duration <= 0) return;
+    const seekable = video.seekable;
+    let maxTime = 0;
+    if (seekable && seekable.length > 0) {
+      maxTime = seekable.end(seekable.length - 1);
+    } else if (Number.isFinite(video.duration) && video.duration > 0) {
+      maxTime = video.duration;
+    }
+    if (maxTime <= 0) return;
     const localProgress =
       (latest - windowStart) / Math.max(0.0001, windowEnd - windowStart);
     const clamped = Math.max(0, Math.min(1, localProgress));
-    const targetTime = video.duration * clamped;
+    const targetTime = maxTime * clamped;
     if (Math.abs(video.currentTime - targetTime) > 0.03) {
       try {
         video.currentTime = targetTime;
@@ -232,7 +237,6 @@ function Scene1({ progress }: { progress: MotionValue<number> }) {
       >
         <ScrollVideo
           src="/hero/scene-1.mp4"
-          poster="/hero/scene-1-poster.jpg"
           windowStart={0}
           windowEnd={0.33}
           progress={progress}
@@ -294,7 +298,6 @@ function Scene2({ progress }: { progress: MotionValue<number> }) {
       >
         <ScrollVideo
           src="/hero/scene-2.mp4"
-          poster="/hero/scene-2-poster.jpg"
           windowStart={0.33}
           windowEnd={0.66}
           progress={progress}
@@ -378,7 +381,6 @@ function Scene3({ progress }: { progress: MotionValue<number> }) {
       >
         <ScrollVideo
           src="/hero/scene-3.mp4"
-          poster="/hero/scene-3-poster.jpg"
           windowStart={0.66}
           windowEnd={1}
           progress={progress}
