@@ -75,10 +75,10 @@ function StreamLayer({ streamOpacityRef }: { streamOpacityRef: React.MutableRefO
     const positions = new Float32Array(COUNT * 3);
     const velocities = new Float32Array(COUNT);
     for (let i = 0; i < COUNT; i++) {
-      positions[i * 3]     = (Math.random() - 0.5) * 4.5;   // x: spread across viewport
+      positions[i * 3]     = (Math.random() - 0.5) * 5;     // x: wider spread
       positions[i * 3 + 1] = Math.random() * 5 - 2;         // y: random start
       positions[i * 3 + 2] = (Math.random() - 0.5) * 2;     // z: depth
-      velocities[i] = 0.6 + Math.random() * 0.8;            // y velocity
+      velocities[i] = 1.8 + Math.random() * 1.6;            // 3x faster — more "streaming"
     }
     return { positions, velocities };
   }, []);
@@ -91,13 +91,13 @@ function StreamLayer({ streamOpacityRef }: { streamOpacityRef: React.MutableRefO
       pos[i * 3 + 1] -= velocities[i] * delta;
       if (pos[i * 3 + 1] < -3) {
         pos[i * 3 + 1] = 3 + Math.random() * 0.5;
-        pos[i * 3]     = (Math.random() - 0.5) * 4.5;
+        pos[i * 3]     = (Math.random() - 0.5) * 5;
       }
     }
     pa.needsUpdate = true;
-    // Smooth opacity follows ref
-    const target = streamOpacityRef.current;
-    matRef.current.opacity = matRef.current.opacity * 0.85 + target * 0.15;
+    // Fast crossfade — sharper transitions
+    const target = Math.min(1, streamOpacityRef.current);
+    matRef.current.opacity = matRef.current.opacity * 0.5 + target * 0.5;
   });
 
   return (
@@ -285,12 +285,15 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
           // sectionIdx = floor(p * sectionCount); localProgress = (p * sectionCount) % 1
           const sectionFloat = p * sectionCount;
           const local = sectionFloat - Math.floor(sectionFloat);
-          // bell curve centered at local=0.5: 1 inside section, dips toward 0 at edges
-          const insideSection = Math.sin(local * Math.PI); // 0 at edges, 1 in middle
-          // sphere opacity = insideSection (smooth)
-          sphereOpacityRef.current = 0.15 + insideSection * 0.85;
-          // stream opacity = inverse (peaks at boundaries)
-          streamOpacityRef.current = 0.9 - insideSection * 0.9;
+          // Sharper bell curve so sphere fully dies at boundaries
+          // Use sin^2 so the in-section plateau is wider, edges sharper
+          const raw = Math.sin(local * Math.PI);
+          const insideSection = Math.pow(raw, 0.6); // raise plateau, sharpen drop-off
+          // Sphere fully dies at boundaries (min 0 not 0.15)
+          sphereOpacityRef.current = insideSection;
+          // Stream PEAKS at boundaries — boosted intensity
+          const boundaryProx = 1 - insideSection;
+          streamOpacityRef.current = boundaryProx * 1.4; // overshoot — clamped by material max
 
           // x: oscillate between -0.9 and +0.9 in a piecewise-sine that matches section count
           // so sphere lands LEFT or RIGHT inside each section, smoothly moves between
