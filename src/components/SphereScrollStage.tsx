@@ -229,13 +229,12 @@ function TrailLayer({
     const tail = Math.max(0, 2 * segP - 1);
     const head = Math.min(1, 2 * segP);
 
-    // Dragon path shape — desktop uses horizontal motion + vertical sin swoop.
-    // On mobile we travel mostly vertically (prev/next y diverge) so a big
-    // swoop adds visual confusion — dragon ends up below its destination cell
-    // making the cell look like it's "above" the trajectory. Shrink loop on mobile.
+    // Dragon path shape: desktop uses horizontal motion + vertical sin swoop.
+    // Mobile (cells co-centered now): no horizontal bend, but a tall downward
+    // arc so the dragon visibly flows top→bottom of viewport between every cell.
     const isMobileNow = typeof window !== "undefined" && window.innerWidth < 768;
     const BEND = isMobileNow ? 0 : 0.55;
-    const LOOP_HEIGHT = isMobileNow ? 0 : 0.9;
+    const LOOP_HEIGHT = isMobileNow ? 1.6 : 0.9;
 
     for (let i = 0; i < COUNT; i++) {
       const localT = params[i * 2];           // 0..1, position-along-dragon offset
@@ -566,8 +565,13 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
           const mob = typeof window !== "undefined" && window.innerWidth < 768;
           const sectionX = (idx: number) =>
             mob ? 0 : (idx % 2 === 0 ? -0.9 : 0.9);
-          const sectionY = (idx: number) =>
-            mob ? (idx % 2 === 0 ? 0.25 : -0.25) : 0;
+          // ALL mobile cells centered (y = 0). Earlier we alternated ±0.25 for
+          // visual rhythm, but alternation means odd segments need the dragon
+          // to flow UPWARD, which breaks the "scroll-down = motion-down" mental
+          // model. With all cells centered, the dragon's vertical arc (LOOP_HEIGHT
+          // re-enabled below) always swoops downward from cell to cell.
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const sectionY = (_idx: number) => 0;
           // SEGMENT-BETWEEN-CENTERS MODEL:
           // Section centers at p = (i+0.5)/N.
           // For each segment between center i and center i+1, the dragon flies
