@@ -142,6 +142,7 @@ interface SphereInnerProps {
   /** mutable refs the host updates from scroll/audio so we don't re-render on every tick */
   pulseRef: React.MutableRefObject<number>;
   xRef: React.MutableRefObject<number>;
+  yRef: React.MutableRefObject<number>;
   scaleRef: React.MutableRefObject<number>;
   /** 0..1 — opacity of the cohesive sphere (drops during transitions) */
   sphereOpacityRef: React.MutableRefObject<number>;
@@ -289,7 +290,7 @@ function TrailLayer({
   );
 }
 
-function Sphere({ pulseRef, xRef, scaleRef, sphereOpacityRef, streamOpacityRef }: SphereInnerProps) {
+function Sphere({ pulseRef, xRef, yRef, scaleRef, sphereOpacityRef, streamOpacityRef }: SphereInnerProps) {
   const groupRef = useRef<THREE.Group>(null);
   const dustRef = useRef<THREE.Points>(null);
   const nodesRef = useRef<THREE.Points>(null);
@@ -386,9 +387,10 @@ function Sphere({ pulseRef, xRef, scaleRef, sphereOpacityRef, streamOpacityRef }
     // Glow scale
     if (glowRef.current) glowRef.current.scale.setScalar(0.45 + amplitude);
 
-    // Whole group: scroll-driven x position + scroll-driven scale + slow rotation
+    // Whole group: scroll-driven position + scale + slow rotation
     if (groupRef.current) {
       groupRef.current.position.x = xRef.current;
+      groupRef.current.position.y = yRef.current;
       groupRef.current.scale.setScalar(sphereScale);
       groupRef.current.rotation.y = t * 0.08;
       groupRef.current.rotation.x = Math.sin(t * 0.05) * 0.12;
@@ -489,6 +491,7 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
   const stageRef = useRef<HTMLDivElement>(null);
   const pulseRef = useRef(0);
   const xRef = useRef(-0.9);             // start LEFT (section 0 is even -> left)
+  const yRef = useRef(0);
   const scaleRef = useRef(0.9);
   const sphereOpacityRef = useRef(1);    // start FULLY visible
   const streamOpacityRef = useRef(0);
@@ -498,7 +501,13 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
   const transitionProgressRef = useRef(0);
   const segProgressRef = useRef(0);
   const [mounted, setMounted] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  // Lazy initializer so the very first render uses the correct viewport class.
+  // Without this, isMobile started false and the ScrollTrigger captured the
+  // desktop sectionX in its closure — cell drifted off-screen on mobile until
+  // the first resize.
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 768 : false,
+  );
 
   useEffect(() => {
     setMounted(true);
@@ -508,12 +517,15 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Helper: which x-position each section sits at.
-  // On desktop: alternating L/R (-0.9 / +0.9) so cell parks beside the L/R text.
-  // On mobile: text is full-width, so cell stays CENTERED (x = 0) — otherwise
-  // it falls off the narrow viewport and the dragon flies invisibly.
+  // Helper: where the cell parks at each section.
+  // Desktop: alternating LEFT/RIGHT (x ±0.9, y 0) — cell sits next to L/R text column.
+  // Mobile:  alternating UP/DOWN slightly (x 0, y ±0.25) — cell sits above/below
+  //          the full-width text, gives section-to-section rhythm without going
+  //          off the narrow viewport.
   const sectionX = (idx: number) =>
     isMobile ? 0 : (idx % 2 === 0 ? -0.9 : 0.9);
+  const sectionY = (idx: number) =>
+    isMobile ? (idx % 2 === 0 ? 0.25 : -0.25) : 0;
 
   // Transition window width in progress-units (page scroll 0..1).
   // Each section spans 1/sectionCount. Transition takes up the LAST `transitionFrac`
@@ -622,8 +634,25 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
             }
           }
 
+          // y position: derive from which section we're "at" (or transitioning between)
+          // by using the same xPos logic but on the sectionY helper
+          let yPos = 0;
+          if (p <= 0) yPos = sectionY(0);
+          else if (p >= 1) yPos = sectionY(N - 1);
+          else {
+            // We're in some segment i -> i+1. Sphere y matches whichever side
+            // it's parked on (mirrors xPos logic).
+            let i2 = Math.floor(p / segmentSpan);
+            if (i2 < 0) i2 = 0;
+            if (i2 > N - 2) i2 = N - 2;
+            const ci2 = i2 * segmentSpan;
+            const segP2 = (p - ci2) / segmentSpan;
+            yPos = segP2 < 0.5 ? sectionY(i2) : sectionY(i2 + 1);
+          }
+
           sphereOpacityRef.current = sphereOpacity;
           xRef.current = xPos;
+          yRef.current = yPos;
           scaleRef.current = sphereScale * (0.85 + Math.sin(p * Math.PI) * 0.2);
           transitionProgressRef.current = trans;
           segProgressRef.current = currentSegP;
@@ -656,6 +685,7 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
             <Sphere
               pulseRef={pulseRef}
               xRef={xRef}
+              yRef={yRef}
               scaleRef={scaleRef}
               sphereOpacityRef={sphereOpacityRef}
               streamOpacityRef={streamOpacityRef}
