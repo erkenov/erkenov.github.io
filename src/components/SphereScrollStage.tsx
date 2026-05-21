@@ -245,20 +245,31 @@ function TrailLayer({
       // the emerging cell instead of retreating backward.
       const u = tail + localT * (head - tail);
 
-      // Base linear interpolation between sphere positions (X + Y)
+      // Base X interpolation + center bend (desktop horizontal motion)
       const linearX = prevX + (nextX - prevX) * u;
-      const linearY = prevY + (nextY - prevY) * u;
-
-      // Bend toward viewport center on X (parabolic, peaks at u=0.5)
       const bendStrength = u * (1 - u) * 4;
       const bendAmount = -linearX * bendStrength * BEND;
       const x = linearX + bendAmount;
 
-      // Y: linear interpolation between cell positions PLUS a downward swoop
-      // (the loop). On desktop (prevY = nextY = 0), y is pure sin-arc as before.
-      // On mobile (prevY differs from nextY), the dragon's y migrates between
-      // section cells while also swooping below the path midpoint.
-      const y = linearY - Math.sin(u * Math.PI) * LOOP_HEIGHT * 0.75;
+      // Y: on MOBILE, if this segment goes UPWARD (next cell above prev cell),
+      // we wrap the dragon path so it ALWAYS flows downward visually:
+      //   u 0..0.5: prevY → off-bottom-viewport
+      //   u 0.5..1: off-top-viewport → nextY
+      // This makes scroll-down always feel like motion-down regardless of which
+      // cell positions alternate. Desktop or non-upward segments use the linear
+      // path + optional sin-arc loop.
+      let y;
+      const goingUp = isMobileNow && nextY > prevY;
+      if (goingUp) {
+        if (u < 0.5) {
+          y = prevY + (-1.4 - prevY) * (u * 2);
+        } else {
+          y = 1.4 + (nextY - 1.4) * ((u - 0.5) * 2);
+        }
+      } else {
+        const linearY = prevY + (nextY - prevY) * u;
+        y = linearY - Math.sin(u * Math.PI) * LOOP_HEIGHT * 0.75;
+      }
 
       // Per-particle wiggle for organic feel (scale by trail extent so it doesn't wiggle when bunched)
       const extent = head - tail;
