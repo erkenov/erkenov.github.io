@@ -1,18 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #0a0a0f;
-  --surface: #13131c;
-  --surface-2: #1a1a26;
-  --border: #26263a;
-  --border-strong: #3a3a52;
-  --text: #f5f5fa;
-  --text-muted: #a0a0b8;
-  --text-dim: #6a6a82;
+  /* Light cream theme — locked 2026-05-21 (v3 vision). Warm magazine-spread feel. */
+  --bg: #F5F1E8;
+  --surface: #FFFFFF;
+  --surface-2: #FAF6EC;
+  --border: #D4CDB8;
+  --border-strong: #C5BDA8;
+  --text: #2A2620;
+  --text-muted: #6B655B;
+  --text-dim: #9B9485;
   --accent: #7ea687;
-  --accent-hover: #8fb898;
+  --accent-hover: #5e8268;
   --accent-soft: rgba(126, 166, 135, 0.12);
-  --success: #4ade80;
+  --success: #5e8268;
 }
 
 @theme inline {
@@ -48,19 +49,19 @@ body {
   font-feature-settings: "ss01", "cv11";
 }
 
-/* Subtle grid background pattern for hero — barely visible, adds texture */
+/* Subtle grid background pattern for hero — barely visible, adds texture (light theme: warm gray on cream) */
 .grid-bg {
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    linear-gradient(to right, rgba(42, 38, 32, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(42, 38, 32, 0.03) 1px, transparent 1px);
   background-size: 48px 48px;
 }
 
-/* Radial glow used behind hero */
+/* Radial glow used behind hero — sage on cream, very soft */
 .hero-glow {
   background: radial-gradient(
     ellipse 800px 400px at 50% 0%,
-    rgba(255, 120, 73, 0.12),
+    rgba(126, 166, 135, 0.10),
     transparent 60%
   );
 }

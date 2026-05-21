@@ -361,18 +361,18 @@ function StageBadge({ stage }: { stage: string }) {
 
 function LeadsView() {
   const shops = [
-    { name: "Westside Auto Repair", city: "London, UK", rating: 3.4, score: 92, status: "Drafting outreach" },
-    { name: "Highway 7 Garage", city: "Manchester, UK", rating: 3.8, score: 86, status: "Drafting outreach" },
-    { name: "PrecisionTune Birmingham", city: "Birmingham, UK", rating: 3.6, score: 81, status: "Email sent" },
+    { name: "Riverside Wellness Clinic", city: "London, UK", rating: 3.4, score: 92, status: "Drafting outreach" },
+    { name: "Highway 7 Dental", city: "Manchester, UK", rating: 3.8, score: 86, status: "Drafting outreach" },
+    { name: "PrecisionFit Birmingham", city: "Birmingham, UK", rating: 3.6, score: 81, status: "Email sent" },
     { name: "Easy Fix Motors", city: "Leeds, UK", rating: 4.1, score: 78, status: "Email sent" },
-    { name: "Bay Area Auto Care", city: "Bristol, UK", rating: 3.2, score: 74, status: "Replied" },
+    { name: "Bay Area Coffee Roasters", city: "Bristol, UK", rating: 3.2, score: 74, status: "Replied" },
     { name: "Northside Mechanics", city: "Liverpool, UK", rating: 3.9, score: 71, status: "Email sent" },
   ];
   return (
     <div className="flex h-full flex-col bg-surface-2">
       <div className="flex items-center justify-between border-b border-border px-6 py-3">
         <div>
-          <div className="mono-label">Lead gen · Auto repair shops</div>
+          <div className="mono-label">Lead gen · matched to your ICP</div>
           <div className="mt-0.5 text-lg font-semibold">Prospects, scored & queued</div>
         </div>
         <div className="flex items-center gap-3">
