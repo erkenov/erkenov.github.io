@@ -229,33 +229,16 @@ function TrailLayer({
     const tail = Math.max(0, 2 * segP - 1);
     const head = Math.min(1, 2 * segP);
 
-    // For MOBILE UPWARD segments only: split the segment into two halves
-    // (bottom-dragon then top-dragon) so we never see BOTH wrap phases at once.
-    const isMobileNow_outer = typeof window !== "undefined" && window.innerWidth < 768;
-    const goingUpWrap = isMobileNow_outer && nextY > prevY;
-    let phaseTail = tail, phaseHead = head;
-    let yPhaseStart = prevY, yPhaseEnd = nextY;
-    if (goingUpWrap) {
-      if (segP < 0.5) {
-        const localSegP = segP * 2;
-        phaseTail = Math.max(0, 2 * localSegP - 1);
-        phaseHead = Math.min(1, 2 * localSegP);
-        yPhaseStart = prevY;
-        yPhaseEnd = -1.4;
-      } else {
-        const localSegP = (segP - 0.5) * 2;
-        phaseTail = Math.max(0, 2 * localSegP - 1);
-        phaseHead = Math.min(1, 2 * localSegP);
-        yPhaseStart = 1.4;
-        yPhaseEnd = nextY;
-      }
-    }
+    // Upward-wrap logic no longer needed — mobile cells are centered now,
+    // every segment goes prevY=0 → nextY=0, no upward direction to wrap.
+    const goingUpWrap = false;
 
     // Dragon path shape: desktop uses horizontal motion + vertical sin swoop.
-    // Mobile (cells alternate ±0.25 in Y): straight line between cells, no arc dip.
+    // Mobile (cells centered): tall vertical arc so dragon flows top→bottom of
+    // viewport between cells.
     const isMobileNow = typeof window !== "undefined" && window.innerWidth < 768;
     const BEND = isMobileNow ? 0 : 0.55;
-    const LOOP_HEIGHT = isMobileNow ? 0 : 0.9;
+    const LOOP_HEIGHT = isMobileNow ? 1.8 : 0.9;
 
     for (let i = 0; i < COUNT; i++) {
       const localT = params[i * 2];           // 0..1, position-along-dragon offset
@@ -589,11 +572,11 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
           const mob = typeof window !== "undefined" && window.innerWidth < 768;
           const sectionX = (idx: number) =>
             mob ? 0 : (idx % 2 === 0 ? -0.9 : 0.9);
-          // Mobile: alternate cells y ±0.25 for vertical rhythm
-          // (Rolled back from "all centered" version per Shamil — alternation
-          // was preferred. 2-of-4 rotations issue acknowledged, address next session.)
-          const sectionY = (idx: number) =>
-            mob ? (idx % 2 === 0 ? 0.25 : -0.25) : 0;
+          // Mobile cells centered (y=0). Tried alternating ±0.25 for rhythm
+          // but it forces dragon to flow UP on odd segments — incompatible
+          // with the "single continuous downward entity" Shamil wants.
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const sectionY = (_idx: number) => 0;
           // SEGMENT-BETWEEN-CENTERS MODEL:
           // Section centers at p = (i+0.5)/N.
           // For each segment between center i and center i+1, the dragon flies
