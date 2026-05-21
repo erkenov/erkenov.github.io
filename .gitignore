@@ -44,3 +44,4 @@ next-env.d.ts
 dev.log
 dev.err
 scripts/__pycache__/
+*.bak
