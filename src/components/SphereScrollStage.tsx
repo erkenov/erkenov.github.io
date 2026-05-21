@@ -498,11 +498,22 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
   const transitionProgressRef = useRef(0);
   const segProgressRef = useRef(0);
   const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
-  // Helper: which x-position each section sits at (alternating L / R)
-  const sectionX = (idx: number) => (idx % 2 === 0 ? -0.9 : 0.9);
+  // Helper: which x-position each section sits at.
+  // On desktop: alternating L/R (-0.9 / +0.9) so cell parks beside the L/R text.
+  // On mobile: text is full-width, so cell stays CENTERED (x = 0) — otherwise
+  // it falls off the narrow viewport and the dragon flies invisibly.
+  const sectionX = (idx: number) =>
+    isMobile ? 0 : (idx % 2 === 0 ? -0.9 : 0.9);
 
   // Transition window width in progress-units (page scroll 0..1).
   // Each section spans 1/sectionCount. Transition takes up the LAST `transitionFrac`
@@ -635,7 +646,7 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
       <div className="pointer-events-none fixed inset-0 z-0">
         {mounted && (
           <Canvas
-            camera={{ position: [0, 0, 2.9], fov: 50 }}
+            camera={{ position: [0, 0, isMobile ? 2.2 : 2.9], fov: 50 }}
             gl={{ alpha: true, antialias: true }}
             style={{ background: "transparent" }}
           >
