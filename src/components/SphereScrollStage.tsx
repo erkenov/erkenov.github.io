@@ -35,8 +35,9 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-const ACCENT = "#7ea687";
-const ACCENT_BRIGHT = "#b8d4be";
+const ACCENT = "#7ea687";        // sage — primary
+const ACCENT_BRIGHT = "#C9A876"; // warm amber — secondary (replaces pale-sage/white)
+const KEY_LIGHT = "#F5E9CC";     // warm-cream key light (replaces #ffffff)
 
 function fibonacciSphere(count: number, radius: number): Float32Array {
   const arr = new Float32Array(count * 3);
@@ -485,8 +486,8 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
             style={{ background: "transparent" }}
           >
             <ambientLight intensity={0.4} />
-            <directionalLight position={[2, 3, 4]} intensity={1.2} color="#ffffff" />
-            <directionalLight position={[-3, -1, 2]} intensity={0.5} color={ACCENT_BRIGHT} />
+            <directionalLight position={[2, 3, 4]} intensity={1.2} color={KEY_LIGHT} />
+            <directionalLight position={[-3, -1, 2]} intensity={0.5} color={ACCENT} />
             <Sphere
               pulseRef={pulseRef}
               xRef={xRef}
