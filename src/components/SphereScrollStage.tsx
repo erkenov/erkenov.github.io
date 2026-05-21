@@ -36,12 +36,14 @@ if (typeof window !== "undefined") {
 }
 
 // Cell-Dragon palette (locked 2026-05-21):
-//   sage outer shell, sun-gold inner glow + dragon, warm cream lighting
-const ACCENT = "#7ea687";        // sage — outer dust shell, primary brand
-const ACCENT_BRIGHT = "#F2C94C"; // SUN GOLD — dragon particles + graph nodes (was amber, too brown)
-const CELL_GLOW = "#FAE3A8";     // soft sun — cell's emissive interior ("leaf with sun shining through")
-const KEY_LIGHT = "#F5E9CC";     // warm cream directional key light
-const AMBIENT_TINT = "#F8F1DE";  // warm ambient (replaces stark white — fixes "uncolored" parts)
+//   sage outer shell, terracotta inner cell, sun-gold dragon, warm cream lighting
+const ACCENT = "#7ea687";          // sage — outer dust shell, primary brand
+const ACCENT_BRIGHT = "#F2C94C";   // sun gold — dragon particles + graph nodes
+const DRAGON_DEEP = "#E89F1F";     // deeper saturated sun — used for dragon trail (avoids burn-to-white)
+const CELL_CORE = "#C76B58";       // terracotta red — inner cell base (earthy complement to sage)
+const CELL_GLOW = "#E88B7A";       // warmer red — cell emissive (red core glowing brighter from within)
+const KEY_LIGHT = "#F5E9CC";       // warm cream directional key light
+const AMBIENT_TINT = "#F8F1DE";    // warm ambient (replaces stark white)
 
 function fibonacciSphere(count: number, radius: number): Float32Array {
   const arr = new Float32Array(count * 3);
@@ -176,13 +178,13 @@ function TrailLayer({
       </bufferGeometry>
       <pointsMaterial
         ref={matRef}
-        color={ACCENT_BRIGHT}
-        size={0.04}
+        color={DRAGON_DEEP}
+        size={0.06}
         sizeAttenuation
         transparent
         opacity={0}
         depthWrite={false}
-        blending={THREE.AdditiveBlending}
+        blending={THREE.NormalBlending}
       />
     </points>
   );
@@ -285,18 +287,18 @@ function Sphere({ pulseRef, xRef, scaleRef, sphereOpacityRef, streamOpacityRef }
 
   return (
     <group ref={groupRef}>
-      {/* INNER CELL — sage base with warm sun-gold glowing from inside */}
+      {/* INNER CELL — terracotta red core glowing warm from within */}
       <mesh ref={glowRef}>
         <sphereGeometry args={[0.55, 64, 64]} />
         <meshStandardMaterial
           ref={glowMatRef as unknown as React.RefObject<THREE.MeshStandardMaterial>}
-          color={ACCENT}
-          roughness={0.45}
-          metalness={0.1}
+          color={CELL_CORE}
+          roughness={0.42}
+          metalness={0.08}
           emissive={CELL_GLOW}
-          emissiveIntensity={0.55}
+          emissiveIntensity={0.7}
           transparent
-          opacity={0.9}
+          opacity={0.95}
         />
       </mesh>
 
