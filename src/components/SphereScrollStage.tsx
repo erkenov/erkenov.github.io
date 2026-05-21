@@ -76,12 +76,15 @@ function TrailLayer({
   prevXRef,
   nextXRef,
   transitionProgressRef,
+  segProgressRef,
 }: {
   streamOpacityRef: React.MutableRefObject<number>;
   prevXRef: React.MutableRefObject<number>;
   nextXRef: React.MutableRefObject<number>;
-  /** 0..1 during a transition (sphere disappearing -> reappearing), else 0 */
+  /** 0..1 — triangle envelope (peak in middle of segment) */
   transitionProgressRef: React.MutableRefObject<number>;
+  /** 0..1 raw segment progress (0 = at prev cell, 1 = at next cell) */
+  segProgressRef: React.MutableRefObject<number>;
 }) {
   const ref = useRef<THREE.Points>(null);
   const matRef = useRef<THREE.PointsMaterial>(null);
@@ -107,25 +110,27 @@ function TrailLayer({
     const prevX = prevXRef.current;
     const nextX = nextXRef.current;
     const trans = transitionProgressRef.current;  // 0 at section center, 1 mid-segment
+    const segP = segProgressRef.current;          // 0..1 raw segment progress
 
-    // Dragon path: bends inward toward viewport center (x=0) at midpoint
-    // and loops slightly — gives the "loop around the text" feeling without
-    // requiring DOM-coordinate awareness.
-    // For each particle position-along-trail u (0..1):
-    //   - linear x from prevX to nextX
-    //   - PLUS an inward bend: at u=0.5 the path is pulled toward x=0 by amount BEND
-    //   - PLUS a vertical loop component: a sine in y so the path swoops down then up
+    // Dragon body extent along path: tail..head, both in [0,1].
+    //   At segP=0:   tail=head=0  → all particles bunched AT PREV cell
+    //   At segP=0.5: tail=0, head=1 → dragon fully extended
+    //   At segP=1:   tail=head=1  → all particles bunched AT NEXT cell (absorbed!)
+    const tail = Math.max(0, 2 * segP - 1);
+    const head = Math.min(1, 2 * segP);
+
     const BEND = 0.55;            // how far the path bends toward center
     const LOOP_HEIGHT = 0.9;      // vertical sweep of the dragon loop
 
     for (let i = 0; i < COUNT; i++) {
-      const localT = params[i * 2];           // 0..1, position along dragon
+      const localT = params[i * 2];           // 0..1, position-along-dragon offset
       const phase = params[i * 2 + 1];
 
-      // Particle u = its position along the dragon * trans
-      // (at trans=0 all particles are near the head, the sphere position;
-      //  at trans=1 they span the full trail from prev to next)
-      const u = localT * trans;
+      // Particle u: maps from [0,1] localT range to [tail, head] dragon extent.
+      // This means during contraction phase (segP > 0.5), all particles
+      // converge toward u=1 = NEXT cell position. Dragon eats itself into
+      // the emerging cell instead of retreating backward.
+      const u = tail + localT * (head - tail);
 
       // Base linear interpolation between sphere positions
       const linearX = prevX + (nextX - prevX) * u;
@@ -142,10 +147,11 @@ function TrailLayer({
       // Use a sin from 0->π so y goes 0 -> negative -> 0 across the trail
       const y = -Math.sin(u * Math.PI) * LOOP_HEIGHT;
 
-      // Per-particle wiggle for organic feel
-      const wiggle = Math.sin(t * 3 + phase + u * 6) * 0.06 * trans;
-      // Z depth wobble
-      const zWobble = Math.sin(phase + t * 1.2 + u * 4) * 0.25;
+      // Per-particle wiggle for organic feel (scale by trail extent so it doesn't wiggle when bunched)
+      const extent = head - tail;
+      const wiggle = Math.sin(t * 3 + phase + u * 6) * 0.06 * extent;
+      // Z depth wobble — also scaled by extent so converged particles aren't drifting in z
+      const zWobble = Math.sin(phase + t * 1.2 + u * 4) * 0.25 * extent;
 
       pos[i * 3]     = x + wiggle;
       pos[i * 3 + 1] = y + wiggle * 0.4;
@@ -153,7 +159,7 @@ function TrailLayer({
     }
     pa.needsUpdate = true;
 
-    // Gentle crossfade
+    // Gentle crossfade — peaks when dragon is fully extended
     const target = Math.min(0.9, streamOpacityRef.current);
     matRef.current.opacity = matRef.current.opacity * 0.85 + target * 0.15;
   });
@@ -335,6 +341,7 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
   const prevXRef = useRef(-0.9);
   const nextXRef = useRef(0.9);
   const transitionProgressRef = useRef(0);
+  const segProgressRef = useRef(0);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
@@ -387,6 +394,7 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
           let fromX = sectionX(0);
           let toX = sectionX(0);
 
+          let currentSegP = 0;
           if (p <= 0) {
             // Page top: peaked at section 0
             sphereScale = 1;
@@ -406,6 +414,7 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
             if (i > N - 2) i = N - 2;
             const ci = i * segmentSpan;
             const segP = (p - ci) / segmentSpan;   // 0..1 across this segment
+            currentSegP = segP;
 
             // Direction is CONSTANT through this segment — from i to i+1
             fromX = sectionX(i);
@@ -451,6 +460,7 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
           xRef.current = xPos;
           scaleRef.current = sphereScale * (0.85 + Math.sin(p * Math.PI) * 0.2);
           transitionProgressRef.current = trans;
+          segProgressRef.current = currentSegP;
           streamOpacityRef.current = trans;
           prevXRef.current = fromX;
           nextXRef.current = toX;
@@ -489,6 +499,7 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
               prevXRef={prevXRef}
               nextXRef={nextXRef}
               transitionProgressRef={transitionProgressRef}
+              segProgressRef={segProgressRef}
             />
           </Canvas>
         )}
