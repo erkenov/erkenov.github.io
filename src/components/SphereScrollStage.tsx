@@ -269,13 +269,13 @@ function TrailLayer({
     }
     pa.needsUpdate = true;
 
-    // Gentle crossfade — peaks when dragon is fully extended
-    const target = Math.min(0.9, streamOpacityRef.current);
-    matRef.current.opacity = matRef.current.opacity * 0.85 + target * 0.15;
+    // Direct opacity assignment — no smoothing (smoothing made dragon
+    // barely visible during fast scrolls)
+    matRef.current.opacity = Math.min(1, streamOpacityRef.current);
   });
 
   return (
-    <points ref={ref}>
+    <points ref={ref} frustumCulled={false}>
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} count={COUNT} array={positions} itemSize={3} />
         <bufferAttribute attach="attributes-color" args={[colors, 3]} count={COUNT} array={colors} itemSize={3} />
@@ -283,7 +283,7 @@ function TrailLayer({
       <pointsMaterial
         ref={matRef}
         vertexColors
-        size={0.028}
+        size={0.04}
         sizeAttenuation
         transparent
         opacity={0}
