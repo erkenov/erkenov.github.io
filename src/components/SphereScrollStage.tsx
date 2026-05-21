@@ -222,12 +222,34 @@ function TrailLayer({
     const trans = transitionProgressRef.current;  // 0 at section center, 1 mid-segment
     const segP = segProgressRef.current;          // 0..1 raw segment progress
 
-    // Dragon body extent along path: tail..head, both in [0,1].
+    // Default dragon body extent across the whole segment.
     //   At segP=0:   tail=head=0  → all particles bunched AT PREV cell
     //   At segP=0.5: tail=0, head=1 → dragon fully extended
     //   At segP=1:   tail=head=1  → all particles bunched AT NEXT cell (absorbed!)
     const tail = Math.max(0, 2 * segP - 1);
     const head = Math.min(1, 2 * segP);
+
+    // For MOBILE UPWARD segments only: split the segment into two halves
+    // (bottom-dragon then top-dragon) so we never see BOTH wrap phases at once.
+    const isMobileNow_outer = typeof window !== "undefined" && window.innerWidth < 768;
+    const goingUpWrap = isMobileNow_outer && nextY > prevY;
+    let phaseTail = tail, phaseHead = head;
+    let yPhaseStart = prevY, yPhaseEnd = nextY;
+    if (goingUpWrap) {
+      if (segP < 0.5) {
+        const localSegP = segP * 2;
+        phaseTail = Math.max(0, 2 * localSegP - 1);
+        phaseHead = Math.min(1, 2 * localSegP);
+        yPhaseStart = prevY;
+        yPhaseEnd = -1.4;
+      } else {
+        const localSegP = (segP - 0.5) * 2;
+        phaseTail = Math.max(0, 2 * localSegP - 1);
+        phaseHead = Math.min(1, 2 * localSegP);
+        yPhaseStart = 1.4;
+        yPhaseEnd = nextY;
+      }
+    }
 
     // Dragon path shape: desktop uses horizontal motion + vertical sin swoop.
     // Mobile (cells alternate ±0.25 in Y): straight line between cells, no arc dip.
@@ -239,11 +261,11 @@ function TrailLayer({
       const localT = params[i * 2];           // 0..1, position-along-dragon offset
       const phase = params[i * 2 + 1];
 
-      // Particle u: maps from [0,1] localT range to [tail, head] dragon extent.
-      // This means during contraction phase (segP > 0.5), all particles
-      // converge toward u=1 = NEXT cell position. Dragon eats itself into
-      // the emerging cell instead of retreating backward.
-      const u = tail + localT * (head - tail);
+      // Particle u: maps localT to [tail, head]. On upward-wrap segments the
+      // tail/head are PHASE-LOCAL (one phase active at a time → no double dragon).
+      const u = goingUpWrap
+        ? phaseTail + localT * (phaseHead - phaseTail)
+        : tail + localT * (head - tail);
 
       // Base X interpolation + center bend (desktop horizontal motion)
       const linearX = prevX + (nextX - prevX) * u;
@@ -251,21 +273,13 @@ function TrailLayer({
       const bendAmount = -linearX * bendStrength * BEND;
       const x = linearX + bendAmount;
 
-      // Y: on MOBILE, if this segment goes UPWARD (next cell above prev cell),
-      // we wrap the dragon path so it ALWAYS flows downward visually:
-      //   u 0..0.5: prevY → off-bottom-viewport
-      //   u 0.5..1: off-top-viewport → nextY
-      // This makes scroll-down always feel like motion-down regardless of which
-      // cell positions alternate. Desktop or non-upward segments use the linear
-      // path + optional sin-arc loop.
+      // Y position. On upward-wrap segments use the phase-local interpolation
+      // (already only one phase active per segP, so no double-dragon).
       let y;
-      const goingUp = isMobileNow && nextY > prevY;
-      if (goingUp) {
-        if (u < 0.5) {
-          y = prevY + (-1.4 - prevY) * (u * 2);
-        } else {
-          y = 1.4 + (nextY - 1.4) * ((u - 0.5) * 2);
-        }
+      if (goingUpWrap) {
+        // Recompute particle u in PHASE-LOCAL space
+        const phaseU = phaseTail + localT * (phaseHead - phaseTail);
+        y = yPhaseStart + (yPhaseEnd - yPhaseStart) * phaseU;
       } else {
         const linearY = prevY + (nextY - prevY) * u;
         y = linearY - Math.sin(u * Math.PI) * LOOP_HEIGHT * 0.75;
