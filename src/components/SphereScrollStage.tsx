@@ -176,7 +176,23 @@ function TrailLayer({
   const matRef = useRef<THREE.PointsMaterial>(null);
   const COUNT = 700;
   const positions = useMemo(() => new Float32Array(COUNT * 3), []);
-  const sprite = getSoftSprite();   // reverted from leaf to soft round dot
+  const sprite = getSoftSprite();
+
+  // Per-particle COLORS — earthy palette: sage + sun-gold + olive
+  const colors = useMemo(() => {
+    const arr = new Float32Array(COUNT * 3);
+    const cSage = new THREE.Color("#7ea687");
+    const cGold = new THREE.Color("#E89F1F");
+    const cOlive = new THREE.Color("#A8B86C");  // earthy yellow-green
+    for (let i = 0; i < COUNT; i++) {
+      const r = Math.random();
+      const c = r < 0.42 ? cSage : r < 0.82 ? cGold : cOlive;
+      arr[i * 3]     = c.r;
+      arr[i * 3 + 1] = c.g;
+      arr[i * 3 + 2] = c.b;
+    }
+    return arr;
+  }, []);
 
   // Each particle has its own position-along-trail [0..1] and a wiggle phase
   const params = useMemo(() => {
@@ -255,11 +271,12 @@ function TrailLayer({
     <points ref={ref}>
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} count={COUNT} array={positions} itemSize={3} />
+        <bufferAttribute attach="attributes-color" args={[colors, 3]} count={COUNT} array={colors} itemSize={3} />
       </bufferGeometry>
       <pointsMaterial
         ref={matRef}
-        color={DRAGON_DEEP}
-        size={0.025}
+        vertexColors
+        size={0.028}
         sizeAttenuation
         transparent
         opacity={0}
@@ -285,6 +302,24 @@ function Sphere({ pulseRef, xRef, scaleRef, sphereOpacityRef, streamOpacityRef }
   const nodeMatRef = useRef<THREE.PointsMaterial>(null);
   const lineMatRef = useRef<THREE.LineBasicMaterial>(null);
   const glowMatRef = useRef<THREE.Material>(null);
+
+  // Per-particle earthy palette for the cell dust shell (matches dragon palette)
+  const dustColors = useRef<Float32Array | null>(null);
+  if (!dustColors.current) {
+    const arr = new Float32Array(1500 * 3);
+    const cSage = new THREE.Color("#7ea687");
+    const cGold = new THREE.Color("#E89F1F");
+    const cOlive = new THREE.Color("#A8B86C");
+    for (let i = 0; i < 1500; i++) {
+      const r = Math.random();
+      // dust shell is mostly sage with golden / olive flecks (60/25/15)
+      const c = r < 0.60 ? cSage : r < 0.85 ? cGold : cOlive;
+      arr[i * 3]     = c.r;
+      arr[i * 3 + 1] = c.g;
+      arr[i * 3 + 2] = c.b;
+    }
+    dustColors.current = arr;
+  }
 
   // Pre-compute graph edges (pairs within distance threshold)
   const lineIndices = useRef<Array<[number, number]>>([]);
@@ -392,14 +427,15 @@ function Sphere({ pulseRef, xRef, scaleRef, sphereOpacityRef, streamOpacityRef }
         />
       </mesh>
 
-      {/* Outer dust cloud — electron shell (soft circular sprites, no squares) */}
+      {/* Outer dust cloud — earthy multi-color palette via vertex colors */}
       <points ref={dustRef}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[dustBase.slice(), 3]} count={dustBase.length / 3} array={dustBase.slice()} itemSize={3} />
+          <bufferAttribute attach="attributes-color" args={[dustColors.current!, 3]} count={1500} array={dustColors.current!} itemSize={3} />
         </bufferGeometry>
         <pointsMaterial
           ref={dustMatRef}
-          color={ACCENT}
+          vertexColors
           size={0.018}
           sizeAttenuation
           transparent
