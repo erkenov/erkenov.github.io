@@ -12,7 +12,7 @@ Optional poster fallbacks (single-frame JPEGs shown while video loads or if brow
 - `scene-2-poster.jpg`
 - `scene-3-poster.jpg`
 
-**Generation prompts:** see `vault/04-tools/hero-video-generation-prompts.md` for the exact prompts to paste into Sora / Veo / Runway, plus brand constraints (no purple-pink gradients, no Web3-NFT vibe, industrial-confident only).
+**Generation prompts:** see `vault/04-tools/hero-video-generation-prompts.md` for the exact prompts to paste into Veo / Runway, plus brand constraints (no purple-pink gradients, no Web3-NFT vibe, industrial-confident only).
 
 **File size target:** under 2 MB each after compression (use Handbrake).
 
