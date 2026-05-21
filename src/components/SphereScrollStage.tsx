@@ -230,12 +230,12 @@ function TrailLayer({
     const head = Math.min(1, 2 * segP);
 
 
-    // Dragon path shape: desktop uses horizontal motion + vertical sin swoop.
-    // Mobile (cells centered): tall vertical arc so dragon flows top→bottom of
-    // viewport between cells.
+    // Dragon path shape: horizontal motion + vertical sin swoop.
+    // Mobile uses same logic as desktop (cells slightly L/R, dragon arcs
+    // side-to-side with a downward sin loop).
     const isMobileNow = typeof window !== "undefined" && window.innerWidth < 768;
-    const BEND = isMobileNow ? 0 : 0.55;
-    const LOOP_HEIGHT = isMobileNow ? 1.8 : 0.9;
+    const BEND = 0.55;
+    const LOOP_HEIGHT = isMobileNow ? 0.7 : 0.9;
 
     for (let i = 0; i < COUNT; i++) {
       const localT = params[i * 2];           // 0..1, position-along-dragon offset
@@ -556,11 +556,13 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
           const N = sectionCount;
           // Read viewport fresh — closure-free so it works under SSR initial render
           const mob = typeof window !== "undefined" && window.innerWidth < 768;
+          // Mobile: same pattern as desktop but with smaller L/R offset to fit
+          // narrow viewport. Cells alternate slightly side-to-side, dragon
+          // moves horizontally between them with the same sin-arc loop.
           const sectionX = (idx: number) =>
-            mob ? 0 : (idx % 2 === 0 ? -0.9 : 0.9);
-          // Mobile cells centered (y=0). Tried alternating ±0.25 for rhythm
-          // but it forces dragon to flow UP on odd segments — incompatible
-          // with the "single continuous downward entity" Shamil wants.
+            mob
+              ? (idx % 2 === 0 ? -0.3 : 0.3)
+              : (idx % 2 === 0 ? -0.9 : 0.9);
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const sectionY = (_idx: number) => 0;
           // SEGMENT-BETWEEN-CENTERS MODEL:
