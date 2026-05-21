@@ -15,14 +15,14 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI Receptionist for Auto Repair Shops — Shamil Erkenov",
+  title: "Erken Systems — Smart Business Systems Builder",
   description:
-    "Independent auto repair shops lose $500–$3,000 every time a customer can't reach the phone. We answer every call, qualify the job, and book it into your calendar — 24/7. Built by Shamil Erkenov.",
-  metadataBase: new URL("https://shamil.work"),
+    "I build smart systems for businesses. AI is part of every system, but the system is the product. Voice agents, workflow automations, CRM integrations, dashboards — built by an operator, not an agency.",
+  metadataBase: new URL("https://erken.systems"),
   openGraph: {
-    title: "AI Receptionist for Auto Repair Shops",
+    title: "Erken Systems — Smart Business Systems Builder",
     description:
-      "Answers every call, qualifies the job, books it into your calendar — 24/7. From $400/month.",
+      "Voice agents, workflows, dashboards — built into one system that runs your business while you focus on the work that matters.",
     type: "website",
   },
   robots: { index: true, follow: true },

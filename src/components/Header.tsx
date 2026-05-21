@@ -12,8 +12,8 @@ export function Header() {
       className="sticky top-0 z-50 w-full border-b border-border/60 bg-bg/80 backdrop-blur-md"
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-8">
-        <Link href="/" className="font-mono text-sm font-medium tracking-tight">
-          shamil<span className="text-accent">.</span>work
+        <Link href="/" className="font-mono text-sm font-medium tracking-tight uppercase">
+          erken<span className="text-accent"> </span>systems
         </Link>
         <nav className="hidden items-center gap-8 md:flex">
           <a

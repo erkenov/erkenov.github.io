@@ -212,7 +212,7 @@ function AmbientParticles({ progress }: { progress: MotionValue<number> }) {
       <Particles
         className="absolute inset-0"
         quantity={60}
-        color="#ff7849"
+        color="#7ea687"
         size={0.5}
         staticity={40}
       />
