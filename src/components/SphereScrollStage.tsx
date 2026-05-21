@@ -172,7 +172,7 @@ function Sphere({ pulseRef, xRef, scaleRef, sphereOpacityRef, streamOpacityRef }
   const dustMatRef = useRef<THREE.PointsMaterial>(null);
   const nodeMatRef = useRef<THREE.PointsMaterial>(null);
   const lineMatRef = useRef<THREE.LineBasicMaterial>(null);
-  const glowMatRef = useRef<THREE.MeshBasicMaterial>(null);
+  const glowMatRef = useRef<THREE.Material>(null);
 
   // Pre-compute graph edges (pairs within distance threshold)
   const lineIndices = useRef<Array<[number, number]>>([]);
@@ -252,20 +252,23 @@ function Sphere({ pulseRef, xRef, scaleRef, sphereOpacityRef, streamOpacityRef }
     if (dustMatRef.current) dustMatRef.current.opacity = 0.7 * o;
     if (nodeMatRef.current) nodeMatRef.current.opacity = 1.0 * o;
     if (lineMatRef.current) lineMatRef.current.opacity = 0;              // removed
-    if (glowMatRef.current) glowMatRef.current.opacity = 0.55 * o;       // solid nucleus
+    if (glowMatRef.current) (glowMatRef.current as THREE.MeshStandardMaterial).opacity = 0.85 * o;
   });
 
   return (
     <group ref={groupRef}>
-      {/* INNER SOLID SPHERE — molecule nucleus, smaller + more opaque */}
+      {/* INNER SOLID SPHERE — molecule nucleus with proper shading for 3D depth */}
       <mesh ref={glowRef}>
-        <sphereGeometry args={[0.55, 48, 48]} />
-        <meshBasicMaterial
-          ref={glowMatRef}
+        <sphereGeometry args={[0.55, 64, 64]} />
+        <meshStandardMaterial
+          ref={glowMatRef as unknown as React.RefObject<THREE.MeshStandardMaterial>}
           color={ACCENT}
+          roughness={0.4}
+          metalness={0.15}
+          emissive={ACCENT}
+          emissiveIntensity={0.15}
           transparent
-          opacity={0.55}
-          depthWrite={false}
+          opacity={0.85}
         />
       </mesh>
 
@@ -341,61 +344,98 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
         onUpdate: (self) => {
           const p = self.progress;
           const N = sectionCount;
-          // CENTER-BASED MODEL: each section i has its "settle center" at p = (i+0.5)/N.
-          // Around that center, in a half-width band, sphere is PEAKED.
-          // Outside that band, sphere COMPRESSES toward a dot and snake emerges
-          // FROM the dot toward the next section's center.
-          // Page edges (top/bottom) are clamped to peaked so sphere never feels half-vanished.
+          // SEGMENT-BETWEEN-CENTERS MODEL:
+          // Section centers at p = (i+0.5)/N.
+          // For each segment between center i and center i+1, the dragon flies
+          // from sectionX(i) toward sectionX(i+1) — direction CONSTANT through
+          // the segment (no flip mid-segment).
+          //
+          // Per segment progress segP (0..1):
+          //   segP < 0.10: still at section i, sphere PEAKED at sectionX(i)
+          //   0.10 - 0.50: sphere compresses to dot at sectionX(i), dragon extends out
+          //   0.50: dragon fully extended midway, sphere invisible (just the dot at far ends)
+          //   0.50 - 0.90: dragon compresses to dot at sectionX(i+1), sphere reforming
+          //   segP > 0.90: sphere PEAKED at sectionX(i+1)
 
-          let nearestIdx = Math.round(p * N - 0.5);
-          if (nearestIdx < 0) nearestIdx = 0;
-          if (nearestIdx > N - 1) nearestIdx = N - 1;
-          const centerP = (nearestIdx + 0.5) / N;
-          const distSectionUnits = (p - centerP) * N;
-          const absDist = Math.abs(distSectionUnits);
+          const firstCenter = 0.5 / N;
+          const lastCenter = (N - 0.5) / N;
 
-          const atTopEdge = p <= centerP && nearestIdx === 0;
-          const atBottomEdge = p >= centerP && nearestIdx === N - 1;
+          let sphereScale = 1;
+          let sphereOpacity = 1;
+          let trans = 0;
+          let xPos = sectionX(0);
+          let fromX = sectionX(0);
+          let toX = sectionX(0);
 
-          const peakBand = 0.15;
-          const transBand = 0.5 - peakBand;
-
-          let sphereScale: number;
-          let sphereOpacity: number;
-          let trans: number;
-          let fromX: number;
-          let toX: number;
-
-          if (atTopEdge || atBottomEdge || absDist < peakBand) {
+          if (p <= firstCenter) {
+            // Before first center: peaked at section 0
             sphereScale = 1;
             sphereOpacity = 1;
-            trans = 0;
-            fromX = sectionX(nearestIdx);
-            toX = sectionX(nearestIdx);
+            xPos = sectionX(0);
+            fromX = toX = xPos;
+          } else if (p >= lastCenter) {
+            // After last center: peaked at section N-1
+            sphereScale = 1;
+            sphereOpacity = 1;
+            xPos = sectionX(N - 1);
+            fromX = toX = xPos;
           } else {
-            const tBand = (absDist - peakBand) / transBand;
-            sphereScale = Math.max(0.05, 1 - Math.pow(tBand, 0.85));
-            sphereOpacity = Math.max(0.05, 1 - Math.pow(tBand, 0.7));
-            trans = Math.pow(tBand, 0.85);
-            if (distSectionUnits > 0) {
-              const next = Math.min(N - 1, nearestIdx + 1);
-              fromX = sectionX(nearestIdx);
-              toX = sectionX(next);
+            // Find which segment we're in
+            // p in [center_i, center_{i+1}) for some i in 0..N-2
+            // i = floor((p * N) - 0.5)
+            let i = Math.floor(p * N - 0.5);
+            if (i < 0) i = 0;
+            if (i > N - 2) i = N - 2;
+            const ci = (i + 0.5) / N;
+            const ciNext = (i + 1.5) / N;
+            const segP = (p - ci) / (ciNext - ci);   // 0..1 across this segment
+
+            // Direction is CONSTANT through this segment — from i to i+1
+            fromX = sectionX(i);
+            toX = sectionX(i + 1);
+
+            const peakLeftEnd = 0.10;
+            const peakRightStart = 0.90;
+
+            if (segP < peakLeftEnd) {
+              // Still at section i, sphere peaked
+              sphereScale = 1;
+              sphereOpacity = 1;
+              xPos = sectionX(i);
+              trans = 0;
+            } else if (segP > peakRightStart) {
+              // Arrived at section i+1, sphere peaked
+              sphereScale = 1;
+              sphereOpacity = 1;
+              xPos = sectionX(i + 1);
+              trans = 0;
             } else {
-              const prev = Math.max(0, nearestIdx - 1);
-              fromX = sectionX(nearestIdx);
-              toX = sectionX(prev);
+              // Transition (segP in [0.10, 0.90])
+              const tNorm = (segP - peakLeftEnd) / (peakRightStart - peakLeftEnd);  // 0..1
+              // Sphere phase: shrinks to dot at tNorm=0.5, expands back at tNorm=1
+              // Use cosine: 1 at endpoints, 0 in the middle
+              const sphereVisible = (1 - Math.cos((tNorm < 0.5 ? tNorm * 2 : (1 - tNorm) * 2) * Math.PI)) / 2;
+              // Above formula: tNorm=0 -> sphereVisible 1, tNorm=0.5 -> 0, tNorm=1 -> 1
+              // But invert because we want PEAK at extremes, DOT at middle
+              // Actually re-derive: we want sphereScale=1 at tNorm=0 and tNorm=1, sphereScale=0 at tNorm=0.5
+              const triangle = 1 - Math.abs(tNorm - 0.5) * 2;   // 0 at ends, 1 at middle
+              const compressed = 1 - triangle;                   // 1 at ends, 0 at middle
+              sphereScale = Math.max(0.05, Math.pow(compressed, 1.2));
+              sphereOpacity = Math.max(0.05, Math.pow(compressed, 0.9));
+              // Snake (dragon) emerges in middle of segment
+              trans = triangle;
+              // Sphere x: stays at fromX for first half, snaps to toX for second half
+              xPos = tNorm < 0.5 ? sectionX(i) : sectionX(i + 1);
             }
           }
 
           sphereOpacityRef.current = sphereOpacity;
-          xRef.current = sectionX(nearestIdx);
+          xRef.current = xPos;
           scaleRef.current = sphereScale * (0.85 + Math.sin(p * Math.PI) * 0.2);
           transitionProgressRef.current = trans;
           streamOpacityRef.current = trans;
           prevXRef.current = fromX;
           nextXRef.current = toX;
-
           pulseRef.current = sphereOpacity * 0.5;
         },
       },
@@ -416,7 +456,9 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
             gl={{ alpha: true, antialias: true }}
             style={{ background: "transparent" }}
           >
-            <ambientLight intensity={0.5} />
+            <ambientLight intensity={0.4} />
+            <directionalLight position={[2, 3, 4]} intensity={1.2} color="#ffffff" />
+            <directionalLight position={[-3, -1, 2]} intensity={0.5} color={ACCENT_BRIGHT} />
             <Sphere
               pulseRef={pulseRef}
               xRef={xRef}
