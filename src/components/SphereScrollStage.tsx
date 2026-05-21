@@ -520,11 +520,10 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
     const check = () => {
       const mob = window.innerWidth < 768;
       setIsMobile(mob);
-      // Also set initial position refs right away so the very first
-      // rendered frame puts the cell at the correct viewport location
-      // — without waiting for the first scroll event to update it.
-      xRef.current = mob ? 0 : -0.9;
-      yRef.current = mob ? 0.25 : 0;
+      // Seed initial position so the first frame matches the scroll callback's
+      // section 0 home position — no "center then snap left" flicker on first scroll.
+      xRef.current = mob ? -0.3 : -0.9;
+      yRef.current = 0;
     };
     check();
     window.addEventListener("resize", check);
