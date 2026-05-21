@@ -45,3 +45,4 @@ dev.log
 dev.err
 scripts/__pycache__/
 *.bak
+*.bak.mp4

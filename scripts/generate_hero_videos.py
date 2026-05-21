@@ -39,49 +39,50 @@ MODEL = "veo-3.0-generate-001"
 POLL_INTERVAL_SEC = 15
 POLL_TIMEOUT_SEC = 60 * 8  # 8 min per clip (Veo 3 says max ~6 min)
 
-# Brand constraints baked into every prompt
+# Brand constraints baked into every prompt (v3 — light cream theme)
 BRAND_PRELUDE = (
-    "Cinematic, restrained, industrial-confident aesthetic. Apple Vision Pro launch reel vibe, "
-    "NOT Web3 NFT vibe. Moody near-black backgrounds. Only accent is industrial orange #ff7849. "
-    "No purple, no pink, no chrome-neon. Real environments and objects. No glowing voxels or "
-    "abstract AI spheres. Restrained motion. No text overlays in the video. No people's faces "
-    "visible — hands and shoulders only. 16:9, 1080p. "
+    "Cinematic, restrained, premium-magazine aesthetic. Apple iPad Pro photography spread vibe, "
+    "NOT Web3 NFT vibe. Warm daylight, soft window light streaming in. Backgrounds are creamy "
+    "off-white, oat, sand, warm beige (#F5F1E8 territory). Only accent color is sage green "
+    "#7ea687 — appears in subtle UI elements, plant leaves, fabric details. No purple, no pink, "
+    "no chrome-neon, no harsh blue. Real environments and objects. No glowing voxels or abstract "
+    "AI spheres. Restrained motion. No text overlays in the video. No people's faces visible — "
+    "hands and shoulders only. 16:9, 1080p. Shot on Arri Alexa, 35mm lens, shallow depth of field. "
 )
 
 PROMPTS = {
     "scene-1.mp4": BRAND_PRELUDE + (
-        "Cinematic close-up shot. A modern smartphone sits face-up on a clean dark wooden desk. "
-        "The desk has a few professional objects scattered nearby — a coffee cup with steam barely "
-        "rising, a notebook, a pen, the edge of a laptop. Industrial overhead lighting creates a "
-        "single soft spotlight on the phone. Color grading is moody and near-black with deep "
-        "neutrals; a faint warm amber-orange glow accents the scene from off-camera. The phone "
-        "begins to ring — the screen illuminates with an incoming call notification, and a subtle "
-        "vibration ripple runs across the wooden surface. Slow dolly-in toward the phone over the "
-        "eight seconds. Documentary realism, not glossy stock-video aesthetic. Shot on Arri Alexa, "
-        "anamorphic lens, shallow depth of field."
+        "Cinematic close-up shot. A modern smartphone lies face-up on a clean light oak desk. "
+        "Soft warm morning window light from the upper left, gentle long shadows. On the desk: a "
+        "ceramic coffee cup with steam rising slowly, a leather notebook, a black pen, the edge "
+        "of a closed laptop, a small potted plant with sage-green leaves softly out of focus. "
+        "The phone screen lights up with an incoming call notification (clean iOS-style "
+        "interface). A subtle micro-vibration ripple runs across the wood. Slow dolly-in toward "
+        "the phone over eight seconds. Documentary realism. Color palette: 85% cream/oat tones, "
+        "10% warm wood, 5% sage-green plant accent. Premium editorial photography feel."
     ),
     "scene-2.mp4": BRAND_PRELUDE + (
-        "Cinematic close-up shot. The same phone from before, now showing an active call interface. "
-        "Below the call timer, a thin horizontal audio waveform pulses gently in industrial orange "
-        "(#ff7849), responding to inaudible voice. The phone screen shows a clean transcript "
-        "building up live, appearing one character at a time in a clean monospace font: "
-        "'Hi, this is Sam — how can I help your business today?'. Behind the phone, the rest of "
-        "the desk fades into shadow. Subtle ambient particles drift in the negative space — like "
-        "dust in a sunbeam, not glowing magic. No glowing AI sphere, no abstract data "
-        "visualization. The scene says: this is just a phone call, but the receptionist is "
-        "invisible and works at 2 AM. Continued slow push-in. Color palette: 90% near-black, "
-        "10% warm orange accent."
+        "Cinematic close-up shot, same desk and morning light. The phone screen now shows an "
+        "active call interface — a clean call timer, and below it a thin horizontal audio "
+        "waveform pulsing gently in sage green (#7ea687) responding to inaudible voice. The "
+        "phone screen shows a transcript building up live in clean monospace font, one character "
+        "at a time: 'Hi, this is Sam — how can I help your business today?'. The sage-leaf plant "
+        "in the foreground gently sways from a passing breeze. Ambient dust particles catch the "
+        "window light. No glowing AI sphere, no abstract data visualization. The scene says: this "
+        "is just a phone call, the receptionist is invisible and works at 2 AM. Continued slow "
+        "push-in. Color palette: 85% cream, 10% warm wood, 5% sage-green accents."
     ),
     "scene-3.mp4": BRAND_PRELUDE + (
-        "Cinematic medium shot. A modern laptop sits on the same dark wooden desk, partially "
-        "closed but rotating open toward the camera in slow smooth motion, like an Apple unboxing "
-        "reveal. As the lid passes 90 degrees, the screen brightens to reveal a clean dark-mode "
-        "CRM dashboard interface (Linear-like or Notion-like — restrained typography, clean rows, "
-        "no fake data clutter). The dashboard shows a single new entry appearing at the top of a "
-        "contact list: 'New lead — booked appointment — 2 minutes ago.'. A subtle orange (#ff7849) "
-        "dot pulses next to the entry. The room around the laptop stays in moody shadow. No hands "
-        "visible. Slow tilt-up and dolly-in continues, landing on the new dashboard entry. Color "
-        "grading like Mr. Robot or Severance — desaturated, surgical, premium."
+        "Cinematic medium shot, same desk and morning light. A modern laptop sits on the desk, "
+        "partially closed, now rotating open toward the camera in slow smooth motion, like an "
+        "Apple unboxing reveal. As the lid passes 90 degrees, the screen brightens to reveal a "
+        "clean LIGHT-mode CRM dashboard interface (Notion-like — cream/off-white background, "
+        "warm dark text, restrained typography, clean rows). The dashboard shows a single new "
+        "entry appearing at the top of a contact list: 'New lead — booked appointment — 2 minutes "
+        "ago.' A subtle sage green (#7ea687) dot pulses next to the entry. The room around the "
+        "laptop is bathed in warm daylight. No hands visible. Slow tilt-up and dolly-in lands on "
+        "the new dashboard entry. Color grading: premium daylight magazine spread, NOT moody. "
+        "Warm, hopeful, professional."
     ),
 }
 
