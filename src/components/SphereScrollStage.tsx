@@ -45,6 +45,34 @@ const CELL_GLOW = "#E88B7A";       // warmer red — cell emissive (red core glo
 const KEY_LIGHT = "#F5E9CC";       // warm cream directional key light
 const AMBIENT_TINT = "#F8F1DE";    // warm ambient (replaces stark white)
 
+/* ------------------------------------------------------------------ */
+/* Soft circular sprite — kills the "cube/square" look on particles.   */
+/* Module-level singleton; created once on first call client-side.     */
+/* ------------------------------------------------------------------ */
+let _softSprite: THREE.Texture | null = null;
+function getSoftSprite(): THREE.Texture | null {
+  if (typeof window === "undefined") return null;
+  if (_softSprite) return _softSprite;
+  const size = 128;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  const gradient = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  gradient.addColorStop(0, "rgba(255,255,255,1)");
+  gradient.addColorStop(0.25, "rgba(255,255,255,0.7)");
+  gradient.addColorStop(0.5, "rgba(255,255,255,0.3)");
+  gradient.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, size, size);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.minFilter = THREE.LinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  tex.needsUpdate = true;
+  _softSprite = tex;
+  return tex;
+}
+
 function fibonacciSphere(count: number, radius: number): Float32Array {
   const arr = new Float32Array(count * 3);
   const golden = Math.PI * (3 - Math.sqrt(5));
@@ -95,8 +123,9 @@ function TrailLayer({
 }) {
   const ref = useRef<THREE.Points>(null);
   const matRef = useRef<THREE.PointsMaterial>(null);
-  const COUNT = 220;
+  const COUNT = 700;
   const positions = useMemo(() => new Float32Array(COUNT * 3), []);
+  const sprite = getSoftSprite();
 
   // Each particle has its own position-along-trail [0..1] and a wiggle phase
   const params = useMemo(() => {
@@ -179,12 +208,14 @@ function TrailLayer({
       <pointsMaterial
         ref={matRef}
         color={DRAGON_DEEP}
-        size={0.06}
+        size={0.025}
         sizeAttenuation
         transparent
         opacity={0}
         depthWrite={false}
         blending={THREE.NormalBlending}
+        map={sprite}
+        alphaTest={0.01}
       />
     </points>
   );
@@ -302,20 +333,42 @@ function Sphere({ pulseRef, xRef, scaleRef, sphereOpacityRef, streamOpacityRef }
         />
       </mesh>
 
-      {/* Outer dust cloud — electron shell */}
+      {/* Outer dust cloud — electron shell (soft circular sprites, no squares) */}
       <points ref={dustRef}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[dustBase.slice(), 3]} count={dustBase.length / 3} array={dustBase.slice()} itemSize={3} />
         </bufferGeometry>
-        <pointsMaterial ref={dustMatRef} color={ACCENT} size={0.022} sizeAttenuation transparent opacity={0.7} depthWrite={false} blending={THREE.AdditiveBlending} />
+        <pointsMaterial
+          ref={dustMatRef}
+          color={ACCENT}
+          size={0.018}
+          sizeAttenuation
+          transparent
+          opacity={0.7}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+          map={getSoftSprite()}
+          alphaTest={0.01}
+        />
       </points>
 
-      {/* Graph nodes (bright accents) — keeping these, removing the lines */}
+      {/* Graph nodes (bright accents) — also soft sprites */}
       <points ref={nodesRef}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[nodeBase.slice(), 3]} count={nodeBase.length / 3} array={nodeBase.slice()} itemSize={3} />
         </bufferGeometry>
-        <pointsMaterial ref={nodeMatRef} color={ACCENT_BRIGHT} size={0.045} sizeAttenuation transparent opacity={1} depthWrite={false} blending={THREE.AdditiveBlending} />
+        <pointsMaterial
+          ref={nodeMatRef}
+          color={ACCENT_BRIGHT}
+          size={0.035}
+          sizeAttenuation
+          transparent
+          opacity={1}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+          map={getSoftSprite()}
+          alphaTest={0.01}
+        />
       </points>
 
       {/* Hidden lines (kept for ref but invisible per 2026-05-21 feedback) */}
