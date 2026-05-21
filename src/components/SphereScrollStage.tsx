@@ -24,7 +24,7 @@
  *   - Lottie animations on section content the sphere "enters"
  */
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -57,9 +57,69 @@ interface SphereInnerProps {
   pulseRef: React.MutableRefObject<number>;
   xRef: React.MutableRefObject<number>;
   scaleRef: React.MutableRefObject<number>;
+  /** 0..1 — opacity of the cohesive sphere (drops during transitions) */
+  sphereOpacityRef: React.MutableRefObject<number>;
+  /** 0..1 — opacity of the downward stream layer (peaks during transitions) */
+  streamOpacityRef: React.MutableRefObject<number>;
 }
 
-function Sphere({ pulseRef, xRef, scaleRef }: SphereInnerProps) {
+/* ------------------------------------------------------------------ */
+/* StreamLayer — downward-flowing particles, visible during transitions */
+/* ------------------------------------------------------------------ */
+function StreamLayer({ streamOpacityRef }: { streamOpacityRef: React.MutableRefObject<number> }) {
+  const ref = useRef<THREE.Points>(null);
+  const matRef = useRef<THREE.PointsMaterial>(null);
+  const COUNT = 600;
+
+  const { positions, velocities } = useMemo(() => {
+    const positions = new Float32Array(COUNT * 3);
+    const velocities = new Float32Array(COUNT);
+    for (let i = 0; i < COUNT; i++) {
+      positions[i * 3]     = (Math.random() - 0.5) * 4.5;   // x: spread across viewport
+      positions[i * 3 + 1] = Math.random() * 5 - 2;         // y: random start
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 2;     // z: depth
+      velocities[i] = 0.6 + Math.random() * 0.8;            // y velocity
+    }
+    return { positions, velocities };
+  }, []);
+
+  useFrame(({ clock }, delta) => {
+    if (!ref.current || !matRef.current) return;
+    const pa = ref.current.geometry.attributes.position as THREE.BufferAttribute;
+    const pos = pa.array as Float32Array;
+    for (let i = 0; i < COUNT; i++) {
+      pos[i * 3 + 1] -= velocities[i] * delta;
+      if (pos[i * 3 + 1] < -3) {
+        pos[i * 3 + 1] = 3 + Math.random() * 0.5;
+        pos[i * 3]     = (Math.random() - 0.5) * 4.5;
+      }
+    }
+    pa.needsUpdate = true;
+    // Smooth opacity follows ref
+    const target = streamOpacityRef.current;
+    matRef.current.opacity = matRef.current.opacity * 0.85 + target * 0.15;
+  });
+
+  return (
+    <points ref={ref}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} count={COUNT} array={positions} itemSize={3} />
+      </bufferGeometry>
+      <pointsMaterial
+        ref={matRef}
+        color={ACCENT_BRIGHT}
+        size={0.025}
+        sizeAttenuation
+        transparent
+        opacity={0}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </points>
+  );
+}
+
+function Sphere({ pulseRef, xRef, scaleRef, sphereOpacityRef, streamOpacityRef }: SphereInnerProps) {
   const groupRef = useRef<THREE.Group>(null);
   const dustRef = useRef<THREE.Points>(null);
   const nodesRef = useRef<THREE.Points>(null);
@@ -68,6 +128,10 @@ function Sphere({ pulseRef, xRef, scaleRef }: SphereInnerProps) {
 
   const dustBase = useRef(fibonacciSphere(1500, 1.0)).current;
   const nodeBase = useRef(fibonacciSphere(120, 1.0)).current;
+  const dustMatRef = useRef<THREE.PointsMaterial>(null);
+  const nodeMatRef = useRef<THREE.PointsMaterial>(null);
+  const lineMatRef = useRef<THREE.LineBasicMaterial>(null);
+  const glowMatRef = useRef<THREE.MeshBasicMaterial>(null);
 
   // Pre-compute graph edges (pairs within distance threshold)
   const lineIndices = useRef<Array<[number, number]>>([]);
@@ -141,6 +205,13 @@ function Sphere({ pulseRef, xRef, scaleRef }: SphereInnerProps) {
       groupRef.current.rotation.y = t * 0.08;
       groupRef.current.rotation.x = Math.sin(t * 0.05) * 0.12;
     }
+
+    // Sphere opacity (cohesive form fades during transitions, stream takes over)
+    const o = sphereOpacityRef.current;
+    if (dustMatRef.current) dustMatRef.current.opacity = 0.55 * o;
+    if (nodeMatRef.current) nodeMatRef.current.opacity = 1.0 * o;
+    if (lineMatRef.current) lineMatRef.current.opacity = 0.18 * o;
+    if (glowMatRef.current) glowMatRef.current.opacity = 0.05 * o;
   });
 
   return (
@@ -148,7 +219,7 @@ function Sphere({ pulseRef, xRef, scaleRef }: SphereInnerProps) {
       {/* Inner glow */}
       <mesh ref={glowRef}>
         <sphereGeometry args={[1, 32, 32]} />
-        <meshBasicMaterial color={ACCENT} transparent opacity={0.05} depthWrite={false} blending={THREE.AdditiveBlending} />
+        <meshBasicMaterial ref={glowMatRef} color={ACCENT} transparent opacity={0.05} depthWrite={false} blending={THREE.AdditiveBlending} />
       </mesh>
 
       {/* Dust layer */}
@@ -156,7 +227,7 @@ function Sphere({ pulseRef, xRef, scaleRef }: SphereInnerProps) {
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[dustBase.slice(), 3]} count={dustBase.length / 3} array={dustBase.slice()} itemSize={3} />
         </bufferGeometry>
-        <pointsMaterial color={ACCENT} size={0.02} sizeAttenuation transparent opacity={0.55} depthWrite={false} blending={THREE.AdditiveBlending} />
+        <pointsMaterial ref={dustMatRef} color={ACCENT} size={0.02} sizeAttenuation transparent opacity={0.55} depthWrite={false} blending={THREE.AdditiveBlending} />
       </points>
 
       {/* Graph lines */}
@@ -164,7 +235,7 @@ function Sphere({ pulseRef, xRef, scaleRef }: SphereInnerProps) {
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[lineBase.current, 3]} count={lineBase.current.length / 3} array={lineBase.current} itemSize={3} />
         </bufferGeometry>
-        <lineBasicMaterial color={ACCENT} transparent opacity={0.18} depthWrite={false} blending={THREE.AdditiveBlending} />
+        <lineBasicMaterial ref={lineMatRef} color={ACCENT} transparent opacity={0.18} depthWrite={false} blending={THREE.AdditiveBlending} />
       </lineSegments>
 
       {/* Graph nodes */}
@@ -172,7 +243,7 @@ function Sphere({ pulseRef, xRef, scaleRef }: SphereInnerProps) {
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[nodeBase.slice(), 3]} count={nodeBase.length / 3} array={nodeBase.slice()} itemSize={3} />
         </bufferGeometry>
-        <pointsMaterial color={ACCENT_BRIGHT} size={0.045} sizeAttenuation transparent opacity={1} depthWrite={false} blending={THREE.AdditiveBlending} />
+        <pointsMaterial ref={nodeMatRef} color={ACCENT_BRIGHT} size={0.045} sizeAttenuation transparent opacity={1} depthWrite={false} blending={THREE.AdditiveBlending} />
       </points>
     </group>
   );
@@ -186,18 +257,19 @@ interface StageProps {
   children: React.ReactNode;
 }
 
-export function SphereScrollStage({ children }: StageProps) {
+export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & { sectionCount?: number }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const pulseRef = useRef(0);
   const xRef = useRef(0);
   const scaleRef = useRef(0.9);
+  const sphereOpacityRef = useRef(1);
+  const streamOpacityRef = useRef(0);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
 
   useGSAP(() => {
     if (!stageRef.current) return;
-    // Scroll tween: x oscillates left/right between sections, scale grows then shrinks
     const tween = gsap.to({ progress: 0 }, {
       progress: 1,
       ease: "none",
@@ -208,13 +280,37 @@ export function SphereScrollStage({ children }: StageProps) {
         scrub: 0.6,
         onUpdate: (self) => {
           const p = self.progress;
-          // x: oscillate between -0.9 and +0.9 across 5 alternating sections
-          // (5 sections means ~2.5 oscillations across the stage)
-          xRef.current = Math.sin(p * Math.PI * 2.5) * 0.9;
-          // Scale: peaks in the middle of the page, smaller at ends
-          scaleRef.current = 0.75 + Math.sin(p * Math.PI) * 0.35;
-          // Pulse: gentle increase as we go deeper
-          pulseRef.current = Math.min(1, p * 0.6);
+          // Section boundaries: progress p has `sectionCount` sections.
+          // We want sphere visible IN sections, stream visible AT boundaries.
+          // sectionIdx = floor(p * sectionCount); localProgress = (p * sectionCount) % 1
+          const sectionFloat = p * sectionCount;
+          const local = sectionFloat - Math.floor(sectionFloat);
+          // bell curve centered at local=0.5: 1 inside section, dips toward 0 at edges
+          const insideSection = Math.sin(local * Math.PI); // 0 at edges, 1 in middle
+          // sphere opacity = insideSection (smooth)
+          sphereOpacityRef.current = 0.15 + insideSection * 0.85;
+          // stream opacity = inverse (peaks at boundaries)
+          streamOpacityRef.current = 0.9 - insideSection * 0.9;
+
+          // x: oscillate between -0.9 and +0.9 in a piecewise-sine that matches section count
+          // so sphere lands LEFT or RIGHT inside each section, smoothly moves between
+          const sectionIdx = Math.floor(sectionFloat);
+          const isLeftSection = sectionIdx % 2 === 0;
+          const targetX = isLeftSection ? -0.9 : 0.9;
+          // smooth-step toward target as we enter the middle of the section
+          const nextLeft = (sectionIdx + 1) % 2 === 0;
+          const nextTargetX = nextLeft ? -0.9 : 0.9;
+          // ease: stay at targetX during section body, slide to next during boundary
+          const ease = local < 0.3 ? 0
+                     : local > 0.7 ? 1
+                     : (local - 0.3) / 0.4;
+          xRef.current = targetX + (nextTargetX - targetX) * ease;
+
+          // Scale: peaks in the middle of the page
+          scaleRef.current = 0.7 + Math.sin(p * Math.PI) * 0.35;
+
+          // Pulse: gentle baseline + spikes at section centers (when in-section)
+          pulseRef.current = insideSection * 0.5;
         },
       },
     });
@@ -235,7 +331,14 @@ export function SphereScrollStage({ children }: StageProps) {
             style={{ background: "transparent" }}
           >
             <ambientLight intensity={0.5} />
-            <Sphere pulseRef={pulseRef} xRef={xRef} scaleRef={scaleRef} />
+            <Sphere
+              pulseRef={pulseRef}
+              xRef={xRef}
+              scaleRef={scaleRef}
+              sphereOpacityRef={sphereOpacityRef}
+              streamOpacityRef={streamOpacityRef}
+            />
+            <StreamLayer streamOpacityRef={streamOpacityRef} />
           </Canvas>
         )}
       </div>
