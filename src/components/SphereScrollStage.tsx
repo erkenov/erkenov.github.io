@@ -247,45 +247,51 @@ function Sphere({ pulseRef, xRef, scaleRef, sphereOpacityRef, streamOpacityRef }
       groupRef.current.rotation.x = Math.sin(t * 0.05) * 0.12;
     }
 
-    // Sphere opacity — brighter saturated values per Shamil feedback
+    // Sphere opacity — molecule visual
     const o = sphereOpacityRef.current;
-    if (dustMatRef.current) dustMatRef.current.opacity = 0.75 * o;       // was 0.55
+    if (dustMatRef.current) dustMatRef.current.opacity = 0.7 * o;
     if (nodeMatRef.current) nodeMatRef.current.opacity = 1.0 * o;
-    if (lineMatRef.current) lineMatRef.current.opacity = 0.32 * o;       // was 0.18 — more visible network
-    if (glowMatRef.current) glowMatRef.current.opacity = 0.10 * o;       // was 0.05
+    if (lineMatRef.current) lineMatRef.current.opacity = 0;              // removed
+    if (glowMatRef.current) glowMatRef.current.opacity = 0.55 * o;       // solid nucleus
   });
 
   return (
     <group ref={groupRef}>
-      {/* Inner glow */}
+      {/* INNER SOLID SPHERE — molecule nucleus, smaller + more opaque */}
       <mesh ref={glowRef}>
-        <sphereGeometry args={[1, 32, 32]} />
-        <meshBasicMaterial ref={glowMatRef} color={ACCENT} transparent opacity={0.05} depthWrite={false} blending={THREE.AdditiveBlending} />
+        <sphereGeometry args={[0.55, 48, 48]} />
+        <meshBasicMaterial
+          ref={glowMatRef}
+          color={ACCENT}
+          transparent
+          opacity={0.55}
+          depthWrite={false}
+        />
       </mesh>
 
-      {/* Dust layer */}
+      {/* Outer dust cloud — electron shell */}
       <points ref={dustRef}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[dustBase.slice(), 3]} count={dustBase.length / 3} array={dustBase.slice()} itemSize={3} />
         </bufferGeometry>
-        <pointsMaterial ref={dustMatRef} color={ACCENT} size={0.02} sizeAttenuation transparent opacity={0.55} depthWrite={false} blending={THREE.AdditiveBlending} />
+        <pointsMaterial ref={dustMatRef} color={ACCENT} size={0.022} sizeAttenuation transparent opacity={0.7} depthWrite={false} blending={THREE.AdditiveBlending} />
       </points>
 
-      {/* Graph lines */}
-      <lineSegments ref={linesRef}>
-        <bufferGeometry>
-          <bufferAttribute attach="attributes-position" args={[lineBase.current, 3]} count={lineBase.current.length / 3} array={lineBase.current} itemSize={3} />
-        </bufferGeometry>
-        <lineBasicMaterial ref={lineMatRef} color={ACCENT} transparent opacity={0.18} depthWrite={false} blending={THREE.AdditiveBlending} />
-      </lineSegments>
-
-      {/* Graph nodes */}
+      {/* Graph nodes (bright accents) — keeping these, removing the lines */}
       <points ref={nodesRef}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[nodeBase.slice(), 3]} count={nodeBase.length / 3} array={nodeBase.slice()} itemSize={3} />
         </bufferGeometry>
         <pointsMaterial ref={nodeMatRef} color={ACCENT_BRIGHT} size={0.045} sizeAttenuation transparent opacity={1} depthWrite={false} blending={THREE.AdditiveBlending} />
       </points>
+
+      {/* Hidden lines (kept for ref but invisible per 2026-05-21 feedback) */}
+      <lineSegments ref={linesRef} visible={false}>
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" args={[lineBase.current, 3]} count={lineBase.current.length / 3} array={lineBase.current} itemSize={3} />
+        </bufferGeometry>
+        <lineBasicMaterial ref={lineMatRef} color={ACCENT} transparent opacity={0} depthWrite={false} />
+      </lineSegments>
     </group>
   );
 }
@@ -334,70 +340,63 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
         scrub: 0.6,
         onUpdate: (self) => {
           const p = self.progress;
-          const sectionFloat = p * sectionCount;
-          let sectionIdx = Math.floor(sectionFloat);
-          // Clamp to last section at p===1
-          if (sectionIdx >= sectionCount) sectionIdx = sectionCount - 1;
-          const local = sectionFloat - sectionIdx;  // 0..1 within section
+          const N = sectionCount;
+          // CENTER-BASED MODEL: each section i has its "settle center" at p = (i+0.5)/N.
+          // Around that center, in a half-width band, sphere is PEAKED.
+          // Outside that band, sphere COMPRESSES toward a dot and snake emerges
+          // FROM the dot toward the next section's center.
+          // Page edges (top/bottom) are clamped to peaked so sphere never feels half-vanished.
 
-          // In-section vs transition window:
-          // local in [0, 1-transitionFrac]  -> in section: sphere fully visible at sectionX(sectionIdx)
-          // local in [1-transitionFrac, 1]  -> transition: sphere fades, trail emerges
-          // Each section is broken into:
-          //   - REFORM phase  (0.00 .. 0.20):  sphere fades IN from prev snake (0->1)
-          //   - PEAK phase    (0.20 .. 0.30):  sphere fully visible
-          //   - DISSOLVE phase(0.30 .. 1.00):  sphere fades out, snake to next section emerges gradually
-          // Result: transformation starts ON THE FIRST SCROLL, is gradual through most
-          // of the section, with a brief sphere-peak moment in between.
+          let nearestIdx = Math.round(p * N - 0.5);
+          if (nearestIdx < 0) nearestIdx = 0;
+          if (nearestIdx > N - 1) nearestIdx = N - 1;
+          const centerP = (nearestIdx + 0.5) / N;
+          const distSectionUnits = (p - centerP) * N;
+          const absDist = Math.abs(distSectionUnits);
+
+          const atTopEdge = p <= centerP && nearestIdx === 0;
+          const atBottomEdge = p >= centerP && nearestIdx === N - 1;
+
+          const peakBand = 0.15;
+          const transBand = 0.5 - peakBand;
+
+          let sphereScale: number;
           let sphereOpacity: number;
           let trans: number;
-          let currentX: number;
+          let fromX: number;
+          let toX: number;
 
-          const reformEnd = 0.20;
-          const peakEnd = 0.30;
-
-          // Sphere x always at current section's home (sphere doesn't drift during section)
-          currentX = sectionX(sectionIdx);
-
-          // Trail prev/next: snake flies from PREV section's x toward THIS section's x
-          // during REFORM phase; from THIS section toward NEXT during DISSOLVE phase.
-          const prevIdx = Math.max(0, sectionIdx - 1);
-          const nextIdx = Math.min(sectionCount - 1, sectionIdx + 1);
-
-          if (local < reformEnd) {
-            // REFORMING: sphere is being rebuilt at this section's x from incoming snake
-            const t = local / reformEnd;             // 0..1
-            sphereOpacity = Math.pow(t, 0.7);         // ease-in
-            trans = 1 - t;                            // snake fading out as sphere appears
-            prevXRef.current = sectionX(prevIdx);
-            nextXRef.current = sectionX(sectionIdx);
-          } else if (local < peakEnd) {
-            // PEAK: fully formed
+          if (atTopEdge || atBottomEdge || absDist < peakBand) {
+            sphereScale = 1;
             sphereOpacity = 1;
             trans = 0;
-            prevXRef.current = sectionX(prevIdx);
-            nextXRef.current = sectionX(sectionIdx);
+            fromX = sectionX(nearestIdx);
+            toX = sectionX(nearestIdx);
           } else {
-            // DISSOLVING: sphere dies gradually across the remaining 70% of the section
-            const t = (local - peakEnd) / (1 - peakEnd);   // 0..1 across the long tail
-            sphereOpacity = Math.pow(1 - t, 0.8);          // gradual ease-out
-            trans = Math.pow(t, 0.85);                      // snake emerges gradually
-            prevXRef.current = sectionX(sectionIdx);
-            nextXRef.current = sectionX(nextIdx);
+            const tBand = (absDist - peakBand) / transBand;
+            sphereScale = Math.max(0.05, 1 - Math.pow(tBand, 0.85));
+            sphereOpacity = Math.max(0.05, 1 - Math.pow(tBand, 0.7));
+            trans = Math.pow(tBand, 0.85);
+            if (distSectionUnits > 0) {
+              const next = Math.min(N - 1, nearestIdx + 1);
+              fromX = sectionX(nearestIdx);
+              toX = sectionX(next);
+            } else {
+              const prev = Math.max(0, nearestIdx - 1);
+              fromX = sectionX(nearestIdx);
+              toX = sectionX(prev);
+            }
           }
 
-          // Boost: keep sphere a touch brighter than raw opacity (so it never reads as ghost-faint)
-          sphereOpacityRef.current = Math.min(1, sphereOpacity * 1.1 + 0.05);
-          xRef.current = currentX;
+          sphereOpacityRef.current = sphereOpacity;
+          xRef.current = sectionX(nearestIdx);
+          scaleRef.current = sphereScale * (0.85 + Math.sin(p * Math.PI) * 0.2);
           transitionProgressRef.current = trans;
-          // Snake opacity inverse — but with smoothing baked into trail layer
-          streamOpacityRef.current = Math.max(0, 1 - sphereOpacity);
+          streamOpacityRef.current = trans;
+          prevXRef.current = fromX;
+          nextXRef.current = toX;
 
-          // Scale: peaks toward mid-page, smaller at edges
-          scaleRef.current = 0.75 + Math.sin(p * Math.PI) * 0.3;
-
-          // Pulse: baseline + emphasized in-section
-          pulseRef.current = sphereOpacity * 0.45;
+          pulseRef.current = sphereOpacity * 0.5;
         },
       },
     });
