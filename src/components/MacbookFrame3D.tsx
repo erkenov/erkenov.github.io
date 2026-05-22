@@ -63,7 +63,7 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
       style={{ scale, opacity }}
       className="mx-auto w-full max-w-4xl"
     >
-      <div className="aspect-[16/10] w-full">
+      <div className="aspect-[4/3] w-full">
         <Canvas
           camera={{ position: [0, 0.4, 3.2], fov: 32 }}
           gl={{ alpha: true, antialias: true }}
