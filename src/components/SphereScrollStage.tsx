@@ -697,8 +697,9 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
 
   return (
     <div ref={stageRef} className="relative">
-      {/* Fixed canvas behind all content */}
-      <div className="pointer-events-none fixed inset-0 z-0">
+      {/* Fixed canvas — z-20 puts cell-dragon IN FRONT of laptop + sections.
+          pointer-events-none keeps clicks passing through to elements below. */}
+      <div className="pointer-events-none fixed inset-0 z-20">
         {mounted && (
           <Canvas
             camera={{ position: [0, 0, isMobile ? 2.2 : 2.9], fov: 50 }}
