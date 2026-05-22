@@ -127,7 +127,7 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
             {/* Center auto-positions model at origin. Scale chosen by trial
                 to fit the laptop comfortably in the canvas viewport with
                 breathing room around it. */}
-            <Center scale={0.0304} position={[0.2, -0.3, 0]}>
+            <Center scale={0.0304} position={[0.2, -0.42, 0]}>
               <Model openValue={openValue} />
             </Center>
             <ContactShadows
