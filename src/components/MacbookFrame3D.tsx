@@ -50,12 +50,24 @@ function Model({ openValue }: { openValue: MotionValue<number> }) {
   useFrame(() => {
     const lid = lidRef.current;
     if (!lid) return;
-    // openValue: 0 = closed (lid folded down onto base), 1 = open (authored pose).
-    // Closed = open + PI/2 (positive rotation folds lid forward/down onto keyboard).
     const t = openValue.get();
     const open = baseRotationRef.current;
     const closed = open + Math.PI / 2;
-    lid.rotation.x = closed + t * (open - closed);
+    const angle = closed + t * (open - closed);
+    lid.rotation.x = angle;
+
+    // The lid's local origin sits ~0.382 units in FRONT of the actual
+    // hinge (between lid origin and base back edge — discovered via runtime
+    // bbox inspection). Without compensation, rotating the lid swings it
+    // up into the air. We compute where the hinge would land after rotation
+    // and translate the lid to keep the hinge anchored.
+    const HINGE_Y = -0.02;
+    const HINGE_Z = -0.382;
+    const c = Math.cos(angle);
+    const s = Math.sin(angle);
+    const ry = HINGE_Y * c - HINGE_Z * s;
+    const rz = HINGE_Y * s + HINGE_Z * c;
+    lid.position.set(0, HINGE_Y - ry, HINGE_Z - rz);
   });
 
   return <primitive object={scene} rotation={[0, -0.010, 0]} />;
