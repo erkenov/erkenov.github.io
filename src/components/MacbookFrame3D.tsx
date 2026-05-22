@@ -96,7 +96,7 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
   //  - Close FAST so it finishes before scrolling out (0.50 → 0.65)
   const openValue = useTransform(
     scrollYProgress,
-    [0.05, 0.45, 0.80, 1.0],
+    [0.05, 0.45, 0.60, 0.78],
     [0, 1, 1, 0],
   );
 
