@@ -50,10 +50,11 @@ function Model({ openValue }: { openValue: MotionValue<number> }) {
   useFrame(() => {
     const lid = lidRef.current;
     if (!lid) return;
-    // openValue: 0 = closed (lid folded down onto base), 1 = open (authored pose)
+    // openValue: 0 = closed (lid folded down onto base), 1 = open (authored pose).
+    // Closed = open + PI/2 (positive rotation folds lid forward/down onto keyboard).
     const t = openValue.get();
     const open = baseRotationRef.current;
-    const closed = open - Math.PI / 2;
+    const closed = open + Math.PI / 2;
     lid.rotation.x = closed + t * (open - closed);
   });
 
