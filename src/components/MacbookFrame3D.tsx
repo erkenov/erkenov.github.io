@@ -15,7 +15,7 @@
  * with the component regardless of which page hosts it.
  */
 
-import { Suspense, useRef } from "react";
+import { Suspense, useRef, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { useGLTF, Environment, ContactShadows, Center } from "@react-three/drei";
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -32,9 +32,9 @@ function Model() {
   const { scene } = useGLTF("/macbook.glb", true) as unknown as {
     scene: THREE.Group;
   };
-  // TEMP: stash node structure on window so Playwright can read it.
-  // Remove after we know the lid node name.
-  if (typeof window !== "undefined") {
+  // TEMP: stash node structure on window via useEffect after scene loads.
+  useEffect(() => {
+    if (typeof window === "undefined" || !scene) return;
     const dump: Array<{ name: string; type: string; parent: string | null }> = [];
     scene.traverse((obj) => {
       dump.push({
@@ -45,7 +45,7 @@ function Model() {
     });
     (window as unknown as { __macbookNodes?: unknown }).__macbookNodes = dump;
     (window as unknown as { __macbookScene?: unknown }).__macbookScene = scene;
-  }
+  }, [scene]);
   return <primitive object={scene} rotation={[0, -0.010, 0]} />;
 }
 
