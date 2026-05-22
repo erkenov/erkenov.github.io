@@ -25,7 +25,7 @@ const SECTIONS = [
     side: "left" as const,
     kicker: "Lead capture",
     headline: "Every channel answered.",
-    body: "Your website, built right — forms, embedded chat, voice-agent button, all wired to the pipeline. AI voice receptionist that picks up in two rings. Web chat that answers product questions and books calls. WhatsApp Business and Instagram DMs integrated through the same flow. Leads can come from anywhere — they all land in one place.",
+    body: "Your website, built right and wired to the pipeline. AI voice receptionist that picks up in two rings, qualifies the caller, books the appointment. Web chat that answers product questions and books calls. WhatsApp Business and Instagram DMs integrated through the same flow. Forms routed straight to the pipeline. Leads can come from anywhere — they all land in one place.",
   },
   {
     side: "right" as const,
