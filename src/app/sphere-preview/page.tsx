@@ -7,6 +7,8 @@
 
 import { SphereScrollStage } from "@/components/SphereScrollStage";
 import { MacbookFrame3D } from "@/components/MacbookFrame3D";
+import { Scene2Channels } from "@/components/Scene2Channels";
+import { Scene4CrmTabs } from "@/components/Scene4CrmTabs";
 
 const SECTIONS = [
   {
@@ -83,7 +85,12 @@ export default function SpherePreviewPage() {
         <Section
           key={i}
           {...s}
-          media={i === 4 ? <MacbookFrame3D /> : null}
+          media={
+            i === 1 ? <Scene2Channels />
+            : i === 3 ? <Scene4CrmTabs />
+            : i === 4 ? <MacbookFrame3D />
+            : null
+          }
         />
       ))}
       {/* Trailing space so scroll has room to finish its tween */}
