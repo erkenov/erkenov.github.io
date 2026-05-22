@@ -108,10 +108,11 @@ export default function SpherePreviewPage() {
             // Opaque HTML media (carousel / tabs): tight wrapper centered
             // vertically with section, anchored on the side opposite the
             // text, with safe margin from viewport edge.
-            i === 1
+            // Scenes 2 and 4 BOTH have text on the right. Media must
+            // anchor LEFT for both so the tabs / carousel stay in the
+            // left half and don't overlap the text column.
+            i === 1 || i === 3
               ? "absolute inset-y-[8vh] left-[10vw] hidden md:flex md:w-[55%] items-center pointer-events-auto"
-              : i === 3
-              ? "absolute inset-y-[8vh] right-[10vw] hidden md:flex md:w-[55%] items-center pointer-events-auto"
               : undefined
           }
         />
