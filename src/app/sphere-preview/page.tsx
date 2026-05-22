@@ -12,7 +12,7 @@ const SECTIONS = [
     side: "left" as const,
     kicker: "Erken Systems",
     headline: "Full-spectrum business systems, with AI inside.",
-    body: "Every business runs the same pipeline — leads come in, get captured, get tracked, get reported on. I build all four steps as one system. Workflow automation is the wiring between them. One operator. One system. Any business.",
+    body: "Every business runs the same pipeline — leads come in, get captured, get tracked, get reported on. I build all four steps — bundled as one connected system, or piece by piece. Pick what you're missing. Workflow automation is the wiring between them. One operator. Any business.",
     cta: "Show the demo",
   },
   {
