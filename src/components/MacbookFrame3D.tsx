@@ -61,7 +61,7 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
     <motion.div
       ref={ref}
       style={{ scale, opacity }}
-      className="mx-auto w-full max-w-4xl"
+      className="mx-auto w-full max-w-5xl"
     >
       <div className="aspect-[4/3] w-full">
         <Canvas
@@ -85,7 +85,7 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
             {/* Center auto-positions model at origin. Scale chosen by trial
                 to fit the laptop comfortably in the canvas viewport with
                 breathing room around it. */}
-            <Center scale={0.055} position={[0, 0, 0]}>
+            <Center scale={0.055} position={[0, 0.6, 0]}>
               <Model />
             </Center>
             <ContactShadows
