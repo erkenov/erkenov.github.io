@@ -30,12 +30,8 @@ function Model() {
   const { scene } = useGLTF("/macbook.glb") as unknown as {
     scene: THREE.Group;
   };
-  // Bounds (outside) handles fit-to-frustum; we just apply the 3/4 rotation.
-  // Slight Y rotation gives a 3/4 view (we see the screen face + side of base)
-  // Slight X rotation tilts the top toward viewer so screen content is readable
-  return (
-    <primitive object={scene} rotation={[0.04, -0.25, 0]} />
-  );
+  // Native pose first — see what the artist authored.
+  return <primitive object={scene} />;
 }
 
 useGLTF.preload("/macbook.glb");
