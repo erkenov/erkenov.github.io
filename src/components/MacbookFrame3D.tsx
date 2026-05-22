@@ -38,6 +38,9 @@ function Model({ openValue }: { openValue: MotionValue<number> }) {
   const pivotRef = useRef<THREE.Group | null>(null);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      (window as unknown as { __macbookScene?: unknown }).__macbookScene = scene;
+    }
     const lid = scene.getObjectByName(LID_NODE_NAME);
     if (!lid || !lid.parent) return;
     // If we've already wrapped, skip.
