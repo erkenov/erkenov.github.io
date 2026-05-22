@@ -172,7 +172,7 @@ export const Carousel = ({ items, initialScroll = 0, loop = false }: CarouselPro
                   },
                 }}
                 key={"card" + index}
-                className="rounded-3xl last:pr-[5%] md:last:pr-[33%]"
+                className="rounded-3xl"
               >
                 {item}
               </motion.div>
