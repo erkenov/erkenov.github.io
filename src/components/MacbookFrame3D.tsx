@@ -17,7 +17,7 @@
 
 import { Suspense, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import { useGLTF, Stage } from "@react-three/drei";
+import { useGLTF, Environment, ContactShadows, Center } from "@react-three/drei";
 import { motion, useScroll, useTransform } from "framer-motion";
 import * as THREE from "three";
 
@@ -65,23 +65,36 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
     >
       <div className="aspect-[16/10] w-full">
         <Canvas
-          camera={{ position: [0, 0.6, 8], fov: 24 }}
+          camera={{ position: [0, 0.5, 4], fov: 30 }}
           gl={{ alpha: true, antialias: true }}
           style={{ background: "transparent" }}
         >
           <Suspense fallback={null}>
-            {/* Stage = drei helper. Auto-fits model to camera, sets up
-                3-point lighting, contact shadows under model. The HDR
-                environment is NOT used as background (Stage handles this
-                correctly — only contributes reflections). */}
-            <Stage
-              adjustCamera={1.8}
-              intensity={0.5}
-              environment="city"
-              shadows={{ type: "contact", opacity: 0.45, blur: 2 }}
-            >
+            <ambientLight intensity={0.5} color="#F8F1DE" />
+            <directionalLight
+              position={[3, 4, 5]}
+              intensity={1.1}
+              color="#F5E9CC"
+            />
+            <directionalLight
+              position={[-4, 1, 2]}
+              intensity={0.4}
+              color="#7ea687"
+            />
+            <Environment preset="city" background={false} />
+            {/* Center auto-positions model at origin. Scale chosen by trial
+                to fit the laptop comfortably in the canvas viewport with
+                breathing room around it. */}
+            <Center scale={0.025}>
               <Model />
-            </Stage>
+            </Center>
+            <ContactShadows
+              position={[0, -0.85, 0]}
+              opacity={0.4}
+              scale={5}
+              blur={2}
+              far={1}
+            />
           </Suspense>
         </Canvas>
       </div>
