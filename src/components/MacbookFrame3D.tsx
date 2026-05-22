@@ -34,7 +34,7 @@ function Model() {
   };
   // Small positive Y rotation so the laptop faces the viewer head-on
   // (model was authored facing slightly right of camera)
-  return <primitive object={scene} rotation={[0, -0.04, 0]} />;
+  return <primitive object={scene} rotation={[0, -0.015, 0]} />;
 }
 
 useGLTF.preload("/macbook.glb", true);
