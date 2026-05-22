@@ -75,7 +75,7 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
                 environment is NOT used as background (Stage handles this
                 correctly — only contributes reflections). */}
             <Stage
-              adjustCamera={0.4}
+              adjustCamera={1.8}
               intensity={0.5}
               environment="city"
               shadows={{ type: "contact", opacity: 0.45, blur: 2 }}
