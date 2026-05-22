@@ -46,7 +46,7 @@ function Model({ openValue }: { openValue: MotionValue<number> }) {
 
     // Hinge in WORLD coords (measured via runtime inspection):
     //   (0.198, -0.649, -0.246) — base back edge / lid bottom edge
-    const hingeWorld = new THREE.Vector3(0.198, -0.619, -0.246);
+    const hingeWorld = new THREE.Vector3(0.198, -0.605, -0.246);
     // Convert to lid's parent local frame so the pivot sits at the hinge.
     const hingeInParent = lidParent.worldToLocal(hingeWorld.clone());
 
@@ -71,7 +71,7 @@ function Model({ openValue }: { openValue: MotionValue<number> }) {
     // Closed needs >90° because authored open pose leans back slightly;
     // ~110° folds the lid flat onto the keyboard.
     const t = openValue.get();
-    pivot.rotation.x = (1 - t) * (Math.PI * 0.58);
+    pivot.rotation.x = (1 - t) * (Math.PI * 0.60);
   });
 
   return <primitive object={scene} rotation={[0, -0.010, 0]} />;
