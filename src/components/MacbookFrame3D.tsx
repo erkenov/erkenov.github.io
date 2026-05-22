@@ -32,10 +32,9 @@ function Model() {
   const { scene } = useGLTF("/macbook.glb", true) as unknown as {
     scene: THREE.Group;
   };
-  // TEMP: dump node structure to console once, to find the lid mesh.
+  // TEMP: stash node structure on window so Playwright can read it.
   // Remove after we know the lid node name.
-  if (typeof window !== "undefined" && !(window as unknown as { __macbookDumped?: boolean }).__macbookDumped) {
-    (window as unknown as { __macbookDumped?: boolean }).__macbookDumped = true;
+  if (typeof window !== "undefined") {
     const dump: Array<{ name: string; type: string; parent: string | null }> = [];
     scene.traverse((obj) => {
       dump.push({
@@ -44,8 +43,8 @@ function Model() {
         parent: obj.parent?.name ?? null,
       });
     });
-    // eslint-disable-next-line no-console
-    console.log("MACBOOK_NODES", JSON.stringify(dump));
+    (window as unknown as { __macbookNodes?: unknown }).__macbookNodes = dump;
+    (window as unknown as { __macbookScene?: unknown }).__macbookScene = scene;
   }
   return <primitive object={scene} rotation={[0, -0.010, 0]} />;
 }
