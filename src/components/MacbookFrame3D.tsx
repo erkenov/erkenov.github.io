@@ -17,7 +17,7 @@
 
 import { Suspense, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import { useGLTF, Environment, ContactShadows } from "@react-three/drei";
+import { useGLTF, Environment, ContactShadows, Bounds } from "@react-three/drei";
 import { motion, useScroll, useTransform } from "framer-motion";
 import * as THREE from "three";
 
@@ -30,15 +30,11 @@ function Model() {
   const { scene } = useGLTF("/macbook.glb") as unknown as {
     scene: THREE.Group;
   };
+  // Bounds (outside) handles fit-to-frustum; we just apply the 3/4 rotation.
   // Slight Y rotation gives a 3/4 view (we see the screen face + side of base)
   // Slight X rotation tilts the top toward viewer so screen content is readable
   return (
-    <primitive
-      object={scene}
-      position={[0, -0.15, 0]}
-      rotation={[0.04, -0.25, 0]}
-      scale={0.35}
-    />
+    <primitive object={scene} rotation={[0.04, -0.25, 0]} />
   );
 }
 
@@ -92,11 +88,16 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
                 NOT as a skybox behind the model. That was the "video
                 window" effect Shamil flagged. */}
             <Environment preset="city" background={false} />
-            <Model />
+            {/* Bounds auto-fits the model to the camera frustum.
+                margin=1.8 = 80% extra space around the laptop so it
+                doesn't crowd the canvas edges. */}
+            <Bounds fit clip observe margin={1.8}>
+              <Model />
+            </Bounds>
             <ContactShadows
-              position={[0, -0.6, 0]}
+              position={[0, -0.5, 0]}
               opacity={0.45}
-              scale={4}
+              scale={6}
               blur={2}
               far={1}
             />
