@@ -112,7 +112,7 @@ export default function SpherePreviewPage() {
             // anchor LEFT for both so the tabs / carousel stay in the
             // left half and don't overlap the text column.
             i === 1 || i === 3
-              ? "absolute inset-y-[8vh] left-[10vw] hidden md:flex md:w-[55%] items-center pointer-events-auto"
+              ? "absolute inset-y-[8vh] left-[8vw] hidden md:flex md:w-[55%] items-center justify-start pointer-events-auto"
               : undefined
           }
         />
