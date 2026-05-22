@@ -32,8 +32,21 @@ function Model() {
   const { scene } = useGLTF("/macbook.glb", true) as unknown as {
     scene: THREE.Group;
   };
-  // Small positive Y rotation so the laptop faces the viewer head-on
-  // (model was authored facing slightly right of camera)
+  // TEMP: dump node structure to console once, to find the lid mesh.
+  // Remove after we know the lid node name.
+  if (typeof window !== "undefined" && !(window as unknown as { __macbookDumped?: boolean }).__macbookDumped) {
+    (window as unknown as { __macbookDumped?: boolean }).__macbookDumped = true;
+    const dump: Array<{ name: string; type: string; parent: string | null }> = [];
+    scene.traverse((obj) => {
+      dump.push({
+        name: obj.name,
+        type: obj.type,
+        parent: obj.parent?.name ?? null,
+      });
+    });
+    // eslint-disable-next-line no-console
+    console.log("MACBOOK_NODES", JSON.stringify(dump));
+  }
   return <primitive object={scene} rotation={[0, -0.010, 0]} />;
 }
 
