@@ -11,8 +11,8 @@ const SECTIONS = [
   {
     side: "left" as const,
     kicker: "v3 · scene 01",
-    headline: "Full-spectrum business systems.",
-    body: "I build the whole customer pipeline — voice agents, lead generation, CRM, workflows, dashboards. Same operator. One system.",
+    headline: "Full-spectrum business systems, with AI inside.",
+    body: "I build full customer pipelines for any business — voice agents, lead generation, CRM, workflow automation, project management, dashboards, websites. One operator. One system. Every channel landing in the same place.",
     cta: "Show the demo",
   },
   {
@@ -36,8 +36,8 @@ const SECTIONS = [
   {
     side: "left" as const,
     kicker: "v3 · scene 05",
-    headline: "Voice was one of five.",
-    body: "Five streams feed the same system: lead gen, voice + chat + WhatsApp, CRM + email triage, automation glue, reporting. I build all five. You see one system, not five tools.",
+    headline: "Voice was one piece. The rest of the stack works the same way.",
+    body: "Lead generation, CRM, workflow automation, project management, dashboards, websites — same approach end to end. Every customer touch lands in one place. Structured, automated, reported.",
   },
 ];
 
