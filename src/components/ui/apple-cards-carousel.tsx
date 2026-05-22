@@ -46,47 +46,60 @@ export const Carousel = ({ items, initialScroll = 0, loop = false }: CarouselPro
   const [canScrollRight, setCanScrollRight] = React.useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // When loop is enabled, render items twice so we have material to scroll
-  // through after wrap-around. The scroll handler jumps back instantly
-  // (no animation) when crossing the half-width boundary, so the user
-  // perceives an endless scroll.
-  const renderedItems = loop ? [...items, ...items] : items;
+  // When loop is enabled, triple the items and start the scroll position
+  // in the MIDDLE copy. When the user scrolls into the first or last
+  // copy, we silently teleport them back to the middle. The middle copy
+  // always renders the same content the wrap zones do, so no visible jump.
+  const renderedItems = loop ? [...items, ...items, ...items] : items;
 
   useEffect(() => {
-    if (carouselRef.current) {
+    if (!carouselRef.current) return;
+    if (loop) {
+      // Position scroll in the middle third so the user can scroll either
+      // direction without immediately hitting a wrap.
+      requestAnimationFrame(() => {
+        if (!carouselRef.current) return;
+        const oneThird = carouselRef.current.scrollWidth / 3;
+        carouselRef.current.style.scrollBehavior = "auto";
+        carouselRef.current.scrollLeft = oneThird;
+        requestAnimationFrame(() => {
+          if (carouselRef.current) carouselRef.current.style.scrollBehavior = "smooth";
+        });
+      });
+    } else {
       carouselRef.current.scrollLeft = initialScroll;
-      checkScrollability();
     }
-  }, [initialScroll]);
+    checkScrollability();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialScroll, loop]);
 
   const checkScrollability = () => {
-    if (carouselRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-      if (loop) {
-        // In loop mode, never expose "can't scroll" — arrows always work.
-        setCanScrollLeft(true);
-        setCanScrollRight(true);
-        // Seamless wrap: when we cross the half-width boundary (past the
-        // original items), jump back to the equivalent earlier position.
-        const halfWidth = scrollWidth / 2;
-        if (scrollLeft >= halfWidth) {
-          carouselRef.current.style.scrollBehavior = "auto";
-          carouselRef.current.scrollLeft = scrollLeft - halfWidth;
-          // Restore smooth scrolling on next tick.
-          requestAnimationFrame(() => {
-            if (carouselRef.current) carouselRef.current.style.scrollBehavior = "smooth";
-          });
-        } else if (scrollLeft <= 0) {
-          carouselRef.current.style.scrollBehavior = "auto";
-          carouselRef.current.scrollLeft = halfWidth;
-          requestAnimationFrame(() => {
-            if (carouselRef.current) carouselRef.current.style.scrollBehavior = "smooth";
-          });
-        }
-      } else {
-        setCanScrollLeft(scrollLeft > 0);
-        setCanScrollRight(scrollLeft < scrollWidth - clientWidth);
+    if (!carouselRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+    if (loop) {
+      setCanScrollLeft(true);
+      setCanScrollRight(true);
+      // Wrap zones: first 1/6 of total = inside first copy → jump +1/3.
+      // Last 1/6 = inside last copy → jump -1/3. The middle 2/3 is safe.
+      const oneThird = scrollWidth / 3;
+      const wrapLow = oneThird * 0.5;
+      const wrapHigh = oneThird * 2.5;
+      if (scrollLeft < wrapLow) {
+        carouselRef.current.style.scrollBehavior = "auto";
+        carouselRef.current.scrollLeft = scrollLeft + oneThird;
+        requestAnimationFrame(() => {
+          if (carouselRef.current) carouselRef.current.style.scrollBehavior = "smooth";
+        });
+      } else if (scrollLeft > wrapHigh) {
+        carouselRef.current.style.scrollBehavior = "auto";
+        carouselRef.current.scrollLeft = scrollLeft - oneThird;
+        requestAnimationFrame(() => {
+          if (carouselRef.current) carouselRef.current.style.scrollBehavior = "smooth";
+        });
       }
+    } else {
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth);
     }
   };
 
