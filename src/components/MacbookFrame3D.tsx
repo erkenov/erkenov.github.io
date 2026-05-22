@@ -34,7 +34,7 @@ function Model() {
   };
   // Small positive Y rotation so the laptop faces the viewer head-on
   // (model was authored facing slightly right of camera)
-  return <primitive object={scene} rotation={[0, -0.08, 0]} />;
+  return <primitive object={scene} rotation={[0, -0.04, 0]} />;
 }
 
 useGLTF.preload("/macbook.glb", true);
@@ -87,7 +87,7 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
             {/* Center auto-positions model at origin. Scale chosen by trial
                 to fit the laptop comfortably in the canvas viewport with
                 breathing room around it. */}
-            <Center scale={0.0304} position={[0.2, 0.05, 0]}>
+            <Center scale={0.0304} position={[0.2, -0.3, 0]}>
               <Model />
             </Center>
             <ContactShadows
