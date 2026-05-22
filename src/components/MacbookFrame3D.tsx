@@ -67,9 +67,11 @@ function Model({ openValue }: { openValue: MotionValue<number> }) {
   useFrame(() => {
     const pivot = pivotRef.current;
     if (!pivot) return;
-    // openValue 0..1 → pivot rotation PI/2..0
+    // openValue 0..1 → pivot rotation (full-closed)..0
+    // Closed needs >90° because authored open pose leans back slightly;
+    // ~110° folds the lid flat onto the keyboard.
     const t = openValue.get();
-    pivot.rotation.x = (1 - t) * (Math.PI / 2);
+    pivot.rotation.x = (1 - t) * (Math.PI * 0.61);
   });
 
   return <primitive object={scene} rotation={[0, -0.010, 0]} />;
