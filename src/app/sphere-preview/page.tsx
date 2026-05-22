@@ -19,7 +19,7 @@ const SECTIONS = [
     side: "right" as const,
     kicker: "Lead generation",
     headline: "Where your next ten customers come from.",
-    body: "Your channel, my approach. Google Maps scraping for local businesses. Cold email at scale. Meta Business AI agents on Instagram and Facebook ads. LinkedIn outreach when the work is white-collar. Every method ends the same way — leads land structured, ready for the next step.",
+    body: "Your channel, my approach. Google Maps scraping for local businesses. Cold email at scale. AI voice agent that runs outbound calls — qualifies, pitches, books. Meta Business AI agents on Instagram and Facebook ads. LinkedIn outreach when the work is white-collar. Every method ends the same way — leads land structured, ready for the next step.",
   },
   {
     side: "left" as const,
