@@ -16,9 +16,9 @@
  */
 
 import { Suspense, useRef, useEffect } from "react";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, Environment, ContactShadows, Center } from "@react-three/drei";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
 import * as THREE from "three";
 
 interface MacbookFrame3DProps {
@@ -26,26 +26,37 @@ interface MacbookFrame3DProps {
   children?: React.ReactNode;
 }
 
-function Model() {
-  // Second arg = true → use Draco decoder (model is Draco-compressed:
-  // 9.7MB → 2.86MB after gltf-transform draco)
+/** Name of the lid mesh group in the jackbaeten MacBook M3 model.
+ *  Discovered via runtime inspection — contains the 18 child meshes
+ *  (screen, bezel, camera notch). */
+const LID_NODE_NAME = "VCQqxpxkUlzqcJI_62";
+
+function Model({ openValue }: { openValue: MotionValue<number> }) {
   const { scene } = useGLTF("/macbook.glb", true) as unknown as {
     scene: THREE.Group;
   };
-  // TEMP: stash node structure on window via useEffect after scene loads.
+  const lidRef = useRef<THREE.Object3D | null>(null);
+  const baseRotationRef = useRef<number>(0);
+
   useEffect(() => {
-    if (typeof window === "undefined" || !scene) return;
-    const dump: Array<{ name: string; type: string; parent: string | null }> = [];
-    scene.traverse((obj) => {
-      dump.push({
-        name: obj.name,
-        type: obj.type,
-        parent: obj.parent?.name ?? null,
-      });
-    });
-    (window as unknown as { __macbookNodes?: unknown }).__macbookNodes = dump;
-    (window as unknown as { __macbookScene?: unknown }).__macbookScene = scene;
+    const lid = scene.getObjectByName(LID_NODE_NAME);
+    if (lid) {
+      lidRef.current = lid;
+      // Capture the lid's authored open-pose rotation so close folds FROM here.
+      baseRotationRef.current = lid.rotation.x;
+    }
   }, [scene]);
+
+  useFrame(() => {
+    const lid = lidRef.current;
+    if (!lid) return;
+    // openValue: 0 = closed (lid folded down onto base), 1 = open (authored pose)
+    const t = openValue.get();
+    const open = baseRotationRef.current;
+    const closed = open - Math.PI / 2;
+    lid.rotation.x = closed + t * (open - closed);
+  });
+
   return <primitive object={scene} rotation={[0, -0.010, 0]} />;
 }
 
@@ -68,6 +79,13 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
   const opacity = useTransform(
     scrollYProgress,
     [0, 0.2, 0.8, 1],
+    [0, 1, 1, 0],
+  );
+  // Lid open/close — closed at section edges, open mid-section.
+  // 0 = lid lying flat on base, 1 = lid in authored open pose.
+  const openValue = useTransform(
+    scrollYProgress,
+    [0.18, 0.42, 0.58, 0.82],
     [0, 1, 1, 0],
   );
 
@@ -100,7 +118,7 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
                 to fit the laptop comfortably in the canvas viewport with
                 breathing room around it. */}
             <Center scale={0.0304} position={[0.2, -0.3, 0]}>
-              <Model />
+              <Model openValue={openValue} />
             </Center>
             <ContactShadows
               position={[0, -0.85, 0]}
