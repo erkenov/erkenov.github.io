@@ -31,7 +31,7 @@ const SECTIONS = [
     side: "right" as const,
     kicker: "Lead management",
     headline: "Every lead tracked, every follow-up automated.",
-    body: "Three ways we wire this up. Google Sheets — lean and free. GoHighLevel — the industry standard, you sign up directly. Or the Erken Systems platform — your CRM, calendar, email, SMS, and follow-up workflows all under one branded login. Already using Salesforce, HubSpot, Pipedrive? Same approach, I learn your stack. Every lead tagged, every follow-up automated, every channel logged.",
+    body: "Three ways we wire this up. Google Sheets — lean and free. GoHighLevel — the industry standard, you sign up directly. Or the Erken Systems platform — your CRM, calendar, email, SMS, and follow-up workflows, all in one place. Already using Salesforce, HubSpot, Pipedrive? Same approach, I learn your stack. Every lead tagged, every follow-up automated, every channel logged.",
   },
   {
     side: "left" as const,
