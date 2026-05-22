@@ -6,6 +6,7 @@
  */
 
 import { SphereScrollStage } from "@/components/SphereScrollStage";
+import { MacbookFrame } from "@/components/MacbookFrame";
 
 const SECTIONS = [
   {
@@ -41,10 +42,12 @@ const SECTIONS = [
   },
 ];
 
-function Section({ kicker, headline, body, side, cta }: typeof SECTIONS[number]) {
+type SectionProps = typeof SECTIONS[number] & { media?: React.ReactNode };
+
+function Section({ kicker, headline, body, side, cta, media }: SectionProps) {
   const isLeft = side === "left";
   return (
-    <section className="min-h-screen flex items-center px-6 md:px-12">
+    <section className="relative min-h-screen flex items-center px-6 md:px-12">
       <div className={`w-full md:w-1/2 ${isLeft ? "md:mr-auto" : "md:ml-auto"} max-w-xl`}>
         <div className="mono-label">{kicker}</div>
         <h2
@@ -62,6 +65,13 @@ function Section({ kicker, headline, body, side, cta }: typeof SECTIONS[number])
           </button>
         )}
       </div>
+      {media && (
+        <div
+          className={`absolute inset-y-0 ${isLeft ? "right-0" : "left-0"} hidden md:flex md:w-1/2 items-center justify-center px-8 lg:px-16`}
+        >
+          {media}
+        </div>
+      )}
     </section>
   );
 }
@@ -69,7 +79,13 @@ function Section({ kicker, headline, body, side, cta }: typeof SECTIONS[number])
 export default function SpherePreviewPage() {
   return (
     <SphereScrollStage>
-      {SECTIONS.map((s, i) => <Section key={i} {...s} />)}
+      {SECTIONS.map((s, i) => (
+        <Section
+          key={i}
+          {...s}
+          media={i === 2 ? <MacbookFrame /> : null}
+        />
+      ))}
       {/* Trailing space so scroll has room to finish its tween */}
       <div className="h-[20vh]" />
     </SphereScrollStage>
