@@ -71,7 +71,7 @@ function Model({ openValue }: { openValue: MotionValue<number> }) {
     // Closed needs >90° because authored open pose leans back slightly;
     // ~110° folds the lid flat onto the keyboard.
     const t = openValue.get();
-    pivot.rotation.x = (1 - t) * (Math.PI * 0.6);
+    pivot.rotation.x = (1 - t) * (Math.PI * 0.612);
   });
 
   return <primitive object={scene} rotation={[0, -0.010, 0]} />;
