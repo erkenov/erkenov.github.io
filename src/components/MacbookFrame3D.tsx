@@ -30,9 +30,16 @@ function Model() {
   const { scene } = useGLTF("/macbook.glb") as unknown as {
     scene: THREE.Group;
   };
-  // Auto-center the model so it sits at origin regardless of how the
-  // artist authored it
-  return <primitive object={scene} position={[0, -0.4, 0]} scale={1.4} />;
+  // Slight Y rotation gives a 3/4 view (we see the screen face + side of base)
+  // Slight X rotation tilts the top toward viewer so screen content is readable
+  return (
+    <primitive
+      object={scene}
+      position={[0, -0.15, 0]}
+      rotation={[0.08, -0.28, 0]}
+      scale={0.6}
+    />
+  );
 }
 
 useGLTF.preload("/macbook.glb");
@@ -65,7 +72,7 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
     >
       <div className="aspect-[16/10] w-full">
         <Canvas
-          camera={{ position: [0, 0.2, 2.5], fov: 35 }}
+          camera={{ position: [0, 0.8, 4.2], fov: 28 }}
           gl={{ alpha: true, antialias: true }}
           style={{ background: "transparent" }}
         >
