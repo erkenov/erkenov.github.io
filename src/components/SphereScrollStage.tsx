@@ -730,8 +730,11 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
         )}
       </div>
 
-      {/* Foreground sections — scroll naturally; sphere reacts via refs */}
-      <div className="relative z-10">{children}</div>
+      {/* Foreground sections — no z-index wrapper so per-element z values
+          can interleave with the cell-dragon canvas above. Text gets
+          z-30 inside each Section so it floats in FRONT of the cell;
+          laptop media stays at default z which keeps it BEHIND the cell. */}
+      <div className="relative">{children}</div>
     </div>
   );
 }

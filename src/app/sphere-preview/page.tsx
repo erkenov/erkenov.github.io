@@ -48,7 +48,7 @@ function Section({ kicker, headline, body, side, cta, media }: SectionProps) {
   const isLeft = side === "left";
   return (
     <section className="relative min-h-screen flex items-center px-6 md:px-12">
-      <div className={`w-full md:w-1/2 ${isLeft ? "md:mr-auto" : "md:ml-auto"} max-w-xl`}>
+      <div className={`relative z-30 w-full md:w-1/2 ${isLeft ? "md:mr-auto" : "md:ml-auto"} max-w-xl`}>
         <div className="mono-label">{kicker}</div>
         <h2
           className="mt-3 text-3xl md:text-5xl font-bold tracking-tight"
