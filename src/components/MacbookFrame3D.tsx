@@ -87,11 +87,14 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
   // Lid open/close — closed at section edges, open mid-section. Window size
   // stays fixed at full scale (no scroll-driven scale/opacity anymore per
   // 2026-05-22 feedback — pulsing window felt unfinished).
-  // Lid open/close — closed at section edges, open mid-section.
-  // 0 = lid lying flat on base, 1 = lid in authored open pose.
+  // Lid open/close timing per 2026-05-22 feedback:
+  //  - Start opening as soon as Lead Capture text appears (~0.05 progress)
+  //  - Reach fully open at ~0.45 (slow, ~7 "scrolls" worth)
+  //  - Brief peak (no long hold)
+  //  - Close FAST so it finishes before scrolling out (0.50 → 0.65)
   const openValue = useTransform(
     scrollYProgress,
-    [0.18, 0.42, 0.58, 0.82],
+    [0.05, 0.45, 0.50, 0.65],
     [0, 1, 1, 0],
   );
 
