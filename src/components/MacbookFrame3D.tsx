@@ -32,7 +32,9 @@ function Model() {
   const { scene } = useGLTF("/macbook.glb", true) as unknown as {
     scene: THREE.Group;
   };
-  return <primitive object={scene} />;
+  // Small positive Y rotation so the laptop faces the viewer head-on
+  // (model was authored facing slightly right of camera)
+  return <primitive object={scene} rotation={[0, 0.08, 0]} />;
 }
 
 useGLTF.preload("/macbook.glb", true);
@@ -91,9 +93,9 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
             <ContactShadows
               position={[0, -0.85, 0]}
               opacity={0.4}
-              scale={5}
-              blur={2}
-              far={1}
+              scale={2}
+              blur={1.5}
+              far={0.6}
             />
           </Suspense>
         </Canvas>
