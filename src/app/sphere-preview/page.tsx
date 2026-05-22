@@ -109,9 +109,9 @@ export default function SpherePreviewPage() {
             // vertically with section, anchored on the side opposite the
             // text, with safe margin from viewport edge.
             i === 1
-              ? "absolute inset-y-[8vh] left-[4vw] hidden md:flex md:w-[70%] items-center pointer-events-auto"
+              ? "absolute inset-y-[8vh] left-[4vw] hidden md:flex md:w-[80%] items-center pointer-events-auto"
               : i === 3
-              ? "absolute inset-y-[8vh] right-[4vw] hidden md:flex md:w-[70%] items-center pointer-events-auto"
+              ? "absolute inset-y-[8vh] right-[4vw] hidden md:flex md:w-[80%] items-center pointer-events-auto"
               : undefined
           }
         />
