@@ -129,7 +129,7 @@ export function Scene2Channels() {
   const items = CHANNELS.map((c, i) => <Card key={c.title} card={c} index={i} />);
   return (
     <div className="w-full">
-      <Carousel items={items} />
+      <Carousel items={items} loop />
     </div>
   );
 }

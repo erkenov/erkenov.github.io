@@ -19,6 +19,10 @@ import { useOutsideClick } from "@/hooks/use-outside-click";
 interface CarouselProps {
   items: React.ReactElement[];
   initialScroll?: number;
+  /** When true, items are duplicated and the scroll wraps seamlessly —
+   *  scrolling past the end jumps back to an equivalent earlier position
+   *  with no animation, giving an "infinite" feel. */
+  loop?: boolean;
 }
 
 type Card = {
@@ -36,11 +40,17 @@ export const CarouselContext = createContext<{
   currentIndex: 0,
 });
 
-export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
+export const Carousel = ({ items, initialScroll = 0, loop = false }: CarouselProps) => {
   const carouselRef = React.useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = React.useState(false);
   const [canScrollRight, setCanScrollRight] = React.useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // When loop is enabled, render items twice so we have material to scroll
+  // through after wrap-around. The scroll handler jumps back instantly
+  // (no animation) when crossing the half-width boundary, so the user
+  // perceives an endless scroll.
+  const renderedItems = loop ? [...items, ...items] : items;
 
   useEffect(() => {
     if (carouselRef.current) {
@@ -52,8 +62,31 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
   const checkScrollability = () => {
     if (carouselRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-      setCanScrollLeft(scrollLeft > 0);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth);
+      if (loop) {
+        // In loop mode, never expose "can't scroll" — arrows always work.
+        setCanScrollLeft(true);
+        setCanScrollRight(true);
+        // Seamless wrap: when we cross the half-width boundary (past the
+        // original items), jump back to the equivalent earlier position.
+        const halfWidth = scrollWidth / 2;
+        if (scrollLeft >= halfWidth) {
+          carouselRef.current.style.scrollBehavior = "auto";
+          carouselRef.current.scrollLeft = scrollLeft - halfWidth;
+          // Restore smooth scrolling on next tick.
+          requestAnimationFrame(() => {
+            if (carouselRef.current) carouselRef.current.style.scrollBehavior = "smooth";
+          });
+        } else if (scrollLeft <= 0) {
+          carouselRef.current.style.scrollBehavior = "auto";
+          carouselRef.current.scrollLeft = halfWidth;
+          requestAnimationFrame(() => {
+            if (carouselRef.current) carouselRef.current.style.scrollBehavior = "smooth";
+          });
+        }
+      } else {
+        setCanScrollLeft(scrollLeft > 0);
+        setCanScrollRight(scrollLeft < scrollWidth - clientWidth);
+      }
     }
   };
 
@@ -110,7 +143,7 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
               // adding centered horizontal margin we didn't want.
             )}
           >
-            {items.map((item, index) => (
+            {renderedItems.map((item, index) => (
               <motion.div
                 initial={{
                   opacity: 0,
