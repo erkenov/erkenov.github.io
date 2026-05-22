@@ -83,7 +83,7 @@ export default function SpherePreviewPage() {
         <Section
           key={i}
           {...s}
-          media={<MacbookFrame3D />}
+          media={i === 4 ? <MacbookFrame3D /> : null}
         />
       ))}
       {/* Trailing space so scroll has room to finish its tween */}
