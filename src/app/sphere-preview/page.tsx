@@ -67,7 +67,7 @@ function Section({ kicker, headline, body, side, cta, media }: SectionProps) {
       </div>
       {media && (
         <div
-          className={`absolute -top-[35vh] -bottom-[35vh] ${isLeft ? "right-0" : "left-0"} hidden md:flex md:w-[75%] items-center justify-center px-2 lg:px-4 pointer-events-none`}
+          className={`absolute -top-[33vh] -bottom-[33vh] ${isLeft ? "right-0" : "left-0"} hidden md:flex md:w-[70%] items-center justify-center px-2 lg:px-4 pointer-events-none`}
         >
           {media}
         </div>
