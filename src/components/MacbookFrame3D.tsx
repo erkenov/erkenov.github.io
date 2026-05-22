@@ -15,7 +15,7 @@
  * with the component regardless of which page hosts it.
  */
 
-import { Suspense, useRef, useEffect } from "react";
+import { Suspense, useRef, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, Environment, ContactShadows, Center } from "@react-three/drei";
 import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
@@ -32,15 +32,20 @@ interface MacbookFrame3DProps {
 const LID_NODE_NAME = "VCQqxpxkUlzqcJI_62";
 
 function Model({ openValue }: { openValue: MotionValue<number> }) {
-  const { scene } = useGLTF("/macbook.glb", true) as unknown as {
+  const { scene: sharedScene } = useGLTF("/macbook.glb", true) as unknown as {
     scene: THREE.Group;
   };
+  // Clone the scene so each MacbookFrame3D instance has its own copy and can
+  // animate its lid independently (useGLTF caches and returns the SAME scene
+  // object across instances, so without cloning all laptops would share one
+  // lid).
+  const scene = useMemo(() => sharedScene.clone(true), [sharedScene]);
   const pivotRef = useRef<THREE.Group | null>(null);
 
   useEffect(() => {
     const lid = scene.getObjectByName(LID_NODE_NAME);
     if (!lid || !lid.parent) return;
-    // If we've already wrapped, skip.
+    // Already wrapped on THIS clone? Skip.
     if (lid.parent.userData.__macbookHingeWrapped) return;
     const lidParent = lid.parent;
 
