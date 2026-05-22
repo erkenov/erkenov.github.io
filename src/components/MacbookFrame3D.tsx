@@ -61,7 +61,7 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
     <motion.div
       ref={ref}
       style={{ scale, opacity }}
-      className="mx-auto w-full max-w-3xl"
+      className="mx-auto w-full max-w-4xl"
     >
       <div className="aspect-[16/10] w-full">
         <Canvas
