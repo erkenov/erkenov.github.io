@@ -35,39 +35,41 @@ function Model({ openValue }: { openValue: MotionValue<number> }) {
   const { scene } = useGLTF("/macbook.glb", true) as unknown as {
     scene: THREE.Group;
   };
-  const lidRef = useRef<THREE.Object3D | null>(null);
-  const baseRotationRef = useRef<number>(0);
+  const pivotRef = useRef<THREE.Group | null>(null);
 
   useEffect(() => {
     const lid = scene.getObjectByName(LID_NODE_NAME);
-    if (lid) {
-      lidRef.current = lid;
-      // Capture the lid's authored open-pose rotation so close folds FROM here.
-      baseRotationRef.current = lid.rotation.x;
-    }
+    if (!lid || !lid.parent) return;
+    // If we've already wrapped, skip.
+    if (lid.parent.userData.__macbookHingeWrapped) return;
+    const lidParent = lid.parent;
+
+    // Hinge in WORLD coords (measured via runtime inspection):
+    //   (0.198, -0.649, -0.246) — base back edge / lid bottom edge
+    const hingeWorld = new THREE.Vector3(0.198, -0.649, -0.246);
+    // Convert to lid's parent local frame so the pivot sits at the hinge.
+    const hingeInParent = lidParent.worldToLocal(hingeWorld.clone());
+
+    const lidLocalPos = lid.position.clone();
+    const pivot = new THREE.Group();
+    pivot.position.copy(hingeInParent);
+
+    // Re-parent lid under pivot, offset so its world position stays the same.
+    lidParent.remove(lid);
+    lid.position.copy(lidLocalPos).sub(hingeInParent);
+    pivot.add(lid);
+    lidParent.add(pivot);
+    lidParent.userData.__macbookHingeWrapped = true;
+
+    pivotRef.current = pivot;
   }, [scene]);
 
   useFrame(() => {
-    const lid = lidRef.current;
-    if (!lid) return;
+    const pivot = pivotRef.current;
+    if (!pivot) return;
+    // openValue 0..1 → pivot rotation PI/2..0
     const t = openValue.get();
-    const open = baseRotationRef.current;
-    const closed = open + Math.PI / 2;
-    const angle = closed + t * (open - closed);
-    lid.rotation.x = angle;
-
-    // The lid's local origin sits ~0.382 units in FRONT of the actual
-    // hinge (between lid origin and base back edge — discovered via runtime
-    // bbox inspection). Without compensation, rotating the lid swings it
-    // up into the air. We compute where the hinge would land after rotation
-    // and translate the lid to keep the hinge anchored.
-    const HINGE_Y = -0.02;
-    const HINGE_Z = -0.382;
-    const c = Math.cos(angle);
-    const s = Math.sin(angle);
-    const ry = HINGE_Y * c - HINGE_Z * s;
-    const rz = HINGE_Y * s + HINGE_Z * c;
-    lid.position.set(0, HINGE_Y - ry, HINGE_Z - rz);
+    pivot.rotation.x = (1 - t) * (Math.PI / 2);
   });
 
   return <primitive object={scene} rotation={[0, -0.010, 0]} />;
@@ -82,18 +84,9 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
     offset: ["start end", "end start"],
   });
 
-  // Subtle scale-in as the section enters view, scale-out as it leaves.
-  // Until we wire lid animation, this is the entrance polish.
-  const scale = useTransform(
-    scrollYProgress,
-    [0, 0.35, 0.65, 1],
-    [0.85, 1, 1, 0.85],
-  );
-  const opacity = useTransform(
-    scrollYProgress,
-    [0, 0.2, 0.8, 1],
-    [0, 1, 1, 0],
-  );
+  // Lid open/close — closed at section edges, open mid-section. Window size
+  // stays fixed at full scale (no scroll-driven scale/opacity anymore per
+  // 2026-05-22 feedback — pulsing window felt unfinished).
   // Lid open/close — closed at section edges, open mid-section.
   // 0 = lid lying flat on base, 1 = lid in authored open pose.
   const openValue = useTransform(
@@ -105,7 +98,6 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
   return (
     <motion.div
       ref={ref}
-      style={{ scale, opacity }}
       className="w-full pointer-events-auto"
     >
       <div className="aspect-[1/1] w-full">
