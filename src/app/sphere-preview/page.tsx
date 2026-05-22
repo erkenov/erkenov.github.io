@@ -44,9 +44,25 @@ const SECTIONS = [
   },
 ];
 
-type SectionProps = typeof SECTIONS[number] & { media?: React.ReactNode };
+type SectionProps = typeof SECTIONS[number] & {
+  media?: React.ReactNode;
+  /** Width class for the absolute media wrapper. Default w-[90%] suits the
+   *  3D MacBook (transparent canvas). Opaque HTML media like the carousel
+   *  needs a narrower wrapper that stops before the text column. */
+  mediaWrapperClassName?: string;
+};
 
-function Section({ kicker, headline, body, side, cta, media }: SectionProps) {
+const DEFAULT_MEDIA_WRAPPER = "md:w-[90%]";
+
+function Section({
+  kicker,
+  headline,
+  body,
+  side,
+  cta,
+  media,
+  mediaWrapperClassName = DEFAULT_MEDIA_WRAPPER,
+}: SectionProps) {
   const isLeft = side === "left";
   return (
     <section className="relative min-h-screen flex items-center px-6 md:px-12">
@@ -69,7 +85,7 @@ function Section({ kicker, headline, body, side, cta, media }: SectionProps) {
       </div>
       {media && (
         <div
-          className={`absolute -top-[55vh] -bottom-[10vh] ${isLeft ? "-right-12" : "-left-12"} hidden md:flex md:w-[90%] items-center justify-center px-2 lg:px-4 pointer-events-none`}
+          className={`absolute -top-[55vh] -bottom-[10vh] ${isLeft ? "-right-12" : "-left-12"} hidden md:flex ${mediaWrapperClassName} items-center justify-center px-2 lg:px-4 pointer-events-none`}
         >
           {media}
         </div>
@@ -90,6 +106,11 @@ export default function SpherePreviewPage() {
             : i === 3 ? <Scene4CrmTabs />
             : i === 4 ? <MacbookFrame3D />
             : null
+          }
+          mediaWrapperClassName={
+            // Opaque HTML media (carousel/tabs) must NOT overlap the text
+            // column. Narrower wrapper keeps them in the opposite half.
+            i === 1 || i === 3 ? "md:w-[52%]" : undefined
           }
         />
       ))}
