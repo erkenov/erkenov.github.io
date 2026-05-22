@@ -17,7 +17,7 @@
 
 import { Suspense, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import { useGLTF, Environment, ContactShadows, Bounds } from "@react-three/drei";
+import { useGLTF, Stage } from "@react-three/drei";
 import { motion, useScroll, useTransform } from "framer-motion";
 import * as THREE from "three";
 
@@ -73,34 +73,18 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
           style={{ background: "transparent" }}
         >
           <Suspense fallback={null}>
-            <ambientLight intensity={0.55} color="#F8F1DE" />
-            <directionalLight
-              position={[3, 4, 5]}
-              intensity={1.2}
-              color="#F5E9CC"
-            />
-            <directionalLight
-              position={[-4, 1, 2]}
-              intensity={0.4}
-              color="#7ea687"
-            />
-            {/* background={false} — use HDR for PBR reflections only,
-                NOT as a skybox behind the model. That was the "video
-                window" effect Shamil flagged. */}
-            <Environment preset="city" background={false} />
-            {/* Bounds auto-fits the model to the camera frustum.
-                margin=1.8 = 80% extra space around the laptop so it
-                doesn't crowd the canvas edges. */}
-            <Bounds fit clip observe margin={1.8}>
+            {/* Stage = drei helper. Auto-fits model to camera, sets up
+                3-point lighting, contact shadows under model. The HDR
+                environment is NOT used as background (Stage handles this
+                correctly — only contributes reflections). */}
+            <Stage
+              adjustCamera={0.6}
+              intensity={0.5}
+              environment="city"
+              shadows={{ type: "contact", opacity: 0.45, blur: 2 }}
+            >
               <Model />
-            </Bounds>
-            <ContactShadows
-              position={[0, -0.5, 0]}
-              opacity={0.45}
-              scale={6}
-              blur={2}
-              far={1}
-            />
+            </Stage>
           </Suspense>
         </Canvas>
       </div>
