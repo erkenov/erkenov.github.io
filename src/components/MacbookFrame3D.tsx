@@ -37,7 +37,7 @@ function Model() {
       object={scene}
       position={[0, -0.15, 0]}
       rotation={[0.04, -0.25, 0]}
-      scale={0.6}
+      scale={0.35}
     />
   );
 }
@@ -72,7 +72,7 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
     >
       <div className="aspect-[16/10] w-full">
         <Canvas
-          camera={{ position: [0, 0.35, 4.5], fov: 26 }}
+          camera={{ position: [0, 0.6, 8], fov: 24 }}
           gl={{ alpha: true, antialias: true }}
           style={{ background: "transparent" }}
         >
