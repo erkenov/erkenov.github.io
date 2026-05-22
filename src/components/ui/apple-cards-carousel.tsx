@@ -181,18 +181,20 @@ export const Carousel = ({ items, initialScroll = 0, loop = false }: CarouselPro
         </div>
         <div className="ml-4 flex justify-start gap-2">
           <button
-            className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 disabled:opacity-50"
+            className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-accent text-bg shadow-sm transition-colors hover:bg-accent-hover disabled:opacity-40"
             onClick={scrollLeft}
             disabled={!canScrollLeft}
+            aria-label="Previous card"
           >
-            <IconArrowNarrowLeft className="h-6 w-6 text-gray-500" />
+            <IconArrowNarrowLeft className="h-6 w-6" />
           </button>
           <button
-            className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 disabled:opacity-50"
+            className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-accent text-bg shadow-sm transition-colors hover:bg-accent-hover disabled:opacity-40"
             onClick={scrollRight}
             disabled={!canScrollRight}
+            aria-label="Next card"
           >
-            <IconArrowNarrowRight className="h-6 w-6 text-gray-500" />
+            <IconArrowNarrowRight className="h-6 w-6" />
           </button>
         </div>
       </div>
