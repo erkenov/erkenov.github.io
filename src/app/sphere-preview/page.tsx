@@ -36,7 +36,7 @@ const SECTIONS = [
   {
     side: "left" as const,
     kicker: "The control panel",
-    headline: "Everything in one view.",
+    headline: "Your whole operation, one screen.",
     body: "Calls, chats, forms, emails, deals — all visible in one dashboard. Workflow automation runs underneath everything, moving data between tools without you touching a thing. You see exactly where every customer is. The system is the product.",
   },
 ];
