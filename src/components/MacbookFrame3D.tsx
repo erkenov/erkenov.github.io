@@ -46,7 +46,7 @@ function Model({ openValue }: { openValue: MotionValue<number> }) {
 
     // Hinge in WORLD coords (measured via runtime inspection):
     //   (0.198, -0.649, -0.246) — base back edge / lid bottom edge
-    const hingeWorld = new THREE.Vector3(0.198, -0.610, -0.246);
+    const hingeWorld = new THREE.Vector3(0.198, -0.610, -0.200);
     // Convert to lid's parent local frame so the pivot sits at the hinge.
     const hingeInParent = lidParent.worldToLocal(hingeWorld.clone());
 
