@@ -27,14 +27,15 @@ interface MacbookFrame3DProps {
 }
 
 function Model() {
-  const { scene } = useGLTF("/macbook.glb") as unknown as {
+  // Second arg = true → use Draco decoder (model is Draco-compressed:
+  // 9.7MB → 2.86MB after gltf-transform draco)
+  const { scene } = useGLTF("/macbook.glb", true) as unknown as {
     scene: THREE.Group;
   };
-  // Native pose first — see what the artist authored.
   return <primitive object={scene} />;
 }
 
-useGLTF.preload("/macbook.glb");
+useGLTF.preload("/macbook.glb", true);
 
 export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -74,7 +75,7 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
                 environment is NOT used as background (Stage handles this
                 correctly — only contributes reflections). */}
             <Stage
-              adjustCamera={0.6}
+              adjustCamera={0.4}
               intensity={0.5}
               environment="city"
               shadows={{ type: "contact", opacity: 0.45, blur: 2 }}
