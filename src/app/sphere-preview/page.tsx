@@ -46,13 +46,15 @@ const SECTIONS = [
 
 type SectionProps = typeof SECTIONS[number] & {
   media?: React.ReactNode;
-  /** Width class for the absolute media wrapper. Default w-[90%] suits the
-   *  3D MacBook (transparent canvas). Opaque HTML media like the carousel
-   *  needs a narrower wrapper that stops before the text column. */
+  /** Full wrapper className for the absolute media container. Default is
+   *  set for the 3D MacBook (large transparent canvas extending past the
+   *  section). Compact HTML media (carousel/tabs) should override with a
+   *  tighter wrapper that sits within the section bounds. */
   mediaWrapperClassName?: string;
 };
 
-const DEFAULT_MEDIA_WRAPPER = "md:w-[90%]";
+const DEFAULT_MEDIA_WRAPPER = (isLeft: boolean) =>
+  `absolute -top-[55vh] -bottom-[10vh] ${isLeft ? "-right-12" : "-left-12"} hidden md:flex md:w-[90%] items-center justify-center px-2 lg:px-4 pointer-events-none`;
 
 function Section({
   kicker,
@@ -61,9 +63,10 @@ function Section({
   side,
   cta,
   media,
-  mediaWrapperClassName = DEFAULT_MEDIA_WRAPPER,
+  mediaWrapperClassName,
 }: SectionProps) {
   const isLeft = side === "left";
+  const wrapperClass = mediaWrapperClassName ?? DEFAULT_MEDIA_WRAPPER(isLeft);
   return (
     <section className="relative min-h-screen flex items-center px-6 md:px-12">
       <div className={`relative z-30 w-full md:w-1/2 ${isLeft ? "md:mr-auto" : "md:ml-auto"} max-w-xl`}>
@@ -83,13 +86,7 @@ function Section({
           </button>
         )}
       </div>
-      {media && (
-        <div
-          className={`absolute -top-[55vh] -bottom-[10vh] ${isLeft ? "-right-12" : "-left-12"} hidden md:flex ${mediaWrapperClassName} items-center justify-center px-2 lg:px-4 pointer-events-none`}
-        >
-          {media}
-        </div>
-      )}
+      {media && <div className={wrapperClass}>{media}</div>}
     </section>
   );
 }
@@ -108,9 +105,14 @@ export default function SpherePreviewPage() {
             : null
           }
           mediaWrapperClassName={
-            // Opaque HTML media (carousel/tabs) must NOT overlap the text
-            // column. Narrower wrapper keeps them in the opposite half.
-            i === 1 || i === 3 ? "md:w-[52%]" : undefined
+            // Opaque HTML media (carousel / tabs): tight wrapper centered
+            // vertically with section, anchored on the side opposite the
+            // text, with safe margin from viewport edge.
+            i === 1
+              ? "absolute inset-y-[8vh] left-[4vw] hidden md:flex md:w-[60%] items-center pointer-events-auto"
+              : i === 3
+              ? "absolute inset-y-[8vh] right-[4vw] hidden md:flex md:w-[60%] items-center pointer-events-auto"
+              : undefined
           }
         />
       ))}
