@@ -36,7 +36,7 @@ function Model() {
     <primitive
       object={scene}
       position={[0, -0.15, 0]}
-      rotation={[0.08, -0.28, 0]}
+      rotation={[0.04, -0.25, 0]}
       scale={0.6}
     />
   );
@@ -72,7 +72,7 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
     >
       <div className="aspect-[16/10] w-full">
         <Canvas
-          camera={{ position: [0, 0.8, 4.2], fov: 28 }}
+          camera={{ position: [0, 0.35, 4.5], fov: 26 }}
           gl={{ alpha: true, antialias: true }}
           style={{ background: "transparent" }}
         >
@@ -88,7 +88,10 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
               intensity={0.4}
               color="#7ea687"
             />
-            <Environment preset="city" />
+            {/* background={false} — use HDR for PBR reflections only,
+                NOT as a skybox behind the model. That was the "video
+                window" effect Shamil flagged. */}
+            <Environment preset="city" background={false} />
             <Model />
             <ContactShadows
               position={[0, -0.6, 0]}
