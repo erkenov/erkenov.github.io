@@ -10,7 +10,7 @@ import { SphereScrollStage } from "@/components/SphereScrollStage";
 const SECTIONS = [
   {
     side: "left" as const,
-    kicker: "v3 · scene 01",
+    kicker: "Erken Systems",
     headline: "Full-spectrum business systems, with AI inside.",
     body: "I build full customer pipelines for any business — voice agents, lead generation, CRM, workflow automation, project management, dashboards, websites. One operator. One system. Every channel landing in the same place.",
     cta: "Show the demo",
