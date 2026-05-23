@@ -91,7 +91,7 @@ const TIERS: TierContent[] = [
     value: "sheets",
     content: (
       <TierPanel
-        bg="#F5F1E8"
+        bg="#D8E1D0"
         label="Lean · no lock-in"
         tagline="Google Sheets — fast, free, no platform lock-in."
         bullets={[
