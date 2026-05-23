@@ -17,6 +17,8 @@ import { Carousel, Card } from "@/components/ui/apple-cards-carousel";
 import { Scene2VoiceAgentVisual } from "@/components/Scene2VoiceAgentVisual";
 import { Scene2GoogleMapsVisual } from "@/components/Scene2GoogleMapsVisual";
 import { Scene2ColdEmailVisual } from "@/components/Scene2ColdEmailVisual";
+import { Scene2MetaAdsVisual } from "@/components/Scene2MetaAdsVisual";
+import { Scene2LinkedInVisual } from "@/components/Scene2LinkedInVisual";
 
 type ChannelCard = {
   src: string;
@@ -92,6 +94,7 @@ const CHANNELS: ChannelCard[] = [
     category: "Paid · Meta",
     title: "Meta Business AI on FB / Instagram",
     src: ph("Meta ads", "E89F1F"),
+    visual: <Scene2MetaAdsVisual />,
     content: (
       <CardBody>
         <p>
@@ -110,6 +113,7 @@ const CHANNELS: ChannelCard[] = [
     category: "Outbound · LinkedIn",
     title: "LinkedIn outreach (white-collar)",
     src: ph("LinkedIn", "A8B86C"),
+    visual: <Scene2LinkedInVisual />,
     content: (
       <CardBody>
         <p>
