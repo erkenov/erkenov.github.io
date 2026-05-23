@@ -91,18 +91,14 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
     offset: ["start end", "end start"],
   });
 
-  // Lid open/close — closed at section edges, open mid-section. Window size
-  // stays fixed at full scale (no scroll-driven scale/opacity anymore per
-  // 2026-05-22 feedback — pulsing window felt unfinished).
-  // Lid open/close timing per 2026-05-22 feedback:
-  //  - Start opening as soon as Lead Capture text appears (~0.05 progress)
-  //  - Reach fully open at ~0.45 (slow, ~7 "scrolls" worth)
-  //  - Brief peak (no long hold)
-  //  - Close FAST so it finishes before scrolling out (0.50 → 0.65)
+  // Scene 5 is the LAST section. Shamil's spec (2026-05-23):
+  //  - Fully OPEN at the bottom of the page (= max scroll)
+  //  - Closes as user scrolls UP toward Scene 4
+  //  - No "closing on the way out" — there's no out, this is the end.
   const openValue = useTransform(
     scrollYProgress,
-    [0.05, 0.45, 0.60, 0.88],
-    [0, 1, 1, 0],
+    [0.1, 0.5],
+    [0, 1],
   );
 
   return (
@@ -132,7 +128,7 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
             {/* Center auto-positions model at origin. Scale chosen by trial
                 to fit the laptop comfortably in the canvas viewport with
                 breathing room around it. */}
-            <Center scale={0.0304} position={[0.2, -0.3, 0]}>
+            <Center scale={0.0304} position={[0.2, -0.45, 0]}>
               <Model openValue={openValue} />
             </Center>
             <ContactShadows
