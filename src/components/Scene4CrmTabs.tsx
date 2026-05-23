@@ -3,15 +3,21 @@
 /**
  * Scene4CrmTabs — animated tabs picker for the Lead Management scene.
  *
- * Three tabs = the three CRM tiers Shamil offers: Google Sheets, GoHighLevel,
- * and the Erken Systems platform (white-label GHL).
+ * Three tabs = the three CRM tiers Shamil offers: Google Sheets,
+ * GoHighLevel, and the Erken Systems platform (white-label GHL).
  *
- * Each tab body is a placeholder card for now — to be replaced with real
- * CRM mockups (screenshots of pipeline view, contact list, etc.) once
- * those are produced.
+ * Each tab now renders a live React mockup of its dashboard so the
+ * viewer sees the platform, not just bullet text:
+ *  - Google Sheets → Scene4SheetsMockup (fake spreadsheet pipeline)
+ *  - GoHighLevel  → Scene4PipelineMockup brand="ghl" (fake kanban)
+ *  - Erken Systems → Scene4PipelineMockup brand="erken" (same kanban,
+ *    Erken logo in the chrome — visually communicates the "same engine,
+ *    your brand" pitch)
  */
 
 import { Tabs } from "@/components/ui/tabs";
+import { Scene4SheetsMockup } from "@/components/Scene4SheetsMockup";
+import { Scene4PipelineMockup } from "@/components/Scene4PipelineMockup";
 
 type TierContent = {
   title: string;
@@ -24,29 +30,44 @@ function TierPanel({
   label,
   tagline,
   bullets,
+  mockup,
 }: {
   bg: string;
   label: string;
   tagline: string;
   bullets: string[];
+  mockup: React.ReactNode;
 }) {
   return (
     <div
-      className="relative h-full w-full overflow-hidden rounded-2xl p-8 md:p-12"
+      className="relative h-full w-full overflow-hidden rounded-2xl p-6 md:p-8 grid grid-rows-[auto_1fr] gap-4"
       style={{ background: bg }}
     >
-      <div className="mono-label text-text-dim">{label}</div>
-      <h3 className="mt-3 text-2xl md:text-4xl font-bold tracking-tight text-text" style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}>
-        {tagline}
-      </h3>
-      <ul className="mt-6 space-y-2 text-base md:text-lg text-text-muted">
-        {bullets.map((b) => (
-          <li key={b} className="flex items-start gap-2">
-            <span className="mt-2 inline-block h-1 w-1 shrink-0 rounded-full bg-accent" />
-            <span>{b}</span>
-          </li>
-        ))}
-      </ul>
+      {/* Header block: label + tagline */}
+      <div>
+        <div className="mono-label text-text-dim">{label}</div>
+        <h3
+          className="mt-2 text-xl md:text-2xl font-bold tracking-tight text-text"
+          style={{ letterSpacing: "-0.025em", lineHeight: 1.15 }}
+        >
+          {tagline}
+        </h3>
+      </div>
+
+      {/* Body: two-column on md+, mockup left, bullets right */}
+      <div className="flex flex-col md:flex-row gap-5 md:gap-6 min-h-0">
+        <div className="md:basis-[58%] flex items-center justify-center min-w-0">
+          {mockup}
+        </div>
+        <ul className="md:basis-[42%] space-y-1.5 text-sm md:text-[15px] text-text-muted">
+          {bullets.map((b) => (
+            <li key={b} className="flex items-start gap-2">
+              <span className="mt-2 inline-block h-1 w-1 shrink-0 rounded-full bg-accent" />
+              <span>{b}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
@@ -62,10 +83,11 @@ const TIERS: TierContent[] = [
         tagline="Erken Systems platform — branded, pre-configured, fully managed."
         bullets={[
           "Same engine under the hood, but pre-tuned for the four-step pipeline",
-          "C R M, calendar, email, S M S, follow-up workflows — all in one branded login",
+          "CRM, calendar, email, SMS, follow-up workflows — all in one branded login",
           "Setup is included in the build; you don't see GoHighLevel anywhere",
           "Best for: clients who want it to just work without learning a CRM",
         ]}
+        mockup={<Scene4PipelineMockup brand="erken" />}
       />
     ),
   },
@@ -83,6 +105,7 @@ const TIERS: TierContent[] = [
           "Native integrations with Retell, Zapier, Stripe — wire any tool you use",
           "Best for: businesses that want a known-quantity platform with a million tutorials",
         ]}
+        mockup={<Scene4PipelineMockup brand="ghl" />}
       />
     ),
   },
@@ -100,6 +123,7 @@ const TIERS: TierContent[] = [
           "Cheapest path to a working pipeline. Upgrade later if you need more.",
           "Best for: solo operators, side-businesses, MVP stage",
         ]}
+        mockup={<Scene4SheetsMockup />}
       />
     ),
   },
@@ -107,11 +131,11 @@ const TIERS: TierContent[] = [
 
 export function Scene4CrmTabs() {
   return (
-    <div className="relative h-[28rem] w-full md:h-[34rem]">
+    <div className="relative h-[32rem] w-full md:h-[38rem]">
       <Tabs
         tabs={TIERS}
         containerClassName="mb-4 justify-center"
-        contentClassName="h-[24rem] md:h-[30rem]"
+        contentClassName="h-[28rem] md:h-[34rem]"
       />
     </div>
   );
