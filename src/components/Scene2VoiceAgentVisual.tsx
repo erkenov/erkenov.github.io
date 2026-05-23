@@ -27,12 +27,13 @@ export function Scene2VoiceAgentVisual() {
   return (
     <div className="absolute inset-0 flex flex-col justify-end px-5 pb-6 bg-gradient-to-b from-[#0d1f17] via-[#11261c] to-[#091912]">
       {/* Decorative concentric pulse rings around the call icon —
-          each ring is offset by ~1.3s so the cycle reads as a calm,
-          breathing rhythm rather than a rapid sonar ping */}
+          each ring is offset by ~1.7s for an even rhythm at the new
+          5-second cycle. Three rings at staggered phases keep the
+          visual filled without packing too dense. */}
       <div className="absolute inset-x-0 top-[42%] flex items-center justify-center">
         <PulseRing delay={0} />
-        <PulseRing delay={1.3} className="absolute" />
-        <PulseRing delay={2.6} className="absolute" />
+        <PulseRing delay={1.7} className="absolute" />
+        <PulseRing delay={3.4} className="absolute" />
       </div>
 
       {/* Erken Systems mark in upper-right corner — moved higher now that
@@ -84,20 +85,26 @@ export function Scene2VoiceAgentVisual() {
 }
 
 function PulseRing({ delay, className = "" }: { delay: number; className?: string }) {
-  // Slower, wider pulse — was firing every 0.8s and only expanding 1.6x,
-  // which read as aggressive. Now ~4s cycle expanding to 2.5x for a
-  // calmer "breathing" feel.
+  // Slow, wide pulse. Earlier version had a "spike" at the birth of each
+  // ring because opacity jumped from 0 (between cycles) to 0.55 (first
+  // keyframe) instantly. Fix: opacity now ramps 0 → 0.55 → 0 over the
+  // cycle so both birth and death are soft fades. Expansion bumped to
+  // 4x so the ring always extends past the card edges before
+  // disappearing.
   return (
     <motion.div
       className={`w-32 h-32 rounded-full border-2 border-[#7ea687]/40 ${className}`}
-      initial={{ scale: 0.4, opacity: 0.55 }}
-      animate={{ scale: [0.4, 2.5, 2.5], opacity: [0.55, 0, 0] }}
+      initial={{ scale: 0.4, opacity: 0 }}
+      animate={{
+        scale: [0.4, 1.0, 4.0, 4.0],
+        opacity: [0, 0.55, 0, 0],
+      }}
       transition={{
-        duration: 4.0,
+        duration: 5.0,
         delay,
         repeat: Infinity,
         ease: "easeOut",
-        times: [0, 0.85, 1],
+        times: [0, 0.18, 0.9, 1],
       }}
     />
   );

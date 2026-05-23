@@ -46,11 +46,32 @@ const ACTIVITY: ActivityRow[] = [
     time: "1h",
   },
   {
+    kind: "OPENED",
+    name: "Carlos",
+    business: "South Lamar Motors",
+    detail: "opened · clicked demo link",
+    time: "1h",
+  },
+  {
+    kind: "REPLIED",
+    name: "Priya",
+    business: "Eastside Auto Pros",
+    detail: '"Interested — call me Friday afternoon"',
+    time: "2h",
+  },
+  {
     kind: "DELIVERED",
     name: "Lara",
     business: "ZipCar Repair",
     detail: "inbox · waiting",
     time: "2h",
+  },
+  {
+    kind: "OPENED",
+    name: "Marcus",
+    business: "Bee Cave Service",
+    detail: "opened 2x",
+    time: "3h",
   },
   {
     kind: "SCHEDULED",
