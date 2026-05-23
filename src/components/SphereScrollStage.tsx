@@ -704,7 +704,7 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
           <Canvas
             camera={{ position: [0, 0, isMobile ? 2.2 : 2.9], fov: 50 }}
             gl={{ alpha: true, antialias: true }}
-            style={{ background: "transparent" }}
+            style={{ background: "transparent", pointerEvents: "none" }}
           >
             <ambientLight intensity={0.45} color={AMBIENT_TINT} />
             <directionalLight position={[2, 3, 4]} intensity={1.2} color={KEY_LIGHT} />
