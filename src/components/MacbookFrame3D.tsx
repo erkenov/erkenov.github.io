@@ -97,7 +97,7 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
   //  - No "closing on the way out" — there's no out, this is the end.
   const openValue = useTransform(
     scrollYProgress,
-    [0.1, 0.5],
+    [0.3, 0.55],
     [0, 1],
   );
 
@@ -128,7 +128,7 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
             {/* Center auto-positions model at origin. Scale chosen by trial
                 to fit the laptop comfortably in the canvas viewport with
                 breathing room around it. */}
-            <Center scale={0.0304} position={[0.2, -0.45, 0]}>
+            <Center scale={0.0304} position={[0.2, -0.375, 0]}>
               <Model openValue={openValue} />
             </Center>
             <ContactShadows
