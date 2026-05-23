@@ -15,6 +15,7 @@
 
 import { Carousel, Card } from "@/components/ui/apple-cards-carousel";
 import { Scene2VoiceAgentVisual } from "@/components/Scene2VoiceAgentVisual";
+import { Scene2GoogleMapsVisual } from "@/components/Scene2GoogleMapsVisual";
 
 type ChannelCard = {
   src: string;
@@ -53,6 +54,7 @@ const CHANNELS: ChannelCard[] = [
     category: "Outbound · scrape",
     title: "Google Maps prospecting",
     src: ph("Google Maps", "7ea687"),
+    visual: <Scene2GoogleMapsVisual />,
     content: (
       <CardBody>
         <p>
