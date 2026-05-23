@@ -5,8 +5,20 @@
  * card art for the Lead Generation Apple Cards Carousel.
  *
  * Renders a stylized phone-call interface: dark background, sage waveform
- * pulse, live transcript snippet, status pill. The aim is "looks like a
- * real product screen at a glance" without being a literal phone screenshot.
+ * pulse, COLD-outbound transcript snippet, prominent caller ID showing
+ * Shamil's real Retell number (so a visitor calling it reaches the
+ * actual AI agent — the mockup IS the demo).
+ *
+ * Edits 2026-05-23:
+ *  - Removed redundant "Outbound · live" badge (already implied by the
+ *    card category, title, and "Outbound" caller label)
+ *  - Removed fake call duration timer in the bottom-left
+ *  - Removed the separate "Try it live" CTA block — Shamil's number is
+ *    now the prominent caller-ID instead of the prospect's number
+ *  - Erken corner mark moved higher
+ *  - Transcript rewritten for COLD outbound (prospect doesn't know the
+ *    caller), pitching the Erken Systems platform itself — the agent
+ *    selling the platform that built the agent
  */
 
 import { motion } from "motion/react";
@@ -21,36 +33,26 @@ export function Scene2VoiceAgentVisual() {
         <PulseRing delay={1.6} className="absolute" />
       </div>
 
-      {/* Outbound call status pill — pushed below the card title block
-          which occupies roughly the first ~140px from the top */}
-      <div className="absolute top-40 left-5 inline-flex items-center gap-1.5 rounded-full bg-white/10 backdrop-blur-sm px-2.5 py-1 border border-white/15">
-        <span className="relative flex h-1.5 w-1.5">
-          <span className="absolute inline-flex h-full w-full rounded-full bg-[#C76B58] opacity-75 animate-ping" />
-          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#C76B58]" />
-        </span>
-        <span className="text-[10px] font-medium tracking-wider uppercase text-white/85">
-          Outbound · live
-        </span>
-      </div>
-
-      {/* Erken Systems mark in corner — also pushed below the title block */}
-      <div className="absolute top-40 right-5 flex items-center gap-1.5">
+      {/* Erken Systems mark in upper-right corner — moved higher now that
+          the redundant status pill is gone */}
+      <div className="absolute top-10 right-5 flex items-center gap-1.5">
         <div className="w-5 h-5 rounded-full bg-[#7ea687] flex items-center justify-center">
           <div className="w-1.5 h-1.5 rounded-full bg-[#C76B58]" />
         </div>
         <span className="text-[10px] font-medium text-white/70">Erken · AI agent</span>
       </div>
 
-      {/* Phone call display — contact + waveform */}
+      {/* Caller ID — Shamil's real Retell number as the OUTBOUND caller.
+          Visitor sees this, calls it, reaches the live agent. */}
       <div className="relative z-10 mb-3">
         <div className="text-[11px] text-white/55 uppercase tracking-wider font-mono">
-          Calling
+          Outbound call
         </div>
-        <div className="mt-1 text-base font-semibold text-white tracking-tight">
-          Maya Chen
+        <div className="mt-1 text-lg font-bold text-white tracking-tight tabular-nums">
+          +1 (901) 633-1400
         </div>
         <div className="text-[12px] text-white/65">
-          Apex Auto · Austin TX · +1 (512) 555-0142
+          → Apex Auto · Austin TX
         </div>
       </div>
 
@@ -61,29 +63,19 @@ export function Scene2VoiceAgentVisual() {
         ))}
       </div>
 
-      {/* Live transcript snippet */}
+      {/* Live transcript — cold outbound, pitching Erken Systems
+          platform itself. The agent doesn't assume the prospect knows
+          who's calling. */}
       <div className="relative z-10 space-y-1.5 mb-3">
-        <TranscriptLine speaker="Agent" text="Hi Maya — I'm calling on behalf of Apex Auto's online booking system…" />
-        <TranscriptLine speaker="Maya" text="Oh, hi. Yeah — is this about the brake check?" />
-        <TranscriptLine speaker="Agent" text="Yes. I can book you in for Thursday at 9am or Friday at 2pm. Which works?" />
+        <TranscriptLine speaker="Agent" text="Hi — am I speaking with Maya at Apex Auto?" />
+        <TranscriptLine speaker="Maya" text="Yes, this is Maya. Who's this?" />
+        <TranscriptLine speaker="Agent" text="Sam from Erken Systems. Quick question — how are you handling missed calls right now? I help shops capture leads that would otherwise go to voicemail." />
       </div>
 
-      {/* Live-demo CTA — Shamil's actual Retell number. Calling it
-          connects the visitor to the live AI agent so the mockup doubles
-          as a working demo. */}
-      <div className="relative z-10 mb-2 rounded-lg border border-[#7ea687]/40 bg-[#7ea687]/10 px-3 py-2 backdrop-blur-sm">
-        <div className="text-[9px] uppercase tracking-wider text-[#7ea687] font-mono font-medium">
-          Try it live — call this number
-        </div>
-        <div className="mt-0.5 text-[15px] font-bold text-white tracking-tight tabular-nums">
-          +1 (901) 633-1400
-        </div>
-      </div>
-
-      {/* Duration + state */}
-      <div className="relative z-10 flex items-center justify-between text-[11px] text-white/55 font-mono">
-        <span>01:42</span>
-        <span>Booking · 87% confidence</span>
+      {/* Footer state — duration removed; just the confidence indicator
+          to keep the product-like polish */}
+      <div className="relative z-10 flex items-center justify-end text-[11px] text-white/55 font-mono">
+        <span>Qualifying · 91% confidence</span>
       </div>
     </div>
   );
