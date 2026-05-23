@@ -82,10 +82,10 @@ const TIERS: TierContent[] = [
         label="Branded · all-in-one"
         tagline="Erken Systems platform — branded, pre-configured, fully managed."
         bullets={[
-          "Same engine under the hood, but pre-tuned for the four-step pipeline",
-          "CRM, calendar, email, SMS, follow-up workflows — all in one branded login",
-          "Setup is included in the build; you don't see GoHighLevel anywhere",
-          "Best for: clients who want it to just work without learning a CRM",
+          "Pipelines, calendars, SMS, email, funnels — all in one branded login",
+          "Set up and configured for your operation by the time you log in",
+          "Native integrations with Retell, Zapier, Stripe — wire any tool you use",
+          "Best for: businesses that want it to just work without learning a new platform",
         ]}
         mockup={<Scene4PipelineMockup brand="erken" />}
       />
