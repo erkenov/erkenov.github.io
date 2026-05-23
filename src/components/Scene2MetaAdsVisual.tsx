@@ -29,27 +29,42 @@ const DM_THREAD: DmTurn[] = [
 export function Scene2MetaAdsVisual() {
   return (
     <div className="absolute inset-0 flex flex-col px-5 pb-6 pt-32 bg-gradient-to-br from-[#F2B85E] via-[#E89F1F] to-[#B7771A]">
-      {/* Erken mark in upper-right — cream inner dot for contrast */}
-      <div className="absolute top-10 right-5 z-20 flex items-center gap-1.5">
-        <div className="w-5 h-5 rounded-full bg-[#7ea687] flex items-center justify-center">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#F5F1E8]" />
+      {/* Erken badge — white pill style for consistent visibility */}
+      <div className="absolute top-10 right-5 z-30 flex items-center gap-1.5 rounded-full bg-white/95 px-2 py-1 shadow-md">
+        <div className="w-4 h-4 rounded-full bg-[#7ea687] flex items-center justify-center">
+          <div className="w-1 h-1 rounded-full bg-[#C76B58]" />
         </div>
-        <span className="text-[10px] font-medium text-white/95">Erken · Meta AI</span>
+        <span className="text-[10px] font-semibold text-[#2a2722]">Erken · Meta AI</span>
       </div>
 
-      {/* Header — campaign + stats */}
+      {/* Header — explicitly "inbound from ad" so it's clear this is
+          NOT cold DM outreach (which Meta bans). The prospect saw an
+          ad and sent the first message. */}
       <div className="relative z-10 mb-3">
-        <div className="text-[11px] text-white/80 uppercase tracking-wider font-mono">
-          Instagram ad · Auto repair Austin
+        <div className="text-[11px] text-white/85 uppercase tracking-wider font-mono">
+          Inbound DM · Instagram ad
         </div>
         <div className="mt-2 grid grid-cols-3 gap-2">
-          <Stat label="DMs" value="184" />
-          <Stat label="Replied" value="142" emphasize />
+          <Stat label="Ad → DMs" value="184" />
+          <Stat label="Agent replied" value="142" emphasize />
           <Stat label="Booked" value="38" tint="#F5F1E8" emphasize />
         </div>
       </div>
 
-      {/* DM thread — Instagram-style chat bubbles */}
+      {/* "Sourced from ad" pill above the thread */}
+      <div className="relative z-10 mb-2 inline-flex items-center gap-1.5 rounded-full bg-white/15 border border-white/25 px-2 py-0.5 backdrop-blur-sm self-start">
+        <svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="#F5F1E8" strokeWidth="2" />
+          <circle cx="12" cy="12" r="4" fill="none" stroke="#F5F1E8" strokeWidth="2" />
+          <circle cx="17.5" cy="6.5" r="1.2" fill="#F5F1E8" />
+        </svg>
+        <span className="text-[9px] font-medium tracking-wider uppercase text-white/85">
+          ↑ from your Friday brake-check ad
+        </span>
+      </div>
+
+      {/* DM thread — Instagram-style chat bubbles. Prospect sends
+          first (inbound from ad) → agent replies → books. */}
       <div className="relative z-10 flex-1 space-y-1.5 mb-3">
         {DM_THREAD.map((turn, i) => (
           <DmBubble key={i} turn={turn} delay={i * 0.1} />
@@ -57,7 +72,7 @@ export function Scene2MetaAdsVisual() {
       </div>
 
       {/* Footer */}
-      <div className="relative z-10 flex items-center justify-between text-[10px] text-white/80 font-mono">
+      <div className="relative z-10 flex items-center justify-between text-[10px] text-white/85 font-mono">
         <span>↳ Auto-booked to CRM</span>
         <span>Reply rate · 77%</span>
       </div>

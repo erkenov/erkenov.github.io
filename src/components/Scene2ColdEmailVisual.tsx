@@ -92,12 +92,12 @@ const ACTIVITY: ActivityRow[] = [
 export function Scene2ColdEmailVisual() {
   return (
     <div className="absolute inset-0 flex flex-col px-5 pb-6 pt-32 bg-gradient-to-br from-[#9bbea4] via-[#7ea687] to-[#4f6f5a]">
-      {/* Erken mark in upper-right */}
-      <div className="absolute top-10 right-5 z-20 flex items-center gap-1.5">
-        <div className="w-5 h-5 rounded-full bg-[#7ea687] flex items-center justify-center">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#C76B58]" />
+      {/* Erken badge — white pill style for consistent visibility */}
+      <div className="absolute top-10 right-5 z-30 flex items-center gap-1.5 rounded-full bg-white/95 px-2 py-1 shadow-md">
+        <div className="w-4 h-4 rounded-full bg-[#7ea687] flex items-center justify-center">
+          <div className="w-1 h-1 rounded-full bg-[#C76B58]" />
         </div>
-        <span className="text-[10px] font-medium text-white/70">Erken · outreach</span>
+        <span className="text-[10px] font-semibold text-[#2a2722]">Erken · outreach</span>
       </div>
 
       {/* Campaign header */}

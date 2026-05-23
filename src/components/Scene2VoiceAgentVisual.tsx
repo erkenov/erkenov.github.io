@@ -36,14 +36,13 @@ export function Scene2VoiceAgentVisual() {
         <PulseRing delay={3.4} className="absolute" />
       </div>
 
-      {/* Erken Systems mark in upper-right corner. On a terracotta
-          background the mark's terracotta dot would disappear, so the
-          inner dot uses cream here while the outer stays sage. */}
-      <div className="absolute top-10 right-5 flex items-center gap-1.5">
-        <div className="w-5 h-5 rounded-full bg-[#7ea687] flex items-center justify-center">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#F5F1E8]" />
+      {/* Erken Systems badge — white pill style matching the Google Maps
+          card so the brand mark reads clearly against the warm bg */}
+      <div className="absolute top-10 right-5 z-30 flex items-center gap-1.5 rounded-full bg-white/95 px-2 py-1 shadow-md">
+        <div className="w-4 h-4 rounded-full bg-[#7ea687] flex items-center justify-center">
+          <div className="w-1 h-1 rounded-full bg-[#C76B58]" />
         </div>
-        <span className="text-[10px] font-medium text-white/85">Erken · AI agent</span>
+        <span className="text-[10px] font-semibold text-[#2a2722]">Erken · AI agent</span>
       </div>
 
       {/* Caller ID — Shamil's real Retell number as the OUTBOUND caller.
