@@ -85,7 +85,7 @@ const TIERS: TierContent[] = [
           "Pipelines, calendars, SMS, email, funnels — all in one branded login",
           "Set up and configured for your operation by the time you log in",
           "Native integrations with Retell, Zapier, Stripe — wire any tool you use",
-          "Best for: businesses that want it to just work without learning a new platform",
+          "All-in pricing — setup, software, and a year of platform access in one transparent fee",
         ]}
         mockup={<Scene4PipelineMockup brand="erken" />}
       />
