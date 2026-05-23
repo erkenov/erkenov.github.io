@@ -92,7 +92,7 @@ const CHANNELS: ChannelCard[] = [
   },
   {
     category: "Paid · Meta",
-    title: "Meta Business AI on FB / Instagram",
+    title: "Meta Business AI",
     src: ph("Meta ads", "E89F1F"),
     visual: <Scene2MetaAdsVisual />,
     content: (
@@ -111,7 +111,7 @@ const CHANNELS: ChannelCard[] = [
   },
   {
     category: "Outbound · LinkedIn",
-    title: "LinkedIn outreach (white-collar)",
+    title: "LinkedIn outreach",
     src: ph("LinkedIn", "A8B86C"),
     visual: <Scene2LinkedInVisual />,
     content: (
