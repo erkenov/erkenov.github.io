@@ -16,6 +16,7 @@
 import { Carousel, Card } from "@/components/ui/apple-cards-carousel";
 import { Scene2VoiceAgentVisual } from "@/components/Scene2VoiceAgentVisual";
 import { Scene2GoogleMapsVisual } from "@/components/Scene2GoogleMapsVisual";
+import { Scene2ColdEmailVisual } from "@/components/Scene2ColdEmailVisual";
 
 type ChannelCard = {
   src: string;
@@ -72,6 +73,7 @@ const CHANNELS: ChannelCard[] = [
     category: "Outbound · email",
     title: "Cold email at scale",
     src: ph("Cold email", "5e8268"),
+    visual: <Scene2ColdEmailVisual />,
     content: (
       <CardBody>
         <p>
