@@ -57,7 +57,7 @@ const TIERS: TierContent[] = [
     value: "erken",
     content: (
       <TierPanel
-        bg="#EDE6D2"
+        bg="#EFC7BC"
         label="Branded · all-in-one"
         tagline="Erken Systems platform — branded, pre-configured, fully managed."
         bullets={[
@@ -74,7 +74,7 @@ const TIERS: TierContent[] = [
     value: "ghl",
     content: (
       <TierPanel
-        bg="#F0EBDC"
+        bg="#F2D9A0"
         label="Industry standard"
         tagline="GoHighLevel — full agency CRM, you sign up directly."
         bullets={[
