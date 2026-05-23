@@ -97,7 +97,7 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
   //  - No "closing on the way out" — there's no out, this is the end.
   const openValue = useTransform(
     scrollYProgress,
-    [0.4, 0.55],
+    [0.4, 0.6],
     [0, 1],
   );
 
