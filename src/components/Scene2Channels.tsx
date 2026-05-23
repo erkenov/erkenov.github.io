@@ -6,18 +6,22 @@
  * Horizontal carousel of channel cards. Click any card to expand into a
  * full modal with details. Channels = lead-gen methods Shamil offers.
  *
- * Real screenshots / thumbnails will replace the placeholder images later
- * once Shamil produces them (Google Maps scrape result, cold email
- * dashboard, voice agent UI, Meta Business AI, LinkedIn outreach).
+ * Order locked 2026-05-23 (Shamil): Voice agent FIRST (the flagship
+ * channel), then Google Maps scraping, cold email, Meta Business AI,
+ * LinkedIn. Voice agent now uses an inline animated mockup visual
+ * instead of a static placeholder; other cards still use placeholder
+ * thumbnails until real visuals are produced.
  */
 
 import { Carousel, Card } from "@/components/ui/apple-cards-carousel";
+import { Scene2VoiceAgentVisual } from "@/components/Scene2VoiceAgentVisual";
 
 type ChannelCard = {
   src: string;
   title: string;
   category: string;
   content: React.ReactNode;
+  visual?: React.ReactNode;
 };
 
 // Placeholder thumbnail URLs — sage primary + terracotta accent on cream.
@@ -26,6 +30,25 @@ const ph = (label: string, bg: string, fg = "F5F1E8") =>
   `https://placehold.co/640x800/${bg}/${fg}?text=${encodeURIComponent(label)}&font=inter`;
 
 const CHANNELS: ChannelCard[] = [
+  {
+    category: "Outbound · voice",
+    title: "AI voice agent that calls",
+    src: ph("Voice agent", "C76B58"),
+    visual: <Scene2VoiceAgentVisual />,
+    content: (
+      <CardBody>
+        <p>
+          An AI agent on Retell makes the outbound call — qualifies the
+          prospect, books the meeting, hands off to a human only when
+          there&apos;s real interest.
+        </p>
+        <p>
+          Calls hundreds of numbers a day at a fraction of the cost of
+          human SDRs, with a transcript and a recording for every contact.
+        </p>
+      </CardBody>
+    ),
+  },
   {
     category: "Outbound · scrape",
     title: "Google Maps prospecting",
@@ -57,24 +80,6 @@ const CHANNELS: ChannelCard[] = [
         <p>
           Replies routed straight into the same pipeline as inbound leads —
           no separate inbox to babysit.
-        </p>
-      </CardBody>
-    ),
-  },
-  {
-    category: "Outbound · voice",
-    title: "AI voice agent that calls",
-    src: ph("Voice agent", "C76B58"),
-    content: (
-      <CardBody>
-        <p>
-          An AI agent on Retell makes the outbound call — qualifies the
-          prospect, books the meeting, hands off to a human only when
-          there&apos;s real interest.
-        </p>
-        <p>
-          Calls hundreds of numbers a day at a fraction of the cost of
-          human SDRs, with a transcript and a recording for every contact.
         </p>
       </CardBody>
     ),

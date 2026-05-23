@@ -30,6 +30,10 @@ type Card = {
   title: string;
   category: string;
   content: React.ReactNode;
+  /** Optional React node to render as the card's visual layer INSTEAD of
+   *  the BlurImage. Use this for inline mockup components when a static
+   *  image isn't expressive enough (e.g. an animated voice-agent UI). */
+  visual?: React.ReactNode;
 };
 
 export const CarouselContext = createContext<{
@@ -305,12 +309,16 @@ export const Card = ({
             {card.title}
           </motion.p>
         </div>
-        <BlurImage
-          src={card.src}
-          alt={card.title}
-          fill
-          className="absolute inset-0 z-10 object-cover"
-        />
+        {card.visual ? (
+          <div className="absolute inset-0 z-10 overflow-hidden">{card.visual}</div>
+        ) : (
+          <BlurImage
+            src={card.src}
+            alt={card.title}
+            fill
+            className="absolute inset-0 z-10 object-cover"
+          />
+        )}
       </motion.button>
     </>
   );
