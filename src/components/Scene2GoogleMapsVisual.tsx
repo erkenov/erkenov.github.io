@@ -1,16 +1,17 @@
 "use client";
 
 /**
- * Scene2GoogleMapsVisual — atmospheric "Google Maps scraping" card art
- * for the Lead Generation Apple Cards Carousel.
+ * Scene2GoogleMapsVisual — "Google Maps scraping" card art for the
+ * Lead Generation Apple Cards Carousel.
  *
- * Stylized scraping dashboard: dark sage background with a faint map
- * grid pattern, list of recently-scraped businesses with their ICP
- * status tags (NEW / QUEUED / DUPE), and a header summary showing the
- * total count and the target market.
+ * The MAP itself now reads as Google Maps: cream/light "land", white
+ * roads with subtle outlines, blue water (Lady Bird Lake — Austin),
+ * green park polygons, and classic red Google-Maps-style teardrop pins.
  *
- * Built to match the visual rhythm of Scene2VoiceAgentVisual so the
- * carousel feels cohesive.
+ * A dark translucent "results panel" docks over the bottom 55% of the
+ * card showing the live scrape feed: 5 sample businesses with ICP
+ * status tags. Matches the dark-on-map UX pattern that the actual
+ * Google Maps search results use.
  */
 
 import { motion } from "motion/react";
@@ -20,100 +21,164 @@ type ScrapedBusiness = {
   zip: string;
   rating: number;
   reviews: number;
-  phone: string;
   status: "NEW" | "QUEUED" | "DUPE";
 };
 
 const BUSINESSES: ScrapedBusiness[] = [
-  { name: "Apex Auto Center",       zip: "78704", rating: 4.6, reviews: 218, phone: "(512) 555-0142", status: "NEW" },
-  { name: "West 6th Garage",        zip: "78703", rating: 4.4, reviews: 156, phone: "(512) 555-0287", status: "QUEUED" },
-  { name: "Lonestar Auto Repair",   zip: "78701", rating: 4.8, reviews: 412, phone: "(512) 555-0455", status: "NEW" },
-  { name: "ZipCar Repair",          zip: "78705", rating: 4.2, reviews: 89,  phone: "(512) 555-0671", status: "DUPE" },
-  { name: "Downtown Motors",        zip: "78702", rating: 4.5, reviews: 267, phone: "(512) 555-0834", status: "NEW" },
+  { name: "Apex Auto Center",     zip: "78704", rating: 4.6, reviews: 218, status: "NEW" },
+  { name: "West 6th Garage",      zip: "78703", rating: 4.4, reviews: 156, status: "QUEUED" },
+  { name: "Lonestar Auto Repair", zip: "78701", rating: 4.8, reviews: 412, status: "NEW" },
+  { name: "ZipCar Repair",        zip: "78705", rating: 4.2, reviews: 89,  status: "DUPE" },
+  { name: "Downtown Motors",      zip: "78702", rating: 4.5, reviews: 267, status: "NEW" },
 ];
 
 export function Scene2GoogleMapsVisual() {
   return (
-    <div className="absolute inset-0 flex flex-col justify-end px-5 pb-6 bg-gradient-to-b from-[#0f2018] via-[#143025] to-[#0a1a13]">
-      {/* Faint map grid background — suggests cartography without being
-          a literal map */}
-      <MapGrid />
+    <div className="absolute inset-0 overflow-hidden">
+      {/* Google-Maps-styled background */}
+      <MapBackdrop />
 
-      {/* Erken Systems mark in upper-right corner */}
-      <div className="absolute top-10 right-5 z-20 flex items-center gap-1.5">
-        <div className="w-5 h-5 rounded-full bg-[#7ea687] flex items-center justify-center">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#C76B58]" />
+      {/* Erken Systems mark in upper-right corner — sits on the map */}
+      <div className="absolute top-10 right-5 z-30 flex items-center gap-1.5 rounded-full bg-white/90 px-2 py-1 shadow-md">
+        <div className="w-4 h-4 rounded-full bg-[#7ea687] flex items-center justify-center">
+          <div className="w-1 h-1 rounded-full bg-[#C76B58]" />
         </div>
-        <span className="text-[10px] font-medium text-white/70">Erken · scraper</span>
+        <span className="text-[10px] font-semibold text-[#2a2722]">Erken · scraper</span>
       </div>
 
-      {/* Counter header */}
-      <div className="relative z-10 mb-4">
-        <div className="text-[11px] text-white/55 uppercase tracking-wider font-mono">
-          Scraped · last 24h
+      {/* Dark translucent results panel docked to the bottom — same UX
+          metaphor real Google Maps uses for its sidebar */}
+      <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col px-5 pb-6 pt-4 bg-gradient-to-t from-[#0d1f17] via-[#0d1f17]/95 to-[#0d1f17]/0">
+        {/* Counter header */}
+        <div className="mb-3">
+          <div className="text-[10px] text-white/55 uppercase tracking-wider font-mono">
+            Scraped · last 24h
+          </div>
+          <div className="mt-0.5 text-base font-bold text-white tracking-tight tabular-nums">
+            3,247 businesses · Austin TX
+          </div>
         </div>
-        <div className="mt-1 text-lg font-bold text-white tracking-tight tabular-nums">
-          3,247 businesses
-        </div>
-        <div className="text-[12px] text-white/65">
-          Austin TX · Auto repair · 8mi radius
-        </div>
-      </div>
 
-      {/* Business list */}
-      <div className="relative z-10 mb-3 space-y-1">
-        {BUSINESSES.map((b, i) => (
-          <BusinessRow key={b.name} biz={b} delay={i * 0.08} />
-        ))}
-      </div>
+        {/* Business list */}
+        <div className="space-y-1 mb-3">
+          {BUSINESSES.map((b, i) => (
+            <BusinessRow key={b.name} biz={b} delay={i * 0.08} />
+          ))}
+        </div>
 
-      {/* Footer ICP score */}
-      <div className="relative z-10 flex items-center justify-between text-[11px] text-white/55 font-mono">
-        <span>ICP score · 8.3 / 10</span>
-        <span>→ outreach queue</span>
+        {/* Footer status */}
+        <div className="flex items-center justify-between text-[10px] text-white/55 font-mono">
+          <span>ICP score · 8.3 / 10</span>
+          <span>→ outreach queue</span>
+        </div>
       </div>
     </div>
   );
 }
 
-function MapGrid() {
-  // Render a faint isometric-leaning grid of "streets" via SVG so the
-  // background reads as a map without consuming much visual weight.
+/** Google-Maps-styled background: cream land, white roads with outlines,
+ *  blue water polygon (Lady Bird Lake — Austin's actual river),
+ *  scattered green park polygons, and classic red teardrop pins.       */
+function MapBackdrop() {
   return (
     <svg
-      className="absolute inset-0 z-0 w-full h-full opacity-[0.18]"
+      className="absolute inset-0 z-0 w-full h-full"
       viewBox="0 0 400 600"
       aria-hidden="true"
       preserveAspectRatio="xMidYMid slice"
     >
       <defs>
-        <pattern id="streetGrid" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
-          <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#7ea687" strokeWidth="0.7" />
+        {/* Subtle texture to keep the cream land from looking flat */}
+        <pattern id="landTexture" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
+          <rect width="32" height="32" fill="#F2EBDA" />
+          <circle cx="16" cy="16" r="0.5" fill="#E6DFC9" />
         </pattern>
       </defs>
-      <rect width="100%" height="100%" fill="url(#streetGrid)" />
-      {/* a couple of stylized "main streets" */}
-      <path d="M 0 200 L 400 280" stroke="#7ea687" strokeWidth="1.4" strokeOpacity="0.5" fill="none" />
-      <path d="M 130 0 L 200 600" stroke="#7ea687" strokeWidth="1.4" strokeOpacity="0.5" fill="none" />
-      <path d="M 0 470 L 400 410" stroke="#7ea687" strokeWidth="1.0" strokeOpacity="0.4" fill="none" />
-      {/* a few pin-style dots scattered to suggest businesses on map */}
-      <Pin cx={70}  cy={130} />
-      <Pin cx={210} cy={90}  />
-      <Pin cx={310} cy={170} />
-      <Pin cx={140} cy={250} />
-      <Pin cx={330} cy={310} />
-      <Pin cx={90}  cy={400} />
-      <Pin cx={250} cy={460} />
-      <Pin cx={350} cy={510} />
+
+      {/* Land */}
+      <rect width="400" height="600" fill="url(#landTexture)" />
+
+      {/* Parks — Austin has a few. Faint green polygons. */}
+      <path d="M 30 60 L 110 50 L 130 90 L 95 130 L 35 115 Z" fill="#C7DCC1" />
+      <path d="M 290 180 L 360 175 L 380 230 L 320 250 L 280 220 Z" fill="#C7DCC1" />
+      <path d="M 50 320 L 140 310 L 150 360 L 80 380 Z" fill="#C7DCC1" />
+
+      {/* Water — Lady Bird Lake winding through Austin */}
+      <path
+        d="M -20 280 Q 80 240, 180 290 T 360 270 L 420 285 L 420 320 Q 320 350, 220 320 T 60 330 L -20 320 Z"
+        fill="#A8D1F5"
+      />
+      <path
+        d="M -20 280 Q 80 240, 180 290 T 360 270 L 420 285"
+        stroke="#7CB6E8"
+        strokeWidth="0.7"
+        fill="none"
+      />
+
+      {/* Highways — wider, slightly yellowed white with darker outline */}
+      <Road d="M 0 400 L 400 380" wide />
+      <Road d="M 180 0 L 220 600" wide />
+      <Road d="M 0 150 L 400 175" />
+
+      {/* Streets — thinner */}
+      <Road d="M 0 90 L 400 95" thin />
+      <Road d="M 0 220 L 400 230" thin />
+      <Road d="M 0 460 L 400 470" thin />
+      <Road d="M 0 520 L 400 540" thin />
+      <Road d="M 80 0 L 95 600" thin />
+      <Road d="M 280 0 L 310 600" thin />
+      <Road d="M 340 0 L 360 600" thin />
+
+      {/* Highway shield labels */}
+      <HighwayShield x={195} y={420} label="I-35" />
+
+      {/* Classic Google Maps red teardrop pins at scattered business locations */}
+      <MapPin cx={100} cy={195} />
+      <MapPin cx={240} cy={155} />
+      <MapPin cx={155} cy={235} />
+      <MapPin cx={310} cy={140} />
+      <MapPin cx={75}  cy={250} />
+      <MapPin cx={205} cy={205} />
+      <MapPin cx={285} cy={235} />
     </svg>
   );
 }
 
-function Pin({ cx, cy }: { cx: number; cy: number }) {
+function Road({ d, wide, thin }: { d: string; wide?: boolean; thin?: boolean }) {
+  const widths = wide ? { outline: 7, inner: 5 } : thin ? { outline: 2.5, inner: 1.5 } : { outline: 4, inner: 2.8 };
+  return (
+    <>
+      <path d={d} stroke="#E0D5B7" strokeWidth={widths.outline} fill="none" strokeLinecap="round" />
+      <path d={d} stroke="#FFFFFF" strokeWidth={widths.inner} fill="none" strokeLinecap="round" />
+    </>
+  );
+}
+
+function HighwayShield({ x, y, label }: { x: number; y: number; label: string }) {
   return (
     <g>
-      <circle cx={cx} cy={cy} r="3.5" fill="#C76B58" />
-      <circle cx={cx} cy={cy} r="7" fill="none" stroke="#C76B58" strokeOpacity="0.4" strokeWidth="0.8" />
+      <rect x={x - 13} y={y - 9} width="26" height="18" rx="3" fill="#7CB6E8" stroke="#FFFFFF" strokeWidth="1.2" />
+      <text x={x} y={y + 4} textAnchor="middle" fontSize="10" fontFamily="Inter, sans-serif" fontWeight="700" fill="#FFFFFF">
+        {label}
+      </text>
+    </g>
+  );
+}
+
+/** Classic Google Maps red teardrop pin with white inner circle */
+function MapPin({ cx, cy }: { cx: number; cy: number }) {
+  return (
+    <g transform={`translate(${cx - 9} ${cy - 22})`}>
+      {/* shadow */}
+      <ellipse cx="9" cy="22" rx="6" ry="1.5" fill="#000000" fillOpacity="0.2" />
+      {/* teardrop */}
+      <path
+        d="M 9 0 C 4 0 0 4 0 9 C 0 16 9 22 9 22 C 9 22 18 16 18 9 C 18 4 14 0 9 0 Z"
+        fill="#EA4335"
+        stroke="#B23A2D"
+        strokeWidth="0.5"
+      />
+      <circle cx="9" cy="9" r="3" fill="#FFFFFF" />
     </g>
   );
 }
@@ -135,15 +200,15 @@ function BusinessRow({ biz, delay }: { biz: ScrapedBusiness; delay: number }) {
         dim ? "bg-white/[0.02]" : "bg-white/[0.04]"
       }`}
     >
-      {/* map pin */}
+      {/* mini Google-style pin */}
       <div className="shrink-0">
-        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+        <svg width="12" height="12" viewBox="0 0 18 22" aria-hidden="true">
           <path
-            d="M12 2 C7.6 2 4 5.6 4 10 C4 16 12 22 12 22 C12 22 20 16 20 10 C20 5.6 16.4 2 12 2 Z"
-            fill={dim ? "#ffffff" : "#C76B58"}
+            d="M 9 0 C 4 0 0 4 0 9 C 0 16 9 22 9 22 C 9 22 18 16 18 9 C 18 4 14 0 9 0 Z"
+            fill={dim ? "#ffffff" : "#EA4335"}
             fillOpacity={dim ? 0.25 : 1}
           />
-          <circle cx="12" cy="10" r="3" fill="#0f2018" />
+          <circle cx="9" cy="9" r="3" fill="#FFFFFF" />
         </svg>
       </div>
 

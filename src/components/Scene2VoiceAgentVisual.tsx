@@ -26,11 +26,13 @@ import { motion } from "motion/react";
 export function Scene2VoiceAgentVisual() {
   return (
     <div className="absolute inset-0 flex flex-col justify-end px-5 pb-6 bg-gradient-to-b from-[#0d1f17] via-[#11261c] to-[#091912]">
-      {/* Decorative concentric pulse rings around the call icon */}
+      {/* Decorative concentric pulse rings around the call icon —
+          each ring is offset by ~1.3s so the cycle reads as a calm,
+          breathing rhythm rather than a rapid sonar ping */}
       <div className="absolute inset-x-0 top-[42%] flex items-center justify-center">
         <PulseRing delay={0} />
-        <PulseRing delay={0.8} className="absolute" />
-        <PulseRing delay={1.6} className="absolute" />
+        <PulseRing delay={1.3} className="absolute" />
+        <PulseRing delay={2.6} className="absolute" />
       </div>
 
       {/* Erken Systems mark in upper-right corner — moved higher now that
@@ -82,13 +84,16 @@ export function Scene2VoiceAgentVisual() {
 }
 
 function PulseRing({ delay, className = "" }: { delay: number; className?: string }) {
+  // Slower, wider pulse — was firing every 0.8s and only expanding 1.6x,
+  // which read as aggressive. Now ~4s cycle expanding to 2.5x for a
+  // calmer "breathing" feel.
   return (
     <motion.div
       className={`w-32 h-32 rounded-full border-2 border-[#7ea687]/40 ${className}`}
-      initial={{ scale: 0.5, opacity: 0.6 }}
-      animate={{ scale: [0.5, 1.6, 1.6], opacity: [0.6, 0, 0] }}
+      initial={{ scale: 0.4, opacity: 0.55 }}
+      animate={{ scale: [0.4, 2.5, 2.5], opacity: [0.55, 0, 0] }}
       transition={{
-        duration: 2.4,
+        duration: 4.0,
         delay,
         repeat: Infinity,
         ease: "easeOut",
