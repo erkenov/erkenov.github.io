@@ -7,7 +7,9 @@
 
 import { SphereScrollStage } from "@/components/SphereScrollStage";
 import { MacbookFrame3D } from "@/components/MacbookFrame3D";
+import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
 import { Scene2Channels } from "@/components/Scene2Channels";
+import { Scene3ChannelsFunnel } from "@/components/Scene3ChannelsFunnel";
 import { Scene4CrmTabs } from "@/components/Scene4CrmTabs";
 
 const SECTIONS = [
@@ -99,20 +101,23 @@ export default function SpherePreviewPage() {
           key={i}
           {...s}
           media={
-            i === 1 ? <Scene2Channels />
+            i === 0 ? <Scene1IntroVideo />
+            : i === 1 ? <Scene2Channels />
+            : i === 2 ? <Scene3ChannelsFunnel />
             : i === 3 ? <Scene4CrmTabs />
             : i === 4 ? <MacbookFrame3D />
             : null
           }
           mediaWrapperClassName={
-            // Opaque HTML media (carousel / tabs): tight wrapper centered
-            // vertically with section, anchored on the side opposite the
-            // text, with safe margin from viewport edge.
-            // Scenes 2 and 4 BOTH have text on the right. Media must
-            // anchor LEFT for both so the tabs / carousel stay in the
-            // left half and don't overlap the text column.
-            // Scene 4 (tabs) sits slightly more left than Scene 2 (carousel).
-            i === 1 || i === 3
+            // Opaque HTML media gets a tight wrapper anchored opposite
+            // the text column so it doesn't overlap the copy.
+            //  - Scenes 0 (video) and 2 (funnel) have text on the LEFT,
+            //    so media anchors RIGHT.
+            //  - Scenes 1 (carousel) and 3 (tabs) have text on the RIGHT,
+            //    so media anchors LEFT.
+            i === 0 || i === 2
+              ? "absolute inset-y-[8vh] right-[4vw] hidden md:flex md:w-[50%] items-center justify-end pointer-events-auto"
+              : i === 1 || i === 3
               ? "absolute inset-y-[8vh] left-[4vw] hidden md:flex md:w-[55%] items-center justify-start pointer-events-auto"
               : undefined
           }
