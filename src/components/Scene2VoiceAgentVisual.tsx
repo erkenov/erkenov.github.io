@@ -21,8 +21,9 @@ export function Scene2VoiceAgentVisual() {
         <PulseRing delay={1.6} className="absolute" />
       </div>
 
-      {/* Outbound call status pill */}
-      <div className="absolute top-24 left-5 inline-flex items-center gap-1.5 rounded-full bg-white/10 backdrop-blur-sm px-2.5 py-1 border border-white/15">
+      {/* Outbound call status pill — pushed below the card title block
+          which occupies roughly the first ~140px from the top */}
+      <div className="absolute top-40 left-5 inline-flex items-center gap-1.5 rounded-full bg-white/10 backdrop-blur-sm px-2.5 py-1 border border-white/15">
         <span className="relative flex h-1.5 w-1.5">
           <span className="absolute inline-flex h-full w-full rounded-full bg-[#C76B58] opacity-75 animate-ping" />
           <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#C76B58]" />
@@ -32,8 +33,8 @@ export function Scene2VoiceAgentVisual() {
         </span>
       </div>
 
-      {/* Erken Systems mark in corner */}
-      <div className="absolute top-24 right-5 flex items-center gap-1.5">
+      {/* Erken Systems mark in corner — also pushed below the title block */}
+      <div className="absolute top-40 right-5 flex items-center gap-1.5">
         <div className="w-5 h-5 rounded-full bg-[#7ea687] flex items-center justify-center">
           <div className="w-1.5 h-1.5 rounded-full bg-[#C76B58]" />
         </div>
@@ -49,7 +50,7 @@ export function Scene2VoiceAgentVisual() {
           Maya Chen
         </div>
         <div className="text-[12px] text-white/65">
-          Apex Auto · Manchester · +44 7700 900812
+          Apex Auto · Austin TX · +1 (512) 555-0142
         </div>
       </div>
 
