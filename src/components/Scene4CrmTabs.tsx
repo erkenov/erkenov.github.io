@@ -47,9 +47,6 @@ function TierPanel({
           </li>
         ))}
       </ul>
-      <div className="absolute bottom-6 right-6 font-mono text-[10px] uppercase tracking-wider text-text-dim/70">
-        Demo · placeholder content
-      </div>
     </div>
   );
 }

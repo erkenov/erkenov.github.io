@@ -111,9 +111,11 @@ export default function SpherePreviewPage() {
             // Scenes 2 and 4 BOTH have text on the right. Media must
             // anchor LEFT for both so the tabs / carousel stay in the
             // left half and don't overlap the text column.
-            // BUILD-MARKER: vercel-deploy-test-v3
-            i === 1 || i === 3
+            // Scene 4 (tabs) sits slightly more left than Scene 2 (carousel).
+            i === 1
               ? "absolute inset-y-[8vh] left-[8vw] hidden md:flex md:w-[55%] items-center justify-start pointer-events-auto"
+              : i === 3
+              ? "absolute inset-y-[8vh] left-[4vw] hidden md:flex md:w-[55%] items-center justify-start pointer-events-auto"
               : undefined
           }
         />
