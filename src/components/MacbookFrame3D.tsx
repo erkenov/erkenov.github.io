@@ -86,18 +86,18 @@ useGLTF.preload("/macbook.glb", true);
 
 export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
+  // Use PAGE scroll progress, not element-based. Page progress = 1 exactly
+  // at page bottom regardless of viewport size, so "fully open at bottom"
+  // is robust across screens.
+  const { scrollYProgress } = useScroll();
 
-  // Scene 5 is the LAST section. Shamil's spec (2026-05-23):
-  //  - Fully OPEN at the bottom of the page (= max scroll)
-  //  - Closes as user scrolls UP toward Scene 4
-  //  - No "closing on the way out" — there's no out, this is the end.
+  // Scene 5 spec (2026-05-23):
+  //  - Fully OPEN at page bottom (progress = 1)
+  //  - Closes as user scrolls UP
+  //  - Opens between 0.85 → 1.0 of the page scroll
   const openValue = useTransform(
     scrollYProgress,
-    [0.6, 0.72],
+    [0.85, 1.0],
     [0, 1],
   );
 
