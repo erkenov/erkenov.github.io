@@ -18,7 +18,7 @@ import {
   IconMessageCircle,
   IconBrandWhatsapp,
   IconBrandInstagram,
-  IconForms,
+  IconClipboardList,
 } from "@tabler/icons-react";
 
 type Channel = {
@@ -32,7 +32,7 @@ const CHANNELS: Channel[] = [
   { Icon: IconMessageCircle, label: "Web chat", color: "#7ea687" },
   { Icon: IconBrandWhatsapp, label: "WhatsApp", color: "#25D366" },
   { Icon: IconBrandInstagram, label: "Instagram DM", color: "#E89F1F" },
-  { Icon: IconForms, label: "Forms", color: "#8B7BB8" },
+  { Icon: IconClipboardList, label: "Forms", color: "#8B7BB8" },
 ];
 
 // SVG viewBox layout (in SVG units)
