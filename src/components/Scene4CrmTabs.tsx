@@ -53,18 +53,18 @@ function TierPanel({
 
 const TIERS: TierContent[] = [
   {
-    title: "Google Sheets",
-    value: "sheets",
+    title: "Erken Systems platform",
+    value: "erken",
     content: (
       <TierPanel
-        bg="#F5F1E8"
-        label="Tier 01 · Lean"
-        tagline="Google Sheets — fast, free, no platform lock-in."
+        bg="#EDE6D2"
+        label="Branded · all-in-one"
+        tagline="Erken Systems platform — branded, pre-configured, fully managed."
         bullets={[
-          "Lead in, lead out — one source of truth in a spreadsheet you already understand",
-          "Apps Script glue connects to your forms, voice calls, email — no separate tool to learn",
-          "Cheapest path to a working pipeline. Upgrade later if you need more.",
-          "Best for: solo operators, side-businesses, MVP stage",
+          "Same engine under the hood, but pre-tuned for the four-step pipeline",
+          "C R M, calendar, email, S M S, follow-up workflows — all in one branded login",
+          "Setup is included in the build; you don't see GoHighLevel anywhere",
+          "Best for: clients who want it to just work without learning a CRM",
         ]}
       />
     ),
@@ -75,7 +75,7 @@ const TIERS: TierContent[] = [
     content: (
       <TierPanel
         bg="#F0EBDC"
-        label="Tier 02 · Industry standard"
+        label="Industry standard"
         tagline="GoHighLevel — full agency CRM, you sign up directly."
         bullets={[
           "Pipelines, tags, calendars, SMS, email, funnels — all in one tool",
@@ -87,18 +87,18 @@ const TIERS: TierContent[] = [
     ),
   },
   {
-    title: "Erken Systems platform",
-    value: "erken",
+    title: "Google Sheets",
+    value: "sheets",
     content: (
       <TierPanel
-        bg="#EDE6D2"
-        label="Tier 03 · Branded"
-        tagline="Erken Systems platform — branded, pre-configured, fully managed."
+        bg="#F5F1E8"
+        label="Lean · no lock-in"
+        tagline="Google Sheets — fast, free, no platform lock-in."
         bullets={[
-          "Same engine under the hood, but pre-tuned for the four-step pipeline",
-          "C R M, calendar, email, S M S, follow-up workflows — all in one branded login",
-          "Setup is included in the build; you don't see GoHighLevel anywhere",
-          "Best for: clients who want it to just work without learning a CRM",
+          "Lead in, lead out — one source of truth in a spreadsheet you already understand",
+          "Apps Script glue connects to your forms, voice calls, email — no separate tool to learn",
+          "Cheapest path to a working pipeline. Upgrade later if you need more.",
+          "Best for: solo operators, side-businesses, MVP stage",
         ]}
       />
     ),
