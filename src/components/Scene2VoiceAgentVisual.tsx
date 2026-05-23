@@ -68,6 +68,18 @@ export function Scene2VoiceAgentVisual() {
         <TranscriptLine speaker="Agent" text="Yes. I can book you in for Thursday at 9am or Friday at 2pm. Which works?" />
       </div>
 
+      {/* Live-demo CTA — Shamil's actual Retell number. Calling it
+          connects the visitor to the live AI agent so the mockup doubles
+          as a working demo. */}
+      <div className="relative z-10 mb-2 rounded-lg border border-[#7ea687]/40 bg-[#7ea687]/10 px-3 py-2 backdrop-blur-sm">
+        <div className="text-[9px] uppercase tracking-wider text-[#7ea687] font-mono font-medium">
+          Try it live — call this number
+        </div>
+        <div className="mt-0.5 text-[15px] font-bold text-white tracking-tight tabular-nums">
+          +1 (901) 633-1400
+        </div>
+      </div>
+
       {/* Duration + state */}
       <div className="relative z-10 flex items-center justify-between text-[11px] text-white/55 font-mono">
         <span>01:42</span>
