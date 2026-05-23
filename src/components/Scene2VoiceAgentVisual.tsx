@@ -25,7 +25,7 @@ import { motion } from "motion/react";
 
 export function Scene2VoiceAgentVisual() {
   return (
-    <div className="absolute inset-0 flex flex-col justify-end px-5 pb-6 bg-gradient-to-b from-[#0d1f17] via-[#11261c] to-[#091912]">
+    <div className="absolute inset-0 flex flex-col justify-end px-5 pb-6 bg-gradient-to-br from-[#D88573] via-[#C76B58] to-[#A0533F]">
       {/* Decorative concentric pulse rings around the call icon —
           each ring is offset by ~1.7s for an even rhythm at the new
           5-second cycle. Three rings at staggered phases keep the
@@ -36,13 +36,14 @@ export function Scene2VoiceAgentVisual() {
         <PulseRing delay={3.4} className="absolute" />
       </div>
 
-      {/* Erken Systems mark in upper-right corner — moved higher now that
-          the redundant status pill is gone */}
+      {/* Erken Systems mark in upper-right corner. On a terracotta
+          background the mark's terracotta dot would disappear, so the
+          inner dot uses cream here while the outer stays sage. */}
       <div className="absolute top-10 right-5 flex items-center gap-1.5">
         <div className="w-5 h-5 rounded-full bg-[#7ea687] flex items-center justify-center">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#C76B58]" />
+          <div className="w-1.5 h-1.5 rounded-full bg-[#F5F1E8]" />
         </div>
-        <span className="text-[10px] font-medium text-white/70">Erken · AI agent</span>
+        <span className="text-[10px] font-medium text-white/85">Erken · AI agent</span>
       </div>
 
       {/* Caller ID — Shamil's real Retell number as the OUTBOUND caller.
@@ -93,7 +94,7 @@ function PulseRing({ delay, className = "" }: { delay: number; className?: strin
   // disappearing.
   return (
     <motion.div
-      className={`w-32 h-32 rounded-full border-2 border-[#7ea687]/40 ${className}`}
+      className={`w-32 h-32 rounded-full border-2 border-[#F5F1E8]/45 ${className}`}
       initial={{ scale: 0.4, opacity: 0 }}
       animate={{
         scale: [0.4, 1.0, 4.0, 4.0],
@@ -116,7 +117,7 @@ function Bar({ index }: { index: number }) {
   const base = 6 + Math.abs(Math.sin(index * 0.6)) * 26;
   return (
     <motion.div
-      className="w-[3px] rounded-full bg-[#7ea687]/70"
+      className="w-[3px] rounded-full bg-[#F5F1E8]/75"
       style={{ height: base }}
       animate={{ height: [base, base * 0.4, base, base * 1.1, base] }}
       transition={{
@@ -135,7 +136,7 @@ function TranscriptLine({ speaker, text }: { speaker: string; text: string }) {
     <div className="flex items-start gap-2 text-[11px] leading-snug">
       <span
         className={`shrink-0 font-mono text-[9px] uppercase tracking-wider mt-0.5 ${
-          isAgent ? "text-[#7ea687]" : "text-[#E89F1F]"
+          isAgent ? "text-[#F5F1E8]" : "text-[#FFD898]"
         }`}
       >
         {speaker}

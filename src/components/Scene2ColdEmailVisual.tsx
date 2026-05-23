@@ -91,7 +91,7 @@ const ACTIVITY: ActivityRow[] = [
 
 export function Scene2ColdEmailVisual() {
   return (
-    <div className="absolute inset-0 flex flex-col px-5 pb-6 pt-32 bg-gradient-to-b from-[#0d1f17] via-[#11261c] to-[#091912]">
+    <div className="absolute inset-0 flex flex-col px-5 pb-6 pt-32 bg-gradient-to-br from-[#9bbea4] via-[#7ea687] to-[#4f6f5a]">
       {/* Erken mark in upper-right */}
       <div className="absolute top-10 right-5 z-20 flex items-center gap-1.5">
         <div className="w-5 h-5 rounded-full bg-[#7ea687] flex items-center justify-center">
@@ -109,8 +109,8 @@ export function Scene2ColdEmailVisual() {
         {/* Counter row */}
         <div className="mt-2 grid grid-cols-3 gap-2">
           <Stat label="Sent" value="247" />
-          <Stat label="Opened" value="142" tint="#E89F1F" />
-          <Stat label="Replied" value="23" tint="#7ea687" emphasize />
+          <Stat label="Opened" value="142" tint="#FFD898" />
+          <Stat label="Replied" value="23" tint="#F5F1E8" emphasize />
         </div>
       </div>
 
@@ -156,12 +156,15 @@ function Stat({
   );
 }
 
+// Pill colors recalibrated for the sage-green card background — sage
+// labels would disappear into the bg, so REPLIED is now cream-emphatic;
+// OPENED keeps the warm-gold accent.
 const KIND_STYLES: Record<ActivityKind, { bg: string; text: string; label: string }> = {
-  REPLIED:   { bg: "bg-[#7ea687]/20 border border-[#7ea687]/40", text: "text-[#7ea687]", label: "★ REPLIED" },
-  OPENED:    { bg: "bg-[#E89F1F]/15 border border-[#E89F1F]/40", text: "text-[#E89F1F]", label: "OPENED" },
-  DELIVERED: { bg: "bg-white/8 border border-white/15",          text: "text-white/65", label: "DELIVERED" },
-  SCHEDULED: { bg: "bg-white/8 border border-white/15",          text: "text-white/55", label: "SCHEDULED" },
-  UNSUB:     { bg: "bg-white/5 border border-white/10",          text: "text-white/35", label: "UNSUB" },
+  REPLIED:   { bg: "bg-[#F5F1E8]/25 border border-[#F5F1E8]/45", text: "text-[#F5F1E8]", label: "★ REPLIED" },
+  OPENED:    { bg: "bg-[#E89F1F]/25 border border-[#E89F1F]/55", text: "text-[#FFD898]", label: "OPENED" },
+  DELIVERED: { bg: "bg-white/10 border border-white/20",         text: "text-white/75", label: "DELIVERED" },
+  SCHEDULED: { bg: "bg-white/10 border border-white/20",         text: "text-white/60", label: "SCHEDULED" },
+  UNSUB:     { bg: "bg-white/5 border border-white/15",          text: "text-white/40", label: "UNSUB" },
 };
 
 function ActivityRowView({ row, delay }: { row: ActivityRow; delay: number }) {
@@ -179,8 +182,8 @@ function ActivityRowView({ row, delay }: { row: ActivityRow; delay: number }) {
           <path
             d="M4 6 H20 V18 H4 Z M4 6 L12 13 L20 6"
             fill="none"
-            stroke={muted ? "#ffffff" : "#7ea687"}
-            strokeOpacity={muted ? 0.3 : 0.9}
+            stroke="#F5F1E8"
+            strokeOpacity={muted ? 0.4 : 0.95}
             strokeWidth="1.6"
             strokeLinejoin="round"
           />

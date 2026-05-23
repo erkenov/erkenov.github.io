@@ -46,9 +46,11 @@ export function Scene2GoogleMapsVisual() {
         <span className="text-[10px] font-semibold text-[#2a2722]">Erken · scraper</span>
       </div>
 
-      {/* Dark translucent results panel docked to the bottom — same UX
-          metaphor real Google Maps uses for its sidebar */}
-      <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col px-5 pb-6 pt-4 bg-gradient-to-t from-[#0d1f17] via-[#0d1f17]/95 to-[#0d1f17]/0">
+      {/* Translucent results panel docked to the bottom — same UX
+          metaphor real Google Maps uses for its sidebar. Tinted deep
+          sage (the channel's brand color) instead of near-black for
+          warmer carousel cohesion. */}
+      <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col px-5 pb-6 pt-4 bg-gradient-to-t from-[#3f5e4a] via-[#3f5e4a]/95 to-[#3f5e4a]/0">
         {/* Counter header */}
         <div className="mb-3">
           <div className="text-[10px] text-white/55 uppercase tracking-wider font-mono">
@@ -183,9 +185,10 @@ function MapPin({ cx, cy }: { cx: number; cy: number }) {
   );
 }
 
+// Pills tuned for the deep-sage panel background.
 const STATUS_STYLES: Record<ScrapedBusiness["status"], { bg: string; text: string }> = {
-  NEW:    { bg: "bg-[#7ea687]/20 border border-[#7ea687]/40", text: "text-[#7ea687]" },
-  QUEUED: { bg: "bg-[#E89F1F]/15 border border-[#E89F1F]/40", text: "text-[#E89F1F]" },
+  NEW:    { bg: "bg-[#F5F1E8]/25 border border-[#F5F1E8]/45", text: "text-[#F5F1E8]" },
+  QUEUED: { bg: "bg-[#E89F1F]/25 border border-[#E89F1F]/55", text: "text-[#FFD898]" },
   DUPE:   { bg: "bg-white/8 border border-white/15",          text: "text-white/40" },
 };
 
