@@ -116,7 +116,7 @@ export default function SpherePreviewPage() {
             //  - Scenes 1 (carousel) and 3 (tabs) have text on the RIGHT,
             //    so media anchors LEFT.
             i === 0 || i === 2
-              ? "absolute inset-y-[8vh] right-[4vw] hidden md:flex md:w-[50%] items-center justify-end pointer-events-auto"
+              ? "absolute inset-y-[8vh] right-[4vw] hidden md:flex md:w-[50%] items-center justify-center pointer-events-auto"
               : i === 1 || i === 3
               ? "absolute inset-y-[8vh] left-[4vw] hidden md:flex md:w-[55%] items-center justify-start pointer-events-auto"
               : undefined
