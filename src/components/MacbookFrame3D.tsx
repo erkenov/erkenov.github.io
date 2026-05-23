@@ -51,7 +51,10 @@ function Model({ openValue }: { openValue: MotionValue<number> }) {
 
     // Hinge in WORLD coords (measured via runtime inspection):
     //   (0.198, -0.649, -0.246) — base back edge / lid bottom edge
-    const hingeWorld = new THREE.Vector3(0.198, -0.625, -0.246);
+    // Y lowered from -0.625 → -0.69 to kill the mid-rotation gap between
+    // lid and base (pivot was sitting above the model's actual hinge axis,
+    // so the lid bottom swung upward away from the keyboard during close).
+    const hingeWorld = new THREE.Vector3(0.198, -0.69, -0.246);
     // Convert to lid's parent local frame so the pivot sits at the hinge.
     const hingeInParent = lidParent.worldToLocal(hingeWorld.clone());
 
@@ -94,10 +97,11 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
   // Scene 5 spec (2026-05-23):
   //  - Fully OPEN at page bottom (progress = 1)
   //  - Closes as user scrolls UP
-  //  - Opens between 0.85 → 1.0 of the page scroll
+  //  - Narrowed from [0.85, 1.0] → [0.93, 1.0] so the full close takes
+  //    fewer scroll ticks (faster animation per scroll-wheel click).
   const openValue = useTransform(
     scrollYProgress,
-    [0.85, 1.0],
+    [0.93, 1.0],
     [0, 1],
   );
 
