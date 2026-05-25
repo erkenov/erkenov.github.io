@@ -815,6 +815,18 @@ export default function PreviewV6Page() {
     const onScroll = () => {
       if (scrollStartY === null) scrollStartY = window.scrollY;
       setBubbleVisible(false);
+      // Mobile (Shamil 2026-05-25 evening): skip the dragon-draw logic.
+      // The trail is hidden on mobile (`hideTrail` prop) and Celly is
+      // pinned, so we DON'T want the cell-dragon's world Y to slide with
+      // scroll — that's what was making the dust appear to "stay where
+      // it was" while the page scrolled past it.
+      const isMobileNow =
+        typeof window !== "undefined" && window.innerWidth < 768;
+      if (isMobileNow) {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(showBubbleIfCellVisible, SCROLL_STOP_DELAY_MS);
+        return;
+      }
       // Dragon DRAWS in scroll direction (Shamil round 22): trail tail
       // anchored at Celly's last spot, head extends in scroll direction
       // proportional to scroll delta. The further you scroll, the

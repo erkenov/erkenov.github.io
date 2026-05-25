@@ -409,16 +409,20 @@ function Sphere({ pulseRef, xRef, yRef, scaleRef, sphereOpacityRef, streamOpacit
     }
 
     // Sphere opacity + size — dust/nodes are BIG when cell is peaked, SMALL when transforming to dragon
+    // Mobile halves particle size (Shamil 2026-05-25 evening): the
+    // desktop-tuned dust covered text on a phone screen.
     const o = sphereOpacityRef.current;
+    const mobileSizeFactor =
+      typeof window !== "undefined" && window.innerWidth < 768 ? 0.5 : 1;
     if (dustMatRef.current) {
       dustMatRef.current.opacity = 0.85 * o;
       // size ranges 0.022 (transforming) -> 0.05 (fully peaked)
-      dustMatRef.current.size = 0.022 + o * 0.028;
+      dustMatRef.current.size = (0.022 + o * 0.028) * mobileSizeFactor;
     }
     if (nodeMatRef.current) {
       nodeMatRef.current.opacity = 1.0 * o;
       // graph nodes bigger when cell is fully formed
-      nodeMatRef.current.size = 0.035 + o * 0.025;
+      nodeMatRef.current.size = (0.035 + o * 0.025) * mobileSizeFactor;
     }
     if (lineMatRef.current) lineMatRef.current.opacity = 0;
     if (glowMatRef.current) {
