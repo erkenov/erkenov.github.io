@@ -122,10 +122,12 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
 
   const openValue = useTransform(
     scrollYProgress,
-    // Closing phase tightened from 0.65→1.0 to 0.85→1.0 — close
-    // happens faster at the end of the section (Shamil 2026-05-25
-    // evening). Opening still 0→0.35.
-    [0, 0.35, 0.85, 1],
+    // Closing starts at the same 0.65 mark but finishes by 0.80 instead
+    // of 1.0 — the CLOSE itself happens faster, the lid is already shut
+    // before the section exits the viewport (Shamil 2026-05-25 evening
+    // "close faster not sooner"). Outputs clamp past 0.80 so lid stays
+    // closed through the rest of the section exit.
+    [0, 0.35, 0.65, 0.80],
     [0, 1, 1, 0],
   );
 
