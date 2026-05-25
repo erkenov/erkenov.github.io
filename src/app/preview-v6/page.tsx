@@ -1103,6 +1103,15 @@ export default function PreviewV6Page() {
                 "absolute inset-y-[8vh] left-[38vw] right-[3vw] hidden md:flex items-center justify-center pointer-events-auto"
               : i === 1 || i === 3
               ? "absolute inset-y-[8vh] left-[4vw] hidden md:flex md:w-[55%] items-center justify-start pointer-events-auto"
+              : i === 4
+              ? // MacBook scene — was using the wide default wrapper that
+                // extends -55vh above and -10vh below the section, causing
+                // the closed laptop to bleed into the Industries section
+                // (Shamil 2026-05-25 evening, lid showing weird underside).
+                // Confine the canvas to section bounds; the lid open/close
+                // animation still plays via useScroll over the full
+                // start-end → end-start traversal range.
+                "absolute inset-y-0 inset-x-0 hidden md:flex items-center justify-center px-2 lg:px-4 pointer-events-none"
               : undefined
           }
           // Step 4 keeps mediaAvoidCelly = true (Shamil round 46):
