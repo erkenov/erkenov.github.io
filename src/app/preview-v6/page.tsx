@@ -597,9 +597,12 @@ export default function PreviewV6Page() {
       const cellyHalfVw = VISIBLE_HALF_W_REM * scaleFromSpace * remToVw;
       const cellyHalfVh = VISIBLE_HALF_H_REM * scaleFromSpace * remToVh;
       const FIT_THRESHOLD = 2;
-      // Tightened from 25vw → 12vw 2026-05-25 evening: bubble was
-      // wandering far from Celly. Hard cap forces nearby placement.
-      const MAX_BUBBLE_DIST_FROM_CELLY = 12;
+      // Re-tuned (Shamil 2026-05-25 late evening): at 12 the bubble had
+      // nowhere to go on Section 0 (Erken intro — text on left, Celly
+      // on left) and the soft fallback landed it on top of Celly. 20vw
+      // gives findEmptySpot enough room to escape her avoid rect while
+      // still keeping the bubble visually tethered to her.
+      const MAX_BUBBLE_DIST_FROM_CELLY = 20;
       let chosenVariant: BubbleVariant | null = null;
       let chosenTarget = { xVw: 50, yVh: 50, minDist: 0 };
 
@@ -624,10 +627,11 @@ export default function PreviewV6Page() {
       // SHORT-only on both viewports (Shamil 2026-05-25 evening): the
       // long pitch never landed visually — bubble too big, copy felt
       // sales-y. The one-liner reads cleaner and matches mobile.
-      // Tightened further: desktop widthRem 11→9 ("still too big"),
-      // bubble pulled in closer to Celly via lower MAX_BUBBLE_DIST below.
+      // Width re-tuned: at 9rem the desktop bubble read like a "poem"
+      // (text wrapping to too many lines). Back up to 11rem; paired
+      // with smaller 12px text below.
       const variants = [
-        { ...CELLY_VARIANTS[2], widthRem: isMobile ? 10 : 9 },
+        { ...CELLY_VARIANTS[2], widthRem: isMobile ? 10 : 11 },
       ];
       for (const variant of variants) {
         const cellyAvoid = buildCellyAvoid(variant);
@@ -1341,8 +1345,8 @@ export default function PreviewV6Page() {
           Sits on top of the merged cloud silhouette. Copy is the active
           variant chosen by the auto-positioner (LONG/MEDIUM/SHORT
           depending on available space). */}
-      <div className={`relative z-10 ${isMobile ? "px-4 py-4" : "px-8 py-7"}`}>
-        <div className={`${isMobile ? "text-[11px]" : "text-[14px]"} leading-relaxed text-neutral-800`}>
+      <div className={`relative z-10 ${isMobile ? "px-4 py-4" : "px-6 py-5"}`}>
+        <div className={`${isMobile ? "text-[11px]" : "text-[12px]"} leading-relaxed text-neutral-800`}>
           {activeVariant?.text ?? CELLY_INTRO}
         </div>
       </div>
