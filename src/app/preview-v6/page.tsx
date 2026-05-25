@@ -464,25 +464,29 @@ export default function PreviewV6Page() {
       // place across all sections. Bubble still auto-positions above her.
       if (window.innerWidth < 768) {
         const fixedXVw = 14;
-        const fixedYVh = 94;
+        // Anchor from BOTTOM via dynamic-viewport-height so the URL bar
+        // hiding/showing doesn't shift Celly (Shamil 2026-05-25 evening
+        // "Erken fidgets when URL bar moves"). Falls back to vh on
+        // browsers that don't support dvh.
+        const fixedBottomDvh = 6;
         el.style.left = `${fixedXVw}vw`;
-        el.style.top = `${fixedYVh}vh`;
-        el.style.transform = "translate(-50%, -50%) scale(0.6)";
+        el.style.top = "auto";
+        el.style.bottom = `${fixedBottomDvh}dvh`;
+        el.style.transform = "translate(-50%, 0) scale(0.6)";
         // Tighter bubble: narrower variant (text re-wraps to fewer chars
         // per line but font stays the same), and sits closer to Celly.
         const variant = { ...CELLY_VARIANTS[2], widthRem: 8 };
         setActiveVariant(variant);
         bubbleEl.style.right = "auto";
-        bubbleEl.style.bottom = "auto";
+        bubbleEl.style.top = "auto";
         bubbleEl.style.left = `${fixedXVw + 7}vw`;
-        bubbleEl.style.top = `${fixedYVh - 13}vh`;
-        bubbleEl.style.transform = "translate(-50%, -50%)";
+        bubbleEl.style.bottom = `${fixedBottomDvh + 6}dvh`;
+        bubbleEl.style.transform = "translate(-50%, 0)";
         bubbleEl.style.width = `${variant.widthRem}rem`;
         // Pin the cell-dragon (the dust cloud) to Celly's screen position
-        // too (Shamil 2026-05-25 evening). Without this the cell renders
-        // wherever the scroll math wants, and Celly looks isolated from
-        // her dust. Project Celly's (vw, vh) into the camera's world
-        // coordinates and write directly to the refs.
+        // too. Approximation: Celly's center is roughly 86% from top
+        // (anchored 6dvh from bottom + half her ~13rem * 0.6 sprite).
+        const approxCellyYVh = 86;
         if (cellRefsRef.current) {
           const refs = cellRefsRef.current;
           const { cameraZ, fovDeg } = cameraParamsRef.current;
@@ -494,7 +498,7 @@ export default function PreviewV6Page() {
               : 16 / 9;
           const horizontalHalf = verticalHalf * aspect;
           const targetX = ((fixedXVw - 50) / 100) * (2 * horizontalHalf);
-          const targetY = ((50 - fixedYVh) / 100) * (2 * verticalHalf);
+          const targetY = ((50 - approxCellyYVh) / 100) * (2 * verticalHalf);
           if (cellAnimRafRef.current !== null) {
             cancelAnimationFrame(cellAnimRafRef.current);
             cellAnimRafRef.current = null;
@@ -839,7 +843,7 @@ export default function PreviewV6Page() {
               : 16 / 9;
           const horizontalHalf = verticalHalf * aspect;
           const targetX = ((14 - 50) / 100) * (2 * horizontalHalf);
-          const targetY = ((50 - 94) / 100) * (2 * verticalHalf);
+          const targetY = ((50 - 86) / 100) * (2 * verticalHalf);
           refs.xRef.current = targetX;
           refs.yRef.current = targetY;
           refs.scaleRef.current = 1;
@@ -1092,7 +1096,7 @@ export default function PreviewV6Page() {
               : 16 / 9;
           const horizontalHalf = verticalHalf * aspect;
           refs.xRef.current = ((14 - 50) / 100) * (2 * horizontalHalf);
-          refs.yRef.current = ((50 - 94) / 100) * (2 * verticalHalf);
+          refs.yRef.current = ((50 - 86) / 100) * (2 * verticalHalf);
           refs.scaleRef.current = 1;
           refs.sphereOpacityRef.current = 1;
           refs.streamOpacityRef.current = 0;
