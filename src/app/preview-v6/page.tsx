@@ -823,6 +823,29 @@ export default function PreviewV6Page() {
       const isMobileNow =
         typeof window !== "undefined" && window.innerWidth < 768;
       if (isMobileNow) {
+        // Pin the cell-dragon to Celly's bottom-left spot DURING scroll
+        // too, not just on stop (Shamil 2026-05-25 evening). Otherwise
+        // the cell sits at its initial center-left position with scale
+        // 0.9 dust filling most of the viewport — Shamil's "dust expands
+        // to full page" complaint. Re-applies on every scroll tick.
+        const refs = cellRefsRef.current;
+        if (refs) {
+          const { cameraZ, fovDeg } = cameraParamsRef.current;
+          const halfFovRad = (fovDeg / 2) * (Math.PI / 180);
+          const verticalHalf = cameraZ * Math.tan(halfFovRad);
+          const aspect =
+            window.innerHeight > 0
+              ? window.innerWidth / window.innerHeight
+              : 16 / 9;
+          const horizontalHalf = verticalHalf * aspect;
+          const targetX = ((14 - 50) / 100) * (2 * horizontalHalf);
+          const targetY = ((50 - 94) / 100) * (2 * verticalHalf);
+          refs.xRef.current = targetX;
+          refs.yRef.current = targetY;
+          refs.scaleRef.current = 1;
+          refs.sphereOpacityRef.current = 1;
+          refs.streamOpacityRef.current = 0;
+        }
         if (timer) clearTimeout(timer);
         timer = setTimeout(showBubbleIfCellVisible, SCROLL_STOP_DELAY_MS);
         return;
@@ -1052,6 +1075,28 @@ export default function PreviewV6Page() {
       onCellPositionChange={handleCellMove}
       onCellRefsReady={(refs) => {
         cellRefsRef.current = refs;
+        // On mobile, immediately pin the cell to Celly's bottom-left
+        // spot so the very first frame doesn't show a giant center-left
+        // dust cloud (Shamil 2026-05-25 evening).
+        if (typeof window !== "undefined" && window.innerWidth < 768) {
+          // Use the SphereScrollStage mobile camera defaults — exact
+          // params live in cameraParamsRef which the page populates on
+          // the first onCellPositionChange tick.
+          const cameraZ = 2.2;
+          const fovDeg = 50;
+          const halfFovRad = (fovDeg / 2) * (Math.PI / 180);
+          const verticalHalf = cameraZ * Math.tan(halfFovRad);
+          const aspect =
+            window.innerHeight > 0
+              ? window.innerWidth / window.innerHeight
+              : 16 / 9;
+          const horizontalHalf = verticalHalf * aspect;
+          refs.xRef.current = ((14 - 50) / 100) * (2 * horizontalHalf);
+          refs.yRef.current = ((50 - 94) / 100) * (2 * verticalHalf);
+          refs.scaleRef.current = 1;
+          refs.sphereOpacityRef.current = 1;
+          refs.streamOpacityRef.current = 0;
+        }
       }}
       // hide the 3D cell-core — Celly is the visual stand-in for it.
       hideInnerCellCore
