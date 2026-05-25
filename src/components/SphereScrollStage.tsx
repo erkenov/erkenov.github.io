@@ -547,6 +547,7 @@ export function SphereScrollStage({
   sectionYOverrides,
   disableScrollDrivenShape = false,
   straightTrail = false,
+  hideTrail = false,
 }: StageProps & {
   sectionCount?: number;
   hideInnerCellCore?: boolean;
@@ -554,6 +555,9 @@ export function SphereScrollStage({
   disableScrollDrivenShape?: boolean;
   /** Pass through to TrailLayer — straight dragon (no bend, no arc). */
   straightTrail?: boolean;
+  /** Skip rendering the TrailLayer entirely. Used on mobile where the
+   *  trailing dragon competes with Celly's dust cloud. (Shamil 2026-05-25) */
+  hideTrail?: boolean;
 }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const pulseRef = useRef(0);
@@ -863,16 +867,18 @@ export function SphereScrollStage({
               streamOpacityRef={streamOpacityRef}
               hideInnerCore={hideInnerCellCore}
             />
-            <TrailLayer
-              streamOpacityRef={streamOpacityRef}
-              prevXRef={prevXRef}
-              nextXRef={nextXRef}
-              prevYRef={prevYRef}
-              nextYRef={nextYRef}
-              transitionProgressRef={transitionProgressRef}
-              segProgressRef={segProgressRef}
-              straightTrail={straightTrail}
-            />
+            {!hideTrail && (
+              <TrailLayer
+                streamOpacityRef={streamOpacityRef}
+                prevXRef={prevXRef}
+                nextXRef={nextXRef}
+                prevYRef={prevYRef}
+                nextYRef={nextYRef}
+                transitionProgressRef={transitionProgressRef}
+                segProgressRef={segProgressRef}
+                straightTrail={straightTrail}
+              />
+            )}
           </Canvas>
         )}
       </div>

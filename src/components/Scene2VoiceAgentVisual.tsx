@@ -26,32 +26,11 @@ import { motion } from "motion/react";
 export function Scene2VoiceAgentVisual() {
   return (
     <div className="absolute inset-0 flex flex-col justify-end px-5 pb-6 bg-gradient-to-br from-[#D88573] via-[#C76B58] to-[#A0533F]">
-      {/* Decorative concentric pulse rings around the call icon —
-          each ring is offset by ~1.7s for an even rhythm at the new
-          5-second cycle. Three rings at staggered phases keep the
-          visual filled without packing too dense. */}
-      <div className="absolute inset-x-0 top-[42%] flex items-center justify-center">
-        <PulseRing delay={0} />
-        <PulseRing delay={1.7} className="absolute" />
-        <PulseRing delay={3.4} className="absolute" />
-      </div>
-
-      {/* Erken Systems badge — white pill style matching the Google Maps
-          card so the brand mark reads clearly against the warm bg */}
-      <div className="absolute top-10 right-5 z-30 flex items-center gap-1.5 rounded-full bg-white/95 px-2 py-1 shadow-md">
-        <div className="w-4 h-4 rounded-full bg-[#7ea687] flex items-center justify-center">
-          <div className="w-1 h-1 rounded-full bg-[#C76B58]" />
-        </div>
-        <span className="text-[10px] font-semibold text-[#2a2722]">Erken · AI agent</span>
-      </div>
-
       {/* Caller ID — Shamil's real Retell number as the OUTBOUND caller.
-          Visitor sees this, calls it, reaches the live agent. */}
+          "Outbound call" label removed 2026-05-25 (Shamil): redundant
+          with the card category "Outbound · voice". */}
       <div className="relative z-10 mb-3">
-        <div className="text-[11px] text-white/55 uppercase tracking-wider font-mono">
-          Outbound call
-        </div>
-        <div className="mt-1 text-lg font-bold text-white tracking-tight tabular-nums">
+        <div className="text-lg font-bold text-white tracking-tight tabular-nums">
           +1 (901) 633-1400
         </div>
         <div className="text-[12px] text-white/65">
@@ -72,14 +51,9 @@ export function Scene2VoiceAgentVisual() {
       <div className="relative z-10 space-y-1.5 mb-3">
         <TranscriptLine speaker="Agent" text="Hi — am I speaking with Maya at Apex Auto?" />
         <TranscriptLine speaker="Maya" text="Yes, this is Maya. Who's this?" />
-        <TranscriptLine speaker="Agent" text="Sam from Erken Systems. Quick question — how are you handling missed calls right now? I help shops capture leads that would otherwise go to voicemail." />
+        <TranscriptLine speaker="Agent" text="This is Erken. Quick question — how are you handling missed calls right now? I help shops capture leads that would otherwise go to voicemail." />
       </div>
 
-      {/* Footer state — duration removed; just the confidence indicator
-          to keep the product-like polish */}
-      <div className="relative z-10 flex items-center justify-end text-[11px] text-white/55 font-mono">
-        <span>Qualifying · 91% confidence</span>
-      </div>
     </div>
   );
 }

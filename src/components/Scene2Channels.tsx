@@ -26,7 +26,19 @@ type ChannelCard = {
   category: string;
   content: React.ReactNode;
   visual?: React.ReactNode;
+  topRightOverlay?: React.ReactNode;
 };
+
+// Shared Erken brand badge for the top-right corner of every channel
+// card — reads as "all these tools are Erken-built" (Shamil 2026-05-25).
+const ErkenBadge = ({ label }: { label: string }) => (
+  <div className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2 py-1 shadow-md">
+    <div className="w-4 h-4 rounded-full bg-[#7ea687] flex items-center justify-center">
+      <div className="w-1 h-1 rounded-full bg-[#C76B58]" />
+    </div>
+    <span className="text-[10px] font-semibold text-[#2a2722]">{label}</span>
+  </div>
+);
 
 // Placeholder thumbnail URLs — sage primary + terracotta accent on cream.
 // Aspect 4:5 (portrait) — the carousel cards are tall.
@@ -39,6 +51,7 @@ const CHANNELS: ChannelCard[] = [
     title: "AI voice agent that calls",
     src: ph("Voice agent", "C76B58"),
     visual: <Scene2VoiceAgentVisual />,
+    topRightOverlay: <ErkenBadge label="Erken · AI agent" />,
     content: (
       <CardBody>
         <p>
@@ -58,6 +71,7 @@ const CHANNELS: ChannelCard[] = [
     title: "Google Maps prospecting",
     src: ph("Google Maps", "7ea687"),
     visual: <Scene2GoogleMapsVisual />,
+    topRightOverlay: <ErkenBadge label="Erken · scraper" />,
     content: (
       <CardBody>
         <p>
@@ -76,6 +90,7 @@ const CHANNELS: ChannelCard[] = [
     title: "Cold email at scale",
     src: ph("Cold email", "5e8268"),
     visual: <Scene2ColdEmailVisual />,
+    topRightOverlay: <ErkenBadge label="Erken · outreach" />,
     content: (
       <CardBody>
         <p>
@@ -95,6 +110,7 @@ const CHANNELS: ChannelCard[] = [
     title: "Meta Business AI",
     src: ph("Meta ads", "E89F1F"),
     visual: <Scene2MetaAdsVisual />,
+    topRightOverlay: <ErkenBadge label="Erken · Meta AI" />,
     content: (
       <CardBody>
         <p>
@@ -114,6 +130,7 @@ const CHANNELS: ChannelCard[] = [
     title: "LinkedIn outreach",
     src: ph("LinkedIn", "A8B86C"),
     visual: <Scene2LinkedInVisual />,
+    topRightOverlay: <ErkenBadge label="Erken · LinkedIn" />,
     content: (
       <CardBody>
         <p>

@@ -6,6 +6,7 @@ import React, {
   createContext,
   useContext,
 } from "react";
+import { createPortal } from "react-dom";
 import {
   IconArrowNarrowLeft,
   IconArrowNarrowRight,
@@ -38,6 +39,11 @@ type Card = {
    *  the BlurImage. Use this for inline mockup components when a static
    *  image isn't expressive enough (e.g. an animated voice-agent UI). */
   visual?: React.ReactNode;
+  /** Optional badge/element rendered in the top-right corner of the
+   *  CLOSED card, at z-50 so it sits above the dark gradient + title
+   *  overlay. (Shamil 2026-05-25: Erken AI agent badge was getting
+   *  trapped inside the visual's stacking context.) */
+  topRightOverlay?: React.ReactNode;
 };
 
 export const CarouselContext = createContext<{
@@ -189,7 +195,9 @@ export const Carousel = ({ items, initialScroll = 0, loop = false, arrowsPositio
         </div>
         <div
           className={cn(
-            "flex gap-2",
+            // Mobile users scroll with their finger; arrows just take up
+            // space and rarely get tapped (Shamil 2026-05-25).
+            "hidden md:flex gap-2",
             arrowsPosition === "right"
               ? "mr-4 justify-end"
               : "ml-4 justify-start"
@@ -258,64 +266,71 @@ export const Card = ({
     onCardClose(index);
   };
 
+  // Modal is portalled to document.body so it escapes ancestor stacking
+  // contexts (the SphereScrollStage canvas + GSAP transforms create one
+  // that traps high z-index modals on mobile). (Shamil 2026-05-25)
+  const modal = (
+    <AnimatePresence>
+      {open && (
+        <div className="fixed inset-0 z-[200] h-screen overflow-auto">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 h-full w-full bg-black/80 backdrop-blur-lg"
+          />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            ref={containerRef}
+            layoutId={layout ? `card-${card.title}` : undefined}
+            className="relative z-[210] mx-auto my-10 h-fit max-w-5xl rounded-3xl bg-white p-4 font-sans md:p-10 dark:bg-neutral-900"
+          >
+            <button
+              className="sticky top-4 right-0 ml-auto flex h-8 w-8 items-center justify-center rounded-full bg-black dark:bg-white"
+              onClick={handleClose}
+            >
+              <IconX className="h-6 w-6 text-neutral-100 dark:text-neutral-900" />
+            </button>
+            <motion.p
+              layoutId={layout ? `category-${card.title}` : undefined}
+              className="text-base font-medium text-black dark:text-white"
+            >
+              {card.category}
+            </motion.p>
+            <motion.p
+              layoutId={layout ? `title-${card.title}` : undefined}
+              className="mt-4 text-2xl font-semibold text-neutral-700 md:text-5xl dark:text-white"
+            >
+              {card.title}
+            </motion.p>
+            <div className="py-10">{card.content}</div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+
   return (
     <>
-      <AnimatePresence>
-        {open && (
-          <div className="fixed inset-0 z-50 h-screen overflow-auto">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 h-full w-full bg-black/80 backdrop-blur-lg"
-            />
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              ref={containerRef}
-              layoutId={layout ? `card-${card.title}` : undefined}
-              className="relative z-[60] mx-auto my-10 h-fit max-w-5xl rounded-3xl bg-white p-4 font-sans md:p-10 dark:bg-neutral-900"
-            >
-              <button
-                className="sticky top-4 right-0 ml-auto flex h-8 w-8 items-center justify-center rounded-full bg-black dark:bg-white"
-                onClick={handleClose}
-              >
-                <IconX className="h-6 w-6 text-neutral-100 dark:text-neutral-900" />
-              </button>
-              <motion.p
-                layoutId={layout ? `category-${card.title}` : undefined}
-                className="text-base font-medium text-black dark:text-white"
-              >
-                {card.category}
-              </motion.p>
-              <motion.p
-                layoutId={layout ? `title-${card.title}` : undefined}
-                className="mt-4 text-2xl font-semibold text-neutral-700 md:text-5xl dark:text-white"
-              >
-                {card.title}
-              </motion.p>
-              <div className="py-10">{card.content}</div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {typeof document !== "undefined" ? createPortal(modal, document.body) : null}
       <motion.button
         layoutId={layout ? `card-${card.title}` : undefined}
         onClick={handleOpen}
-        className="relative z-10 flex h-80 w-56 flex-col items-start justify-start overflow-hidden rounded-3xl bg-gray-100 md:h-[40rem] md:w-96 dark:bg-neutral-900"
+        className="relative z-10 flex h-96 w-72 flex-col items-start justify-start overflow-hidden rounded-3xl bg-gray-100 md:h-[40rem] md:w-96 dark:bg-neutral-900"
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 z-30 h-full bg-gradient-to-b from-black/50 via-transparent to-transparent" />
-        <div className="relative z-40 p-8">
+        <div className="relative z-40 p-5 md:p-8">
           <motion.p
             layoutId={layout ? `category-${card.category}` : undefined}
-            className="text-left font-sans text-sm font-medium text-white md:text-base"
+            className="text-left font-sans text-xs font-medium text-white md:text-base"
           >
             {card.category}
           </motion.p>
           <motion.p
             layoutId={layout ? `title-${card.title}` : undefined}
-            className="mt-2 max-w-xs text-left font-sans text-xl font-semibold [text-wrap:balance] text-white md:text-3xl"
+            className="mt-2 max-w-xs text-left font-sans text-lg font-semibold [text-wrap:balance] text-white md:text-3xl"
           >
             {card.title}
           </motion.p>
@@ -329,6 +344,11 @@ export const Card = ({
             fill
             className="absolute inset-0 z-10 object-cover"
           />
+        )}
+        {card.topRightOverlay && (
+          <div className="absolute top-3 right-3 z-50 pointer-events-none">
+            {card.topRightOverlay}
+          </div>
         )}
       </motion.button>
     </>

@@ -28,8 +28,6 @@ const BUSINESSES: ScrapedBusiness[] = [
   { name: "Apex Auto Center",     zip: "78704", rating: 4.6, reviews: 218, status: "NEW" },
   { name: "West 6th Garage",      zip: "78703", rating: 4.4, reviews: 156, status: "QUEUED" },
   { name: "Lonestar Auto Repair", zip: "78701", rating: 4.8, reviews: 412, status: "NEW" },
-  { name: "ZipCar Repair",        zip: "78705", rating: 4.2, reviews: 89,  status: "DUPE" },
-  { name: "Downtown Motors",      zip: "78702", rating: 4.5, reviews: 267, status: "NEW" },
 ];
 
 export function Scene2GoogleMapsVisual() {
@@ -38,19 +36,14 @@ export function Scene2GoogleMapsVisual() {
       {/* Google-Maps-styled background */}
       <MapBackdrop />
 
-      {/* Erken Systems mark in upper-right corner — sits on the map */}
-      <div className="absolute top-10 right-5 z-30 flex items-center gap-1.5 rounded-full bg-white/90 px-2 py-1 shadow-md">
-        <div className="w-4 h-4 rounded-full bg-[#7ea687] flex items-center justify-center">
-          <div className="w-1 h-1 rounded-full bg-[#C76B58]" />
-        </div>
-        <span className="text-[10px] font-semibold text-[#2a2722]">Erken · scraper</span>
-      </div>
+      {/* Erken badge moved out of the visual to the card's topRightOverlay
+          slot — was trapped in the visual's stacking context. */}
 
-      {/* Translucent results panel docked to the bottom — same UX
-          metaphor real Google Maps uses for its sidebar. Tinted deep
-          sage (the channel's brand color) instead of near-black for
-          warmer carousel cohesion. */}
-      <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col px-5 pb-6 pt-4 bg-gradient-to-t from-[#3f5e4a] via-[#3f5e4a]/95 to-[#3f5e4a]/0">
+      {/* Translucent results panel — moved DOWN so the business list
+          flows off the bottom of the card the way the cold-email card
+          does (Shamil 2026-05-25). Footer row + last two businesses
+          removed in the same pass to clean up the lower half. */}
+      <div className="absolute inset-x-0 top-[55%] bottom-[-15%] z-20 flex flex-col px-5 pt-4 bg-gradient-to-t from-[#3f5e4a] via-[#3f5e4a]/95 to-[#3f5e4a]/0">
         {/* Counter header */}
         <div className="mb-3">
           <div className="text-[10px] text-white/55 uppercase tracking-wider font-mono">
@@ -61,17 +54,11 @@ export function Scene2GoogleMapsVisual() {
           </div>
         </div>
 
-        {/* Business list */}
-        <div className="space-y-1 mb-3">
+        {/* Business list — overflows off the bottom of the card */}
+        <div className="space-y-1">
           {BUSINESSES.map((b, i) => (
             <BusinessRow key={b.name} biz={b} delay={i * 0.08} />
           ))}
-        </div>
-
-        {/* Footer status */}
-        <div className="flex items-center justify-between text-[10px] text-white/55 font-mono">
-          <span>ICP score · 8.3 / 10</span>
-          <span>→ outreach queue</span>
         </div>
       </div>
     </div>

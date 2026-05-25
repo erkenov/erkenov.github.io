@@ -26,7 +26,7 @@ const BULLETS = [
 export function Scene4ErkenPlatform() {
   return (
     <div
-      className="relative h-[34rem] md:h-[38rem] w-full overflow-hidden rounded-2xl p-6 md:p-8 grid grid-rows-[auto_1fr_auto] gap-4"
+      className="relative w-full rounded-2xl p-6 md:p-8 md:h-[38rem] md:overflow-hidden md:grid md:grid-rows-[auto_1fr_auto] gap-4"
       style={{ background: "#EFC7BC" }}
     >
       {/* Header — label + tagline */}

@@ -95,7 +95,7 @@ function Section({
   const isLeft = side === "left";
   const wrapperClass = mediaWrapperClassName ?? DEFAULT_MEDIA_WRAPPER(isLeft);
   return (
-    <section className="relative min-h-screen flex items-center px-6 md:px-12">
+    <section className="relative md:min-h-screen md:flex md:items-center px-6 md:px-12 py-10 md:py-0">
       <div
         data-celly-avoid
         className={`relative z-30 w-full md:w-1/2 ${isLeft ? "md:mr-auto" : "md:ml-auto"} max-w-xl`}
@@ -115,20 +115,19 @@ function Section({
             {cta} →
           </button>
         )}
-        {/* MOBILE media (Shamil 2026-05-25): renders inline BELOW the
-            text on phone since the desktop absolute-positioned wrapper
-            is md-only and pushes media off-screen on mobile. Rendered
-            ONLY when isMobile to avoid double-mounting heavy components
-            like the 3D MacBook or videos. */}
-        {media && isMobile && (
-          <div
-            {...(mediaAvoidCelly ? { "data-celly-avoid": "" } : {})}
-            className="mt-10 w-full"
-          >
-            {media}
-          </div>
-        )}
       </div>
+      {/* MOBILE media — rendered OUTSIDE the text column so it breaks
+          out of the max-w-xl cap and spans the full section width.
+          (Shamil 2026-05-25: especially needed for the MacBook 3D
+          scene that has no side text on mobile.) */}
+      {media && isMobile && (
+        <div
+          {...(mediaAvoidCelly ? { "data-celly-avoid": "" } : {})}
+          className="mt-10 w-full"
+        >
+          {media}
+        </div>
+      )}
       {media && !isMobile && (
         <div
           {...(mediaAvoidCelly ? { "data-celly-avoid": "" } : {})}
@@ -155,7 +154,7 @@ const CELLY_VARIANTS: BubbleVariant[] = [
   {
     // LONG — full pitch
     text:
-      "Hi, I'm Celly. Shamil built this site with me — and I'm wired into everything he knows. Every project, every system, every lesson from ten years of building. Ask me anything about him, his work, or what we'd build for you.",
+      "Hi, I'm Erken. Shamil built this site with me — I'm wired into everything he knows. Every project, every system, every lesson from ten years of building. Ask me anything about him, his work, or what we'd build for you.",
     widthRem: 22,
     paddingVw: 9,
     paddingVh: 11,
@@ -163,14 +162,14 @@ const CELLY_VARIANTS: BubbleVariant[] = [
   {
     // MEDIUM — condensed
     text:
-      "Hi, I'm Celly. I'm Shamil's assistant — I know every project, every system, every lesson. Ask me anything.",
+      "Hi, I'm Erken. I'm Shamil's assistant — I know every project, every system, every lesson. Ask me anything.",
     widthRem: 17,
     paddingVw: 7,
     paddingVh: 7,
   },
   {
     // SHORT — one-liner
-    text: "Hi, I'm Shamil's assistant. Ask me anything.",
+    text: "Hi, I'm Erken. Ask me anything.",
     widthRem: 12,
     paddingVw: 5,
     paddingVh: 4,
@@ -400,8 +399,10 @@ export default function PreviewV6Page() {
     const el = spriteContainerRef.current;
     const bubbleEl = bubbleContainerRef.current;
     // Re-apply Celly's opacity — 0 when scrolling, 1 when stopped.
+    // Mobile (Shamil 2026-05-25): always 1, she stays visible during scroll.
     if (el) {
-      const restOpacity = bubbleVisible ? 1 : 0;
+      const mobile = typeof window !== "undefined" && window.innerWidth < 768;
+      const restOpacity = mobile ? 1 : bubbleVisible ? 1 : 0;
       el.style.setProperty("--celly-rest-opacity", String(restOpacity));
       el.style.setProperty("--celly-hover-opacity", "1");
       el.style.opacity = "var(--celly-rest-opacity)";
@@ -455,6 +456,27 @@ export default function PreviewV6Page() {
         lastSideRef.current = lastDesiredDirectionRef.current;
         setPointDirection(lastDesiredDirectionRef.current);
       }
+      // Mobile (Shamil 2026-05-25): pin Celly to the bottom-LEFT corner.
+      // No findEmptySpot, no scale-from-space — she sits in one fixed
+      // place across all sections. Bubble still auto-positions above her.
+      if (window.innerWidth < 768) {
+        const fixedXVw = 14;
+        const fixedYVh = 94;
+        el.style.left = `${fixedXVw}vw`;
+        el.style.top = `${fixedYVh}vh`;
+        el.style.transform = "translate(-50%, -50%) scale(0.6)";
+        // Tighter bubble: narrower variant (text re-wraps to fewer chars
+        // per line but font stays the same), and sits closer to Celly.
+        const variant = { ...CELLY_VARIANTS[2], widthRem: 8 };
+        setActiveVariant(variant);
+        bubbleEl.style.right = "auto";
+        bubbleEl.style.bottom = "auto";
+        bubbleEl.style.left = `${fixedXVw + 7}vw`;
+        bubbleEl.style.top = `${fixedYVh - 13}vh`;
+        bubbleEl.style.transform = "translate(-50%, -50%)";
+        bubbleEl.style.width = `${variant.widthRem}rem`;
+        return;
+      }
       // 2. Find empty spot for Celly. paddingVw/Vh = HALF her sprite at
       //    the SMALLEST scale we'd allow — so finder considers more
       //    candidates. Actual scale is then derived from minDist.
@@ -481,13 +503,13 @@ export default function PreviewV6Page() {
       // (and her bubble) fit beside the obstacle. When there's plenty
       // of room she stays at max scale. Clamped so she's never too
       // small to see or too big to fit.
-      // Mobile gets half the size (Shamil 2026-05-25: she was covering
-      // most of the phone screen). Keep desktop bounds untouched.
-      const isMobile = window.innerWidth < 768;
-      const MIN_SCALE = isMobile ? 0.6 : 1.2;
-      const MAX_SCALE = isMobile ? 1.0 : 2.0;
-      const BASE_SCALE = isMobile ? 0.5 : 1.0;
-      const SPACE_GROWTH = isMobile ? 0.065 : 0.13;
+      // Mobile got half the size 2026-05-25 afternoon; same evening Shamil
+      // applied the same shrink to desktop ("50% of what she is now").
+      // Both viewports now share these bounds.
+      const MIN_SCALE = 0.6;
+      const MAX_SCALE = 1.0;
+      const BASE_SCALE = 0.5;
+      const SPACE_GROWTH = 0.065;
       const scaleFromSpace = Math.max(
         MIN_SCALE,
         Math.min(MAX_SCALE, BASE_SCALE + cellyTarget.minDist * SPACE_GROWTH),
@@ -566,12 +588,13 @@ export default function PreviewV6Page() {
         };
       };
 
-      // Mobile cap (Shamil 2026-05-25): screen real estate is tight, the
-      // SHORT one-liner is already as much copy as fits comfortably. Plus
-      // we override widthRem so the cloud isn't oversized for the text.
-      const variants = isMobile
-        ? [{ ...CELLY_VARIANTS[2], widthRem: 10 }]
-        : CELLY_VARIANTS;
+      // SHORT-only on both viewports (Shamil 2026-05-25 evening): the
+      // long pitch never landed visually — bubble too big, copy felt
+      // sales-y. The one-liner reads cleaner and matches mobile.
+      // Desktop bubble slightly wider than mobile since more room.
+      const variants = [
+        { ...CELLY_VARIANTS[2], widthRem: isMobile ? 10 : 11 },
+      ];
       for (const variant of variants) {
         const cellyAvoid = buildCellyAvoid(variant);
         const target = findEmptySpot({
@@ -949,7 +972,9 @@ export default function PreviewV6Page() {
     // disappears mid-scroll, leaving just the dragon-trail visual. Fades
     // back to full opacity when scroll stops at her new auto-position.
     lastCellOpacityRef.current = 1;
-    const restOpacity = stoppedRef.current ? 1 : 0;
+    // Mobile: Celly is always visible (she's pinned bottom-left, no scroll fade).
+    const mobile = typeof window !== "undefined" && window.innerWidth < 768;
+    const restOpacity = mobile ? 1 : stoppedRef.current ? 1 : 0;
     const hoverOpacity = 1;
     el.style.setProperty("--celly-rest-opacity", String(restOpacity));
     el.style.setProperty("--celly-hover-opacity", String(hoverOpacity));
@@ -986,6 +1011,9 @@ export default function PreviewV6Page() {
       // Round 23: straight dragon — no bend, no sin arc — matches the
       // pen-drawing-down-the-page mental model.
       straightTrail
+      // Mobile (Shamil 2026-05-25): trailing dragon disabled. Keep just
+      // the cell/dust cloud around Celly — no chasing snake of particles.
+      hideTrail={isMobile}
       // Per-section Y overrides so the dust CLOUD follows Celly when
       // she's not in the default upper-third position. Step 1 puts the
       // cell + cloud at bottom-right (Y=-0.8) so Celly is INSIDE the
@@ -1202,7 +1230,10 @@ export default function PreviewV6Page() {
           // top and bottom to give cloud-like scalloped edges.
           // Mobile (Shamil 2026-05-25): puffs scaled down so the cloud
           // hugs the short text instead of ballooning around it.
-          const PUFF_SCALE = isMobile ? 0.55 : 1;
+          // Bubble cloud puffs shrink on both viewports now that the SHORT
+          // variant + smaller widthRem is universal. Desktop 0.7 keeps
+          // the cloud silhouette but tightens it around the text.
+          const PUFF_SCALE = isMobile ? 0.4 : 0.7;
           const puffs: React.ReactNode[] = [];
           const ROWS = 4;
           const COLS = 7;
@@ -1277,7 +1308,7 @@ export default function PreviewV6Page() {
           variant chosen by the auto-positioner (LONG/MEDIUM/SHORT
           depending on available space). */}
       <div className={`relative z-10 ${isMobile ? "px-4 py-4" : "px-8 py-7"}`}>
-        <div className="text-[14px] leading-relaxed text-neutral-800">
+        <div className={`${isMobile ? "text-[11px]" : "text-[14px]"} leading-relaxed text-neutral-800`}>
           {activeVariant?.text ?? CELLY_INTRO}
         </div>
       </div>

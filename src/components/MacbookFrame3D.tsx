@@ -144,7 +144,7 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
           zIndex: -1,
         }}
       />
-      <div className="aspect-[1/1] w-full">
+      <div className="aspect-[4/3] md:aspect-[1/1] w-full">
         <Canvas
           camera={{ position: [0, 0.4, 3.2], fov: 32 }}
           gl={{ alpha: true, antialias: true }}
@@ -168,7 +168,10 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
                 centered. Y offset -0.375 → 0 brings the whole laptop
                 higher into the canvas so it's fully visible alongside the
                 section text. ContactShadows lifted to follow. */}
-            <Center scale={0.0304} position={[0.2, 0, 0]}>
+            <Center
+              scale={typeof window !== "undefined" && window.innerWidth < 768 ? 0.05 : 0.0304}
+              position={typeof window !== "undefined" && window.innerWidth < 768 ? [0.0125, 0, 0] : [0.2, 0, 0]}
+            >
               <Model openValue={openValue} />
             </Center>
             <ContactShadows

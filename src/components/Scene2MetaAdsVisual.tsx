@@ -29,13 +29,7 @@ const DM_THREAD: DmTurn[] = [
 export function Scene2MetaAdsVisual() {
   return (
     <div className="absolute inset-0 flex flex-col px-5 pb-6 pt-32 bg-gradient-to-br from-[#F2B85E] via-[#E89F1F] to-[#B7771A]">
-      {/* Erken badge — white pill style for consistent visibility */}
-      <div className="absolute top-10 right-5 z-30 flex items-center gap-1.5 rounded-full bg-white/95 px-2 py-1 shadow-md">
-        <div className="w-4 h-4 rounded-full bg-[#7ea687] flex items-center justify-center">
-          <div className="w-1 h-1 rounded-full bg-[#C76B58]" />
-        </div>
-        <span className="text-[10px] font-semibold text-[#2a2722]">Erken · Meta AI</span>
-      </div>
+      {/* Erken badge moved to card's topRightOverlay slot. */}
 
       {/* Header — explicitly "inbound from ad" so it's clear this is
           NOT cold DM outreach (which Meta bans). The prospect saw an
