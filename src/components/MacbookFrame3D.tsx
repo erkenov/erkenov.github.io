@@ -51,10 +51,14 @@ function Model({ openValue }: { openValue: MotionValue<number> }) {
 
     // Hinge in WORLD coords (measured via runtime inspection):
     //   (0.198, -0.649, -0.246) — base back edge / lid bottom edge
-    // Y lowered from -0.625 → -0.69 to kill the mid-rotation gap between
-    // lid and base (pivot was sitting above the model's actual hinge axis,
-    // so the lid bottom swung upward away from the keyboard during close).
-    const hingeWorld = new THREE.Vector3(0.198, -0.69, -0.246);
+    // Y history:
+    //  -0.625 → small mid-rotation gap between lid and base
+    //  -0.69  → killed the gap BUT hinge swung DOWN through the base
+    //           on close (Shamil 2026-05-25 evening "hinge goes down")
+    //  -0.625 → restored. The "gap" was less ugly than the through-base
+    //           swing. Pair with reduced rotation angle below to avoid
+    //           over-closing past flat-onto-keyboard.
+    const hingeWorld = new THREE.Vector3(0.198, -0.625, -0.246);
     // Convert to lid's parent local frame so the pivot sits at the hinge.
     const hingeInParent = lidParent.worldToLocal(hingeWorld.clone());
 
@@ -76,10 +80,12 @@ function Model({ openValue }: { openValue: MotionValue<number> }) {
     const pivot = pivotRef.current;
     if (!pivot) return;
     // openValue 0..1 → pivot rotation (full-closed)..0
-    // Closed needs >90° because authored open pose leans back slightly;
-    // ~110° folds the lid flat onto the keyboard.
+    // Was 0.612 * π ≈ 110° but that over-rotated past flat-onto-keyboard,
+    // pushing the lid down through the base. 0.5 * π = exactly 90° from
+    // open to closed. (Shamil 2026-05-25 evening: "hinge goes down
+    // through bottom".)
     const t = openValue.get();
-    pivot.rotation.x = (1 - t) * (Math.PI * 0.612);
+    pivot.rotation.x = (1 - t) * (Math.PI * 0.5);
   });
 
   return <primitive object={scene} rotation={[0, -0.010, 0]} />;
