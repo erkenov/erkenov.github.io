@@ -49,16 +49,23 @@ function Model({ openValue }: { openValue: MotionValue<number> }) {
     if (lid.parent.userData.__macbookHingeWrapped) return;
     const lidParent = lid.parent;
 
-    // Hinge in WORLD coords (measured via runtime inspection):
-    //   (0.198, -0.649, -0.246) — base back edge / lid bottom edge
-    // Y history:
-    //  -0.625 → small mid-rotation gap between lid and base
-    //  -0.69  → killed the gap BUT hinge swung DOWN through the base
-    //           on close (Shamil 2026-05-25 evening "hinge goes down")
-    //  -0.625 → restored. The "gap" was less ugly than the through-base
-    //           swing. Pair with reduced rotation angle below to avoid
-    //           over-closing past flat-onto-keyboard.
-    const hingeWorld = new THREE.Vector3(0.198, -0.625, -0.246);
+    // Find the actual hinge axis from the lid's geometry rather than
+    // guessing Y by hand. The hinge runs along the lid's BOTTOM-BACK
+    // edge — the lowest-Y, smallest-Z points of the lid bounding box.
+    // (Shamil 2026-05-25 evening: previous hand-tuned values were
+    // either above or below the real axis; lid kept clipping through
+    // the keyboard base on close.)
+    const bbox = new THREE.Box3().setFromObject(lid);
+    // X — keep the existing tuned X (model isn't centered at 0).
+    const hingeX = 0.198;
+    // Y — the BOTTOM edge of the lid's bounding box. Pivot at the
+    // lid's lowest point means the bottom edge stays still during
+    // rotation, only the top arcs.
+    const hingeY = bbox.min.y;
+    // Z — the BACK edge of the lid (smallest Z, since negative-Z is
+    // "into the screen" / "back of laptop" in this model's frame).
+    const hingeZ = bbox.min.z;
+    const hingeWorld = new THREE.Vector3(hingeX, hingeY, hingeZ);
     // Convert to lid's parent local frame so the pivot sits at the hinge.
     const hingeInParent = lidParent.worldToLocal(hingeWorld.clone());
 
