@@ -457,11 +457,16 @@ export default function PreviewV6Page() {
       // (and her bubble) fit beside the obstacle. When there's plenty
       // of room she stays at max scale. Clamped so she's never too
       // small to see or too big to fit.
-      const MIN_SCALE = 1.2;
-      const MAX_SCALE = 2.0;
+      // Mobile gets half the size (Shamil 2026-05-25: she was covering
+      // most of the phone screen). Keep desktop bounds untouched.
+      const isMobile = window.innerWidth < 768;
+      const MIN_SCALE = isMobile ? 0.6 : 1.2;
+      const MAX_SCALE = isMobile ? 1.0 : 2.0;
+      const BASE_SCALE = isMobile ? 0.5 : 1.0;
+      const SPACE_GROWTH = isMobile ? 0.065 : 0.13;
       const scaleFromSpace = Math.max(
         MIN_SCALE,
-        Math.min(MAX_SCALE, 1.0 + cellyTarget.minDist * 0.13),
+        Math.min(MAX_SCALE, BASE_SCALE + cellyTarget.minDist * SPACE_GROWTH),
       );
       el.style.transform = `translate(-50%, -50%) scale(${scaleFromSpace})`;
 

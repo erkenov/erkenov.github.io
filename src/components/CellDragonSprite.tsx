@@ -172,10 +172,12 @@ export function CellDragonSprite({
               // direction for the taper highlight.
               borderRadius: "55% 55% 50% 50% / 25% 25% 75% 75%",
               background: `linear-gradient(170deg, ${WHITE_BRIGHT} 0%, ${WHITE_BRIGHT} 50%, ${CREAM_SOFT} 85%, ${CREAM_SHADOW} 100%)`,
+              // Sage box-shadow rings removed: iOS Safari draws them as
+              // rectangles when this div sits inside a rotated parent +
+              // has elliptical border-radius. Outer-halo div around the
+              // whole sprite provides the sage aura. Keep depth + inset.
               boxShadow: [
                 `0 4px 10px rgba(94, 130, 104, 0.30)`,
-                `0 0 0 1px ${SAGE_GLOW}44`,
-                `0 0 8px ${SAGE_GLOW}44`,
                 `inset -2px 0 3px ${CREAM_SHADOW}55`,
                 `inset 2px 1px 3px rgba(255,255,255,0.95)`,
               ].join(", "),
@@ -221,10 +223,9 @@ export function CellDragonSprite({
             style={{
               borderRadius: "55% 55% 50% 50% / 25% 25% 75% 75%",
               background: `linear-gradient(190deg, ${WHITE_BRIGHT} 0%, ${WHITE_BRIGHT} 50%, ${CREAM_SOFT} 85%, ${CREAM_SHADOW} 100%)`,
+              // Sage rings removed — see left-hand note.
               boxShadow: [
                 `0 4px 10px rgba(94, 130, 104, 0.30)`,
-                `0 0 0 1px ${SAGE_GLOW}44`,
-                `0 0 8px ${SAGE_GLOW}44`,
                 `inset 2px 0 3px ${CREAM_SHADOW}55`,
                 `inset -2px 1px 3px rgba(255,255,255,0.95)`,
               ].join(", "),
@@ -246,10 +247,13 @@ export function CellDragonSprite({
             // Dome shape: rounder at top, slight flatten at bottom
             borderRadius: "55% 55% 50% 50% / 70% 70% 30% 30%",
             background: `linear-gradient(160deg, ${WHITE_BRIGHT} 0%, ${WHITE_BRIGHT} 45%, ${CREAM_SOFT} 82%, ${CREAM_SHADOW} 100%)`,
+            // Sage box-shadow rings removed: iOS Safari renders them as
+            // squares because this element has overflow:hidden + an
+            // elliptical border-radius. The outer-halo div around the
+            // whole sprite provides sage aura. Keep depth + inset shadows
+            // so the dome still reads as a 3D ball.
             boxShadow: [
               `0 6px 14px rgba(94, 130, 104, 0.30)`,
-              `0 0 0 1px ${SAGE_GLOW}55`,
-              `0 0 16px ${SAGE_GLOW}55`,
               `inset -4px -6px 12px ${CREAM_SHADOW}55`,
               `inset 3px 4px 8px rgba(255,255,255,0.95)`,
             ].join(", "),
