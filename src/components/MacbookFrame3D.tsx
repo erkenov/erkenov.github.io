@@ -122,7 +122,10 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
 
   const openValue = useTransform(
     scrollYProgress,
-    [0, 0.35, 0.65, 1],
+    // Closing phase tightened from 0.65→1.0 to 0.85→1.0 — close
+    // happens faster at the end of the section (Shamil 2026-05-25
+    // evening). Opening still 0→0.35.
+    [0, 0.35, 0.85, 1],
     [0, 1, 1, 0],
   );
 
