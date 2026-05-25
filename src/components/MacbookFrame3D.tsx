@@ -115,14 +115,16 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
     offset: ["start end", "end start"],
   });
 
+  // Mobile keeps the close slow (0.65→1.0 = 35% of scroll). Desktop
+  // closes faster (0.65→0.80 = 15%). Shamil 2026-05-25 evening: "close
+  // slower on mobile, same launch spot". Captured at component init —
+  // a viewport rotation across the breakpoint requires a page refresh
+  // to retune, which is fine for the cinematic.
+  const closeEnd =
+    typeof window !== "undefined" && window.innerWidth < 768 ? 1.0 : 0.80;
   const openValue = useTransform(
     scrollYProgress,
-    // Closing starts at the same 0.65 mark but finishes by 0.80 instead
-    // of 1.0 — the CLOSE itself happens faster, the lid is already shut
-    // before the section exits the viewport (Shamil 2026-05-25 evening
-    // "close faster not sooner"). Outputs clamp past 0.80 so lid stays
-    // closed through the rest of the section exit.
-    [0, 0.35, 0.65, 0.80],
+    [0, 0.35, 0.65, closeEnd],
     [0, 1, 1, 0],
   );
 
