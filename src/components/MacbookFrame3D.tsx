@@ -80,12 +80,14 @@ function Model({ openValue }: { openValue: MotionValue<number> }) {
     const pivot = pivotRef.current;
     if (!pivot) return;
     // openValue 0..1 → pivot rotation (full-closed)..0
-    // Was 0.612 * π ≈ 110° but that over-rotated past flat-onto-keyboard,
-    // pushing the lid down through the base. 0.5 * π = exactly 90° from
-    // open to closed. (Shamil 2026-05-25 evening: "hinge goes down
-    // through bottom".)
+    // Tuning history:
+    //  0.612π (~110°) — over-rotated past flat, pushed through base
+    //  0.5π   (~90°)  — left a visible gap at full close (Shamil
+    //                   "not fully closed, farthest it goes")
+    //  0.555π (~100°) — split the difference; the authored open pose
+    //                   leans ~10° back so closing needs 100° total.
     const t = openValue.get();
-    pivot.rotation.x = (1 - t) * (Math.PI * 0.5);
+    pivot.rotation.x = (1 - t) * (Math.PI * 0.555);
   });
 
   return <primitive object={scene} rotation={[0, -0.010, 0]} />;
