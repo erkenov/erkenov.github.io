@@ -90,7 +90,8 @@ function Section({
   media,
   mediaWrapperClassName,
   mediaAvoidCelly = true,
-}: SectionProps) {
+  isMobile = false,
+}: SectionProps & { isMobile?: boolean }) {
   const isLeft = side === "left";
   const wrapperClass = mediaWrapperClassName ?? DEFAULT_MEDIA_WRAPPER(isLeft);
   return (
@@ -114,8 +115,21 @@ function Section({
             {cta} →
           </button>
         )}
+        {/* MOBILE media (Shamil 2026-05-25): renders inline BELOW the
+            text on phone since the desktop absolute-positioned wrapper
+            is md-only and pushes media off-screen on mobile. Rendered
+            ONLY when isMobile to avoid double-mounting heavy components
+            like the 3D MacBook or videos. */}
+        {media && isMobile && (
+          <div
+            {...(mediaAvoidCelly ? { "data-celly-avoid": "" } : {})}
+            className="mt-10 w-full"
+          >
+            {media}
+          </div>
+        )}
       </div>
-      {media && (
+      {media && !isMobile && (
         <div
           {...(mediaAvoidCelly ? { "data-celly-avoid": "" } : {})}
           className={wrapperClass}
@@ -984,6 +998,7 @@ export default function PreviewV6Page() {
       {SECTIONS.map((s, i) => (
         <Section
           key={i}
+          isMobile={isMobile}
           {...s}
           media={
             i === 0 ? <Scene1IntroVideo />
