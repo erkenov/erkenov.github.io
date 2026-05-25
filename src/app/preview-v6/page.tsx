@@ -365,6 +365,16 @@ export default function PreviewV6Page() {
   const [pointDirection, setPointDirection] = useState<"left" | "right">("right");
   const lastSideRef = useRef<"left" | "right">("right");
   const lastDesiredDirectionRef = useRef<"left" | "right">("right");
+  // Mobile flag — drives bubble-variant cap (SHORT only) and smaller
+  // cloud puffs / tighter padding. Initial false → matches SSR; set
+  // truthy after mount so we never mismatch on first paint.
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const compute = () => setIsMobile(window.innerWidth < 768);
+    compute();
+    window.addEventListener("resize", compute);
+    return () => window.removeEventListener("resize", compute);
+  }, []);
   // Active bubble variant — adaptive (LONG/MEDIUM/SHORT). Auto-positioner
   // picks the largest variant that fits in the available empty zone on
   // stop. Null = no variant fits, bubble is hidden entirely.
@@ -542,7 +552,13 @@ export default function PreviewV6Page() {
         };
       };
 
-      for (const variant of CELLY_VARIANTS) {
+      // Mobile cap (Shamil 2026-05-25): screen real estate is tight, the
+      // SHORT one-liner is already as much copy as fits comfortably. Plus
+      // we override widthRem so the cloud isn't oversized for the text.
+      const variants = isMobile
+        ? [{ ...CELLY_VARIANTS[2], widthRem: 10 }]
+        : CELLY_VARIANTS;
+      for (const variant of variants) {
         const cellyAvoid = buildCellyAvoid(variant);
         const target = findEmptySpot({
           preferredXVw: cellyTarget.xVw,
@@ -563,7 +579,7 @@ export default function PreviewV6Page() {
         }
       }
       if (!chosenVariant) {
-        chosenVariant = CELLY_VARIANTS[CELLY_VARIANTS.length - 1];
+        chosenVariant = variants[variants.length - 1];
         const cellyAvoid = buildCellyAvoid(chosenVariant);
         chosenTarget = findEmptySpot({
           preferredXVw: cellyTarget.xVw,
@@ -702,7 +718,7 @@ export default function PreviewV6Page() {
         cellAnimRafRef.current = requestAnimationFrame(tick);
       }
     }
-  }, [bubbleVisible]);
+  }, [bubbleVisible, isMobile]);
   // (pointDirection state + lastSideRef + lastDesiredDirectionRef
   //  moved to top of component to avoid TDZ error in the stop-handler
   //  useEffect above.)
@@ -1169,9 +1185,10 @@ export default function PreviewV6Page() {
         {(() => {
           // Cloud-shaped distribution: wider than tall, with extra puffs
           // top and bottom to give cloud-like scalloped edges.
+          // Mobile (Shamil 2026-05-25): puffs scaled down so the cloud
+          // hugs the short text instead of ballooning around it.
+          const PUFF_SCALE = isMobile ? 0.55 : 1;
           const puffs: React.ReactNode[] = [];
-          // Inner fill — solid block of large overlapping circles to
-          // make the body opaque
           const ROWS = 4;
           const COLS = 7;
           for (let r = 0; r < ROWS; r++) {
@@ -1184,8 +1201,8 @@ export default function PreviewV6Page() {
                   key={`fill-${r}-${c}`}
                   className="absolute bg-white rounded-full"
                   style={{
-                    width: "80px",
-                    height: "80px",
+                    width: `${80 * PUFF_SCALE}px`,
+                    height: `${80 * PUFF_SCALE}px`,
                     left: `${xPct}%`,
                     top: `${yPct}%`,
                     transform: "translate(-50%, -50%)",
@@ -1194,7 +1211,6 @@ export default function PreviewV6Page() {
               );
             }
           }
-          // Top scallops — varied-size puffs along the top edge
           const topPuffs = [
             { x: 12, y: 5, size: 70 },
             { x: 28, y: -2, size: 90 },
@@ -1208,8 +1224,8 @@ export default function PreviewV6Page() {
                 key={`top-${i}`}
                 className="absolute bg-white rounded-full"
                 style={{
-                  width: `${p.size}px`,
-                  height: `${p.size}px`,
+                  width: `${p.size * PUFF_SCALE}px`,
+                  height: `${p.size * PUFF_SCALE}px`,
                   left: `${p.x}%`,
                   top: `${p.y}%`,
                   transform: "translate(-50%, -50%)",
@@ -1217,7 +1233,6 @@ export default function PreviewV6Page() {
               />
             );
           });
-          // Bottom scallops — slightly smaller, fewer
           const botPuffs = [
             { x: 15, y: 92, size: 65 },
             { x: 35, y: 98, size: 80 },
@@ -1230,8 +1245,8 @@ export default function PreviewV6Page() {
                 key={`bot-${i}`}
                 className="absolute bg-white rounded-full"
                 style={{
-                  width: `${p.size}px`,
-                  height: `${p.size}px`,
+                  width: `${p.size * PUFF_SCALE}px`,
+                  height: `${p.size * PUFF_SCALE}px`,
                   left: `${p.x}%`,
                   top: `${p.y}%`,
                   transform: "translate(-50%, -50%)",
@@ -1246,7 +1261,7 @@ export default function PreviewV6Page() {
           Sits on top of the merged cloud silhouette. Copy is the active
           variant chosen by the auto-positioner (LONG/MEDIUM/SHORT
           depending on available space). */}
-      <div className="relative z-10 px-8 py-7">
+      <div className={`relative z-10 ${isMobile ? "px-4 py-4" : "px-8 py-7"}`}>
         <div className="text-[14px] leading-relaxed text-neutral-800">
           {activeVariant?.text ?? CELLY_INTRO}
         </div>
