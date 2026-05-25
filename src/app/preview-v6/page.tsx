@@ -410,8 +410,11 @@ export default function PreviewV6Page() {
     // Scroll-start: smoothly shrink Celly's body to invisible over
     // ~200ms (Shamil round 27), then start dragon-trail at her last
     // position. The shrink RAF tweens scaleRef + sphereOpacityRef from
-    // their current values down to 0.
-    if (cellRefsRef.current && !bubbleVisible) {
+    // their current values down to 0. Skipped on mobile — there's no
+    // trail (hideTrail={isMobile}) and the dust cloud should stay
+    // visible around Celly at all times. (Shamil 2026-05-25 evening.)
+    const isMobileNow = typeof window !== "undefined" && window.innerWidth < 768;
+    if (cellRefsRef.current && !bubbleVisible && !isMobileNow) {
       const refs = cellRefsRef.current;
       if (cellAnimRafRef.current !== null) {
         cancelAnimationFrame(cellAnimRafRef.current);
@@ -475,6 +478,34 @@ export default function PreviewV6Page() {
         bubbleEl.style.top = `${fixedYVh - 13}vh`;
         bubbleEl.style.transform = "translate(-50%, -50%)";
         bubbleEl.style.width = `${variant.widthRem}rem`;
+        // Pin the cell-dragon (the dust cloud) to Celly's screen position
+        // too (Shamil 2026-05-25 evening). Without this the cell renders
+        // wherever the scroll math wants, and Celly looks isolated from
+        // her dust. Project Celly's (vw, vh) into the camera's world
+        // coordinates and write directly to the refs.
+        if (cellRefsRef.current) {
+          const refs = cellRefsRef.current;
+          const { cameraZ, fovDeg } = cameraParamsRef.current;
+          const halfFovRad = (fovDeg / 2) * (Math.PI / 180);
+          const verticalHalf = cameraZ * Math.tan(halfFovRad);
+          const aspect =
+            typeof window !== "undefined" && window.innerHeight > 0
+              ? window.innerWidth / window.innerHeight
+              : 16 / 9;
+          const horizontalHalf = verticalHalf * aspect;
+          const targetX = ((fixedXVw - 50) / 100) * (2 * horizontalHalf);
+          const targetY = ((50 - fixedYVh) / 100) * (2 * verticalHalf);
+          if (cellAnimRafRef.current !== null) {
+            cancelAnimationFrame(cellAnimRafRef.current);
+            cellAnimRafRef.current = null;
+          }
+          refs.xRef.current = targetX;
+          refs.yRef.current = targetY;
+          refs.scaleRef.current = 1;
+          refs.sphereOpacityRef.current = 1;
+          refs.streamOpacityRef.current = 0;
+          lastCellWorldPosRef.current = { x: targetX, y: targetY };
+        }
         return;
       }
       // 2. Find empty spot for Celly. paddingVw/Vh = HALF her sprite at
