@@ -23,6 +23,10 @@ interface CarouselProps {
    *  scrolling past the end jumps back to an equivalent earlier position
    *  with no animation, giving an "infinite" feel. */
   loop?: boolean;
+  /** Where to place the prev/next arrow buttons relative to the card row.
+   *  "left" (default) keeps existing behavior; "right" justify-end pushes
+   *  them to the far side. */
+  arrowsPosition?: "left" | "right";
 }
 
 type Card = {
@@ -44,7 +48,7 @@ export const CarouselContext = createContext<{
   currentIndex: 0,
 });
 
-export const Carousel = ({ items, initialScroll = 0, loop = false }: CarouselProps) => {
+export const Carousel = ({ items, initialScroll = 0, loop = false, arrowsPosition = "left" }: CarouselProps) => {
   const carouselRef = React.useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = React.useState(false);
   const [canScrollRight, setCanScrollRight] = React.useState(true);
@@ -183,7 +187,14 @@ export const Carousel = ({ items, initialScroll = 0, loop = false }: CarouselPro
             ))}
           </div>
         </div>
-        <div className="ml-4 flex justify-start gap-2">
+        <div
+          className={cn(
+            "flex gap-2",
+            arrowsPosition === "right"
+              ? "mr-4 justify-end"
+              : "ml-4 justify-start"
+          )}
+        >
           <button
             className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-accent text-bg shadow-sm transition-colors hover:bg-accent-hover disabled:opacity-40"
             onClick={scrollLeft}

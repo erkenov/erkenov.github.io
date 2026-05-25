@@ -148,6 +148,9 @@ interface SphereInnerProps {
   sphereOpacityRef: React.MutableRefObject<number>;
   /** 0..1 — opacity of the downward stream layer (peaks during transitions) */
   streamOpacityRef: React.MutableRefObject<number>;
+  /** When true, the inner red glowing core mesh is hidden so a 2D overlay
+   *  (Sally) can visually take its place. The outer dust + nodes stay. */
+  hideInnerCore?: boolean;
 }
 
 /* ------------------------------------------------------------------ */
@@ -166,6 +169,7 @@ function TrailLayer({
   nextYRef,
   transitionProgressRef,
   segProgressRef,
+  straightTrail = false,
 }: {
   streamOpacityRef: React.MutableRefObject<number>;
   prevXRef: React.MutableRefObject<number>;
@@ -176,6 +180,10 @@ function TrailLayer({
   transitionProgressRef: React.MutableRefObject<number>;
   /** 0..1 raw segment progress (0 = at prev cell, 1 = at next cell) */
   segProgressRef: React.MutableRefObject<number>;
+  /** When true, dragon is drawn as a straight line between prev and next
+   *  (no bend, no sin arc). Used for the inverted "Celly drives" mode
+   *  where curves don't fit Shamil's pen-drawing mental model. */
+  straightTrail?: boolean;
 }) {
   const ref = useRef<THREE.Points>(null);
   const matRef = useRef<THREE.PointsMaterial>(null);
@@ -244,15 +252,16 @@ function TrailLayer({
       // Particle u: maps localT to [tail, head] of the dragon body extent.
       const u = tail + localT * (head - tail);
 
-      // Base X interpolation + center bend (desktop horizontal motion)
+      // Base X interpolation + (optionally) center bend
       const linearX = prevX + (nextX - prevX) * u;
       const bendStrength = u * (1 - u) * 4;
-      const bendAmount = -linearX * bendStrength * BEND;
+      const bendAmount = straightTrail ? 0 : -linearX * bendStrength * BEND;
       const x = linearX + bendAmount;
 
-      // Y position: linear lerp between cell positions + downward sin arc
+      // Y position: linear lerp + (optionally) downward sin arc
       const linearY = prevY + (nextY - prevY) * u;
-      const y = linearY - Math.sin(u * Math.PI) * LOOP_HEIGHT * 0.75;
+      const arcOffset = straightTrail ? 0 : Math.sin(u * Math.PI) * LOOP_HEIGHT * 0.75;
+      const y = linearY - arcOffset;
 
       // Per-particle wiggle for organic feel (scale by trail extent so it doesn't wiggle when bunched)
       const extent = head - tail;
@@ -293,7 +302,7 @@ function TrailLayer({
   );
 }
 
-function Sphere({ pulseRef, xRef, yRef, scaleRef, sphereOpacityRef, streamOpacityRef }: SphereInnerProps) {
+function Sphere({ pulseRef, xRef, yRef, scaleRef, sphereOpacityRef, streamOpacityRef, hideInnerCore }: SphereInnerProps) {
   const groupRef = useRef<THREE.Group>(null);
   const dustRef = useRef<THREE.Points>(null);
   const nodesRef = useRef<THREE.Points>(null);
@@ -412,7 +421,11 @@ function Sphere({ pulseRef, xRef, yRef, scaleRef, sphereOpacityRef, streamOpacit
       nodeMatRef.current.size = 0.035 + o * 0.025;
     }
     if (lineMatRef.current) lineMatRef.current.opacity = 0;
-    if (glowMatRef.current) (glowMatRef.current as THREE.MeshStandardMaterial).opacity = 0.95 * o;
+    if (glowMatRef.current) {
+      // Hide the inner red core entirely when a 2D overlay (Sally) is
+      // replacing it visually. Outer dust + nodes stay untouched.
+      (glowMatRef.current as THREE.MeshStandardMaterial).opacity = hideInnerCore ? 0 : 0.95 * o;
+    }
   });
 
   return (
@@ -488,9 +501,60 @@ function Sphere({ pulseRef, xRef, yRef, scaleRef, sphereOpacityRef, streamOpacit
 interface StageProps {
   /** Children = the scrollable sections that live above the fixed sphere canvas */
   children: React.ReactNode;
+  /** Optional callback fired every onUpdate with the current cell position +
+   *  scale + opacity, plus camera params needed to project world→screen.
+   *  Used by external 2D overlays (e.g. CellDragonSprite) to track the cell.
+   *  Fires at 60fps — keep handler cheap (write directly to a DOM ref,
+   *  don't setState). */
+  onCellPositionChange?: (pos: CellPositionInfo) => void;
+  /** Fired once on mount with the internal position + shape + trail refs.
+   *  External code (the page) writes to these to drive cell behavior. */
+  onCellRefsReady?: (refs: {
+    xRef: React.MutableRefObject<number>;
+    yRef: React.MutableRefObject<number>;
+    scaleRef: React.MutableRefObject<number>;
+    sphereOpacityRef: React.MutableRefObject<number>;
+    streamOpacityRef: React.MutableRefObject<number>;
+    prevXRef: React.MutableRefObject<number>;
+    prevYRef: React.MutableRefObject<number>;
+    nextXRef: React.MutableRefObject<number>;
+    nextYRef: React.MutableRefObject<number>;
+    transitionProgressRef: React.MutableRefObject<number>;
+    segProgressRef: React.MutableRefObject<number>;
+  }) => void;
 }
 
-export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & { sectionCount?: number }) {
+export type CellPositionInfo = {
+  worldX: number;
+  worldY: number;
+  scale: number;
+  opacity: number;
+  cameraZ: number;
+  fovDeg: number;
+  isMobile: boolean;
+  /** Currently "settled" section index (0..sectionCount-1). During a
+   *  segment transition this is the section the cell is heading to once
+   *  it crosses the segment midpoint, otherwise the section it's peaked at. */
+  sectionIndex: number;
+};
+
+export function SphereScrollStage({
+  children,
+  sectionCount = 5,
+  onCellPositionChange,
+  onCellRefsReady,
+  hideInnerCellCore = false,
+  sectionYOverrides,
+  disableScrollDrivenShape = false,
+  straightTrail = false,
+}: StageProps & {
+  sectionCount?: number;
+  hideInnerCellCore?: boolean;
+  sectionYOverrides?: Record<number, number>;
+  disableScrollDrivenShape?: boolean;
+  /** Pass through to TrailLayer — straight dragon (no bend, no arc). */
+  straightTrail?: boolean;
+}) {
   const stageRef = useRef<HTMLDivElement>(null);
   const pulseRef = useRef(0);
   const xRef = useRef(-0.9);             // start LEFT (section 0 is even -> left)
@@ -507,6 +571,27 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
   const transitionProgressRef = useRef(0);
   const segProgressRef = useRef(0);
   const [mounted, setMounted] = useState(false);
+  // Expose position refs to the parent on mount so external code can
+  // force the cell to a specific world position. Used by the page to
+  // make the cell follow Celly's auto-positioned spot on scroll stop.
+  useEffect(() => {
+    if (onCellRefsReady) {
+      onCellRefsReady({
+        xRef,
+        yRef,
+        scaleRef,
+        sphereOpacityRef,
+        streamOpacityRef,
+        prevXRef,
+        prevYRef,
+        nextXRef,
+        nextYRef,
+        transitionProgressRef,
+        segProgressRef,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   // Lazy initializer so the very first render uses the correct viewport class.
   // Without this, isMobile started false and the ScrollTrigger captured the
   // desktop sectionX in its closure — cell drifted off-screen on mobile until
@@ -562,8 +647,13 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
             mob
               ? (idx % 2 === 0 ? -0.3 : 0.3)
               : (idx % 2 === 0 ? -0.9 : 0.9);
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const sectionY = (_idx: number) => 0;
+          // Default lift: cell-dragon lives in upper-third of viewport
+          // (Y=+0.4). Per-section override available via sectionYOverrides
+          // prop — sections that need the cell+cloud somewhere else (e.g.
+          // bottom-right for Step 1 Lead Gen) supply their own Y here so
+          // Celly and the dust cloud stay together.
+          const sectionY = (idx: number) =>
+            sectionYOverrides?.[idx] ?? 0.4;
           // SEGMENT-BETWEEN-CENTERS MODEL:
           // Section centers at p = (i+0.5)/N.
           // For each segment between center i and center i+1, the dragon flies
@@ -622,9 +712,14 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
             fromY = sectionY(i);
             toY = sectionY(i + 1);
 
-            // Peak bands now very narrow — transformation begins on FIRST scroll
-            const peakLeftEnd = 0.02;
-            const peakRightStart = 0.98;
+            // Peak bands WIDENED 2026-05-24 round 5 (Shamil): the cell
+            // should be at FULL EXPANSION for most of each section so
+            // visitors who stop reading see Celly fully grown — not
+            // mid-transition. 0.25/0.75 means the first 25% and last 25%
+            // of each segment are "peaked" (cell fully expanded), and
+            // only the middle 50% is dragon-trail transition.
+            const peakLeftEnd = 0.25;
+            const peakRightStart = 0.75;
 
             if (segP < peakLeftEnd) {
               // Still at section i, sphere peaked
@@ -674,18 +769,65 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
             yPos = segP2 < 0.5 ? sectionY(i2) : sectionY(i2 + 1);
           }
 
-          sphereOpacityRef.current = sphereOpacity;
-          xRef.current = xPos;
-          yRef.current = yPos;
-          scaleRef.current = sphereScale * (0.85 + Math.sin(p * Math.PI) * 0.2);
-          transitionProgressRef.current = trans;
-          segProgressRef.current = currentSegP;
-          streamOpacityRef.current = trans;
-          prevXRef.current = fromX;
-          nextXRef.current = toX;
-          prevYRef.current = fromY;
-          nextYRef.current = toY;
-          pulseRef.current = sphereOpacity * 0.5;
+          // Shape writes split into two groups based on
+          // disableScrollDrivenShape:
+          //  - CELL shape (scale/opacity/position): always-page when
+          //    disabled, scroll-driven otherwise.
+          //  - TRAIL (stream/transition/prev/next): always scroll-driven
+          //    so the dragon trail animation still plays during scroll
+          //    even with the inversion enabled. Shamil round 19 part 3.
+          const finalScale = sphereScale * (0.85 + Math.sin(p * Math.PI) * 0.2);
+          // All shape + trail writes gated together now (Shamil round 20):
+          // page owns the cell AND the trail completely when in inversion
+          // mode. The old "always update trail" approach made the scroll
+          // dragon flicker on during scroll, fighting the page's animated
+          // dragon-on-stop.
+          if (!disableScrollDrivenShape) {
+            sphereOpacityRef.current = sphereOpacity;
+            xRef.current = xPos;
+            yRef.current = yPos;
+            scaleRef.current = finalScale;
+            pulseRef.current = sphereOpacity * 0.5;
+            transitionProgressRef.current = trans;
+            segProgressRef.current = currentSegP;
+            streamOpacityRef.current = trans;
+            prevXRef.current = fromX;
+            nextXRef.current = toX;
+            prevYRef.current = fromY;
+            nextYRef.current = toY;
+          }
+
+          // External overlay hook — fires the cell-dragon's current world
+          // position + scale + opacity so a 2D sprite can be positioned ON
+          // TOP of the 3D cell. Camera params included so the caller can
+          // project world coords to screen.
+          if (onCellPositionChange) {
+            // Section index: which scene the cell is "currently in" by xPos.
+            // During the first half of a segment xPos = sectionX(i) (the
+            // section it's leaving), second half xPos = sectionX(i+1)
+            // (the section it's arriving at).
+            let settledIdx = 0;
+            if (p <= 0) settledIdx = 0;
+            else if (p >= 1) settledIdx = N - 1;
+            else {
+              let i = Math.floor(p / segmentSpan);
+              if (i < 0) i = 0;
+              if (i > N - 2) i = N - 2;
+              const ci = i * segmentSpan;
+              const segP = (p - ci) / segmentSpan;
+              settledIdx = segP < 0.5 ? i : i + 1;
+            }
+            onCellPositionChange({
+              worldX: xPos,
+              worldY: yPos,
+              scale: finalScale,
+              opacity: sphereOpacity,
+              cameraZ: mob ? 2.2 : 2.9,
+              fovDeg: 50,
+              isMobile: mob,
+              sectionIndex: settledIdx,
+            });
+          }
         },
       },
     });
@@ -697,9 +839,12 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
 
   return (
     <div ref={stageRef} className="relative">
-      {/* Fixed canvas — z-20 puts cell-dragon IN FRONT of laptop + sections.
-          pointer-events-none keeps clicks passing through to elements below. */}
-      <div className="pointer-events-none fixed inset-0 z-20">
+      {/* Fixed canvas — z-45 puts cell-dragon IN FRONT of Celly (z-40)
+          so the dust visually SURROUNDS her body. Particles are mostly
+          translucent so Celly's face still reads through the shimmer.
+          Bubble at z-50 stays above the dust. (Shamil 2026-05-24 round 19.)
+          pointer-events-none keeps clicks passing through. */}
+      <div className="pointer-events-none fixed inset-0 z-[45]">
         {mounted && (
           <Canvas
             camera={{ position: [0, 0, isMobile ? 2.2 : 2.9], fov: 50 }}
@@ -716,6 +861,7 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
               scaleRef={scaleRef}
               sphereOpacityRef={sphereOpacityRef}
               streamOpacityRef={streamOpacityRef}
+              hideInnerCore={hideInnerCellCore}
             />
             <TrailLayer
               streamOpacityRef={streamOpacityRef}
@@ -725,6 +871,7 @@ export function SphereScrollStage({ children, sectionCount = 5 }: StageProps & {
               nextYRef={nextYRef}
               transitionProgressRef={transitionProgressRef}
               segProgressRef={segProgressRef}
+              straightTrail={straightTrail}
             />
           </Canvas>
         )}

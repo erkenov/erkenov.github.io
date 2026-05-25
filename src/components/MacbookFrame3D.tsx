@@ -89,27 +89,61 @@ useGLTF.preload("/macbook.glb", true);
 
 export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
   const ref = useRef<HTMLDivElement>(null);
-  // Use PAGE scroll progress, not element-based. Page progress = 1 exactly
-  // at page bottom regardless of viewport size, so "fully open at bottom"
-  // is robust across screens.
-  const { scrollYProgress } = useScroll();
+  // 2026-05-24 (round 2, Shamil): lid should OPEN as user scrolls into
+  // the section, REACH PEAK when the section is centered in the viewport
+  // (reading position), and CLOSE as the user scrolls past in either
+  // direction. Previously the lid stayed open forever after first hitting
+  // peak, so by the time the user was actually reading, the model had
+  // started visually drifting back toward closed.
+  //
+  // Now: section traverses the FULL viewport (start end → end start),
+  // and the open value follows a trapezoid:
+  //   0%: closed (section just entering from below)
+  //   35%: fully open (plateau begins)
+  //   65%: still fully open (plateau ends — reading window)
+  //   100%: closed again (section about to exit at top)
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
 
-  // Scene 5 spec (2026-05-23):
-  //  - Fully OPEN at page bottom (progress = 1)
-  //  - Closes as user scrolls UP
-  //  - Narrowed from [0.85, 1.0] → [0.93, 1.0] so the full close takes
-  //    fewer scroll ticks (faster animation per scroll-wheel click).
   const openValue = useTransform(
     scrollYProgress,
-    [0.93, 1.0],
-    [0, 1],
+    [0, 0.35, 0.65, 1],
+    [0, 1, 1, 0],
   );
 
   return (
     <motion.div
       ref={ref}
-      className="w-full pointer-events-auto"
+      // `relative` so Framer Motion's useScroll({ target: ref }) can
+      // measure this element's scroll offsets correctly. Without a
+      // non-static position it logs a warning and the offset math falls
+      // back to the page level.
+      className="relative w-full pointer-events-auto"
     >
+      {/* Invisible screen-avoid marker for the Celly auto-positioner.
+          When real Erken Systems screenshots eventually project onto
+          the laptop's screen, the speech bubble must NOT cover them.
+          The wider canvas is still fair game (transparent 3D space)
+          so Celly can float around the laptop frame — this rect just
+          fences off the screen itself. Position is tuned to where the
+          OPEN lid renders (35-65% scroll progress, which is when
+          Celly is visible because that's when scrolling stops).
+          Shamil 2026-05-24 round 44. */}
+      <div
+        data-celly-avoid
+        aria-hidden="true"
+        className="absolute pointer-events-none"
+        style={{
+          left: "18%",
+          top: "10%",
+          width: "64%",
+          height: "42%",
+          // zIndex: -1 to keep DOM-aware avoiders happy without affecting visuals
+          zIndex: -1,
+        }}
+      />
       <div className="aspect-[1/1] w-full">
         <Canvas
           camera={{ position: [0, 0.4, 3.2], fov: 32 }}
@@ -129,14 +163,16 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
               color="#7ea687"
             />
             <Environment preset="city" background={false} />
-            {/* Center auto-positions model at origin. Scale chosen by trial
-                to fit the laptop comfortably in the canvas viewport with
-                breathing room around it. */}
-            <Center scale={0.0304} position={[0.2, -0.375, 0]}>
+            {/* Model lifted up 2026-05-24 (Shamil): was sitting too low,
+                keyboard cropped at viewport bottom when section text was
+                centered. Y offset -0.375 → 0 brings the whole laptop
+                higher into the canvas so it's fully visible alongside the
+                section text. ContactShadows lifted to follow. */}
+            <Center scale={0.0304} position={[0.2, 0, 0]}>
               <Model openValue={openValue} />
             </Center>
             <ContactShadows
-              position={[0, -0.85, 0]}
+              position={[0, -0.5, 0]}
               opacity={0.45}
               scale={3}
               blur={1.8}
@@ -146,27 +182,14 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
         </Canvas>
       </div>
 
-      {/* CC-BY 4.0 attribution — travels with the component */}
-      <div className="mt-2 text-center font-mono text-[10px] uppercase tracking-wider text-text-dim/70">
-        3D model:{" "}
-        <a
-          href="https://sketchfab.com/3d-models/macbook-pro-m3-16-inch-2024-8e34fc2b303144f78490007d91ff57c4"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline-offset-2 hover:underline"
-        >
-          jackbaeten
-        </a>{" "}
-        ·{" "}
-        <a
-          href="http://creativecommons.org/licenses/by/4.0/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline-offset-2 hover:underline"
-        >
-          CC BY 4.0
-        </a>
-      </div>
+      {/* CC-BY 4.0 attribution REMOVED 2026-05-24 at Shamil's instruction
+          (he tried to contact the author to buy a no-attribution license,
+          author doesn't respond to messages). UNRESOLVED LICENSING TODO —
+          revisit either by paying the author if he becomes reachable, or
+          moving the attribution to a dedicated /credits page in the
+          footer (CC-BY 4.0 spec allows attribution "reasonable to the
+          medium," which on a website means a credits page is acceptable
+          per Creative Commons FAQ). Tracked in vault session-log. */}
     </motion.div>
   );
 }
