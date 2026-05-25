@@ -566,7 +566,9 @@ export default function PreviewV6Page() {
       const cellyHalfVw = VISIBLE_HALF_W_REM * scaleFromSpace * remToVw;
       const cellyHalfVh = VISIBLE_HALF_H_REM * scaleFromSpace * remToVh;
       const FIT_THRESHOLD = 2;
-      const MAX_BUBBLE_DIST_FROM_CELLY = 25;
+      // Tightened from 25vw → 12vw 2026-05-25 evening: bubble was
+      // wandering far from Celly. Hard cap forces nearby placement.
+      const MAX_BUBBLE_DIST_FROM_CELLY = 12;
       let chosenVariant: BubbleVariant | null = null;
       let chosenTarget = { xVw: 50, yVh: 50, minDist: 0 };
 
@@ -591,9 +593,10 @@ export default function PreviewV6Page() {
       // SHORT-only on both viewports (Shamil 2026-05-25 evening): the
       // long pitch never landed visually — bubble too big, copy felt
       // sales-y. The one-liner reads cleaner and matches mobile.
-      // Desktop bubble slightly wider than mobile since more room.
+      // Tightened further: desktop widthRem 11→9 ("still too big"),
+      // bubble pulled in closer to Celly via lower MAX_BUBBLE_DIST below.
       const variants = [
-        { ...CELLY_VARIANTS[2], widthRem: isMobile ? 10 : 11 },
+        { ...CELLY_VARIANTS[2], widthRem: isMobile ? 10 : 9 },
       ];
       for (const variant of variants) {
         const cellyAvoid = buildCellyAvoid(variant);
