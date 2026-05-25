@@ -79,13 +79,13 @@ function Model({ openValue }: { openValue: MotionValue<number> }) {
   useFrame(() => {
     const pivot = pivotRef.current;
     if (!pivot) return;
-    // openValue 0..1 → pivot rotation (full-closed)..0
-    // Was 0.612 * π ≈ 110° but that over-rotated past flat-onto-keyboard,
-    // pushing the lid down through the base. 0.5 * π = exactly 90° from
-    // open to closed. (Shamil 2026-05-25 evening: "hinge goes down
-    // through bottom".)
-    const t = openValue.get();
-    pivot.rotation.x = (1 - t) * (Math.PI * 0.5);
+    // Lid animation FROZEN at fully-open (Shamil 2026-05-25 late evening):
+    // hinge pivot kept slipping no matter the Y offset or rotation angle.
+    // Static open pose looks clean. Real screenshot swap planned as
+    // follow-up. openValue still threaded through in case we re-enable
+    // later.
+    void openValue;
+    pivot.rotation.x = 0;
   });
 
   return <primitive object={scene} rotation={[0, -0.010, 0]} />;
