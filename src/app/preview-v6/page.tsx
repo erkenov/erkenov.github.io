@@ -467,23 +467,34 @@ export default function PreviewV6Page() {
         lastSideRef.current = lastDesiredDirectionRef.current;
         setPointDirection(lastDesiredDirectionRef.current);
       }
-      // Mobile (Shamil 2026-05-25): pin Celly to the bottom-LEFT corner.
-      // No findEmptySpot, no scale-from-space — she sits in one fixed
-      // place across all sections. Bubble still auto-positions above her.
-      if (window.innerWidth < 768) {
-        const fixedXVw = 14;
-        const fixedYVh = 94;
+      // Pin Celly to the bottom-LEFT corner on ALL viewports
+      // (Shamil 2026-05-27: "leave the Erken bot with the text window
+      // in the left corner always — same way as mobile"). Was gated
+      // to mobile only — on desktop the findEmptySpot logic below
+      // was running, making her jump between sections. Now both
+      // viewports share the pin, with viewport-dependent coords.
+      {
+        const mobileNow = window.innerWidth < 768;
+        const fixedXVw = mobileNow ? 14 : 7;
+        const fixedYVh = mobileNow ? 94 : 88;
+        const fixedScale = mobileNow ? 0.6 : 0.7;
         el.style.left = `${fixedXVw}vw`;
         el.style.top = `${fixedYVh}vh`;
-        el.style.transform = "translate(-50%, -50%) scale(0.6)";
-        // Tighter bubble: narrower variant (text re-wraps to fewer chars
-        // per line but font stays the same), and sits closer to Celly.
-        const variant = { ...CELLY_VARIANTS[2], widthRem: 8 };
+        el.style.transform = `translate(-50%, -50%) scale(${fixedScale})`;
+        // Bubble variant + offset: tight + close on mobile, slightly
+        // wider with more breathing room on desktop.
+        const variant = mobileNow
+          ? { ...CELLY_VARIANTS[2], widthRem: 8 }
+          : { ...CELLY_VARIANTS[2], widthRem: 14 };
         setActiveVariant(variant);
         bubbleEl.style.right = "auto";
         bubbleEl.style.bottom = "auto";
-        bubbleEl.style.left = `${fixedXVw + 7}vw`;
-        bubbleEl.style.top = `${fixedYVh - 13}vh`;
+        bubbleEl.style.left = mobileNow
+          ? `${fixedXVw + 7}vw`
+          : `${fixedXVw + 9}vw`;
+        bubbleEl.style.top = mobileNow
+          ? `${fixedYVh - 13}vh`
+          : `${fixedYVh - 12}vh`;
         bubbleEl.style.transform = "translate(-50%, -50%)";
         bubbleEl.style.width = `${variant.widthRem}rem`;
         // Pin the cell-dragon (the dust cloud) to Celly's screen position
@@ -515,290 +526,6 @@ export default function PreviewV6Page() {
           lastCellWorldPosRef.current = { x: targetX, y: targetY };
         }
         return;
-      }
-      // 2. Find empty spot for Celly. paddingVw/Vh = HALF her sprite at
-      //    the SMALLEST scale we'd allow — so finder considers more
-      //    candidates. Actual scale is then derived from minDist.
-      const natural = lastNaturalPosRef.current;
-      const cellyTarget = findEmptySpot({
-        preferredXVw: natural.xVw,
-        preferredYVh: natural.yVh,
-        paddingVw: 4,
-        paddingVh: 5,
-        // Round 49 (Shamil): drop penalty all the way to 0 — the 0.05
-        // version was still letting some scenes land Celly inside text.
-        // With 0 weight, the algorithm picks the position with maximum
-        // empty space, period, regardless of distance from the cell-
-        // dragon's natural Y. Trade-off: she may land in spots that
-        // feel slightly disconnected from where the cell-dragon's
-        // dust cloud actually is, but it guarantees no content overlap.
-        distancePenaltyWeight: 0,
-      });
-      el.style.left = `${cellyTarget.xVw}vw`;
-      el.style.top = `${cellyTarget.yVh}vh`;
-      // Celly's SCALE adapts to available empty space (Shamil round
-      // 46). When the scene is tight (e.g. Step 4 where the laptop
-      // hogs the canvas), minDist is small → Celly shrinks so she
-      // (and her bubble) fit beside the obstacle. When there's plenty
-      // of room she stays at max scale. Clamped so she's never too
-      // small to see or too big to fit.
-      // Mobile got half the size 2026-05-25 afternoon; same evening Shamil
-      // applied the same shrink to desktop ("50% of what she is now").
-      // Both viewports now share these bounds.
-      const MIN_SCALE = 0.6;
-      const MAX_SCALE = 1.0;
-      const BASE_SCALE = 0.5;
-      const SPACE_GROWTH = 0.065;
-      const scaleFromSpace = Math.max(
-        MIN_SCALE,
-        Math.min(MAX_SCALE, BASE_SCALE + cellyTarget.minDist * SPACE_GROWTH),
-      );
-      el.style.transform = `translate(-50%, -50%) scale(${scaleFromSpace})`;
-
-      // VIEWPORT EDGE CLAMP for Celly herself (Shamil 2026-05-24 round
-      // 44 — sprite was getting clipped, especially head, when
-      // findEmptySpot picked a spot near a viewport edge that didn't
-      // account for the sprite's full scaled half-size). Same approach
-      // as the bubble clamp below: measure post-layout and shove back
-      // in if any edge would clip.
-      requestAnimationFrame(() => {
-        if (!el) return;
-        const rect = el.getBoundingClientRect();
-        const vw = window.innerWidth / 100;
-        const vh = window.innerHeight / 100;
-        const SAFE_MARGIN_PX = 12;
-        let dxPx = 0;
-        let dyPx = 0;
-        if (rect.left < SAFE_MARGIN_PX) dxPx = SAFE_MARGIN_PX - rect.left;
-        else if (rect.right > window.innerWidth - SAFE_MARGIN_PX)
-          dxPx = window.innerWidth - SAFE_MARGIN_PX - rect.right;
-        if (rect.top < SAFE_MARGIN_PX) dyPx = SAFE_MARGIN_PX - rect.top;
-        else if (rect.bottom > window.innerHeight - SAFE_MARGIN_PX)
-          dyPx = window.innerHeight - SAFE_MARGIN_PX - rect.bottom;
-        if (dxPx !== 0 || dyPx !== 0) {
-          const newXVw = cellyTarget.xVw + dxPx / vw;
-          const newYVh = cellyTarget.yVh + dyPx / vh;
-          el.style.left = `${newXVw}vw`;
-          el.style.top = `${newYVh}vh`;
-        }
-      });
-      // 3. Find empty spot for bubble — must stay NEAR Celly (Shamil
-      //    2026-05-24 round 16: bubble was wandering to opposite corners).
-      //    Hard cap of 25vw from Celly, plus much heavier distance
-      //    penalty so the finder strongly prefers nearby spots.
-      //
-      //    Round 47 (Shamil hypothesis confirmed): the avoid rect uses
-      //    Celly's CENTER, but the check only verifies the bubble's
-      //    CENTER is outside the rect — bubble body can still extend
-      //    INTO Celly's space, covering her head. Fixes:
-      //      (a) Convert rem→vh/vw using actual viewport (was treating
-      //          rem-values as vh/vw directly, undersizing by ~30%).
-      //      (b) Inflate the avoid rect by the BUBBLE's half-size per
-      //          variant, so the bubble's body can't reach Celly's body.
-      //    The CellDragonSprite container is 13rem × 13rem at scale 1.
-      //    Inside it sits a 5.5×9.5rem body (button) + dangling hands.
-      //    We use a visible half-extent that covers head+body+hands.
-      const remToVw = 16 / Math.max(1, window.innerWidth / 100);
-      const remToVh = 16 / Math.max(1, window.innerHeight / 100);
-      const VISIBLE_HALF_W_REM = 3.4; // half of widest part (hands flare ~6.8rem at scale 1)
-      const VISIBLE_HALF_H_REM = 5.0; // half of tallest part — covers head dome at top
-      const cellyHalfVw = VISIBLE_HALF_W_REM * scaleFromSpace * remToVw;
-      const cellyHalfVh = VISIBLE_HALF_H_REM * scaleFromSpace * remToVh;
-      const FIT_THRESHOLD = 2;
-      // Re-tuned (Shamil 2026-05-25 late evening): at 12 the bubble had
-      // nowhere to go on Section 0 (Erken intro — text on left, Celly
-      // on left) and the soft fallback landed it on top of Celly. 20vw
-      // gives findEmptySpot enough room to escape her avoid rect while
-      // still keeping the bubble visually tethered to her.
-      const MAX_BUBBLE_DIST_FROM_CELLY = 20;
-      let chosenVariant: BubbleVariant | null = null;
-      let chosenTarget = { xVw: 50, yVh: 50, minDist: 0 };
-
-      const buildCellyAvoid = (variant: BubbleVariant): AvoidRect => {
-        // Bubble body extents — half-width straight from widthRem, half-
-        // height estimated as ~45% of widthRem (cloud shape with text
-        // wrap roughly proportional to width). Plus an extra 4vh top/
-        // bottom padding so the bubble doesn't sit right on her head
-        // even when math is generous (Shamil round 48 still seeing
-        // touching).
-        const bubbleHalfWVw = (variant.widthRem / 2) * remToVw;
-        const bubbleHalfHVh = (variant.widthRem * 0.45 / 2) * remToVh;
-        const EXTRA_GAP_VH = 4;
-        return {
-          left: cellyTarget.xVw - cellyHalfVw - bubbleHalfWVw,
-          right: cellyTarget.xVw + cellyHalfVw + bubbleHalfWVw,
-          top: cellyTarget.yVh - cellyHalfVh - bubbleHalfHVh - EXTRA_GAP_VH,
-          bottom: cellyTarget.yVh + cellyHalfVh + bubbleHalfHVh + EXTRA_GAP_VH,
-        };
-      };
-
-      // SHORT-only on both viewports (Shamil 2026-05-25 evening): the
-      // long pitch never landed visually — bubble too big, copy felt
-      // sales-y. The one-liner reads cleaner and matches mobile.
-      // Width re-tuned: at 9rem the desktop bubble read like a "poem"
-      // (text wrapping to too many lines). Back up to 11rem; paired
-      // with smaller 12px text below.
-      const variants = [
-        { ...CELLY_VARIANTS[2], widthRem: isMobile ? 10 : 11 },
-      ];
-      for (const variant of variants) {
-        const cellyAvoid = buildCellyAvoid(variant);
-        const target = findEmptySpot({
-          preferredXVw: cellyTarget.xVw,
-          // Bias the preferred Y so it lands ABOVE her head, not just
-          // 16vh above her center.
-          preferredYVh:
-            cellyTarget.yVh - cellyHalfVh - (variant.widthRem * 0.45 / 2) * remToVh - 8,
-          paddingVw: variant.paddingVw,
-          paddingVh: variant.paddingVh,
-          extraAvoidRects: [cellyAvoid],
-          maxDistFromAnchor: MAX_BUBBLE_DIST_FROM_CELLY,
-          distancePenaltyWeight: 1.2,
-        });
-        if (target.minDist >= FIT_THRESHOLD) {
-          chosenVariant = variant;
-          chosenTarget = target;
-          break;
-        }
-      }
-      if (!chosenVariant) {
-        chosenVariant = variants[variants.length - 1];
-        const cellyAvoid = buildCellyAvoid(chosenVariant);
-        chosenTarget = findEmptySpot({
-          preferredXVw: cellyTarget.xVw,
-          preferredYVh:
-            cellyTarget.yVh -
-            cellyHalfVh -
-            (chosenVariant.widthRem * 0.45 / 2) * remToVh -
-            8,
-          paddingVw: chosenVariant.paddingVw,
-          paddingVh: chosenVariant.paddingVh,
-          extraAvoidRects: [cellyAvoid],
-          maxDistFromAnchor: MAX_BUBBLE_DIST_FROM_CELLY,
-          distancePenaltyWeight: 1.2,
-        });
-      }
-      setActiveVariant(chosenVariant);
-      bubbleEl.style.right = "auto";
-      bubbleEl.style.bottom = "auto";
-      bubbleEl.style.left = `${chosenTarget.xVw}vw`;
-      bubbleEl.style.top = `${chosenTarget.yVh}vh`;
-      bubbleEl.style.transform = "translate(-50%, -50%)";
-      bubbleEl.style.width = `${chosenVariant.widthRem}rem`;
-
-      // VIEWPORT EDGE CLAMP (Shamil 2026-05-24 round 42). In tight
-      // scenes like Step 4 where the laptop dominates and Celly gets
-      // jammed near a viewport edge, findEmptySpot's paddingVw can be
-      // under-estimated (the bubble's rendered width includes padding
-      // and text wrap that exceeds the declared `widthRem`). Measure
-      // the bubble AFTER layout and shove it back inside if it spills
-      // off the page. We prefer staying in-bounds over staying perfectly
-      // centered relative to Celly.
-      requestAnimationFrame(() => {
-        if (!bubbleEl) return;
-        const rect = bubbleEl.getBoundingClientRect();
-        const vw = window.innerWidth / 100;
-        const vh = window.innerHeight / 100;
-        const SAFE_MARGIN_PX = 12; // keep this many px from each edge
-        let dxPx = 0;
-        let dyPx = 0;
-        if (rect.left < SAFE_MARGIN_PX) dxPx = SAFE_MARGIN_PX - rect.left;
-        else if (rect.right > window.innerWidth - SAFE_MARGIN_PX)
-          dxPx = window.innerWidth - SAFE_MARGIN_PX - rect.right;
-        if (rect.top < SAFE_MARGIN_PX) dyPx = SAFE_MARGIN_PX - rect.top;
-        else if (rect.bottom > window.innerHeight - SAFE_MARGIN_PX)
-          dyPx = window.innerHeight - SAFE_MARGIN_PX - rect.bottom;
-        if (dxPx !== 0 || dyPx !== 0) {
-          const newXVw = chosenTarget.xVw + dxPx / vw;
-          const newYVh = chosenTarget.yVh + dyPx / vh;
-          bubbleEl.style.left = `${newXVw}vw`;
-          bubbleEl.style.top = `${newYVh}vh`;
-        }
-      });
-
-      // 4. Animate cell-dragon flying from its LAST position to Celly's
-      //    new spot, then expanding (Shamil 2026-05-24 round 20 — path 3).
-      //    Three phases: (a) trail flies prev→new over 400ms, (b) cell
-      //    expands at new spot over 250ms, (c) trail fades out over 200ms
-      //    (overlaps with expand).
-      if (cellRefsRef.current) {
-        const refs = cellRefsRef.current;
-        const { cameraZ, fovDeg } = cameraParamsRef.current;
-        const halfFovRad = (fovDeg / 2) * (Math.PI / 180);
-        const verticalHalf = cameraZ * Math.tan(halfFovRad);
-        const aspect =
-          typeof window !== "undefined" && window.innerHeight > 0
-            ? window.innerWidth / window.innerHeight
-            : 16 / 9;
-        const horizontalHalf = verticalHalf * aspect;
-        const targetX = ((cellyTarget.xVw - 50) / 100) * (2 * horizontalHalf);
-        const targetY = ((50 - cellyTarget.yVh) / 100) * (2 * verticalHalf);
-        // Starting position = dragon's CURRENT HEAD if there was scroll
-        // (pen-tip where drawing ended), otherwise last cell pos, or
-        // current refs as final fallback. Shamil round 23.
-        // (Rounds 45 + 46 reverted at Shamil's request — neither
-        // tail-anchor variant felt right. Coming back to this another
-        // day; not urgent.)
-        const startX =
-          dragonHeadWorldPosRef.current?.x ??
-          lastCellWorldPosRef.current?.x ??
-          refs.xRef.current;
-        const startY =
-          dragonHeadWorldPosRef.current?.y ??
-          lastCellWorldPosRef.current?.y ??
-          refs.yRef.current;
-        // Clear head ref — next scroll will set it again.
-        dragonHeadWorldPosRef.current = null;
-        // Cancel any in-flight animation so we don't have two updating
-        // the same refs.
-        if (cellAnimRafRef.current !== null) {
-          cancelAnimationFrame(cellAnimRafRef.current);
-          cellAnimRafRef.current = null;
-        }
-        // Setup phase A: trail from start to target, cell invisible.
-        refs.prevXRef.current = startX;
-        refs.prevYRef.current = startY;
-        refs.nextXRef.current = targetX;
-        refs.nextYRef.current = targetY;
-        refs.segProgressRef.current = 0;
-        refs.transitionProgressRef.current = 1;
-        refs.streamOpacityRef.current = 1;
-        refs.scaleRef.current = 0;
-        refs.sphereOpacityRef.current = 0;
-        // Run the animation. Total budget ~600ms.
-        const FLY_MS = 400;
-        const EXPAND_MS = 250;
-        const animStart = performance.now();
-        const tick = (now: number) => {
-          const elapsed = now - animStart;
-          // Trail position progress 0..1 over first FLY_MS.
-          const flyT = Math.min(1, elapsed / FLY_MS);
-          refs.segProgressRef.current = flyT;
-          // Cell xRef/yRef track the trail's leading point — lerp from
-          // start to target. So when trail finishes, cell is at target.
-          refs.xRef.current = startX + (targetX - startX) * flyT;
-          refs.yRef.current = startY + (targetY - startY) * flyT;
-          // After fly finishes, expand cell + fade trail.
-          if (elapsed >= FLY_MS) {
-            const expandT = Math.min(1, (elapsed - FLY_MS) / EXPAND_MS);
-            refs.scaleRef.current = expandT;
-            refs.sphereOpacityRef.current = expandT;
-            refs.streamOpacityRef.current = 1 - expandT;
-          }
-          if (elapsed < FLY_MS + EXPAND_MS) {
-            cellAnimRafRef.current = requestAnimationFrame(tick);
-          } else {
-            // Done — snap final values.
-            refs.scaleRef.current = 1;
-            refs.sphereOpacityRef.current = 1;
-            refs.streamOpacityRef.current = 0;
-            refs.xRef.current = targetX;
-            refs.yRef.current = targetY;
-            cellAnimRafRef.current = null;
-            lastCellWorldPosRef.current = { x: targetX, y: targetY };
-          }
-        };
-        cellAnimRafRef.current = requestAnimationFrame(tick);
       }
     }
   }, [bubbleVisible, isMobile]);
