@@ -151,6 +151,10 @@ interface SphereInnerProps {
   /** When true, the inner red glowing core mesh is hidden so a 2D overlay
    *  (Sally) can visually take its place. The outer dust + nodes stay. */
   hideInnerCore?: boolean;
+  /** When true, the outer 1500-point dust shell is not rendered. Used on
+   *  mobile (Shamil 2026-05-27) — on small viewports the dust cloud reads
+   *  as visual clutter that hurts the sales goal. Desktop unchanged. */
+  hideDust?: boolean;
 }
 
 /* ------------------------------------------------------------------ */
@@ -302,7 +306,7 @@ function TrailLayer({
   );
 }
 
-function Sphere({ pulseRef, xRef, yRef, scaleRef, sphereOpacityRef, streamOpacityRef, hideInnerCore }: SphereInnerProps) {
+function Sphere({ pulseRef, xRef, yRef, scaleRef, sphereOpacityRef, streamOpacityRef, hideInnerCore, hideDust }: SphereInnerProps) {
   const groupRef = useRef<THREE.Group>(null);
   const dustRef = useRef<THREE.Points>(null);
   const nodesRef = useRef<THREE.Points>(null);
@@ -449,25 +453,30 @@ function Sphere({ pulseRef, xRef, yRef, scaleRef, sphereOpacityRef, streamOpacit
         />
       </mesh>
 
-      {/* Outer dust cloud — earthy multi-color palette via vertex colors */}
-      <points ref={dustRef}>
-        <bufferGeometry>
-          <bufferAttribute attach="attributes-position" args={[dustBase.slice(), 3]} count={dustBase.length / 3} array={dustBase.slice()} itemSize={3} />
-          <bufferAttribute attach="attributes-color" args={[dustColors.current!, 3]} count={1500} array={dustColors.current!} itemSize={3} />
-        </bufferGeometry>
-        <pointsMaterial
-          ref={dustMatRef}
-          vertexColors
-          size={0.018}
-          sizeAttenuation
-          transparent
-          opacity={0.7}
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-          map={getSoftSprite()}
-          alphaTest={0.01}
-        />
-      </points>
+      {/* Outer dust cloud — earthy multi-color palette via vertex colors.
+          Hidden on mobile (hideDust prop) per Shamil 2026-05-27: the
+          1500-point cloud reads as clutter on small viewports and hurts
+          the sales goal. Desktop unchanged. */}
+      {!hideDust && (
+        <points ref={dustRef}>
+          <bufferGeometry>
+            <bufferAttribute attach="attributes-position" args={[dustBase.slice(), 3]} count={dustBase.length / 3} array={dustBase.slice()} itemSize={3} />
+            <bufferAttribute attach="attributes-color" args={[dustColors.current!, 3]} count={1500} array={dustColors.current!} itemSize={3} />
+          </bufferGeometry>
+          <pointsMaterial
+            ref={dustMatRef}
+            vertexColors
+            size={0.018}
+            sizeAttenuation
+            transparent
+            opacity={0.7}
+            depthWrite={false}
+            blending={THREE.AdditiveBlending}
+            map={getSoftSprite()}
+            alphaTest={0.01}
+          />
+        </points>
+      )}
 
       {/* Graph nodes (bright accents) — also soft sprites */}
       <points ref={nodesRef}>
@@ -870,6 +879,7 @@ export function SphereScrollStage({
               sphereOpacityRef={sphereOpacityRef}
               streamOpacityRef={streamOpacityRef}
               hideInnerCore={hideInnerCellCore}
+              hideDust={isMobile}
             />
             {!hideTrail && (
               <TrailLayer
