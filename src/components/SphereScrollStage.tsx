@@ -478,24 +478,30 @@ function Sphere({ pulseRef, xRef, yRef, scaleRef, sphereOpacityRef, streamOpacit
         </points>
       )}
 
-      {/* Graph nodes (bright accents) — also soft sprites */}
-      <points ref={nodesRef}>
-        <bufferGeometry>
-          <bufferAttribute attach="attributes-position" args={[nodeBase.slice(), 3]} count={nodeBase.length / 3} array={nodeBase.slice()} itemSize={3} />
-        </bufferGeometry>
-        <pointsMaterial
-          ref={nodeMatRef}
-          color={ACCENT_BRIGHT}
-          size={0.035}
-          sizeAttenuation
-          transparent
-          opacity={1}
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-          map={getSoftSprite()}
-          alphaTest={0.01}
-        />
-      </points>
+      {/* Graph nodes (bright accents) — also soft sprites. Hidden on
+          mobile alongside the dust shell (Shamil 2026-05-27 round 2:
+          "remove dust particles completely from mobile"). The 120 gold
+          flecks were the second-most-clutter source after the 1500-point
+          sage cloud. Desktop unchanged. */}
+      {!hideDust && (
+        <points ref={nodesRef}>
+          <bufferGeometry>
+            <bufferAttribute attach="attributes-position" args={[nodeBase.slice(), 3]} count={nodeBase.length / 3} array={nodeBase.slice()} itemSize={3} />
+          </bufferGeometry>
+          <pointsMaterial
+            ref={nodeMatRef}
+            color={ACCENT_BRIGHT}
+            size={0.035}
+            sizeAttenuation
+            transparent
+            opacity={1}
+            depthWrite={false}
+            blending={THREE.AdditiveBlending}
+            map={getSoftSprite()}
+            alphaTest={0.01}
+          />
+        </points>
+      )}
 
       {/* Hidden lines (kept for ref but invisible per 2026-05-21 feedback) */}
       <lineSegments ref={linesRef} visible={false}>
