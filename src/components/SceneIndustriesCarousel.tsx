@@ -122,12 +122,12 @@ const IMG = {
 } as const;
 
 const INDUSTRIES: IndustryCard[] = [
-  // 1. Dental practices — visual STYLE 1 (outlined icon on brand color)
+  // 1. Dental practices — visual STYLE 2 (full-bleed real photo, like vet)
   {
     category: "Healthcare · HIPAA",
     title: "Dental practices",
     src: ph("Dental", "C76B58"),
-    visual: <CardStyle1IconOnColor bg="C76B58" Icon={IconDental} />,
+    visual: <CardStyle2Photo src="/industries/card-dental-photo.png" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -219,11 +219,12 @@ const INDUSTRIES: IndustryCard[] = [
       />
     ),
   },
-  // 3. Auto repair shops
+  // 3. Auto repair shops — visual STYLE 2 (full-bleed real photo)
   {
     category: "Trades · automotive",
     title: "Auto repair shops",
     src: ph("Auto repair", "E89F1F"),
+    visual: <CardStyle2Photo src="/industries/card-auto-repair-photo.png" />,
     content: (
       <IndustryBodySteps
         steps={[
