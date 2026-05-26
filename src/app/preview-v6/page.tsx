@@ -91,14 +91,20 @@ function Section({
   mediaWrapperClassName,
   mediaAvoidCelly = true,
   isMobile = false,
-}: SectionProps & { isMobile?: boolean }) {
+  useCompactLayout = false,
+}: SectionProps & { isMobile?: boolean; useCompactLayout?: boolean }) {
   const isLeft = side === "left";
   const wrapperClass = mediaWrapperClassName ?? DEFAULT_MEDIA_WRAPPER(isLeft);
+  // L/R-split layout only activates at ≥1400px. Below that, content
+  // stacks vertically (text on top, media below) — same pattern as
+  // the mobile layout. The breakpoint was previously md:(768) which
+  // caused absolute-positioned carousel media to overlap the text
+  // column on viewports between 768 and ~1400 (Shamil 2026-05-27).
   return (
-    <section className="relative md:min-h-screen md:flex md:items-center px-6 md:px-12 py-10 md:py-0">
+    <section className="relative min-[1400px]:min-h-screen min-[1400px]:flex min-[1400px]:items-center px-6 md:px-12 py-10 min-[1400px]:py-0">
       <div
         data-celly-avoid
-        className={`relative z-30 w-full md:w-1/2 ${isLeft ? "md:mr-auto" : "md:ml-auto"} max-w-xl`}
+        className={`relative z-30 w-full min-[1400px]:w-1/2 ${isLeft ? "min-[1400px]:mr-auto" : "min-[1400px]:ml-auto"} max-w-xl`}
       >
         <div className="mono-label">{kicker}</div>
         <h2
@@ -116,11 +122,11 @@ function Section({
           </button>
         )}
       </div>
-      {/* MOBILE media — rendered OUTSIDE the text column so it breaks
+      {/* STACKED media — rendered OUTSIDE the text column so it breaks
           out of the max-w-xl cap and spans the full section width.
-          (Shamil 2026-05-25: especially needed for the MacBook 3D
-          scene that has no side text on mobile.) */}
-      {media && isMobile && (
+          Used on all viewports below the L/R-split breakpoint (1400px).
+          (Shamil 2026-05-27: bumped from 768 to 1400.) */}
+      {media && useCompactLayout && (
         <div
           {...(mediaAvoidCelly ? { "data-celly-avoid": "" } : {})}
           className="mt-10 w-full"
@@ -128,7 +134,7 @@ function Section({
           {media}
         </div>
       )}
-      {media && !isMobile && (
+      {media && !useCompactLayout && (
         <div
           {...(mediaAvoidCelly ? { "data-celly-avoid": "" } : {})}
           className={wrapperClass}
@@ -382,8 +388,18 @@ export default function PreviewV6Page() {
   // cloud puffs / tighter padding. Initial false → matches SSR; set
   // truthy after mount so we never mismatch on first paint.
   const [isMobile, setIsMobile] = useState(false);
+  // useCompactLayout = true on any viewport narrower than 1400px. Drives
+  // section media to stack vertically (mobile-style) instead of using
+  // the L/R-split layout. Bumped from 768 to 1400 on 2026-05-27 because
+  // the L/R-split's absolute-positioned media overlapped the text col
+  // on viewports between 768 and ~1400 (Shamil's laptop at 1270px and
+  // most TVs hit this).
+  const [useCompactLayout, setUseCompactLayout] = useState(false);
   useEffect(() => {
-    const compute = () => setIsMobile(window.innerWidth < 768);
+    const compute = () => {
+      setIsMobile(window.innerWidth < 768);
+      setUseCompactLayout(window.innerWidth < 1400);
+    };
     compute();
     window.addEventListener("resize", compute);
     return () => window.removeEventListener("resize", compute);
@@ -860,6 +876,7 @@ export default function PreviewV6Page() {
         <Section
           key={i}
           isMobile={isMobile}
+          useCompactLayout={useCompactLayout}
           {...s}
           media={
             i === 0 ? <Scene1IntroVideo />
