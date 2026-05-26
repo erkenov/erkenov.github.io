@@ -152,40 +152,53 @@ export const Carousel = ({ items, initialScroll = 0, loop = false, arrowsPositio
     let movedPx = 0;
     let activePointerId: number | null = null;
 
+    const DRAG_THRESHOLD = 6;
+    let isCaptured = false;
+
     const onPointerDown = (e: PointerEvent) => {
       // Primary button only, mouse + pen (touch is handled natively by
       // overflow-x-scroll so we skip it here).
       if (e.pointerType === "touch") return;
       if (e.button !== 0) return;
       isDown = true;
+      isCaptured = false;
       movedPx = 0;
       startX = e.clientX;
       startScroll = el.scrollLeft;
       activePointerId = e.pointerId;
-      // NOTE: deliberately NOT calling e.preventDefault() here — in
-      // Chrome it suppresses the subsequent click event so cards never
-      // open. Native image-drag is killed by `draggable={false}` on
-      // BlurImage and the dragstart listener below. setPointerCapture
-      // alone is enough to keep move events flowing while held.
-      try {
-        el.setPointerCapture(e.pointerId);
-      } catch {}
-      el.style.cursor = "grabbing";
       el.style.scrollBehavior = "auto";
+      // DON'T setPointerCapture here — if we capture before the user
+      // has actually started dragging, clicks on cards never reach the
+      // card button. Capture is deferred until we cross the drag
+      // threshold (in onPointerMove).
     };
     const onPointerMove = (e: PointerEvent) => {
       if (!isDown || e.pointerId !== activePointerId) return;
-      e.preventDefault();
       const walk = e.clientX - startX;
       movedPx = Math.max(movedPx, Math.abs(walk));
+      // Only START scrolling + capturing once user has clearly committed
+      // to a drag. Below the threshold this is just mouse-jitter during
+      // a normal click — leave it alone so the click reaches the card.
+      if (movedPx < DRAG_THRESHOLD) return;
+      if (!isCaptured) {
+        try {
+          el.setPointerCapture(e.pointerId);
+          isCaptured = true;
+          el.style.cursor = "grabbing";
+        } catch {}
+      }
+      e.preventDefault();
       el.scrollLeft = startScroll - walk;
     };
     const finishDrag = (e: PointerEvent) => {
       if (!isDown || e.pointerId !== activePointerId) return;
       isDown = false;
-      try {
-        el.releasePointerCapture(e.pointerId);
-      } catch {}
+      if (isCaptured) {
+        try {
+          el.releasePointerCapture(e.pointerId);
+        } catch {}
+      }
+      isCaptured = false;
       activePointerId = null;
       el.style.cursor = "grab";
       el.style.scrollBehavior = "smooth";
@@ -193,7 +206,9 @@ export const Carousel = ({ items, initialScroll = 0, loop = false, arrowsPositio
     // Suppress the click that follows a drag — capture-phase so it fires
     // before any card button's own click handler.
     const onClickCapture = (e: MouseEvent) => {
-      if (movedPx > 5) {
+      // Only suppress when an actual drag happened (threshold matches
+      // pointermove's). Below the threshold a click is just a click.
+      if (movedPx > DRAG_THRESHOLD) {
         e.preventDefault();
         e.stopPropagation();
         movedPx = 0;
