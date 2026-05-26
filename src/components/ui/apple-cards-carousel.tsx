@@ -370,7 +370,7 @@ export const Card = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 h-full w-full bg-black/80 backdrop-blur-lg"
+            className="fixed inset-0 h-full w-full bg-bg/85 backdrop-blur-md"
           />
           <motion.div
             initial={{ opacity: 0 }}
@@ -378,23 +378,23 @@ export const Card = ({
             exit={{ opacity: 0 }}
             ref={containerRef}
             layoutId={layout ? `card-${card.title}` : undefined}
-            className="relative z-[210] mx-auto my-10 h-fit max-w-5xl rounded-3xl bg-white p-4 font-sans md:p-10 dark:bg-neutral-900"
+            className="relative z-[210] mx-auto my-10 h-fit max-w-5xl rounded-3xl bg-bg p-4 font-sans shadow-xl md:p-10"
           >
             <button
-              className="sticky top-4 right-0 ml-auto flex h-8 w-8 items-center justify-center rounded-full bg-black dark:bg-white"
+              className="sticky top-4 right-0 ml-auto flex h-8 w-8 items-center justify-center rounded-full bg-text"
               onClick={handleClose}
             >
-              <IconX className="h-6 w-6 text-neutral-100 dark:text-neutral-900" />
+              <IconX className="h-6 w-6 text-bg" />
             </button>
             <motion.p
               layoutId={layout ? `category-${card.title}` : undefined}
-              className="text-base font-medium text-black dark:text-white"
+              className="text-base font-medium text-text"
             >
               {card.category}
             </motion.p>
             <motion.p
               layoutId={layout ? `title-${card.title}` : undefined}
-              className="mt-4 text-2xl font-semibold text-neutral-700 md:text-5xl dark:text-white"
+              className="mt-4 text-2xl font-semibold text-text md:text-5xl"
             >
               {card.title}
             </motion.p>
