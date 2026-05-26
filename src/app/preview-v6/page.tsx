@@ -1184,13 +1184,15 @@ export default function PreviewV6Page() {
           feel part of the cell-cloud world. Headline keeps z-30 so the
           intro text stays fully readable (dust mostly affects the card
           row below). */}
-      <section className="relative px-6 md:px-12 pt-28 md:pt-40 pb-16 md:pb-24">
-        {/* Centered + slightly lower (Shamil 2026-05-24). The pt-28/40
-            pushes the headline down from the previous section, and the
-            text-center + mx-auto pulls everything into the middle. */}
+      <section className="relative px-6 md:px-12 pt-36 md:pt-52 pb-16 md:pb-24">
+        {/* Text block pushed FURTHER down (Shamil 2026-05-26 morning):
+            laptop shadow from the section above was covering the headline.
+            pt-28/40 → pt-36/52 brings the text down, and mb-10/14 → mb-6/8
+            shrinks the gap to the carousel below — net halfway closure
+            of the text-to-carousel gap, carousel stays put. */}
         <div
           data-celly-avoid
-          className="relative z-30 max-w-3xl mx-auto mb-10 md:mb-14 text-center"
+          className="relative z-30 max-w-3xl mx-auto mb-6 md:mb-8 text-center"
         >
           <div className="mono-label">Built for your industry</div>
           <h2
