@@ -162,13 +162,16 @@ export const Carousel = ({ items, initialScroll = 0, loop = false, arrowsPositio
       startX = e.clientX;
       startScroll = el.scrollLeft;
       activePointerId = e.pointerId;
+      // NOTE: deliberately NOT calling e.preventDefault() here — in
+      // Chrome it suppresses the subsequent click event so cards never
+      // open. Native image-drag is killed by `draggable={false}` on
+      // BlurImage and the dragstart listener below. setPointerCapture
+      // alone is enough to keep move events flowing while held.
       try {
         el.setPointerCapture(e.pointerId);
       } catch {}
       el.style.cursor = "grabbing";
       el.style.scrollBehavior = "auto";
-      // Block the browser's native image drag from kicking in.
-      e.preventDefault();
     };
     const onPointerMove = (e: PointerEvent) => {
       if (!isDown || e.pointerId !== activePointerId) return;
