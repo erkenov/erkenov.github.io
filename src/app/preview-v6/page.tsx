@@ -15,11 +15,11 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SphereScrollStage, type CellPositionInfo } from "@/components/SphereScrollStage";
-import { MacbookFrame3D } from "@/components/MacbookFrame3D";
 import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
 import { Scene2Channels } from "@/components/Scene2Channels";
 import { Scene3LeadCaptureCarousel } from "@/components/Scene3LeadCaptureCarousel";
-import { Scene4ErkenPlatform } from "@/components/Scene4ErkenPlatform";
+import { Scene4LeadMgmtCarousel } from "@/components/Scene4LeadMgmtCarousel";
+import { Scene5ControlPanelCarousel } from "@/components/Scene5ControlPanelCarousel";
 import { SceneIndustriesCarousel } from "@/components/SceneIndustriesCarousel";
 import { CellDragonSprite } from "@/components/CellDragonSprite";
 
@@ -1127,8 +1127,8 @@ export default function PreviewV6Page() {
             i === 0 ? <Scene1IntroVideo />
             : i === 1 ? <Scene2Channels />
             : i === 2 ? <Scene3LeadCaptureCarousel />
-            : i === 3 ? <Scene4ErkenPlatform />
-            : i === 4 ? <MacbookFrame3D />
+            : i === 3 ? <Scene4LeadMgmtCarousel />
+            : i === 4 ? <Scene5ControlPanelCarousel />
             : null
           }
           mediaWrapperClassName={
@@ -1149,14 +1149,11 @@ export default function PreviewV6Page() {
               : i === 1 || i === 3
               ? "absolute inset-y-[8vh] left-[4vw] hidden md:flex md:w-[55%] items-center justify-start pointer-events-auto"
               : i === 4
-              ? // MacBook scene — was using the wide default wrapper that
-                // extends -55vh above and -10vh below the section, causing
-                // the closed laptop to bleed into the Industries section
-                // (Shamil 2026-05-25 evening, lid showing weird underside).
-                // Confine the canvas to section bounds; the lid open/close
-                // animation still plays via useScroll over the full
-                // start-end → end-start traversal range.
-                "absolute inset-y-0 inset-x-0 hidden md:flex items-center justify-center px-2 lg:px-4 pointer-events-none"
+              ? // Control Panel carousel — text on LEFT, carousel anchors
+                // RIGHT. Mirrors the i===1/i===3 wrapper but reflected.
+                // (Shamil 2026-05-27: replaced 3D MacBook with carousel
+                // for consistency across the page.)
+                "absolute inset-y-[8vh] right-[4vw] hidden md:flex md:w-[55%] items-center justify-end pointer-events-auto"
               : undefined
           }
           // Step 4 keeps mediaAvoidCelly = true (Shamil round 46):
