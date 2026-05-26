@@ -14,12 +14,96 @@
  */
 
 import { Carousel, Card } from "@/components/ui/apple-cards-carousel";
+import { IconDental, IconHome } from "@tabler/icons-react";
+
+/* ============================================================
+   A/B/C/D/E card-visual experiment (Shamil 2026-05-26 afternoon).
+   Five different treatments for the CLOSED card visual to find
+   what feels right for the brand: minimalist but informative.
+   Applied to five different industry cards so they can be compared
+   side-by-side on the live site without changing layout.
+   ============================================================ */
+
+// Style 1 — outlined icon centered on the existing brand-color background.
+// Applied to: Dental practices. Clinical / trustworthy fit.
+function CardStyle1IconOnColor({ bg, Icon }: { bg: string; Icon: React.ComponentType<{ size?: number; stroke?: number; className?: string }> }) {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center" style={{ backgroundColor: `#${bg}` }}>
+      <Icon size={220} stroke={1.2} className="text-[#F5F1E8] opacity-25" />
+    </div>
+  );
+}
+
+// Style 2 — full-bleed photographic image. Pure photo, no overlay.
+// Applied to: Veterinary clinics. Maximum emotional pull.
+function CardStyle2Photo({ src }: { src: string }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt=""
+      className="absolute inset-0 w-full h-full object-cover"
+      draggable={false}
+    />
+  );
+}
+
+// Style 3 — photo + semi-transparent brand-color tint on top, so the
+// card's color identity survives even with a real photo underneath.
+// Applied to: Beauty salons & barbers.
+function CardStyle3PhotoTinted({ src, tint }: { src: string; tint: string }) {
+  return (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover"
+        draggable={false}
+      />
+      <div
+        className="absolute inset-0 mix-blend-multiply"
+        style={{ backgroundColor: `#${tint}`, opacity: 0.55 }}
+      />
+    </>
+  );
+}
+
+// Style 4 — abstract gradient illustration, full-bleed. No literal
+// representation of the industry, just brand-aligned shapes and motion.
+// Applied to: Personal trainers & coaches.
+function CardStyle4Abstract({ src }: { src: string }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt=""
+      className="absolute inset-0 w-full h-full object-cover"
+      draggable={false}
+    />
+  );
+}
+
+// Style 5 — large emoji-style icon on the existing brand-color background.
+// Simpler than the outlined icon — single character glyph. Applied to:
+// Real estate agents.
+function CardStyle5EmojiOnColor({ bg, Icon }: { bg: string; Icon: React.ComponentType<{ size?: number; stroke?: number; className?: string }> }) {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center" style={{ backgroundColor: `#${bg}` }}>
+      <Icon size={180} stroke={2.5} className="text-[#F5F1E8]" />
+    </div>
+  );
+}
 
 type IndustryCard = {
   src: string;
   title: string;
   category: string;
   content: React.ReactNode;
+  /** Optional ReactNode rendered as the CLOSED-card visual (overlay).
+   *  When provided, replaces the default colored BlurImage background.
+   *  Used for the A/B/C/D/E card-visual experiment. */
+  visual?: React.ReactNode;
 };
 
 const ph = (label: string, bg: string, fg = "F5F1E8") =>
@@ -38,11 +122,12 @@ const IMG = {
 } as const;
 
 const INDUSTRIES: IndustryCard[] = [
-  // 1. Dental practices
+  // 1. Dental practices — visual STYLE 1 (outlined icon on brand color)
   {
     category: "Healthcare · HIPAA",
     title: "Dental practices",
     src: ph("Dental", "C76B58"),
+    visual: <CardStyle1IconOnColor bg="C76B58" Icon={IconDental} />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -182,11 +267,12 @@ const INDUSTRIES: IndustryCard[] = [
       />
     ),
   },
-  // 4. Beauty salons & barbers
+  // 4. Beauty salons & barbers — visual STYLE 3 (photo + brand tint overlay)
   {
     category: "Beauty · personal care",
     title: "Beauty salons & barbers",
     src: ph("Salon · barber", "8B7BB8"),
+    visual: <CardStyle3PhotoTinted src="/industries/card-salon-photo.png" tint="8B7BB8" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -470,11 +556,12 @@ const INDUSTRIES: IndustryCard[] = [
       />
     ),
   },
-  // 10. Real estate agents
+  // 10. Real estate agents — visual STYLE 5 (filled icon on brand color)
   {
     category: "Real estate",
     title: "Real estate agents",
     src: ph("Real estate", "9B8A6A"),
+    visual: <CardStyle5EmojiOnColor bg="9B8A6A" Icon={IconHome} />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -518,11 +605,12 @@ const INDUSTRIES: IndustryCard[] = [
       />
     ),
   },
-  // 11. Personal trainers & coaches
+  // 11. Personal trainers & coaches — visual STYLE 4 (abstract gradient)
   {
     category: "Fitness · wellness",
     title: "Personal trainers & coaches",
     src: ph("Personal trainer", "A8B86C"),
+    visual: <CardStyle4Abstract src="/industries/card-trainer-abstract.png" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -662,11 +750,12 @@ const INDUSTRIES: IndustryCard[] = [
       />
     ),
   },
-  // 14. Veterinary clinics
+  // 14. Veterinary clinics — visual STYLE 2 (full-bleed real photo)
   {
     category: "Services · pets",
     title: "Veterinary clinics",
     src: ph("Veterinary", "C9A87B"),
+    visual: <CardStyle2Photo src="/industries/card-vet-photo.png" />,
     content: (
       <IndustryBodySteps
         steps={[
