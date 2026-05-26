@@ -501,7 +501,12 @@ export default function PreviewV6Page() {
       {
         const mobileNow = window.innerWidth < 768;
         const fixedXVw = mobileNow ? 14 : 7;
-        const fixedYVh = mobileNow ? 90 : 85;
+        // yPercent kept WELL clear of viewport bottom on both. Desktop
+        // 70vh ensures the sprite never collides with the Windows
+        // taskbar / browser bottom chrome. Mobile 85vh — phones have
+        // more vertical real estate proportionally. (Shamil 2026-05-27
+        // round 3 — taskbar was clipping head.)
+        const fixedYVh = mobileNow ? 85 : 70;
         const fixedScale = mobileNow ? 0.6 : 0.7;
         el.style.left = `${fixedXVw}vw`;
         el.style.top = `${fixedYVh}vh`;
@@ -599,7 +604,7 @@ export default function PreviewV6Page() {
               : 16 / 9;
           const horizontalHalf = verticalHalf * aspect;
           const targetX = ((14 - 50) / 100) * (2 * horizontalHalf);
-          const targetY = ((50 - 90) / 100) * (2 * verticalHalf);
+          const targetY = ((50 - 85) / 100) * (2 * verticalHalf);
           refs.xRef.current = targetX;
           refs.yRef.current = targetY;
           refs.scaleRef.current = 1;
@@ -860,7 +865,7 @@ export default function PreviewV6Page() {
           // empty side margins which makes a too-cornery pin float in
           // negative space.
           const xPercent = mob ? 14 : 7;
-          const yPercent = mob ? 90 : 85;
+          const yPercent = mob ? 85 : 70;
           refs.xRef.current = ((xPercent - 50) / 100) * (2 * horizontalHalf);
           refs.yRef.current = ((50 - yPercent) / 100) * (2 * verticalHalf);
           refs.scaleRef.current = 1;
