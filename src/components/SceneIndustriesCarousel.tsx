@@ -839,13 +839,13 @@ function IndustryBodySteps({
               {/* Image column — accepts string URL or inline JSX (SVG). */}
               {step.image && (
                 <div className="md:w-1/3 shrink-0">
-                  <div className="aspect-[4/3] w-full overflow-hidden rounded-xl bg-text-muted/10">
+                  <div className="aspect-square w-full overflow-hidden rounded-xl bg-text-muted/10">
                     {typeof step.image === "string" ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={step.image}
                         alt={step.imageAlt ?? step.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                         loading="lazy"
                       />
                     ) : (
