@@ -885,7 +885,11 @@ export function SphereScrollStage({
               sphereOpacityRef={sphereOpacityRef}
               streamOpacityRef={streamOpacityRef}
               hideInnerCore={hideInnerCellCore}
-              hideDust={isMobile}
+              // Dust + graph nodes hidden on ALL viewports (Shamil
+              // 2026-05-27): the page now uses pure-carousel UI; the
+              // dust cloud + node sparkles add no information and
+              // distract from the carousel content. Was `={isMobile}`.
+              hideDust={true}
             />
             {!hideTrail && (
               <TrailLayer

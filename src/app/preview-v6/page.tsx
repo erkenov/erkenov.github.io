@@ -96,6 +96,13 @@ function Section({
   const wrapperClass = mediaWrapperClassName ?? DEFAULT_MEDIA_WRAPPER(isLeft);
   return (
     <section className="relative md:min-h-screen md:flex md:items-center px-6 md:px-12 py-10 md:py-0">
+      {/* Inner max-width wrapper (Shamil 2026-05-27): on ultra-wide
+          screens (TVs, 4K monitors) the L/R-split layout was leaving a
+          huge empty cream column between the text and its absolute-
+          positioned media. The wrapper caps content at 1600px and
+          centers it; the absolute media wrappers below now position
+          relative to THIS 1600px container, not the full viewport. */}
+      <div className="relative w-full max-w-[1600px] mx-auto md:flex md:items-center md:min-h-screen">
       <div
         data-celly-avoid
         className={`relative z-30 w-full md:w-1/2 ${isLeft ? "md:mr-auto" : "md:ml-auto"} max-w-xl`}
@@ -136,6 +143,7 @@ function Section({
           {media}
         </div>
       )}
+      </div>
     </section>
   );
 }
@@ -1075,14 +1083,16 @@ export default function PreviewV6Page() {
       onCellPositionChange={handleCellMove}
       onCellRefsReady={(refs) => {
         cellRefsRef.current = refs;
-        // On mobile, immediately pin the cell to Celly's bottom-left
-        // spot so the very first frame doesn't show a giant center-left
-        // dust cloud (Shamil 2026-05-25 evening).
-        if (typeof window !== "undefined" && window.innerWidth < 768) {
-          // Use the SphereScrollStage mobile camera defaults — exact
-          // params live in cameraParamsRef which the page populates on
-          // the first onCellPositionChange tick.
-          const cameraZ = 2.2;
+        // Pin the Erken bot to a fixed bottom-left spot on ALL viewports
+        // — mobile, desktop, big TVs. (Shamil 2026-05-27: "leave the
+        // Erken bot with the text window in the left corner always".)
+        // Previously only mobile got this pin; desktop let the cell sit
+        // at the SphereScrollStage default top-left position which moved
+        // around as scroll-driven shape math fired. Now both behave the
+        // same: fixed bottom-left, no scroll movement, no dust cloud.
+        if (typeof window !== "undefined") {
+          const mob = window.innerWidth < 768;
+          const cameraZ = mob ? 2.2 : 2.9;
           const fovDeg = 50;
           const halfFovRad = (fovDeg / 2) * (Math.PI / 180);
           const verticalHalf = cameraZ * Math.tan(halfFovRad);
@@ -1091,8 +1101,16 @@ export default function PreviewV6Page() {
               ? window.innerWidth / window.innerHeight
               : 16 / 9;
           const horizontalHalf = verticalHalf * aspect;
-          refs.xRef.current = ((14 - 50) / 100) * (2 * horizontalHalf);
-          refs.yRef.current = ((50 - 94) / 100) * (2 * verticalHalf);
+          // Pin position as % of viewport. Mobile keeps the existing
+          // 14% / 94% (bottom-left, hugging the corner). Desktop uses
+          // a slightly less extreme spot — the bot + bubble combo needs
+          // breathing room on wide viewports, and TV viewports get
+          // empty side margins which makes a too-cornery pin float in
+          // negative space.
+          const xPercent = mob ? 14 : 10;
+          const yPercent = mob ? 94 : 82;
+          refs.xRef.current = ((xPercent - 50) / 100) * (2 * horizontalHalf);
+          refs.yRef.current = ((50 - yPercent) / 100) * (2 * verticalHalf);
           refs.scaleRef.current = 1;
           refs.sphereOpacityRef.current = 1;
           refs.streamOpacityRef.current = 0;
@@ -1106,9 +1124,10 @@ export default function PreviewV6Page() {
       // Round 23: straight dragon — no bend, no sin arc — matches the
       // pen-drawing-down-the-page mental model.
       straightTrail
-      // Mobile (Shamil 2026-05-25): trailing dragon disabled. Keep just
-      // the cell/dust cloud around Celly — no chasing snake of particles.
-      hideTrail={isMobile}
+      // Trailing dragon disabled on ALL viewports (Shamil 2026-05-27):
+      // "remove the dust cloud, the dragon, just leave the Erken bot
+      // with the text window in the left corner always."
+      hideTrail={true}
       // Per-section Y overrides so the dust CLOUD follows Celly when
       // she's not in the default upper-third position. Step 1 puts the
       // cell + cloud at bottom-right (Y=-0.8) so Celly is INSIDE the
@@ -1182,32 +1201,38 @@ export default function PreviewV6Page() {
           intro text stays fully readable (dust mostly affects the card
           row below). */}
       <section className="relative px-6 md:px-12 pt-10 md:pt-16 pb-16 md:pb-24">
-        {/* Tight top padding (Shamil 2026-05-27 evening). Previous value
-            was pt-36 md:pt-52 — needed because the 3D MacBook's shadow
-            in the section above was covering the headline. That section
-            is now a carousel (no shadow), so the giant top gap is dead
-            weight. Pulled back to pt-10/16 to match the visual rhythm
-            of the four step sections above. */}
-        <div
-          data-celly-avoid
-          className="relative z-30 max-w-3xl mx-auto mb-6 md:mb-8 text-left md:text-center"
-        >
-          <div className="mono-label">Built for your industry</div>
-          <h2
-            className="mt-3 text-3xl md:text-5xl font-bold tracking-tight"
-            style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
+        {/* Inner max-width wrapper — same treatment as the four step
+            sections above so the Industries layout stays centered on
+            ultra-wide TVs / 4K monitors instead of stretching to the
+            viewport edges. (Shamil 2026-05-27.) */}
+        <div className="max-w-[1600px] mx-auto">
+          {/* Tight top padding (Shamil 2026-05-27 evening). Previous value
+              was pt-36 md:pt-52 — needed because the 3D MacBook's shadow
+              in the section above was covering the headline. That section
+              is now a carousel (no shadow), so the giant top gap is dead
+              weight. Pulled back to pt-10/16 to match the visual rhythm
+              of the four step sections above. */}
+          <div
+            data-celly-avoid
+            className="relative z-30 max-w-3xl mx-auto mb-6 md:mb-8 text-left md:text-center"
           >
-            Pre-configured for what you actually do.
-          </h2>
-          <p className="mt-5 text-base md:text-lg text-text-muted leading-relaxed">
-            Sixteen industries with the pipeline already wired for your
-            operation. Voice scripts in your language. Intake forms with
-            the questions that matter. Pipeline stages that match your
-            sales cycle. Click your industry to see what comes pre-built.
-          </p>
-        </div>
-        <div data-celly-avoid className="relative z-10">
-          <SceneIndustriesCarousel />
+            <div className="mono-label">Built for your industry</div>
+            <h2
+              className="mt-3 text-3xl md:text-5xl font-bold tracking-tight"
+              style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
+            >
+              Pre-configured for what you actually do.
+            </h2>
+            <p className="mt-5 text-base md:text-lg text-text-muted leading-relaxed">
+              Sixteen industries with the pipeline already wired for your
+              operation. Voice scripts in your language. Intake forms with
+              the questions that matter. Pipeline stages that match your
+              sales cycle. Click your industry to see what comes pre-built.
+            </p>
+          </div>
+          <div data-celly-avoid className="relative z-10">
+            <SceneIndustriesCarousel />
+          </div>
         </div>
       </section>
 
