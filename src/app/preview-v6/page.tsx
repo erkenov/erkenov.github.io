@@ -96,13 +96,6 @@ function Section({
   const wrapperClass = mediaWrapperClassName ?? DEFAULT_MEDIA_WRAPPER(isLeft);
   return (
     <section className="relative md:min-h-screen md:flex md:items-center px-6 md:px-12 py-10 md:py-0">
-      {/* Inner max-width wrapper (Shamil 2026-05-27): on ultra-wide
-          screens (TVs, 4K monitors) the L/R-split layout was leaving a
-          huge empty cream column between the text and its absolute-
-          positioned media. The wrapper caps content at 1600px and
-          centers it; the absolute media wrappers below now position
-          relative to THIS 1600px container, not the full viewport. */}
-      <div className="relative w-full max-w-[1600px] mx-auto md:flex md:items-center md:min-h-screen">
       <div
         data-celly-avoid
         className={`relative z-30 w-full md:w-1/2 ${isLeft ? "md:mr-auto" : "md:ml-auto"} max-w-xl`}
@@ -143,7 +136,6 @@ function Section({
           {media}
         </div>
       )}
-      </div>
     </section>
   );
 }
@@ -928,38 +920,32 @@ export default function PreviewV6Page() {
           intro text stays fully readable (dust mostly affects the card
           row below). */}
       <section className="relative px-6 md:px-12 pt-10 md:pt-16 pb-16 md:pb-24">
-        {/* Inner max-width wrapper — same treatment as the four step
-            sections above so the Industries layout stays centered on
-            ultra-wide TVs / 4K monitors instead of stretching to the
-            viewport edges. (Shamil 2026-05-27.) */}
-        <div className="max-w-[1600px] mx-auto">
-          {/* Tight top padding (Shamil 2026-05-27 evening). Previous value
-              was pt-36 md:pt-52 — needed because the 3D MacBook's shadow
-              in the section above was covering the headline. That section
-              is now a carousel (no shadow), so the giant top gap is dead
-              weight. Pulled back to pt-10/16 to match the visual rhythm
-              of the four step sections above. */}
-          <div
-            data-celly-avoid
-            className="relative z-30 max-w-3xl mx-auto mb-6 md:mb-8 text-left md:text-center"
+        {/* Tight top padding (Shamil 2026-05-27 evening). Previous value
+            was pt-36 md:pt-52 — needed because the 3D MacBook's shadow
+            in the section above was covering the headline. That section
+            is now a carousel (no shadow), so the giant top gap is dead
+            weight. Pulled back to pt-10/16 to match the visual rhythm
+            of the four step sections above. */}
+        <div
+          data-celly-avoid
+          className="relative z-30 max-w-3xl mx-auto mb-6 md:mb-8 text-left md:text-center"
+        >
+          <div className="mono-label">Built for your industry</div>
+          <h2
+            className="mt-3 text-3xl md:text-5xl font-bold tracking-tight"
+            style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
           >
-            <div className="mono-label">Built for your industry</div>
-            <h2
-              className="mt-3 text-3xl md:text-5xl font-bold tracking-tight"
-              style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
-            >
-              Pre-configured for what you actually do.
-            </h2>
-            <p className="mt-5 text-base md:text-lg text-text-muted leading-relaxed">
-              Sixteen industries with the pipeline already wired for your
-              operation. Voice scripts in your language. Intake forms with
-              the questions that matter. Pipeline stages that match your
-              sales cycle. Click your industry to see what comes pre-built.
-            </p>
-          </div>
-          <div data-celly-avoid className="relative z-10">
-            <SceneIndustriesCarousel />
-          </div>
+            Pre-configured for what you actually do.
+          </h2>
+          <p className="mt-5 text-base md:text-lg text-text-muted leading-relaxed">
+            Sixteen industries with the pipeline already wired for your
+            operation. Voice scripts in your language. Intake forms with
+            the questions that matter. Pipeline stages that match your
+            sales cycle. Click your industry to see what comes pre-built.
+          </p>
+        </div>
+        <div data-celly-avoid className="relative z-10">
+          <SceneIndustriesCarousel />
         </div>
       </section>
 
