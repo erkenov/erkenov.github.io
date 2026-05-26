@@ -130,17 +130,84 @@ export const Carousel = ({ items, initialScroll = 0, loop = false, arrowsPositio
   };
 
   const handleCardClose = (index: number) => {
-    if (carouselRef.current) {
-      const cardWidth = isMobile() ? 230 : 384; // (md:w-96)
-      const gap = isMobile() ? 4 : 8;
-      const scrollPosition = (cardWidth + gap) * (index + 1);
-      carouselRef.current.scrollTo({
-        left: scrollPosition,
-        behavior: "smooth",
-      });
-      setCurrentIndex(index);
-    }
+    // Shamil 2026-05-26: don't auto-scroll on close — the original
+    // behavior jumped to the next card which felt unintentional.
+    // Just track which card was last viewed; leave scroll position alone.
+    setCurrentIndex(index);
   };
+
+  // Drag-to-scroll (Shamil 2026-05-26): click and drag the carousel
+  // to pan. Arrow buttons still work. Touch scrolling on mobile is
+  // unchanged because we don't preventDefault for touch events.
+  React.useEffect(() => {
+    const el = carouselRef.current;
+    if (!el) return;
+    let isDown = false;
+    let startX = 0;
+    let startScroll = 0;
+    let movedPx = 0;
+
+    const onMouseDown = (e: MouseEvent) => {
+      // Only start drag for primary button + not when the target is
+      // a card button (those handle their own click-to-expand).
+      if (e.button !== 0) return;
+      isDown = true;
+      movedPx = 0;
+      startX = e.pageX - el.offsetLeft;
+      startScroll = el.scrollLeft;
+      el.style.cursor = "grabbing";
+      el.style.scrollBehavior = "auto";
+    };
+    const onMouseLeave = () => {
+      if (!isDown) return;
+      isDown = false;
+      el.style.cursor = "grab";
+      el.style.scrollBehavior = "smooth";
+    };
+    const onMouseUp = (e: MouseEvent) => {
+      if (!isDown) return;
+      isDown = false;
+      el.style.cursor = "grab";
+      el.style.scrollBehavior = "smooth";
+      // If the user actually dragged (>5px), suppress the click that
+      // would otherwise open a card.
+      if (movedPx > 5) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - el.offsetLeft;
+      const walk = x - startX;
+      movedPx = Math.max(movedPx, Math.abs(walk));
+      el.scrollLeft = startScroll - walk;
+    };
+    // Block click events that follow a drag, so cards don't pop open.
+    const onClickCapture = (e: MouseEvent) => {
+      if (movedPx > 5) {
+        e.preventDefault();
+        e.stopPropagation();
+        movedPx = 0;
+      }
+    };
+
+    el.style.cursor = "grab";
+    el.addEventListener("mousedown", onMouseDown);
+    el.addEventListener("mouseleave", onMouseLeave);
+    el.addEventListener("mouseup", onMouseUp);
+    el.addEventListener("mousemove", onMouseMove);
+    el.addEventListener("click", onClickCapture, { capture: true });
+
+    return () => {
+      el.removeEventListener("mousedown", onMouseDown);
+      el.removeEventListener("mouseleave", onMouseLeave);
+      el.removeEventListener("mouseup", onMouseUp);
+      el.removeEventListener("mousemove", onMouseMove);
+      el.removeEventListener("click", onClickCapture, { capture: true } as EventListenerOptions);
+    };
+  }, []);
 
   const isMobile = () => {
     return window && window.innerWidth < 768;
