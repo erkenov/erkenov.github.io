@@ -443,6 +443,18 @@ export const Card = ({
             {card.topRightOverlay}
           </div>
         )}
+        {/* "View details" affordance — purely decorative pill that
+            communicates the card is clickable. The parent <motion.button>
+            handles the actual click anywhere on the card, so this stays
+            pointer-events-none. (Shamil 2026-05-27: most non-technical
+            visitors won't realize the card opens on click without this
+            visible cue.) */}
+        <div className="absolute bottom-4 right-4 z-50 pointer-events-none">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 shadow-md backdrop-blur-sm">
+            <span className="text-xs font-semibold text-[#2a2722]">View details</span>
+            <span className="text-xs font-semibold text-[#C76B58]" aria-hidden>→</span>
+          </div>
+        </div>
       </motion.button>
     </>
   );

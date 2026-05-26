@@ -1190,7 +1190,7 @@ export default function PreviewV6Page() {
             of the four step sections above. */}
         <div
           data-celly-avoid
-          className="relative z-30 max-w-3xl mx-auto mb-6 md:mb-8 text-center"
+          className="relative z-30 max-w-3xl mx-auto mb-6 md:mb-8 text-left md:text-center"
         >
           <div className="mono-label">Built for your industry</div>
           <h2
