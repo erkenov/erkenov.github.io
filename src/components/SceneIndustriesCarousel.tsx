@@ -70,7 +70,7 @@ const INDUSTRIES: IndustryCard[] = [
           {
             title: "A customer calls — even at midnight, even when you're busy",
             description:
-              "When someone calls your shop, your AI receptionist picks up immediately. It speaks like a friendly front-desk person, asks what's wrong with the car, the year and model, and offers to book a drop-off time. No more missed calls going to voicemail. Works around the clock.",
+              "When someone calls your shop, your AI receptionist picks up immediately. It sounds like a friendly front-desk person tailored to how YOU want it to sound — what to ask, what to offer, when to hand off to a human. It diagnoses the issue, checks your live booking calendar, and books a drop-off slot right there on the call. No more missed calls going to voicemail. Works around the clock.",
             // Option B — hand-coded inline SVG illustration (Shamil A/B/C test
             // 2026-05-26). Phone with incoming-call screen + Erken AI badge +
             // sound waves. Brand palette only.
