@@ -92,19 +92,29 @@ function Section({
   mediaAvoidCelly = true,
   isMobile = false,
   useCompactLayout = false,
-}: SectionProps & { isMobile?: boolean; useCompactLayout?: boolean }) {
+  isHero = false,
+}: SectionProps & { isMobile?: boolean; useCompactLayout?: boolean; isHero?: boolean }) {
   const isLeft = side === "left";
   const wrapperClass = mediaWrapperClassName ?? DEFAULT_MEDIA_WRAPPER(isLeft);
-  // L/R-split layout only activates at ≥1400px. Below that, content
-  // stacks vertically (text on top, media below) — same pattern as
-  // the mobile layout. The breakpoint was previously md:(768) which
-  // caused absolute-positioned carousel media to overlap the text
-  // column on viewports between 768 and ~1400 (Shamil 2026-05-27).
+  // L/R-split breakpoint differs between hero and step sections (Shamil
+  // 2026-05-27):
+  //   - HERO (i===0): video placeholder is small + fits beside text at
+  //     md+ widths. L/R stays at md:(768). Text always left-aligned.
+  //   - STEP sections (i===1-4): full carousels need width to render
+  //     properly. Below 1400px they stack vertically with CENTERED
+  //     text (Shamil's preference for the stacked variant). At >=1400
+  //     they go side-by-side with left-aligned text in their column.
+  const sectionFlexClasses = isHero
+    ? "relative md:min-h-screen md:flex md:items-center px-6 md:px-12 py-10 md:py-0"
+    : "relative min-[1400px]:min-h-screen min-[1400px]:flex min-[1400px]:items-center px-6 md:px-12 py-10 min-[1400px]:py-0";
+  const textColClasses = isHero
+    ? `relative z-30 w-full md:w-1/2 ${isLeft ? "md:mr-auto" : "md:ml-auto"} max-w-xl`
+    : `relative z-30 w-full min-[1400px]:w-1/2 ${isLeft ? "min-[1400px]:mr-auto" : "min-[1400px]:ml-auto"} max-w-xl mx-auto text-center min-[1400px]:text-left min-[1400px]:mx-0`;
   return (
-    <section className="relative min-[1400px]:min-h-screen min-[1400px]:flex min-[1400px]:items-center px-6 md:px-12 py-10 min-[1400px]:py-0">
+    <section className={sectionFlexClasses}>
       <div
         data-celly-avoid
-        className={`relative z-30 w-full min-[1400px]:w-1/2 ${isLeft ? "min-[1400px]:mr-auto" : "min-[1400px]:ml-auto"} max-w-xl`}
+        className={textColClasses}
       >
         <div className="mono-label">{kicker}</div>
         <h2
@@ -122,11 +132,11 @@ function Section({
           </button>
         )}
       </div>
-      {/* STACKED media — rendered OUTSIDE the text column so it breaks
-          out of the max-w-xl cap and spans the full section width.
-          Used on all viewports below the L/R-split breakpoint (1400px).
-          (Shamil 2026-05-27: bumped from 768 to 1400.) */}
-      {media && useCompactLayout && (
+      {/* STACKED vs L/R media render. Threshold differs by section type:
+          - HERO uses isMobile (< 768) — at 768+ goes side-by-side
+          - STEP sections use useCompactLayout (< 1400) — at 1400+ goes side-by-side
+          (Shamil 2026-05-27.) */}
+      {media && (isHero ? isMobile : useCompactLayout) && (
         <div
           {...(mediaAvoidCelly ? { "data-celly-avoid": "" } : {})}
           className="mt-10 w-full"
@@ -134,7 +144,7 @@ function Section({
           {media}
         </div>
       )}
-      {media && !useCompactLayout && (
+      {media && !(isHero ? isMobile : useCompactLayout) && (
         <div
           {...(mediaAvoidCelly ? { "data-celly-avoid": "" } : {})}
           className={wrapperClass}
@@ -877,6 +887,7 @@ export default function PreviewV6Page() {
           key={i}
           isMobile={isMobile}
           useCompactLayout={useCompactLayout}
+          isHero={i === 0}
           {...s}
           media={
             i === 0 ? <Scene1IntroVideo />
