@@ -127,7 +127,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Healthcare · HIPAA",
     title: "Dental practices",
     src: ph("Dental", "C76B58"),
-    visual: <CardStyle2Photo src="/industries/card-dental-photo.png" />,
+    visual: <CardStyle2Photo src="/industries/card-dental-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -176,7 +176,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Healthcare",
     title: "Chiropractic clinics",
     src: ph("Chiropractic", "7ea687"),
-    visual: <CardStyle2Photo src="/industries/card-chiropractic-photo.png" />,
+    visual: <CardStyle2Photo src="/industries/card-chiropractic-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -225,7 +225,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Trades · automotive",
     title: "Auto repair shops",
     src: ph("Auto repair", "E89F1F"),
-    visual: <CardStyle2Photo src="/industries/card-auto-repair-photo.png" />,
+    visual: <CardStyle2Photo src="/industries/card-auto-repair-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -274,7 +274,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Beauty · personal care",
     title: "Beauty salons & barbers",
     src: ph("Salon · barber", "8B7BB8"),
-    visual: <CardStyle2Photo src="/industries/card-salon-photo.png" />,
+    visual: <CardStyle2Photo src="/industries/card-salon-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -323,7 +323,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Health · premium",
     title: "Med spas",
     src: ph("Med spa", "D67B82"),
-    visual: <CardStyle2Photo src="/industries/card-medspa-photo.png" />,
+    visual: <CardStyle2Photo src="/industries/card-medspa-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -372,7 +372,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Professional · legal",
     title: "Law firms",
     src: ph("Law firm", "5e8268"),
-    visual: <CardStyle2Photo src="/industries/card-law-firm-photo.png" />,
+    visual: <CardStyle2Photo src="/industries/card-law-firm-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -421,7 +421,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Trades · HVAC",
     title: "HVAC contractors",
     src: ph("HVAC", "F2C94C"),
-    visual: <CardStyle2Photo src="/industries/card-hvac-photo.png" />,
+    visual: <CardStyle2Photo src="/industries/card-hvac-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -470,7 +470,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Trades · plumbing",
     title: "Plumbing services",
     src: ph("Plumbing", "4A90A8"),
-    visual: <CardStyle2Photo src="/industries/card-plumbing-photo.png" />,
+    visual: <CardStyle2Photo src="/industries/card-plumbing-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -519,7 +519,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Trades · roofing",
     title: "Roofing contractors",
     src: ph("Roofing", "B8786A"),
-    visual: <CardStyle2Photo src="/industries/card-roofing-photo.png" />,
+    visual: <CardStyle2Photo src="/industries/card-roofing-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -568,7 +568,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Real estate",
     title: "Real estate agents",
     src: ph("Real estate", "9B8A6A"),
-    visual: <CardStyle2Photo src="/industries/card-real-estate-photo.png" />,
+    visual: <CardStyle2Photo src="/industries/card-real-estate-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -617,7 +617,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Fitness · wellness",
     title: "Personal trainers & coaches",
     src: ph("Personal trainer", "A8B86C"),
-    visual: <CardStyle2Photo src="/industries/card-trainer-photo.png" />,
+    visual: <CardStyle2Photo src="/industries/card-trainer-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -666,7 +666,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Professional · accounting",
     title: "Accountants & CPAs",
     src: ph("CPA · accounting", "7B8FB2"),
-    visual: <CardStyle2Photo src="/industries/card-cpa-photo.png" />,
+    visual: <CardStyle2Photo src="/industries/card-cpa-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -715,7 +715,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Services · cleaning",
     title: "Cleaning services",
     src: ph("Cleaning", "98C5A5"),
-    visual: <CardStyle2Photo src="/industries/card-cleaning-photo.png" />,
+    visual: <CardStyle2Photo src="/industries/card-cleaning-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -764,7 +764,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Services · pets",
     title: "Veterinary clinics",
     src: ph("Veterinary", "C9A87B"),
-    visual: <CardStyle2Photo src="/industries/card-vet-photo.png" />,
+    visual: <CardStyle2Photo src="/industries/card-vet-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -813,7 +813,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Services · pets",
     title: "Pet grooming & boarding",
     src: ph("Pet grooming", "D4B59A"),
-    visual: <CardStyle2Photo src="/industries/card-pet-grooming-photo.png" />,
+    visual: <CardStyle2Photo src="/industries/card-pet-grooming-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -862,7 +862,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Services · custom",
     title: "Photographers & creatives",
     src: ph("Photography", "8E7B9E"),
-    visual: <CardStyle2Photo src="/industries/card-photographer-photo.png" />,
+    visual: <CardStyle2Photo src="/industries/card-photographer-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[

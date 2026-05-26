@@ -48,3 +48,6 @@ scripts/__pycache__/
 *.bak.mp4
 
 .vercel
+
+# Image-optimization originals — kept in scripts/_industry_image_originals
+public/industries/_originals/
