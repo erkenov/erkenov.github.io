@@ -71,14 +71,19 @@ const INDUSTRIES: IndustryCard[] = [
             title: "A customer calls — even at midnight, even when you're busy",
             description:
               "When someone calls your shop, your AI receptionist picks up immediately. It speaks like a friendly front-desk person, asks what's wrong with the car, the year and model, and offers to book a drop-off time. No more missed calls going to voicemail. Works around the clock.",
-            image: ph("Step 1 — Call answered", "E89F1F"),
+            // Option B — hand-coded inline SVG illustration (Shamil A/B/C test
+            // 2026-05-26). Phone with incoming-call screen + Erken AI badge +
+            // sound waves. Brand palette only.
+            image: <Step1CallSvg />,
             imageAlt: "AI receptionist answering a phone call",
           },
           {
             title: "Their information lands in one place — automatically",
             description:
               "Everything the customer said — name, phone, vehicle, the problem they described — drops into your shop's contact list. No clipboard. No paper. No re-typing later. You see it on your computer or phone the moment the call ends.",
-            image: ph("Step 2 — Lead saved", "C76B58"),
+            // Option C — OpenAI gpt-image-1 generated PNG, served from
+            // /public/industries/. Same brand prompt as Step 1 spec.
+            image: "/industries/auto-repair-step2-lead-saved.png",
             imageAlt: "Customer details auto-populated in the dashboard",
           },
           {
@@ -341,7 +346,14 @@ function IndustryBodySteps({
   steps,
   outcome,
 }: {
-  steps: { title: string; description: string; image?: string; imageAlt?: string }[];
+  steps: {
+    title: string;
+    description: string;
+    /** Image source. String → rendered as <img src>. ReactNode → rendered as-is
+     *  (e.g. inline JSX SVG for hand-coded illustrations). */
+    image?: string | React.ReactNode;
+    imageAlt?: string;
+  }[];
   outcome: string;
 }) {
   return (
@@ -351,17 +363,27 @@ function IndustryBodySteps({
         <ol className="space-y-7">
           {steps.map((step, i) => (
             <li key={step.title} className="flex flex-col md:flex-row gap-4 md:gap-6">
-              {/* Image column — placeholder for now, real screenshots later */}
+              {/* Image column — accepts string URL or inline JSX (SVG). */}
               {step.image && (
                 <div className="md:w-1/3 shrink-0">
                   <div className="aspect-[4/3] w-full overflow-hidden rounded-xl bg-text-muted/10">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={step.image}
-                      alt={step.imageAlt ?? step.title}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
+                    {typeof step.image === "string" ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={step.image}
+                        alt={step.imageAlt ?? step.title}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div
+                        className="w-full h-full"
+                        role="img"
+                        aria-label={step.imageAlt ?? step.title}
+                      >
+                        {step.image}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -416,6 +438,125 @@ function IndustryBody({ pipeline, outcome }: { pipeline: string[]; outcome: stri
         <p className="text-[15px]">{outcome}</p>
       </div>
     </div>
+  );
+}
+
+/**
+ * Step1CallSvg — option B (hand-coded inline SVG) for the A/B/C image
+ * style comparison test on the auto-repair card. Phone with incoming
+ * call screen + Erken AI agent badge + sound waves on each side. Pure
+ * brand palette (sage, terracotta, sun gold, cream).
+ */
+function Step1CallSvg() {
+  return (
+    <svg
+      viewBox="0 0 400 300"
+      xmlns="http://www.w3.org/2000/svg"
+      className="w-full h-full"
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <rect width="400" height="300" rx="0" fill="#F5F1E8" />
+      {/* sound waves left */}
+      <g
+        stroke="#E89F1F"
+        strokeWidth="2.5"
+        fill="none"
+        strokeLinecap="round"
+        opacity="0.85"
+      >
+        <path d="M 110 110 Q 92 150 110 190" />
+        <path d="M 85 95 Q 60 150 85 205" />
+        <path d="M 60 80 Q 28 150 60 220" />
+      </g>
+      {/* sound waves right */}
+      <g
+        stroke="#E89F1F"
+        strokeWidth="2.5"
+        fill="none"
+        strokeLinecap="round"
+        opacity="0.85"
+      >
+        <path d="M 290 110 Q 308 150 290 190" />
+        <path d="M 315 95 Q 340 150 315 205" />
+        <path d="M 340 80 Q 372 150 340 220" />
+      </g>
+      {/* phone body */}
+      <g transform="translate(155, 50)">
+        <rect
+          x="0"
+          y="0"
+          width="90"
+          height="200"
+          rx="14"
+          fill="#FFFFFF"
+          stroke="#2a2722"
+          strokeWidth="1.5"
+        />
+        {/* screen */}
+        <rect x="6" y="18" width="78" height="166" rx="6" fill="#1A1A1A" />
+        {/* notch */}
+        <rect x="36" y="22" width="18" height="4" rx="2" fill="#0A0A0A" />
+        {/* incoming-call label */}
+        <text
+          x="45"
+          y="55"
+          textAnchor="middle"
+          fontFamily="ui-sans-serif, system-ui, sans-serif"
+          fontSize="8"
+          fill="#7ea687"
+          fontWeight="700"
+          letterSpacing="0.5"
+        >
+          INCOMING CALL
+        </text>
+        <text
+          x="45"
+          y="75"
+          textAnchor="middle"
+          fontFamily="ui-sans-serif, system-ui, sans-serif"
+          fontSize="10"
+          fill="#FFFFFF"
+          fontWeight="600"
+        >
+          Customer
+        </text>
+        <text
+          x="45"
+          y="89"
+          textAnchor="middle"
+          fontFamily="ui-sans-serif, system-ui, sans-serif"
+          fontSize="7"
+          fill="#888888"
+        >
+          +1 (512) 555-0142
+        </text>
+        {/* Erken AI badge */}
+        <g transform="translate(13, 110)">
+          <rect width="64" height="22" rx="11" fill="#7ea687" />
+          <circle cx="11" cy="11" r="4" fill="#F5F1E8" />
+          <circle cx="11" cy="11" r="1.5" fill="#C76B58" />
+          <text
+            x="36"
+            y="15"
+            textAnchor="middle"
+            fontFamily="ui-sans-serif, system-ui, sans-serif"
+            fontSize="8"
+            fill="#F5F1E8"
+            fontWeight="700"
+          >
+            Erken · AI
+          </text>
+        </g>
+        {/* answer button hint */}
+        <circle cx="45" cy="158" r="14" fill="#7ea687" opacity="0.9" />
+        <path
+          d="M 39 155 Q 42 150 48 153 L 50 156 Q 47 159 49 162 Q 50 164 47 165 Q 39 165 39 155 Z"
+          fill="#F5F1E8"
+        />
+        {/* home indicator */}
+        <rect x="32" y="188" width="26" height="2.5" rx="1.25" fill="#444" />
+      </g>
+    </svg>
   );
 }
 
