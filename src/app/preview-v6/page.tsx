@@ -487,14 +487,21 @@ export default function PreviewV6Page() {
       }
       // Pin Celly to the bottom-LEFT corner on ALL viewports
       // (Shamil 2026-05-27: "leave the Erken bot with the text window
-      // in the left corner always — same way as mobile"). Was gated
-      // to mobile only — on desktop the findEmptySpot logic below
-      // was running, making her jump between sections. Now both
-      // viewports share the pin, with viewport-dependent coords.
+      // in the left corner always — same way as mobile"). Coords
+      // retuned 2026-05-27 evening after Shamil flagged "bot's head
+      // covered by the bubble" on TV and "bot not visible on laptop":
+      //   - yPercent pulled in from the bottom edge (94→90 mobile,
+      //     88→85 desktop) so the sprite fully fits short-height
+      //     viewports (TV browsers often run at ~540px tall).
+      //   - bubble top offset bumped (mobile -13→-20, desktop -12→-25)
+      //     so the bubble sits well ABOVE the bot's head with no
+      //     overlap.
+      //   - desktop bubble width tightened (14rem → 10rem) — text is
+      //     short, the wide variant felt oversized.
       {
         const mobileNow = window.innerWidth < 768;
         const fixedXVw = mobileNow ? 14 : 7;
-        const fixedYVh = mobileNow ? 94 : 88;
+        const fixedYVh = mobileNow ? 90 : 85;
         const fixedScale = mobileNow ? 0.6 : 0.7;
         el.style.left = `${fixedXVw}vw`;
         el.style.top = `${fixedYVh}vh`;
@@ -503,16 +510,16 @@ export default function PreviewV6Page() {
         // wider with more breathing room on desktop.
         const variant = mobileNow
           ? { ...CELLY_VARIANTS[2], widthRem: 8 }
-          : { ...CELLY_VARIANTS[2], widthRem: 14 };
+          : { ...CELLY_VARIANTS[2], widthRem: 10 };
         setActiveVariant(variant);
         bubbleEl.style.right = "auto";
         bubbleEl.style.bottom = "auto";
         bubbleEl.style.left = mobileNow
           ? `${fixedXVw + 7}vw`
-          : `${fixedXVw + 9}vw`;
+          : `${fixedXVw + 7}vw`;
         bubbleEl.style.top = mobileNow
-          ? `${fixedYVh - 13}vh`
-          : `${fixedYVh - 12}vh`;
+          ? `${fixedYVh - 20}vh`
+          : `${fixedYVh - 25}vh`;
         bubbleEl.style.transform = "translate(-50%, -50%)";
         bubbleEl.style.width = `${variant.widthRem}rem`;
         // Pin the cell-dragon (the dust cloud) to Celly's screen position
@@ -592,7 +599,7 @@ export default function PreviewV6Page() {
               : 16 / 9;
           const horizontalHalf = verticalHalf * aspect;
           const targetX = ((14 - 50) / 100) * (2 * horizontalHalf);
-          const targetY = ((50 - 94) / 100) * (2 * verticalHalf);
+          const targetY = ((50 - 90) / 100) * (2 * verticalHalf);
           refs.xRef.current = targetX;
           refs.yRef.current = targetY;
           refs.scaleRef.current = 1;
@@ -852,8 +859,8 @@ export default function PreviewV6Page() {
           // breathing room on wide viewports, and TV viewports get
           // empty side margins which makes a too-cornery pin float in
           // negative space.
-          const xPercent = mob ? 14 : 10;
-          const yPercent = mob ? 94 : 82;
+          const xPercent = mob ? 14 : 7;
+          const yPercent = mob ? 90 : 85;
           refs.xRef.current = ((xPercent - 50) / 100) * (2 * horizontalHalf);
           refs.yRef.current = ((50 - yPercent) / 100) * (2 * verticalHalf);
           refs.scaleRef.current = 1;
