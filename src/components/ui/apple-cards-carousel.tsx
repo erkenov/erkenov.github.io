@@ -245,7 +245,7 @@ export const Carousel = ({ items, initialScroll = 0, loop = false, arrowsPositio
     >
       <div className="relative w-full">
         <div
-          className="flex w-full overflow-x-scroll overscroll-x-auto scroll-smooth py-10 [scrollbar-width:none] select-none touch-pan-y md:py-20"
+          className="flex w-full overflow-x-scroll overscroll-x-auto scroll-smooth py-10 [scrollbar-width:none] select-none md:py-20"
           ref={carouselRef}
           onScroll={checkScrollability}
         >
