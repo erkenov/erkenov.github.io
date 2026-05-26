@@ -25,41 +25,116 @@ type IndustryCard = {
 const ph = (label: string, bg: string, fg = "F5F1E8") =>
   `https://placehold.co/640x800/${bg}/${fg}?text=${encodeURIComponent(label)}&font=inter`;
 
+// Shared OpenAI-generated illustrations used across all 16 industry cards
+// (Shamil 2026-05-26 "go full throttle"). Industry-specific imagery is a
+// future iteration — for now the same five visuals work for any vertical
+// because the content text below differs.
+const IMG = {
+  step1: "/industries/shared-step1-call.png",
+  step2: "/industries/shared-step2-customer-saved.png",
+  step3: "/industries/shared-step3-pipeline-view.png",
+  step4: "/industries/shared-step4-auto-messages.png",
+  step5: "/industries/shared-step5-weekly-report.png",
+} as const;
+
 const INDUSTRIES: IndustryCard[] = [
+  // 1. Dental practices
   {
     category: "Healthcare · HIPAA",
     title: "Dental practices",
     src: ph("Dental", "C76B58"),
     content: (
-      <IndustryBody
-        pipeline={[
-          "Voice agent trained on dental front-desk scripts (new patient, hygiene recall, emergency)",
-          "Intake form pre-built for insurance, last cleaning, medical history",
-          "Pipeline stages: New lead → Insurance verified → Booked → Showed → Treatment plan",
-          "Recall automation: six-month hygiene reminder per patient",
-          "HIPAA-compliant data handling included",
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "A patient calls — even after hours, even when reception's busy",
+            description:
+              "When someone calls your practice, your AI receptionist picks up immediately. It sounds like a friendly front-desk person tailored to how YOU want it to sound — new-patient screening, hygiene recall, or emergency triage. It collects insurance and medical history, checks your live calendar, and books the appointment right there on the call. HIPAA-compliant from the first ring.",
+            image: IMG.step1,
+            imageAlt: "AI receptionist answering a dental practice call",
+          },
+          {
+            title: "Their information lands in one place — automatically",
+            description:
+              "Everything the patient said — name, insurance, last cleaning, what's hurting — drops into your patient list. No paper forms. No re-typing. You see it on your computer or phone the moment the call ends, ready for verification before the appointment.",
+            image: IMG.step2,
+            imageAlt: "Patient details auto-populated in the dashboard",
+          },
+          {
+            title: "Every patient is visible in your treatment pipeline",
+            description:
+              "Each patient moves through stages you can see at a glance: New lead → Insurance verified → Booked → Showed → Treatment plan presented. You always know who's where. Nothing falls through the cracks.",
+            image: IMG.step3,
+            imageAlt: "Patient pipeline board",
+          },
+          {
+            title: "Patients get the right reminder at the right time — automatically",
+            description:
+              "Appointment confirmation goes out the moment they book. Two-day reminder before. Same-day final reminder. Post-visit thank-you with a review request. Six-month recall when they're due for hygiene. All automatic, all in your practice's voice.",
+            image: IMG.step4,
+            imageAlt: "Automated reminder sequence for dental patients",
+          },
+          {
+            title: "Monday morning, you see what actually moved last week",
+            description:
+              "How many new patient calls came in? How many showed? How many accepted their treatment plan? Which marketing source produced the highest-value patients? A simple summary every Monday — no spreadsheets, no consultant required.",
+            image: IMG.step5,
+            imageAlt: "Weekly performance summary for dental practice",
+          },
         ]}
         outcome="A typical clinic recovers two to four missed-call patients per week — about three thousand dollars per month in net new revenue."
       />
     ),
   },
+  // 2. Chiropractic clinics
   {
     category: "Healthcare",
     title: "Chiropractic clinics",
     src: ph("Chiropractic", "7ea687"),
     content: (
-      <IndustryBody
-        pipeline={[
-          "Voice agent answers pain-condition questions, books first consult",
-          "Intake form: pain level, location, prior treatment history",
-          "Pipeline stages: New lead → Consult booked → Plan presented → Package sold → Reactivated",
-          "Treatment-plan follow-up: auto-text after each session, rebook prompt",
-          "Lapsed-patient win-back campaign monthly",
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "A patient calls in pain — they get help, not a voicemail",
+            description:
+              "When someone calls your clinic, your AI receptionist picks up immediately and sounds like a friendly front-desk person tailored to how YOU want — calm, listening, asking about pain level and location. It books their first consult on the spot from your live calendar. Works around the clock.",
+            image: IMG.step1,
+            imageAlt: "AI receptionist answering a chiropractic call",
+          },
+          {
+            title: "Their pain history lands in one place — automatically",
+            description:
+              "Everything they shared — name, phone, pain location, level, prior treatment — drops into your patient list. Ready for your review before the consult. No clipboard. No retyping.",
+            image: IMG.step2,
+            imageAlt: "Patient pain history saved automatically",
+          },
+          {
+            title: "Every patient is visible across the treatment journey",
+            description:
+              "Each patient moves through stages: New lead → Consult booked → Care plan presented → Package sold → Reactivated. You see who's where, who needs a nudge, who's about to lapse.",
+            image: IMG.step3,
+            imageAlt: "Chiropractic care pipeline view",
+          },
+          {
+            title: "Follow-ups happen between visits — automatically",
+            description:
+              "Pre-visit reminders. Post-adjustment check-in text. Rebook nudge before the next session is due. Win-back campaigns for patients who haven't been in for a few weeks. All automatic, all in your clinic's voice.",
+            image: IMG.step4,
+            imageAlt: "Automated chiropractic follow-up sequence",
+          },
+          {
+            title: "Monday morning, you see your practice's heartbeat",
+            description:
+              "New patient calls. Show rate. Package conversion. Reactivation count. Lapsed-patient bookings. A clean weekly summary so you can adjust faster than your competitors.",
+            image: IMG.step5,
+            imageAlt: "Weekly chiropractic performance summary",
+          },
         ]}
         outcome="Reactivation campaigns alone typically bring back ten to twenty inactive patients per month."
       />
     ),
   },
+  // 3. Auto repair shops
   {
     category: "Trades · automotive",
     title: "Auto repair shops",
@@ -71,263 +146,661 @@ const INDUSTRIES: IndustryCard[] = [
             title: "A customer calls — even at midnight, even when you're busy",
             description:
               "When someone calls your shop, your AI receptionist picks up immediately. It sounds like a friendly front-desk person tailored to how YOU want it to sound — what to ask, what to offer, when to hand off to a human. It diagnoses the issue, checks your live booking calendar, and books a drop-off slot right there on the call. No more missed calls going to voicemail. Works around the clock.",
-            // Option B — hand-coded inline SVG illustration (Shamil A/B/C test
-            // 2026-05-26). Phone with incoming-call screen + Erken AI badge +
-            // sound waves. Brand palette only.
-            image: <Step1CallSvg />,
-            imageAlt: "AI receptionist answering a phone call",
+            image: IMG.step1,
+            imageAlt: "AI receptionist answering a shop call",
           },
           {
             title: "Their information lands in one place — automatically",
             description:
               "Everything the customer said — name, phone, vehicle, the problem they described — drops into your shop's contact list. No clipboard. No paper. No re-typing later. You see it on your computer or phone the moment the call ends.",
-            // Option C — OpenAI gpt-image-1 generated PNG, served from
-            // /public/industries/. Same brand prompt as Step 1 spec.
             image: "/industries/auto-repair-step2-lead-saved.png",
             imageAlt: "Customer details auto-populated in the dashboard",
           },
           {
             title: "You see exactly where every customer is in your shop's flow",
             description:
-              "Each customer moves through stages you can see at a glance: Quote requested → Estimate sent → Vehicle dropped → Work approved → Picked up → Review left. You always know who's where. Nothing falls through the cracks.",
-            image: ph("Step 3 — Pipeline view", "7ea687"),
-            imageAlt: "Pipeline kanban view with customer cards in each stage",
+              "Each customer moves through stages: Quote requested → Estimate sent → Vehicle dropped → Work approved → Picked up → Review left. You always know who's where. Nothing falls through the cracks.",
+            image: IMG.step3,
+            imageAlt: "Pipeline kanban view with customer cards",
           },
           {
             title: "The customer gets the right text at the right time — automatically",
             description:
-              "When their car is ready, they get a text. After they pick up, they get a friendly review request. A few months later, when their oil change is due, they get a reminder. All automatic. All in your shop's voice.",
-            image: ph("Step 4 — Auto messages", "5e8268"),
-            imageAlt: "Sequence of automated SMS messages sent to the customer",
+              "When their car is ready, they get a text. After pickup, a friendly review request. A few months later, when their oil change is due, they get a reminder. All automatic, all in your shop's voice.",
+            image: IMG.step4,
+            imageAlt: "Automated SMS sequence to the customer",
           },
           {
-            title: "You see the numbers that actually matter, every Monday morning",
+            title: "Monday morning, you see the numbers that actually matter",
             description:
-              "How many quote requests came in last week? How many became paying jobs? Which marketing channel brings the best customers? A simple weekly summary lands every Monday in plain English — no spreadsheet needed.",
-            image: ph("Step 5 — Weekly report", "A8B86C"),
-            imageAlt: "Weekly performance summary report",
+              "How many quote requests came in last week? How many became paying jobs? Which marketing channel brings the best customers? A simple weekly summary in plain English — no spreadsheet needed.",
+            image: IMG.step5,
+            imageAlt: "Weekly performance summary",
           },
         ]}
         outcome="Shops typically capture twenty to thirty percent more after-hours quote requests they were losing to voicemail, and book ten to fifteen extra service appointments per month."
       />
     ),
   },
+  // 4. Beauty salons & barbers
   {
     category: "Beauty · personal care",
     title: "Beauty salons & barbers",
     src: ph("Salon · barber", "8B7BB8"),
     content: (
-      <IndustryBody
-        pipeline={[
-          "Voice agent books haircuts, color appointments, treatments — knows your service menu and stylist schedules",
-          "Online booking widget for direct self-serve appointments",
-          "Pipeline stages: New client → First visit → Rebooked → Loyalty → VIP",
-          "Auto-text appointment reminders, post-visit review request",
-          "Rebook nudge two weeks before usual cadence (six weeks for cuts, eight for color)",
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "A client calls to book — and books, even when chairs are full",
+            description:
+              "Your AI receptionist picks up immediately, sounds like a friendly front-desk person tailored to your salon's vibe. It knows your service menu and each stylist's schedule. Books a haircut, color, or treatment directly on the call. No more callback-voicemails losing clients to the salon next door.",
+            image: IMG.step1,
+            imageAlt: "AI receptionist booking a salon appointment",
+          },
+          {
+            title: "Their info lands in one place — automatically",
+            description:
+              "Name, phone, preferred stylist, service requested, last visit — all dropped into your client list the moment they hang up. Ready for your team's morning prep. No paper book. No retyping.",
+            image: IMG.step2,
+            imageAlt: "Salon client details saved automatically",
+          },
+          {
+            title: "Every client is visible in your loyalty pipeline",
+            description:
+              "New client → First visit → Rebooked → Loyalty → VIP. You see at a glance who's a first-timer who needs a follow-up, who's overdue for their next color, who's about to lapse.",
+            image: IMG.step3,
+            imageAlt: "Salon loyalty pipeline board",
+          },
+          {
+            title: "Clients get the right reminder at the right time — automatically",
+            description:
+              "Appointment confirmation when they book. Day-before reminder. Post-visit review request. Six-week rebook nudge for cuts, eight weeks for color. All automatic, all in your salon's voice.",
+            image: IMG.step4,
+            imageAlt: "Automated salon reminder sequence",
+          },
+          {
+            title: "Monday morning, you see what filled chairs last week",
+            description:
+              "Bookings by stylist. No-show rate. Rebook rate. Which marketing source brought the highest-value clients. A clean weekly summary so you know which lever to pull next.",
+            image: IMG.step5,
+            imageAlt: "Weekly salon performance summary",
+          },
         ]}
         outcome="Salons typically see a fifteen to twenty-five percent reduction in no-shows once SMS reminders are live."
       />
     ),
   },
+  // 5. Med spas
   {
     category: "Health · premium",
     title: "Med spas",
     src: ph("Med spa", "D67B82"),
     content: (
-      <IndustryBody
-        pipeline={[
-          "Voice agent qualifies inquiries by treatment type (Botox, fillers, laser, IV)",
-          "Intake form: treatment interest, prior procedures, photos",
-          "Pipeline stages: Inquiry → Consult booked → Treatment plan → First session → Loyalty",
-          "Pre-treatment instructions auto-sent, post-treatment care auto-sent",
-          "Membership program automation for monthly clients",
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "A new inquiry calls — they get qualified, not lost",
+            description:
+              "Your AI receptionist picks up immediately. It sounds polished and tailored to your med spa's brand. It qualifies the inquiry by treatment type — Botox, fillers, laser, IV — answers basic pricing questions, and books a paid consult right on the call. Filters out tire-kickers before they reach your team.",
+            image: IMG.step1,
+            imageAlt: "AI receptionist qualifying a med spa inquiry",
+          },
+          {
+            title: "Their treatment interest lands in one place — automatically",
+            description:
+              "Name, contact, treatment interest, prior procedures, even photos if they shared them — all dropped into your patient list. Ready for your nurse or provider to review before the consult.",
+            image: IMG.step2,
+            imageAlt: "Med spa patient interest auto-populated",
+          },
+          {
+            title: "Every patient is visible in your treatment journey",
+            description:
+              "Inquiry → Consult booked → Treatment plan presented → First session → Loyalty member. You see who's where, who needs a follow-up call, who's about to convert.",
+            image: IMG.step3,
+            imageAlt: "Med spa patient journey pipeline",
+          },
+          {
+            title: "Patients get the right care touch at the right time — automatically",
+            description:
+              "Pre-treatment instructions before each session. Post-treatment aftercare. Touch-up reminder when their treatment is due. Membership renewal nudges. All automatic, all in your med spa's voice.",
+            image: IMG.step4,
+            imageAlt: "Automated med spa patient care sequence",
+          },
+          {
+            title: "Monday morning, you see what actually drove revenue",
+            description:
+              "Inquiries by treatment type. Consult-to-treatment conversion. Average ticket. Returning vs new patient ratio. A clean weekly summary so you know which treatments and channels to push.",
+            image: IMG.step5,
+            imageAlt: "Weekly med spa performance summary",
+          },
         ]}
         outcome="Med spas with strong follow-up convert thirty to forty percent more inquiries to first sessions than industry average."
       />
     ),
   },
+  // 6. Law firms
   {
     category: "Professional · legal",
     title: "Law firms",
     src: ph("Law firm", "5e8268"),
     content: (
-      <IndustryBody
-        pipeline={[
-          "Voice agent screens for case type and jurisdiction before connecting",
-          "Intake form: case details, urgency, prior counsel",
-          "Pipeline stages: Inquiry → Conflict-checked → Consult booked → Retainer signed → Active matter",
-          "Auto-confirm consultation, auto-send intake docs before meeting",
-          "Engagement letter and retainer collection automated",
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "A potential client calls — they get pre-screened, not bounced",
+            description:
+              "Your AI intake assistant picks up immediately. It sounds professional, tailored to your firm's voice. It screens for case type, jurisdiction, and urgency before taking up a partner's time. Books a paid or free consult on the call. Filters out conflicts and tire-kickers before anyone in your office reads the file.",
+            image: IMG.step1,
+            imageAlt: "AI intake assistant screening a legal call",
+          },
+          {
+            title: "Their case details land in one place — automatically",
+            description:
+              "Name, case type, key facts, urgency, prior counsel — all dropped into your matter intake list. Ready for conflict check and partner review before the first consult.",
+            image: IMG.step2,
+            imageAlt: "Legal intake details saved automatically",
+          },
+          {
+            title: "Every matter is visible in your engagement pipeline",
+            description:
+              "Inquiry → Conflict-checked → Consult booked → Retainer signed → Active matter. You see at a glance which inquiries are stuck and which are about to convert.",
+            image: IMG.step3,
+            imageAlt: "Law firm matter pipeline",
+          },
+          {
+            title: "Clients get the right touchpoint at the right time — automatically",
+            description:
+              "Consult confirmation. Intake document request. Engagement letter delivery. Retainer collection link. Status updates between hearings. All automatic, all in your firm's voice.",
+            image: IMG.step4,
+            imageAlt: "Automated legal client communication sequence",
+          },
+          {
+            title: "Monday morning, you see what fed the firm last week",
+            description:
+              "Inquiries by practice area. Conversion to retainer. Average matter value. Referral sources. A clean weekly summary so you can shift marketing toward the highest-value practice areas.",
+            image: IMG.step5,
+            imageAlt: "Weekly law firm performance summary",
+          },
         ]}
         outcome="High-value practice areas (PI, family, immigration) see ROI on the first signed retainer — typically two to fifteen thousand dollars per matter."
       />
     ),
   },
+  // 7. HVAC contractors
   {
     category: "Trades · HVAC",
     title: "HVAC contractors",
     src: ph("HVAC", "F2C94C"),
     content: (
-      <IndustryBody
-        pipeline={[
-          "Voice agent qualifies emergency vs scheduled, books service window",
-          "Lead form: system type, age, problem, address",
-          "Pipeline stages: Service requested → Diagnostic scheduled → Quote sent → Job approved → Completed → Maintenance plan",
-          "Maintenance plan auto-renewal reminders",
-          "Seasonal tune-up campaigns (spring AC, fall heating)",
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "A homeowner calls in 95° heat — they get help, not a busy signal",
+            description:
+              "Your AI dispatcher picks up immediately, sounds like a friendly front-desk person tailored to YOUR shop. It qualifies emergency vs scheduled, asks about system type, age, and problem, and books a service window directly on your live dispatch calendar. Captures the after-hours and overflow calls your team can't reach.",
+            image: IMG.step1,
+            imageAlt: "AI dispatcher answering HVAC service call",
+          },
+          {
+            title: "Their service info lands in one place — automatically",
+            description:
+              "Name, address, system type, age, urgency, problem description — all dropped into your job list. Ready for dispatch the moment the call ends. No paper job tickets.",
+            image: IMG.step2,
+            imageAlt: "HVAC service request saved automatically",
+          },
+          {
+            title: "Every job is visible from request to maintenance plan",
+            description:
+              "Service requested → Diagnostic scheduled → Quote sent → Job approved → Completed → Maintenance plan. You see who's where, who's quoted but not approved, who needs a nudge.",
+            image: IMG.step3,
+            imageAlt: "HVAC job pipeline view",
+          },
+          {
+            title: "Customers get the right text at the right time — automatically",
+            description:
+              "Tech-en-route notification. Quote follow-up. Job-complete confirmation with review request. Maintenance plan renewal reminders. Seasonal tune-up campaigns — spring AC, fall heating. All automatic.",
+            image: IMG.step4,
+            imageAlt: "Automated HVAC customer messages",
+          },
+          {
+            title: "Monday morning, you see what produced revenue last week",
+            description:
+              "Service calls by type. Quote-to-job conversion. Average ticket. Maintenance plan growth. A clean weekly summary so you can spot trends and react before the season turns.",
+            image: IMG.step5,
+            imageAlt: "Weekly HVAC performance summary",
+          },
         ]}
         outcome="HVAC shops adding 24/7 voice coverage typically see fifteen to twenty-five percent more booked jobs in their first quarter."
       />
     ),
   },
+  // 8. Plumbing services
   {
     category: "Trades · plumbing",
     title: "Plumbing services",
     src: ph("Plumbing", "4A90A8"),
     content: (
-      <IndustryBody
-        pipeline={[
-          "Voice agent triages emergency vs scheduled, dispatches accordingly",
-          "Service request form with photos and address",
-          "Pipeline stages: Call received → Technician dispatched → On site → Quoted → Approved → Completed → Reviewed",
-          "Automatic review request after job completion",
-          "Recurring customer follow-up for water heater / system age",
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "A pipe bursts at 2 AM — your phone rings, and gets answered",
+            description:
+              "Your AI dispatcher picks up immediately. It sounds calm and professional, tailored to your shop. It triages emergency vs scheduled work, captures the address, problem, and urgency, and either dispatches a tech right then or books a next-day appointment. Captures every after-hours call your competitors are missing.",
+            image: IMG.step1,
+            imageAlt: "AI dispatcher answering plumbing emergency call",
+          },
+          {
+            title: "Their job info lands in one place — automatically",
+            description:
+              "Name, address, problem description, photos if shared, urgency tag — all dropped into your job list. Your dispatcher or tech sees it on their phone the moment the call ends.",
+            image: IMG.step2,
+            imageAlt: "Plumbing job details saved automatically",
+          },
+          {
+            title: "Every job is visible from call to review",
+            description:
+              "Call received → Technician dispatched → On site → Quoted → Approved → Completed → Reviewed. You see who's where, which jobs are stuck on approval, which need follow-up.",
+            image: IMG.step3,
+            imageAlt: "Plumbing job pipeline view",
+          },
+          {
+            title: "Customers get the right touch at the right time — automatically",
+            description:
+              "ETA text when tech is en route. Job-complete confirmation. Review request after pickup. Water-heater age reminder a few years out. All automatic, all in your shop's voice.",
+            image: IMG.step4,
+            imageAlt: "Automated plumbing customer messages",
+          },
+          {
+            title: "Monday morning, you see what kept the trucks rolling",
+            description:
+              "Emergency vs scheduled split. Job-to-quote conversion. Average ticket. Which neighborhoods produce the most jobs. A clean weekly summary so you can plan ad spend and dispatch coverage.",
+            image: IMG.step5,
+            imageAlt: "Weekly plumbing performance summary",
+          },
         ]}
         outcome="Emergency-response plumbers recover two to four after-hours calls per week that would have gone to a competitor."
       />
     ),
   },
+  // 9. Roofing contractors
   {
     category: "Trades · roofing",
     title: "Roofing contractors",
     src: ph("Roofing", "B8786A"),
     content: (
-      <IndustryBody
-        pipeline={[
-          "Voice agent qualifies storm damage vs scheduled replacement, books inspection",
-          "Intake form: roof age, damage type, insurance status",
-          "Pipeline stages: Inquiry → Inspection booked → Estimate sent → Insurance coordination → Job scheduled → Completed",
-          "Insurance claim coordination workflow templates",
-          "Referral request automation after job completion",
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "A storm hits — every homeowner who calls gets answered first",
+            description:
+              "Your AI receptionist picks up immediately. It sounds professional and tailored to your roofing business. It qualifies storm damage vs scheduled replacement, captures roof age, damage type, and insurance status, and books a same-day inspection slot. Wins the bid because you got there first.",
+            image: IMG.step1,
+            imageAlt: "AI receptionist booking a roof inspection",
+          },
+          {
+            title: "Their roof details land in one place — automatically",
+            description:
+              "Name, address, roof age, damage type, insurance carrier — all dropped into your job list. Ready for the inspector's morning route before they leave the yard.",
+            image: IMG.step2,
+            imageAlt: "Roof inspection details saved automatically",
+          },
+          {
+            title: "Every job is visible from inquiry to install",
+            description:
+              "Inquiry → Inspection booked → Estimate sent → Insurance coordination → Job scheduled → Completed. You see which estimates are stuck waiting on insurance and which are ready to schedule.",
+            image: IMG.step3,
+            imageAlt: "Roofing job pipeline view",
+          },
+          {
+            title: "Customers and adjusters get the right update — automatically",
+            description:
+              "Inspection-scheduled confirmation. Estimate delivery. Insurance claim coordination workflow. Install-date confirmation. Post-install warranty info + referral request. All automatic.",
+            image: IMG.step4,
+            imageAlt: "Automated roofing customer + insurance messages",
+          },
+          {
+            title: "Monday morning, you see what closed last week",
+            description:
+              "Inspections booked. Estimate-to-job conversion. Average project value. Insurance coordination time. A clean weekly summary so you can spot bottlenecks and shift resources.",
+            image: IMG.step5,
+            imageAlt: "Weekly roofing performance summary",
+          },
         ]}
         outcome="Roofers competing for storm-damage jobs win significantly more bids with same-day inspection booking."
       />
     ),
   },
+  // 10. Real estate agents
   {
     category: "Real estate",
     title: "Real estate agents",
     src: ph("Real estate", "9B8A6A"),
     content: (
-      <IndustryBody
-        pipeline={[
-          "Voice agent qualifies buyer vs seller, budget, timeline before booking showing",
-          "Lead form: property type, area, budget, financing status",
-          "Pipeline stages: New lead → Pre-qualified → Showing scheduled → Offer made → Under contract → Closed",
-          "Drip campaign for cold leads, hot-lead alert to phone",
-          "Past-client referral and home-anniversary campaigns",
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "A lead inquires at 9 PM — they hear back in seconds",
+            description:
+              "Your AI assistant picks up the call or web inquiry immediately. It sounds polished and tailored to your brand. It qualifies buyer vs seller, asks budget, timeline, and financing status, then books a showing or listing consult right on the spot. Cold leads don't have time to email three other agents — you're already booked.",
+            image: IMG.step1,
+            imageAlt: "AI assistant qualifying a real estate lead",
+          },
+          {
+            title: "Their property interest lands in one place — automatically",
+            description:
+              "Name, contact, property type, area, budget, financing status — all dropped into your lead list. Hot leads ping your phone. Cold leads go straight into the nurture sequence.",
+            image: IMG.step2,
+            imageAlt: "Real estate lead saved automatically",
+          },
+          {
+            title: "Every lead is visible from inquiry to closing",
+            description:
+              "New lead → Pre-qualified → Showing scheduled → Offer made → Under contract → Closed. You see who's hot, who's cold, who needs a check-in.",
+            image: IMG.step3,
+            imageAlt: "Real estate lead pipeline view",
+          },
+          {
+            title: "Leads stay warm without you babysitting them — automatically",
+            description:
+              "Listing alerts for buyers. Market update drips for sellers. Showing-confirmation texts. Anniversary-of-closing nudges to past clients with referral asks. All automatic, all in your voice.",
+            image: IMG.step4,
+            imageAlt: "Automated real estate lead nurture messages",
+          },
+          {
+            title: "Monday morning, you see what moved the needle last week",
+            description:
+              "New leads by source. Contact-to-showing rate. Showing-to-offer rate. Days on market. A clean weekly summary so you can shift ad spend and lead-gen focus before the market moves.",
+            image: IMG.step5,
+            imageAlt: "Weekly real estate performance summary",
+          },
         ]}
         outcome="Agents see ten to twenty percent more contact-to-showing conversion when leads get instant response."
       />
     ),
   },
+  // 11. Personal trainers & coaches
   {
     category: "Fitness · wellness",
     title: "Personal trainers & coaches",
     src: ph("Personal trainer", "A8B86C"),
     content: (
-      <IndustryBody
-        pipeline={[
-          "Voice agent books trial sessions, answers package and pricing questions",
-          "Lead form: goals, experience level, schedule preferences",
-          "Pipeline stages: Inquiry → Trial booked → Trial completed → Package sold → Renewal",
-          "Workout reminder automation, milestone celebrations",
-          "Package renewal nudges before expiration",
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "A new lead inquires — they get booked, not ghosted",
+            description:
+              "Your AI assistant picks up calls and form submissions immediately. It sounds friendly and tailored to your coaching voice. It asks about goals, experience level, and schedule, answers basic pricing, and books a trial session on the spot. The motivated leads who'd otherwise lose momentum overnight stay engaged.",
+            image: IMG.step1,
+            imageAlt: "AI assistant booking a personal training trial",
+          },
+          {
+            title: "Their fitness goals land in one place — automatically",
+            description:
+              "Name, contact, goals, experience level, schedule preferences — all dropped into your client list. Ready for your prep before the first session. No DM scroll-back to remember what they said.",
+            image: IMG.step2,
+            imageAlt: "Training lead profile saved automatically",
+          },
+          {
+            title: "Every client is visible from inquiry to renewal",
+            description:
+              "Inquiry → Trial booked → Trial completed → Package sold → Renewal. You see who's about to lapse, who's ready for an upsell, who needs a check-in.",
+            image: IMG.step3,
+            imageAlt: "Personal training client pipeline",
+          },
+          {
+            title: "Clients get the right nudge between sessions — automatically",
+            description:
+              "Pre-session reminders. Workout-of-the-day texts. Milestone celebrations (first 10 sessions, body comp wins). Package renewal nudges before expiration. All automatic, all in your voice.",
+            image: IMG.step4,
+            imageAlt: "Automated client engagement sequence",
+          },
+          {
+            title: "Monday morning, you see what filled your calendar",
+            description:
+              "New inquiries. Trial-to-paid conversion. Average client lifetime. Which lead source delivers the highest retention. A clean weekly summary so you know where to focus next.",
+            image: IMG.step5,
+            imageAlt: "Weekly trainer performance summary",
+          },
         ]}
         outcome="Trainers converting from in-person-only to digital intake see twenty to forty percent more leads booked per month."
       />
     ),
   },
+  // 12. Accountants & CPAs
   {
     category: "Professional · accounting",
     title: "Accountants & CPAs",
     src: ph("CPA · accounting", "7B8FB2"),
     content: (
-      <IndustryBody
-        pipeline={[
-          "Voice agent qualifies service type (tax, bookkeeping, advisory), books consult",
-          "Intake form: business type, revenue, current setup, services needed",
-          "Pipeline stages: Inquiry → Consult booked → Proposal sent → Engagement signed → Onboarded → Recurring client",
-          "Tax-season reminder campaigns",
-          "Document request workflows automated",
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "A business owner calls — they get screened, not sent to voicemail",
+            description:
+              "Your AI intake assistant picks up immediately. It sounds professional and tailored to your firm. It qualifies by service type (tax, bookkeeping, advisory), business type, and revenue range, and books a consult on your live calendar. Filters out the wrong-fit inquiries before a partner spends an hour on the call.",
+            image: IMG.step1,
+            imageAlt: "AI assistant screening a CPA inquiry",
+          },
+          {
+            title: "Their business profile lands in one place — automatically",
+            description:
+              "Business name, entity type, revenue range, current accounting setup, services needed — all dropped into your prospect list. Ready for your engagement quote before the consult.",
+            image: IMG.step2,
+            imageAlt: "Business profile auto-saved",
+          },
+          {
+            title: "Every prospect is visible from inquiry to recurring client",
+            description:
+              "Inquiry → Consult booked → Proposal sent → Engagement signed → Onboarded → Recurring client. You see which proposals are stuck and which prospects are about to sign.",
+            image: IMG.step3,
+            imageAlt: "CPA engagement pipeline",
+          },
+          {
+            title: "Clients get the right document request at the right time — automatically",
+            description:
+              "Engagement letter delivery. Document request workflows. Tax-season reminder campaigns. Quarterly check-in messages for advisory clients. Annual renewal nudges. All automatic, all in your firm's voice.",
+            image: IMG.step4,
+            imageAlt: "Automated CPA client communication",
+          },
+          {
+            title: "Monday morning, you see your firm's revenue trajectory",
+            description:
+              "New inquiries by service type. Proposal-to-engagement conversion. Average engagement value. Recurring vs one-time mix. A clean weekly summary so you can shift focus toward higher-value services.",
+            image: IMG.step5,
+            imageAlt: "Weekly CPA performance summary",
+          },
         ]}
         outcome="CPAs typically convert one in four qualified inquiries to engaged clients — automation makes the funnel scalable beyond word-of-mouth."
       />
     ),
   },
+  // 13. Cleaning services
   {
     category: "Services · cleaning",
     title: "Cleaning services",
     src: ph("Cleaning", "98C5A5"),
     content: (
-      <IndustryBody
-        pipeline={[
-          "Voice agent quotes residential vs commercial, books first cleaning",
-          "Quote form: square footage, frequency, special requests",
-          "Pipeline stages: Quote → Booked → Recurring → Lapsed",
-          "Pre-clean reminders, post-clean review requests",
-          "Recurring schedule management",
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "A homeowner books a clean — at lunch, late, or weekend",
+            description:
+              "Your AI receptionist picks up immediately, sounds friendly and tailored to your service. It asks residential vs commercial, square footage, frequency, special requests, and books the first cleaning on your live calendar. Captures the thirty to forty percent of bookings that happen outside your office hours.",
+            image: IMG.step1,
+            imageAlt: "AI receptionist booking a cleaning service",
+          },
+          {
+            title: "Their cleaning details land in one place — automatically",
+            description:
+              "Name, address, square footage, frequency, special requests (pets, allergies, eco-only products) — all dropped into your job list. Ready for the crew's morning route briefing.",
+            image: IMG.step2,
+            imageAlt: "Cleaning service details saved automatically",
+          },
+          {
+            title: "Every client is visible from quote to recurring",
+            description:
+              "Quote → Booked → Recurring → Lapsed. You see who's a first-timer who needs follow-up, who's about to lapse on their recurring schedule.",
+            image: IMG.step3,
+            imageAlt: "Cleaning client pipeline view",
+          },
+          {
+            title: "Clients get the right reminder at the right time — automatically",
+            description:
+              "Pre-clean confirmation the day before. Post-clean review request. Recurring schedule reminders. Lapsed-client win-back nudges. All automatic, all in your service's voice.",
+            image: IMG.step4,
+            imageAlt: "Automated cleaning client messages",
+          },
+          {
+            title: "Monday morning, you see what kept the crews busy",
+            description:
+              "New bookings vs recurring. Crew utilization. Average ticket. Lapsed-client recovery. A clean weekly summary so you know whether to hire, raise prices, or push referrals.",
+            image: IMG.step5,
+            imageAlt: "Weekly cleaning service performance summary",
+          },
         ]}
         outcome="Cleaning services see thirty to forty percent of bookings happen outside business hours — voice agent captures all of them."
       />
     ),
   },
+  // 14. Veterinary clinics
   {
     category: "Services · pets",
     title: "Veterinary clinics",
     src: ph("Veterinary", "C9A87B"),
     content: (
-      <IndustryBody
-        pipeline={[
-          "Voice agent triages emergency vs scheduled, books appointments",
-          "New-patient form: species, age, medical history",
-          "Pipeline stages: New patient → First visit → Recurring care → Wellness program",
-          "Vaccine and check-up reminder automation",
-          "Prescription refill workflow",
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "A worried pet owner calls — they get triage, not voicemail",
+            description:
+              "Your AI receptionist picks up immediately. It sounds calm and tailored to your clinic. It triages emergency vs scheduled care, asks about species, age, and what's wrong, and either escalates urgent cases or books a same-day appointment. Reduces emergency-room referrals because pets get seen by YOU first.",
+            image: IMG.step1,
+            imageAlt: "AI receptionist triaging a vet call",
+          },
+          {
+            title: "The pet's profile lands in one place — automatically",
+            description:
+              "Owner name, pet name, species, age, presenting issue, prior medical notes — all dropped into your patient list. Ready for your vet's morning prep.",
+            image: IMG.step2,
+            imageAlt: "Pet patient details saved automatically",
+          },
+          {
+            title: "Every patient is visible from first visit to wellness plan",
+            description:
+              "New patient → First visit → Recurring care → Wellness program member. You see who's overdue for a check-up, who's about to lapse on their care plan.",
+            image: IMG.step3,
+            imageAlt: "Vet patient pipeline view",
+          },
+          {
+            title: "Pet owners get the right reminder at the right time — automatically",
+            description:
+              "Appointment confirmation. Vaccine due reminders. Wellness check-up nudges. Prescription refill workflow. Post-visit follow-up to make sure pets are recovering. All automatic, all in your clinic's voice.",
+            image: IMG.step4,
+            imageAlt: "Automated vet client messages",
+          },
+          {
+            title: "Monday morning, you see what kept the clinic full",
+            description:
+              "New patients. No-show rate. Wellness plan conversions. Prescription revenue. A clean weekly summary so you can spot trends and adjust staffing or marketing.",
+            image: IMG.step5,
+            imageAlt: "Weekly vet clinic performance summary",
+          },
         ]}
         outcome="Vet clinics adding after-hours triage reduce emergency-room referrals by twenty percent and capture more recurring care."
       />
     ),
   },
+  // 15. Pet grooming & boarding
   {
     category: "Services · pets",
     title: "Pet grooming & boarding",
     src: ph("Pet grooming", "D4B59A"),
     content: (
-      <IndustryBody
-        pipeline={[
-          "Voice agent books grooming, boarding, daycare slots",
-          "Intake form: pet type, breed, special handling",
-          "Pipeline stages: New client → First visit → Recurring → Loyalty",
-          "Six-to-eight week rebook reminders per pet",
-          "Holiday boarding waitlist management",
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "A pet owner books a groom or stay — even outside business hours",
+            description:
+              "Your AI receptionist picks up immediately, sounds warm and tailored to your business. It asks about pet type, breed, any special handling, and books grooming, boarding, or daycare slots on your live calendar. Captures the after-hours bookings that used to go to your competitor down the street.",
+            image: IMG.step1,
+            imageAlt: "AI receptionist booking a grooming slot",
+          },
+          {
+            title: "The pet's profile lands in one place — automatically",
+            description:
+              "Owner name, pet name, breed, size, any special handling notes (anxious, senior, medical) — all dropped into your client list. Ready for your groomer's morning prep.",
+            image: IMG.step2,
+            imageAlt: "Pet profile saved automatically",
+          },
+          {
+            title: "Every client is visible from first visit to loyalty member",
+            description:
+              "New client → First visit → Recurring → Loyalty. You see who's overdue for a regroom, who's a new client who needs a follow-up, who's about to lapse.",
+            image: IMG.step3,
+            imageAlt: "Pet grooming client pipeline",
+          },
+          {
+            title: "Owners get the right reminder at the right time — automatically",
+            description:
+              "Appointment confirmation. Six-to-eight week rebook reminders per pet. Holiday-boarding waitlist alerts. Birthday discounts. Post-visit photo + review request. All automatic, all in your shop's voice.",
+            image: IMG.step4,
+            imageAlt: "Automated pet grooming client messages",
+          },
+          {
+            title: "Monday morning, you see what kept the chairs full",
+            description:
+              "New clients. Rebook rate. Average ticket. Holiday boarding utilization. A clean weekly summary so you know when to hire, raise prices, or push a promotion.",
+            image: IMG.step5,
+            imageAlt: "Weekly pet grooming performance summary",
+          },
         ]}
         outcome="Grooming businesses lose significant bookings to voicemail — voice coverage typically adds three to five appointments per week."
       />
     ),
   },
+  // 16. Photographers & creatives
   {
     category: "Services · custom",
     title: "Photographers & creatives",
     src: ph("Photography", "8E7B9E"),
     content: (
-      <IndustryBody
-        pipeline={[
-          "Voice agent qualifies session type (wedding, portrait, commercial), books consult",
-          "Lead form: date, location, budget, style preferences",
-          "Pipeline stages: Inquiry → Consult booked → Proposal sent → Booked → Shoot → Delivered → Reviewed",
-          "Pre-shoot prep automation, post-shoot delivery workflow",
-          "Anniversary campaign for past clients",
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "A wedding couple inquires at midnight — they get a reply, not silence",
+            description:
+              "Your AI assistant picks up calls and form inquiries immediately. It sounds warm and tailored to your creative voice. It qualifies the session type — wedding, portrait, commercial — asks date, location, budget, and style, and books a discovery consult. Wedding couples often book the first photographer who replies. That's you now.",
+            image: IMG.step1,
+            imageAlt: "AI assistant qualifying a photography inquiry",
+          },
+          {
+            title: "Their session details land in one place — automatically",
+            description:
+              "Name, contact, session type, date, location, budget, style references — all dropped into your client list. Ready for your proposal before the consult.",
+            image: IMG.step2,
+            imageAlt: "Photography session details saved automatically",
+          },
+          {
+            title: "Every project is visible from inquiry to delivered gallery",
+            description:
+              "Inquiry → Consult booked → Proposal sent → Booked → Shoot → Delivered → Reviewed. You see which proposals are stuck and which shoots need post-production attention.",
+            image: IMG.step3,
+            imageAlt: "Photography project pipeline view",
+          },
+          {
+            title: "Clients get the right touch at the right time — automatically",
+            description:
+              "Pre-shoot prep with location, outfit, and timing details. Day-before reminder. Post-shoot delivery notification. Anniversary-of-shoot campaign with rebook offer. All automatic, all in your voice.",
+            image: IMG.step4,
+            imageAlt: "Automated photography client messages",
+          },
+          {
+            title: "Monday morning, you see what filled the calendar",
+            description:
+              "New inquiries by session type. Inquiry-to-booking conversion. Average package value. Referral rate. A clean weekly summary so you can shift marketing toward the most profitable session types.",
+            image: IMG.step5,
+            imageAlt: "Weekly photographer performance summary",
+          },
         ]}
         outcome="Photographers booking high-ticket events benefit from instant response on wedding inquiries — couples often book the first photographer who replies."
       />
@@ -359,7 +832,7 @@ function IndustryBodySteps({
   return (
     <div className="space-y-8 text-base text-text-muted leading-relaxed">
       <div>
-        <div className="mono-label text-text-dim text-xs mb-3">How it works for your shop</div>
+        <div className="mono-label text-text-dim text-xs mb-3">How it works</div>
         <ol className="space-y-7">
           {steps.map((step, i) => (
             <li key={step.title} className="flex flex-col md:flex-row gap-4 md:gap-6">
