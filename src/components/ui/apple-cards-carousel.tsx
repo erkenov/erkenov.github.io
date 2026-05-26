@@ -386,15 +386,12 @@ export const Card = ({
             >
               <IconX className="h-6 w-6 text-bg" />
             </button>
-            <motion.p
-              layoutId={layout ? `category-${card.title}` : undefined}
-              className="text-base font-medium text-text"
-            >
-              {card.category}
-            </motion.p>
+            {/* category line removed 2026-05-27 (Shamil): the small text
+                above the title was redundant with the title itself across
+                every carousel, just visual clutter. */}
             <motion.p
               layoutId={layout ? `title-${card.title}` : undefined}
-              className="mt-4 text-2xl font-semibold text-text md:text-5xl"
+              className="text-2xl font-semibold text-text md:text-5xl"
             >
               {card.title}
             </motion.p>
@@ -415,15 +412,12 @@ export const Card = ({
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 z-30 h-full bg-gradient-to-b from-black/50 via-transparent to-transparent" />
         <div className="relative z-40 p-5 md:p-8">
-          <motion.p
-            layoutId={layout ? `category-${card.category}` : undefined}
-            className="text-left font-sans text-xs font-medium text-white md:text-base"
-          >
-            {card.category}
-          </motion.p>
+          {/* category line removed 2026-05-27 (Shamil): the small text
+              above the title was redundant with the title itself across
+              every carousel, just visual clutter. */}
           <motion.p
             layoutId={layout ? `title-${card.title}` : undefined}
-            className="mt-2 max-w-xs text-left font-sans text-lg font-semibold [text-wrap:balance] text-white md:text-3xl"
+            className="max-w-xs text-left font-sans text-lg font-semibold [text-wrap:balance] text-white md:text-3xl"
           >
             {card.title}
           </motion.p>
