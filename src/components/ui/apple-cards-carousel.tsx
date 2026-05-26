@@ -136,9 +136,13 @@ export const Carousel = ({ items, initialScroll = 0, loop = false, arrowsPositio
     setCurrentIndex(index);
   };
 
-  // Drag-to-scroll (Shamil 2026-05-26): click and drag the carousel
-  // to pan. Arrow buttons still work. Touch scrolling on mobile is
-  // unchanged because we don't preventDefault for touch events.
+  // Drag-to-scroll (Shamil 2026-05-26, round 2): use POINTER events with
+  // setPointerCapture so the drag works smoothly while held — previous
+  // mouse-event version was getting hijacked by the browser's native
+  // image-drag, so the carousel only moved on release. Also kill native
+  // HTML5 drag on every child + suppress the click that follows a drag
+  // so cards don't accidentally open mid-pan. One-click-no-drag still
+  // opens cards because we only suppress when moved > 5px.
   React.useEffect(() => {
     const el = carouselRef.current;
     if (!el) return;
@@ -146,45 +150,45 @@ export const Carousel = ({ items, initialScroll = 0, loop = false, arrowsPositio
     let startX = 0;
     let startScroll = 0;
     let movedPx = 0;
+    let activePointerId: number | null = null;
 
-    const onMouseDown = (e: MouseEvent) => {
-      // Only start drag for primary button + not when the target is
-      // a card button (those handle their own click-to-expand).
+    const onPointerDown = (e: PointerEvent) => {
+      // Primary button only, mouse + pen (touch is handled natively by
+      // overflow-x-scroll so we skip it here).
+      if (e.pointerType === "touch") return;
       if (e.button !== 0) return;
       isDown = true;
       movedPx = 0;
-      startX = e.pageX - el.offsetLeft;
+      startX = e.clientX;
       startScroll = el.scrollLeft;
+      activePointerId = e.pointerId;
+      try {
+        el.setPointerCapture(e.pointerId);
+      } catch {}
       el.style.cursor = "grabbing";
       el.style.scrollBehavior = "auto";
-    };
-    const onMouseLeave = () => {
-      if (!isDown) return;
-      isDown = false;
-      el.style.cursor = "grab";
-      el.style.scrollBehavior = "smooth";
-    };
-    const onMouseUp = (e: MouseEvent) => {
-      if (!isDown) return;
-      isDown = false;
-      el.style.cursor = "grab";
-      el.style.scrollBehavior = "smooth";
-      // If the user actually dragged (>5px), suppress the click that
-      // would otherwise open a card.
-      if (movedPx > 5) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    };
-    const onMouseMove = (e: MouseEvent) => {
-      if (!isDown) return;
+      // Block the browser's native image drag from kicking in.
       e.preventDefault();
-      const x = e.pageX - el.offsetLeft;
-      const walk = x - startX;
+    };
+    const onPointerMove = (e: PointerEvent) => {
+      if (!isDown || e.pointerId !== activePointerId) return;
+      e.preventDefault();
+      const walk = e.clientX - startX;
       movedPx = Math.max(movedPx, Math.abs(walk));
       el.scrollLeft = startScroll - walk;
     };
-    // Block click events that follow a drag, so cards don't pop open.
+    const finishDrag = (e: PointerEvent) => {
+      if (!isDown || e.pointerId !== activePointerId) return;
+      isDown = false;
+      try {
+        el.releasePointerCapture(e.pointerId);
+      } catch {}
+      activePointerId = null;
+      el.style.cursor = "grab";
+      el.style.scrollBehavior = "smooth";
+    };
+    // Suppress the click that follows a drag — capture-phase so it fires
+    // before any card button's own click handler.
     const onClickCapture = (e: MouseEvent) => {
       if (movedPx > 5) {
         e.preventDefault();
@@ -192,20 +196,24 @@ export const Carousel = ({ items, initialScroll = 0, loop = false, arrowsPositio
         movedPx = 0;
       }
     };
+    // Kill the browser's native HTML5 drag-image behavior.
+    const onDragStart = (e: DragEvent) => e.preventDefault();
 
     el.style.cursor = "grab";
-    el.addEventListener("mousedown", onMouseDown);
-    el.addEventListener("mouseleave", onMouseLeave);
-    el.addEventListener("mouseup", onMouseUp);
-    el.addEventListener("mousemove", onMouseMove);
-    el.addEventListener("click", onClickCapture, { capture: true });
+    el.addEventListener("pointerdown", onPointerDown);
+    el.addEventListener("pointermove", onPointerMove);
+    el.addEventListener("pointerup", finishDrag);
+    el.addEventListener("pointercancel", finishDrag);
+    el.addEventListener("click", onClickCapture, true);
+    el.addEventListener("dragstart", onDragStart);
 
     return () => {
-      el.removeEventListener("mousedown", onMouseDown);
-      el.removeEventListener("mouseleave", onMouseLeave);
-      el.removeEventListener("mouseup", onMouseUp);
-      el.removeEventListener("mousemove", onMouseMove);
-      el.removeEventListener("click", onClickCapture, { capture: true } as EventListenerOptions);
+      el.removeEventListener("pointerdown", onPointerDown);
+      el.removeEventListener("pointermove", onPointerMove);
+      el.removeEventListener("pointerup", finishDrag);
+      el.removeEventListener("pointercancel", finishDrag);
+      el.removeEventListener("click", onClickCapture, true);
+      el.removeEventListener("dragstart", onDragStart);
     };
   }, []);
 
@@ -219,7 +227,7 @@ export const Carousel = ({ items, initialScroll = 0, loop = false, arrowsPositio
     >
       <div className="relative w-full">
         <div
-          className="flex w-full overflow-x-scroll overscroll-x-auto scroll-smooth py-10 [scrollbar-width:none] md:py-20"
+          className="flex w-full overflow-x-scroll overscroll-x-auto scroll-smooth py-10 [scrollbar-width:none] select-none touch-pan-y md:py-20"
           ref={carouselRef}
           onScroll={checkScrollability}
         >
@@ -444,6 +452,7 @@ export const BlurImage = ({
       height={height}
       loading="lazy"
       decoding="async"
+      draggable={false}
       blurDataURL={typeof src === "string" ? src : undefined}
       alt={alt ? alt : "Background of a beautiful view"}
       {...rest}
