@@ -1181,12 +1181,13 @@ export default function PreviewV6Page() {
           feel part of the cell-cloud world. Headline keeps z-30 so the
           intro text stays fully readable (dust mostly affects the card
           row below). */}
-      <section className="relative px-6 md:px-12 pt-36 md:pt-52 pb-16 md:pb-24">
-        {/* Text block pushed FURTHER down (Shamil 2026-05-26 morning):
-            laptop shadow from the section above was covering the headline.
-            pt-28/40 → pt-36/52 brings the text down, and mb-10/14 → mb-6/8
-            shrinks the gap to the carousel below — net halfway closure
-            of the text-to-carousel gap, carousel stays put. */}
+      <section className="relative px-6 md:px-12 pt-10 md:pt-16 pb-16 md:pb-24">
+        {/* Tight top padding (Shamil 2026-05-27 evening). Previous value
+            was pt-36 md:pt-52 — needed because the 3D MacBook's shadow
+            in the section above was covering the headline. That section
+            is now a carousel (no shadow), so the giant top gap is dead
+            weight. Pulled back to pt-10/16 to match the visual rhythm
+            of the four step sections above. */}
         <div
           data-celly-avoid
           className="relative z-30 max-w-3xl mx-auto mb-6 md:mb-8 text-center"
