@@ -65,15 +65,45 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Auto repair shops",
     src: ph("Auto repair", "E89F1F"),
     content: (
-      <IndustryBody
-        pipeline={[
-          "Voice agent handles quote requests, books drop-off slots, answers service questions",
-          "Quote request form: vehicle, year, problem description, photos",
-          "Pipeline stages: Quote requested → Estimate sent → Vehicle dropped → Work approved → Picked up → Review",
-          "Auto-text when vehicle is ready, auto-request review after pickup",
-          "Maintenance reminder for oil change/inspection due dates",
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "A customer calls — even at midnight, even when you're busy",
+            description:
+              "When someone calls your shop, your AI receptionist picks up immediately. It speaks like a friendly front-desk person, asks what's wrong with the car, the year and model, and offers to book a drop-off time. No more missed calls going to voicemail. Works around the clock.",
+            image: ph("Step 1 — Call answered", "E89F1F"),
+            imageAlt: "AI receptionist answering a phone call",
+          },
+          {
+            title: "Their information lands in one place — automatically",
+            description:
+              "Everything the customer said — name, phone, vehicle, the problem they described — drops into your shop's contact list. No clipboard. No paper. No re-typing later. You see it on your computer or phone the moment the call ends.",
+            image: ph("Step 2 — Lead saved", "C76B58"),
+            imageAlt: "Customer details auto-populated in the dashboard",
+          },
+          {
+            title: "You see exactly where every customer is in your shop's flow",
+            description:
+              "Each customer moves through stages you can see at a glance: Quote requested → Estimate sent → Vehicle dropped → Work approved → Picked up → Review left. You always know who's where. Nothing falls through the cracks.",
+            image: ph("Step 3 — Pipeline view", "7ea687"),
+            imageAlt: "Pipeline kanban view with customer cards in each stage",
+          },
+          {
+            title: "The customer gets the right text at the right time — automatically",
+            description:
+              "When their car is ready, they get a text. After they pick up, they get a friendly review request. A few months later, when their oil change is due, they get a reminder. All automatic. All in your shop's voice.",
+            image: ph("Step 4 — Auto messages", "5e8268"),
+            imageAlt: "Sequence of automated SMS messages sent to the customer",
+          },
+          {
+            title: "You see the numbers that actually matter, every Monday morning",
+            description:
+              "How many quote requests came in last week? How many became paying jobs? Which marketing channel brings the best customers? A simple weekly summary lands every Monday in plain English — no spreadsheet needed.",
+            image: ph("Step 5 — Weekly report", "A8B86C"),
+            imageAlt: "Weekly performance summary report",
+          },
         ]}
-        outcome="Shops typically capture twenty to thirty percent more after-hours quote requests they were losing to voicemail."
+        outcome="Shops typically capture twenty to thirty percent more after-hours quote requests they were losing to voicemail, and book ten to fifteen extra service appointments per month."
       />
     ),
   },
@@ -299,6 +329,73 @@ const INDUSTRIES: IndustryCard[] = [
     ),
   },
 ];
+
+/**
+ * Step-by-step body — plain-language walkthrough of how the system
+ * works for one industry, with a placeholder image per step. New format
+ * introduced 2026-05-26 for non-technical SMB prospects who need to
+ * SEE the journey to understand it. No animations (page is already
+ * heavy with WebGL). Real screenshots swap in over time.
+ */
+function IndustryBodySteps({
+  steps,
+  outcome,
+}: {
+  steps: { title: string; description: string; image?: string; imageAlt?: string }[];
+  outcome: string;
+}) {
+  return (
+    <div className="space-y-8 text-base text-text-muted leading-relaxed">
+      <div>
+        <div className="mono-label text-text-dim text-xs mb-3">How it works for your shop</div>
+        <ol className="space-y-7">
+          {steps.map((step, i) => (
+            <li key={step.title} className="flex flex-col md:flex-row gap-4 md:gap-6">
+              {/* Image column — placeholder for now, real screenshots later */}
+              {step.image && (
+                <div className="md:w-1/3 shrink-0">
+                  <div className="aspect-[4/3] w-full overflow-hidden rounded-xl bg-text-muted/10">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={step.image}
+                      alt={step.imageAlt ?? step.title}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+              )}
+              {/* Text column — big numbered step + plain-language body */}
+              <div className="flex-1">
+                <div className="flex items-baseline gap-3">
+                  <span
+                    className="text-2xl md:text-3xl font-bold text-accent tabular-nums"
+                    style={{ letterSpacing: "-0.025em" }}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h4
+                    className="text-lg md:text-xl font-semibold text-text leading-snug"
+                    style={{ letterSpacing: "-0.01em" }}
+                  >
+                    {step.title}
+                  </h4>
+                </div>
+                <p className="mt-2 text-[15px] md:text-base text-text-muted leading-relaxed">
+                  {step.description}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div className="pt-5 border-t border-text-muted/15">
+        <div className="mono-label text-text-dim text-xs mb-1">Real-world outcome</div>
+        <p className="text-[15px] md:text-base">{outcome}</p>
+      </div>
+    </div>
+  );
+}
 
 function IndustryBody({ pipeline, outcome }: { pipeline: string[]; outcome: string }) {
   return (
