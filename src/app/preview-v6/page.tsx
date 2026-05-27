@@ -501,18 +501,22 @@ export default function PreviewV6Page() {
       {
         const mobileNow = window.innerWidth < 768;
         const fixedXVw = mobileNow ? 14 : 7;
-        // yPercent kept WELL clear of viewport bottom on both. Desktop
-        // 70vh ensures the sprite never collides with the Windows
-        // taskbar / browser bottom chrome. Mobile 85vh — phones have
-        // more vertical real estate proportionally. (Shamil 2026-05-27
-        // round 3 — taskbar was clipping head.)
-        const fixedYVh = mobileNow ? 85 : 70;
+        // yPercent pushed DOWN into the actual bottom-left corner
+        // (Shamil 2026-05-27 round 4 — "the bot should be in the left
+        // bottom corner, now it's way higher than a corner"). Sprite
+        // half-height is ~6.75vh at desktop scale 0.7 / ~8.9vh at
+        // mobile scale 0.6, so 88vh and 90vh keep the sprite fully
+        // visible while hugging the bottom edge.
+        const fixedYVh = mobileNow ? 90 : 88;
         const fixedScale = mobileNow ? 0.6 : 0.7;
         el.style.left = `${fixedXVw}vw`;
         el.style.top = `${fixedYVh}vh`;
         el.style.transform = `translate(-50%, -50%) scale(${fixedScale})`;
-        // Bubble variant + offset: tight + close on mobile, slightly
-        // wider with more breathing room on desktop.
+        // Bubble variant + offset: bubble brought MUCH closer to the
+        // bot's head — was -25vh desktop / -20vh mobile, the user said
+        // bubble was "too far from the bot itself." Tightened to -13vh
+        // both, which leaves ~3vh visual gap above the sprite's top
+        // edge without overlapping.
         const variant = mobileNow
           ? { ...CELLY_VARIANTS[2], widthRem: 8 }
           : { ...CELLY_VARIANTS[2], widthRem: 10 };
@@ -523,8 +527,8 @@ export default function PreviewV6Page() {
           ? `${fixedXVw + 7}vw`
           : `${fixedXVw + 7}vw`;
         bubbleEl.style.top = mobileNow
-          ? `${fixedYVh - 20}vh`
-          : `${fixedYVh - 25}vh`;
+          ? `${fixedYVh - 13}vh`
+          : `${fixedYVh - 13}vh`;
         bubbleEl.style.transform = "translate(-50%, -50%)";
         bubbleEl.style.width = `${variant.widthRem}rem`;
         // Pin the cell-dragon (the dust cloud) to Celly's screen position
@@ -604,7 +608,7 @@ export default function PreviewV6Page() {
               : 16 / 9;
           const horizontalHalf = verticalHalf * aspect;
           const targetX = ((14 - 50) / 100) * (2 * horizontalHalf);
-          const targetY = ((50 - 85) / 100) * (2 * verticalHalf);
+          const targetY = ((50 - 90) / 100) * (2 * verticalHalf);
           refs.xRef.current = targetX;
           refs.yRef.current = targetY;
           refs.scaleRef.current = 1;
@@ -865,7 +869,7 @@ export default function PreviewV6Page() {
           // empty side margins which makes a too-cornery pin float in
           // negative space.
           const xPercent = mob ? 14 : 7;
-          const yPercent = mob ? 85 : 70;
+          const yPercent = mob ? 90 : 88;
           refs.xRef.current = ((xPercent - 50) / 100) * (2 * horizontalHalf);
           refs.yRef.current = ((50 - yPercent) / 100) * (2 * verticalHalf);
           refs.scaleRef.current = 1;

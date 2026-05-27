@@ -371,7 +371,9 @@ export function Scene5ControlPanelCarousel() {
   const items = FEATURES.map((c, i) => <Card key={c.title} card={c} index={i} />);
   return (
     <div className="w-full">
-      <Carousel items={items} />
+      {/* arrowsPosition="right" — Shamil 2026-05-27: Step 4 arrows
+          on the right side to match Lead Capture's pattern. */}
+      <Carousel items={items} arrowsPosition="right" />
     </div>
   );
 }
