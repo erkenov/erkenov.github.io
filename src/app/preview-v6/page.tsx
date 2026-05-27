@@ -500,14 +500,15 @@ export default function PreviewV6Page() {
       //     short, the wide variant felt oversized.
       {
         const mobileNow = window.innerWidth < 768;
-        const fixedXVw = mobileNow ? 14 : 7;
-        // yPercent pushed DOWN into the actual bottom-left corner
-        // (Shamil 2026-05-27 round 4 — "the bot should be in the left
-        // bottom corner, now it's way higher than a corner"). Sprite
-        // half-height is ~6.75vh at desktop scale 0.7 / ~8.9vh at
-        // mobile scale 0.6, so 88vh and 90vh keep the sprite fully
-        // visible while hugging the bottom edge.
-        const fixedYVh = mobileNow ? 90 : 88;
+        // xPercent and yPercent pushed FURTHER into the bottom-left
+        // corner (Shamil 2026-05-27 round 5 — "move bot + bubble lower
+        // and to the left as well"). Desktop sprite half-width is
+        // ~3.8vw at 1920 / ~5.7vw at 1270, so xPercent=5 hugs the
+        // edge cleanly at wide viewports and only slightly overhangs
+        // at ~1270. Mobile sprite half-width is larger proportionally;
+        // 10vw is as left as it goes without major crop.
+        const fixedXVw = mobileNow ? 10 : 5;
+        const fixedYVh = mobileNow ? 91 : 92;
         const fixedScale = mobileNow ? 0.6 : 0.7;
         el.style.left = `${fixedXVw}vw`;
         el.style.top = `${fixedYVh}vh`;
@@ -607,8 +608,8 @@ export default function PreviewV6Page() {
               ? window.innerWidth / window.innerHeight
               : 16 / 9;
           const horizontalHalf = verticalHalf * aspect;
-          const targetX = ((14 - 50) / 100) * (2 * horizontalHalf);
-          const targetY = ((50 - 90) / 100) * (2 * verticalHalf);
+          const targetX = ((10 - 50) / 100) * (2 * horizontalHalf);
+          const targetY = ((50 - 91) / 100) * (2 * verticalHalf);
           refs.xRef.current = targetX;
           refs.yRef.current = targetY;
           refs.scaleRef.current = 1;
@@ -868,8 +869,8 @@ export default function PreviewV6Page() {
           // breathing room on wide viewports, and TV viewports get
           // empty side margins which makes a too-cornery pin float in
           // negative space.
-          const xPercent = mob ? 14 : 7;
-          const yPercent = mob ? 90 : 88;
+          const xPercent = mob ? 10 : 5;
+          const yPercent = mob ? 91 : 92;
           refs.xRef.current = ((xPercent - 50) / 100) * (2 * horizontalHalf);
           refs.yRef.current = ((50 - yPercent) / 100) * (2 * verticalHalf);
           refs.scaleRef.current = 1;
