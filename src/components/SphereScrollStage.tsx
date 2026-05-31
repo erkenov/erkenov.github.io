@@ -567,6 +567,7 @@ export function SphereScrollStage({
   disableScrollDrivenShape = false,
   straightTrail = false,
   hideTrail = false,
+  showDust = false,
 }: StageProps & {
   sectionCount?: number;
   hideInnerCellCore?: boolean;
@@ -577,6 +578,10 @@ export function SphereScrollStage({
   /** Skip rendering the TrailLayer entirely. Used on mobile where the
    *  trailing dragon competes with Celly's dust cloud. (Shamil 2026-05-25) */
   hideTrail?: boolean;
+  /** Show the outer dust shell on desktop (hidden on mobile). Default
+   *  false keeps the live carousel homepage dust-free; the dragon-cell
+   *  staging page (preview-v7) sets this true. (Shamil 2026-05-30) */
+  showDust?: boolean;
 }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const pulseRef = useRef(0);
@@ -885,11 +890,10 @@ export function SphereScrollStage({
               sphereOpacityRef={sphereOpacityRef}
               streamOpacityRef={streamOpacityRef}
               hideInnerCore={hideInnerCellCore}
-              // Dust + graph nodes hidden on ALL viewports (Shamil
-              // 2026-05-27): the page now uses pure-carousel UI; the
-              // dust cloud + node sparkles add no information and
-              // distract from the carousel content. Was `={isMobile}`.
-              hideDust={true}
+              // Dust hidden by default (carousel homepage). When the page
+              // opts in via showDust (dragon-cell staging page), restore the
+              // original behavior: dust on desktop, hidden on mobile.
+              hideDust={showDust ? isMobile : true}
             />
             {!hideTrail && (
               <TrailLayer

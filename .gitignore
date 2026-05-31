@@ -51,3 +51,7 @@ scripts/__pycache__/
 
 # Image-optimization originals — kept in scripts/_industry_image_originals
 public/industries/_originals/
+
+# build/tool artifacts (Shamil 2026-05-30)
+graphify-out/
+nextdev.log
