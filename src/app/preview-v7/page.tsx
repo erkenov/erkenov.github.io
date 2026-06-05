@@ -22,6 +22,11 @@ import { Scene3LeadCaptureCarousel } from "@/components/Scene3LeadCaptureCarouse
 import { Scene4ErkenPlatform } from "@/components/Scene4ErkenPlatform";
 import { SceneIndustriesCarousel } from "@/components/SceneIndustriesCarousel";
 import { CellDragonSprite } from "@/components/CellDragonSprite";
+import ErkenChatWidget, {
+  openErkenChat,
+  useErkenChatOpen,
+} from "@/components/ErkenChatWidget";
+import { Particles } from "@/components/ui/particles";
 
 const SECTIONS = [
   {
@@ -329,6 +334,10 @@ export default function PreviewV6Page() {
   // Bubble visibility — true when user has stopped scrolling for the
   // SCROLL_STOP_DELAY window, false the instant scroll begins again.
   const [bubbleVisible, setBubbleVisible] = useState(false);
+  // True while the GHL chat panel is open. When open, the roaming Celly
+  // (+ her bubble) is hidden via the body.erken-chat-open CSS rule below,
+  // and a second, docked Celly is rendered beside the chat panel.
+  const chatOpen = useErkenChatOpen();
   // Mirror of bubbleVisible into a ref so the 60fps handleCellMove
   // callback (deps: []) can read the latest value without re-creating.
   // Drives Celly's opacity in the same scroll-stop logic as the bubble.
@@ -1250,17 +1259,66 @@ export default function PreviewV6Page() {
         // position math isn't affected by sprite's horizontal flip.
         bubbleText={null}
         onClick={() => {
-          alert(
-            "I'd open a full chat here. For now this is just my intro — production version lets you ask me anything about Erken Systems."
-          );
+          openErkenChat();
         }}
       />
     </div>
+    {/* Docked Celly — appears beside the GHL chat panel (always
+        bottom-right) while the chat is open, so it reads as "you're
+        chatting with Celly." The roaming Celly is hidden via CSS above.
+        Hidden on mobile, where the chat panel is full-screen. */}
+    {chatOpen && (
+      <>
+        {/* Dust field around the docked Celly (canvas particles, NOT the
+            3D scene's dust — that one's welded to scroll). */}
+        <div
+          aria-hidden
+          className="fixed z-30 pointer-events-none hidden md:block"
+          style={{ right: "20rem", bottom: 0, width: "22rem", height: "22rem" }}
+        >
+          <Particles
+            className="absolute inset-0"
+            quantity={70}
+            color="#b09c5e"
+            size={0.7}
+            staticity={25}
+            ease={40}
+          />
+        </div>
+        {/* Docked Celly beside the chat panel. */}
+        <div
+          aria-hidden
+          className="fixed z-40 pointer-events-none hidden md:block"
+          style={{
+            right: "26rem",
+            bottom: "1.5rem",
+            transform: "scale(0.7)",
+            transformOrigin: "bottom right",
+            filter: "drop-shadow(0 0 32px rgba(176, 156, 94, 0.35))",
+          }}
+        >
+          <CellDragonSprite
+            scale={1}
+            pointDirection="right"
+            showOuterShell={false}
+            bubbleText={null}
+          />
+        </div>
+      </>
+    )}
+    <ErkenChatWidget />
     {/* Bump Celly to full opacity when the cursor is on her. */}
     <style>{`
       .celly-container:hover,
       .celly-container:focus-within {
         opacity: var(--celly-hover-opacity, 1) !important;
+      }
+      /* While the chat is open, the roaming Celly + her bubble step aside;
+         a docked Celly appears beside the chat panel instead. */
+      body.erken-chat-open .celly-container,
+      body.erken-chat-open [aria-label="Talk to Celly"] {
+        opacity: 0 !important;
+        pointer-events: none !important;
       }
     `}</style>
 
@@ -1305,15 +1363,11 @@ export default function PreviewV6Page() {
       tabIndex={bubbleVisible ? 0 : -1}
       aria-label="Talk to Celly"
       onClick={() => {
-        alert(
-          "I'd open a full chat here. For now this is just my intro — production version lets you ask me anything about Erken Systems."
-        );
+        openErkenChat();
       }}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
-          alert(
-            "I'd open a full chat here. For now this is just my intro — production version lets you ask me anything about Erken Systems."
-          );
+          openErkenChat();
         }
       }}
       className="fixed z-50 cursor-pointer"
