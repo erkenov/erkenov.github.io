@@ -26,6 +26,7 @@ import ErkenChatWidget, {
   openErkenChat,
   useErkenChatOpen,
 } from "@/components/ErkenChatWidget";
+import ErkenVoiceWidget from "@/components/ErkenVoiceWidget";
 
 const SECTIONS = [
   {
@@ -33,7 +34,7 @@ const SECTIONS = [
     kicker: "Erken Systems",
     headline: "Full-spectrum business systems, with AI inside.",
     body: "If you can answer your phone, you can run an Erken system. Every business runs the same pipeline — leads come in, get captured, get tracked, get reported on. I build all four steps — bundled as one connected system, or piece by piece. Pick what you're missing. Workflow automation is the wiring between them. One operator. Any business.",
-    cta: "Show the demo",
+    cta: "Talk to Shamil's AI assistant",
   },
   {
     side: "right" as const,
@@ -115,7 +116,10 @@ function Section({
           {body}
         </p>
         {cta && (
-          <button className="mt-7 inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover">
+          <button
+            onClick={() => window.__startErkenVoiceCall?.()}
+            className="mt-7 inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
+          >
             {cta} →
           </button>
         )}
@@ -1326,6 +1330,7 @@ export default function PreviewV6Page() {
         chatting with Celly." The roaming Celly is hidden via CSS above.
         Hidden on mobile, where the chat panel is full-screen. */}
     <ErkenChatWidget />
+    <ErkenVoiceWidget />
     {/* Bump Celly to full opacity when the cursor is on her. */}
     <style>{`
       .celly-container:hover,
