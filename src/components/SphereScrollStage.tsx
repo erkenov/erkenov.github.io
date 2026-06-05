@@ -568,6 +568,7 @@ export function SphereScrollStage({
   straightTrail = false,
   hideTrail = false,
   showDust = false,
+  freezeRef,
 }: StageProps & {
   sectionCount?: number;
   hideInnerCellCore?: boolean;
@@ -582,6 +583,10 @@ export function SphereScrollStage({
    *  false keeps the live carousel homepage dust-free; the dragon-cell
    *  staging page (preview-v7) sets this true. (Shamil 2026-05-30) */
   showDust?: boolean;
+  /** When this ref is true, onUpdate stops driving the cell from scroll
+   *  so the host can pin it elsewhere (e.g. docking Celly beside the open
+   *  chat). Prevents a "ghost" scroll-driven dragon at her old spot. */
+  freezeRef?: React.MutableRefObject<boolean>;
 }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const pulseRef = useRef(0);
@@ -664,6 +669,9 @@ export function SphereScrollStage({
         end: "bottom bottom",
         scrub: 0.6,
         onUpdate: (self) => {
+          // Chat docked: host pins the cell; ignore scroll so no ghost
+          // dragon renders at her old scroll-driven spot.
+          if (freezeRef?.current) return;
           const p = self.progress;
           const N = sectionCount;
           // Read viewport fresh — closure-free so it works under SSR initial render

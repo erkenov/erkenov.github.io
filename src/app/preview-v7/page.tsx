@@ -26,7 +26,6 @@ import ErkenChatWidget, {
   openErkenChat,
   useErkenChatOpen,
 } from "@/components/ErkenChatWidget";
-import { Particles } from "@/components/ui/particles";
 
 const SECTIONS = [
   {
@@ -338,6 +337,12 @@ export default function PreviewV6Page() {
   // (+ her bubble) is hidden via the body.erken-chat-open CSS rule below,
   // and a second, docked Celly is rendered beside the chat panel.
   const chatOpen = useErkenChatOpen();
+  // Mirrors chatOpen into a ref so SphereScrollStage's onUpdate can freeze
+  // scroll-driven cell movement while Celly is docked at the chat.
+  const chatFreezeRef = useRef(false);
+  useEffect(() => {
+    chatFreezeRef.current = chatOpen;
+  }, [chatOpen]);
   // Mirror of bubbleVisible into a ref so the 60fps handleCellMove
   // callback (deps: []) can read the latest value without re-creating.
   // Drives Celly's opacity in the same scroll-stop logic as the bubble.
@@ -397,6 +402,55 @@ export default function PreviewV6Page() {
     window.addEventListener("resize", compute);
     return () => window.removeEventListener("resize", compute);
   }, []);
+  // ── Chat dock ──────────────────────────────────────────────────────
+  // While the GHL chat is open, pin the REAL Celly — her sprite, the 3D
+  // dragon cell, and the dust — to a fixed spot beside the chat panel,
+  // re-applying every frame so scroll can't drag her away. Reuses the
+  // same vw/vh→world projection the mobile-pin branch uses (round 17-18).
+  // On close, the RAF stops and normal roaming resumes. Desktop only —
+  // on mobile the chat panel is full-screen.
+  useEffect(() => {
+    if (!chatOpen) return;
+    if (typeof window !== "undefined" && window.innerWidth < 768) return;
+    const el = spriteContainerRef.current;
+    const DOCK_X_VW = 72; // left of the bottom-right chat panel (tunable)
+    const DOCK_Y_VH = 76;
+    let raf = 0;
+    const pin = () => {
+      if (el) {
+        el.style.left = `${DOCK_X_VW}vw`;
+        el.style.top = `${DOCK_Y_VH}vh`;
+        el.style.transform = "translate(-50%, -50%) scale(0.62)";
+        el.style.opacity = "1";
+      }
+      const refs = cellRefsRef.current;
+      if (refs) {
+        const { cameraZ, fovDeg } = cameraParamsRef.current;
+        const verticalHalf = cameraZ * Math.tan((fovDeg / 2) * (Math.PI / 180));
+        const aspect =
+          window.innerHeight > 0 ? window.innerWidth / window.innerHeight : 16 / 9;
+        const horizontalHalf = verticalHalf * aspect;
+        const wx = ((DOCK_X_VW - 50) / 100) * (2 * horizontalHalf);
+        const wy = ((50 - DOCK_Y_VH) / 100) * (2 * verticalHalf);
+        refs.xRef.current = wx;
+        refs.yRef.current = wy;
+        // Pin the trail refs to the dock too, so no stray dragon/stream
+        // lingers or animates at her old spot while scrolling.
+        refs.prevXRef.current = wx;
+        refs.prevYRef.current = wy;
+        refs.nextXRef.current = wx;
+        refs.nextYRef.current = wy;
+        refs.transitionProgressRef.current = 1;
+        refs.segProgressRef.current = 0.5;
+        refs.scaleRef.current = 1;
+        refs.sphereOpacityRef.current = 1; // dust stays visible (even mid-scroll)
+        refs.streamOpacityRef.current = 0;
+      }
+      raf = requestAnimationFrame(pin);
+    };
+    raf = requestAnimationFrame(pin);
+    return () => cancelAnimationFrame(raf);
+  }, [chatOpen]);
   // Active bubble variant — adaptive (LONG/MEDIUM/SHORT). Auto-positioner
   // picks the largest variant that fits in the available empty zone on
   // stop. Null = no variant fits, bubble is hidden entirely.
@@ -423,7 +477,7 @@ export default function PreviewV6Page() {
     // trail (hideTrail={isMobile}) and the dust cloud should stay
     // visible around Celly at all times. (Shamil 2026-05-25 evening.)
     const isMobileNow = typeof window !== "undefined" && window.innerWidth < 768;
-    if (cellRefsRef.current && !bubbleVisible && !isMobileNow) {
+    if (cellRefsRef.current && !bubbleVisible && !isMobileNow && !chatOpen) {
       const refs = cellRefsRef.current;
       if (cellAnimRafRef.current !== null) {
         cancelAnimationFrame(cellAnimRafRef.current);
@@ -462,7 +516,7 @@ export default function PreviewV6Page() {
     // Auto-position Celly + bubble in empty zones on scroll-stop. This
     // is now the ONLY place Celly's position and pointDirection update
     // (handleCellMove is detached — Shamil 2026-05-24 round 13).
-    if (bubbleVisible && el && bubbleEl) {
+    if (bubbleVisible && el && bubbleEl && !chatOpen) {
       // 1. Apply the desired pointing direction (only changes once per stop).
       if (lastSideRef.current !== lastDesiredDirectionRef.current) {
         lastSideRef.current = lastDesiredDirectionRef.current;
@@ -802,7 +856,7 @@ export default function PreviewV6Page() {
         cellAnimRafRef.current = requestAnimationFrame(tick);
       }
     }
-  }, [bubbleVisible, isMobile]);
+  }, [bubbleVisible, isMobile, chatOpen]);
   // (pointDirection state + lastSideRef + lastDesiredDirectionRef
   //  moved to top of component to avoid TDZ error in the stop-handler
   //  useEffect above.)
@@ -822,6 +876,9 @@ export default function PreviewV6Page() {
       scrollStartY = null; // reset for next scroll
     };
     const onScroll = () => {
+      // Chat docked: the dock pin owns the cell; ignore scroll entirely so
+      // the dust doesn't slide off to the old scroll-driven spot.
+      if (chatFreezeRef.current) return;
       if (scrollStartY === null) scrollStartY = window.scrollY;
       setBubbleVisible(false);
       // Mobile (Shamil 2026-05-25 evening): skip the dragon-draw logic.
@@ -1082,6 +1139,7 @@ export default function PreviewV6Page() {
       // the Industries full-width section below.
       sectionCount={SECTIONS.length + 1}
       showDust
+      freezeRef={chatFreezeRef}
       onCellPositionChange={handleCellMove}
       onCellRefsReady={(refs) => {
         cellRefsRef.current = refs;
@@ -1267,45 +1325,6 @@ export default function PreviewV6Page() {
         bottom-right) while the chat is open, so it reads as "you're
         chatting with Celly." The roaming Celly is hidden via CSS above.
         Hidden on mobile, where the chat panel is full-screen. */}
-    {chatOpen && (
-      <>
-        {/* Dust field around the docked Celly (canvas particles, NOT the
-            3D scene's dust — that one's welded to scroll). */}
-        <div
-          aria-hidden
-          className="fixed z-30 pointer-events-none hidden md:block"
-          style={{ right: "20rem", bottom: 0, width: "22rem", height: "22rem" }}
-        >
-          <Particles
-            className="absolute inset-0"
-            quantity={70}
-            color="#b09c5e"
-            size={0.7}
-            staticity={25}
-            ease={40}
-          />
-        </div>
-        {/* Docked Celly beside the chat panel. */}
-        <div
-          aria-hidden
-          className="fixed z-40 pointer-events-none hidden md:block"
-          style={{
-            right: "26rem",
-            bottom: "1.5rem",
-            transform: "scale(0.7)",
-            transformOrigin: "bottom right",
-            filter: "drop-shadow(0 0 32px rgba(176, 156, 94, 0.35))",
-          }}
-        >
-          <CellDragonSprite
-            scale={1}
-            pointDirection="right"
-            showOuterShell={false}
-            bubbleText={null}
-          />
-        </div>
-      </>
-    )}
     <ErkenChatWidget />
     {/* Bump Celly to full opacity when the cursor is on her. */}
     <style>{`
@@ -1313,9 +1332,9 @@ export default function PreviewV6Page() {
       .celly-container:focus-within {
         opacity: var(--celly-hover-opacity, 1) !important;
       }
-      /* While the chat is open, the roaming Celly + her bubble step aside;
-         a docked Celly appears beside the chat panel instead. */
-      body.erken-chat-open .celly-container,
+      /* While the chat is open, only Celly's intro bubble steps aside —
+         the real Celly herself flies to the chat dock (pinned via the
+         chat-dock effect), so we do NOT hide .celly-container. */
       body.erken-chat-open [aria-label="Talk to Celly"] {
         opacity: 0 !important;
         pointer-events: none !important;
