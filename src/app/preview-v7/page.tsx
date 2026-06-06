@@ -337,6 +337,20 @@ export default function PreviewV6Page() {
   // Bubble visibility — true when user has stopped scrolling for the
   // SCROLL_STOP_DELAY window, false the instant scroll begins again.
   const [bubbleVisible, setBubbleVisible] = useState(false);
+  // Text/Voice choice menu shown when Celly is clicked, anchored to her
+  // current screen position. Text → opens the chat; Voice → starts the call.
+  const [choiceMenu, setChoiceMenu] = useState<{ x: number; y: number } | null>(
+    null,
+  );
+  const openChoiceMenu = () => {
+    const el = spriteContainerRef.current;
+    if (el) {
+      const r = el.getBoundingClientRect();
+      setChoiceMenu({ x: r.left + r.width / 2, y: r.top + r.height * 0.28 });
+    } else {
+      setChoiceMenu({ x: window.innerWidth / 2, y: window.innerHeight * 0.5 });
+    }
+  };
   // True while the GHL chat panel is open. When open, the roaming Celly
   // (+ her bubble) is hidden via the body.erken-chat-open CSS rule below,
   // and a second, docked Celly is rendered beside the chat panel.
@@ -347,6 +361,14 @@ export default function PreviewV6Page() {
   useEffect(() => {
     chatFreezeRef.current = chatOpen;
   }, [chatOpen]);
+  // Close the Text/Voice menu the moment the user scrolls — otherwise it
+  // stays stranded where Celly used to be after she repositions on stop.
+  useEffect(() => {
+    if (!choiceMenu) return;
+    const close = () => setChoiceMenu(null);
+    window.addEventListener("scroll", close, { passive: true, once: true });
+    return () => window.removeEventListener("scroll", close);
+  }, [choiceMenu]);
   // Mirror of bubbleVisible into a ref so the 60fps handleCellMove
   // callback (deps: []) can read the latest value without re-creating.
   // Drives Celly's opacity in the same scroll-stop logic as the bubble.
@@ -1321,7 +1343,7 @@ export default function PreviewV6Page() {
         // position math isn't affected by sprite's horizontal flip.
         bubbleText={null}
         onClick={() => {
-          openErkenChat();
+          openChoiceMenu();
         }}
       />
     </div>
@@ -1331,6 +1353,56 @@ export default function PreviewV6Page() {
         Hidden on mobile, where the chat panel is full-screen. */}
     <ErkenChatWidget />
     <ErkenVoiceWidget />
+    {/* Text/Voice choice menu — appears at Celly when she's clicked. */}
+    {choiceMenu && (
+      <>
+        <div
+          className="fixed inset-0 z-[55]"
+          aria-hidden
+          onClick={() => setChoiceMenu(null)}
+        />
+        <div
+          role="menu"
+          aria-label="How would you like to talk to Erken?"
+          className="fixed z-[56] flex flex-col gap-1 rounded-2xl border border-white/15 bg-black/80 p-2 shadow-2xl backdrop-blur-md"
+          style={{
+            left: choiceMenu.x,
+            top: choiceMenu.y,
+            transform: "translate(-50%, -115%)",
+          }}
+        >
+          <div className="px-3 pb-1 pt-1 text-xs text-white/55">
+            Talk to Erken
+          </div>
+          <button
+            role="menuitem"
+            onClick={() => {
+              setChoiceMenu(null);
+              openErkenChat();
+            }}
+            className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
+          >
+            <span aria-hidden className="text-base">
+              💬
+            </span>{" "}
+            Text chat
+          </button>
+          <button
+            role="menuitem"
+            onClick={() => {
+              setChoiceMenu(null);
+              window.__startErkenVoiceCall?.();
+            }}
+            className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
+          >
+            <span aria-hidden className="text-base">
+              🎙️
+            </span>{" "}
+            Voice chat
+          </button>
+        </div>
+      </>
+    )}
     {/* Bump Celly to full opacity when the cursor is on her. */}
     <style>{`
       .celly-container:hover,
@@ -1387,11 +1459,11 @@ export default function PreviewV6Page() {
       tabIndex={bubbleVisible ? 0 : -1}
       aria-label="Talk to Celly"
       onClick={() => {
-        openErkenChat();
+        openChoiceMenu();
       }}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
-          openErkenChat();
+          openChoiceMenu();
         }
       }}
       className="fixed z-50 cursor-pointer"
