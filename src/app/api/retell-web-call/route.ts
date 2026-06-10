@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 // Creates a Retell web call server-side so the secret RETELL_API_KEY never
 // reaches the browser. Returns a short-lived access_token the browser SDK
 // uses to start the in-browser voice call with Erken (the site voice agent).
-const AGENT_ID = "agent_cca2ee6a721faf88d9beda90b8"; // Shamil AI Discovery v1 (conversation-flow; feeds GHL CRM via n8n webhook)
+const AGENT_ID = "agent_758d5b0c75ba4091b0fbdb4e8a"; // Erken Public Site Bot (custom-llm -> erken_public_bridge.py; Haiku; 3-min hard cap; $30/day ceiling enforced in the bridge; leads -> GoHighLevel). Old Discovery agent agent_cca2ee6a721faf88d9beda90b8 still on the phone line.
 
 export async function POST() {
   const key = process.env.RETELL_API_KEY;
