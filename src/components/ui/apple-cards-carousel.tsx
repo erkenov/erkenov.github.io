@@ -245,7 +245,11 @@ export const Carousel = ({ items, initialScroll = 0, loop = false, arrowsPositio
     >
       <div className="relative w-full">
         <div
-          className="flex w-full overflow-x-scroll overscroll-x-auto scroll-smooth py-10 [scrollbar-width:none] select-none md:py-20"
+          // md:py capped at 4vh (2026-06-10): on short viewports (TVs with
+          // browser zoom, 768px-tall laptops) the fixed 5rem padding plus
+          // the card height overflowed the section and bled into the next
+          // carousel.
+          className="flex w-full overflow-x-scroll overscroll-x-auto scroll-smooth py-10 [scrollbar-width:none] select-none md:py-[min(5rem,4vh)]"
           ref={carouselRef}
           onScroll={checkScrollability}
         >
@@ -408,7 +412,10 @@ export const Card = ({
       <motion.button
         layoutId={layout ? `card-${card.title}` : undefined}
         onClick={handleOpen}
-        className="relative z-10 flex h-96 w-72 flex-col items-start justify-start overflow-hidden rounded-3xl bg-gray-100 md:h-[40rem] md:w-96 dark:bg-neutral-900"
+        // md height capped at 72vh (2026-06-10): the fixed 40rem card was
+        // taller than short viewports (TV zoom / 768px laptops), making
+        // adjacent carousels overlap each other vertically.
+        className="relative z-10 flex h-96 w-72 flex-col items-start justify-start overflow-hidden rounded-3xl bg-gray-100 md:h-[min(40rem,72vh)] md:w-96 dark:bg-neutral-900"
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 z-30 h-full bg-gradient-to-b from-black/50 via-transparent to-transparent" />
         <div className="relative z-40 p-5 md:p-8">

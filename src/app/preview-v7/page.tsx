@@ -84,7 +84,7 @@ type SectionProps = typeof SECTIONS[number] & {
 };
 
 const DEFAULT_MEDIA_WRAPPER = (isLeft: boolean) =>
-  `absolute -top-[55vh] -bottom-[10vh] ${isLeft ? "-right-12" : "-left-12"} hidden md:flex md:w-[90%] items-center justify-center px-2 lg:px-4 pointer-events-none`;
+  `absolute -top-[55vh] -bottom-[10vh] ${isLeft ? "-right-12" : "-left-12"} hidden xl:flex xl:w-[90%] items-center justify-center px-2 lg:px-4 pointer-events-none`;
 
 function Section({
   kicker,
@@ -96,11 +96,21 @@ function Section({
   mediaWrapperClassName,
   mediaAvoidCelly = true,
   isMobile = false,
-}: SectionProps & { isMobile?: boolean }) {
+  stacked = false,
+}: SectionProps & { isMobile?: boolean; stacked?: boolean }) {
   const isLeft = side === "left";
   const wrapperClass = mediaWrapperClassName ?? DEFAULT_MEDIA_WRAPPER(isLeft);
   return (
-    <section className="relative md:min-h-screen md:flex md:items-center px-6 md:px-12 py-10 md:py-0">
+    // When media is stacked under the text the section must NOT be a flex
+    // row — otherwise the w-full media lands BESIDE the text column and
+    // overflows the viewport (2026-06-10 responsive QA).
+    <section
+      className={`relative px-6 md:px-12 py-10 ${
+        stacked && media
+          ? "md:py-16"
+          : "md:min-h-screen md:flex md:items-center md:py-0"
+      }`}
+    >
       <div
         data-celly-avoid
         className={`relative z-30 w-full md:w-1/2 ${isLeft ? "md:mr-auto" : "md:ml-auto"} max-w-xl`}
@@ -124,11 +134,16 @@ function Section({
           </button>
         )}
       </div>
-      {/* MOBILE media — rendered OUTSIDE the text column so it breaks
+      {/* STACKED media — rendered OUTSIDE the text column so it breaks
           out of the max-w-xl cap and spans the full section width.
           (Shamil 2026-05-25: especially needed for the MacBook 3D
-          scene that has no side text on mobile.) */}
-      {media && isMobile && (
+          scene that has no side text on mobile.)
+          2026-06-10: now also used on TABLET + SMALL-LAPTOP widths —
+          the absolute side-by-side wrappers mathematically overlap the
+          text column below ~1280px (responsive QA: text painted over
+          carousel cards on every width 768–1640), so those widths stack
+          text-then-media instead. */}
+      {media && (isMobile || stacked) && (
         <div
           {...(mediaAvoidCelly ? { "data-celly-avoid": "" } : {})}
           className="mt-10 w-full"
@@ -136,7 +151,7 @@ function Section({
           {media}
         </div>
       )}
-      {media && !isMobile && (
+      {media && !isMobile && !stacked && (
         <div
           {...(mediaAvoidCelly ? { "data-celly-avoid": "" } : {})}
           className={wrapperClass}
@@ -426,8 +441,16 @@ export default function PreviewV6Page() {
   // cloud puffs / tighter padding. Initial false → matches SSR; set
   // truthy after mount so we never mismatch on first paint.
   const [isMobile, setIsMobile] = useState(false);
+  // Viewport width — drives per-scene media stacking: the absolute
+  // side-by-side media wrappers only have room beside the max-w-xl text
+  // column from ~1280px up (MacBook 3D scene: ~1536px). Below that the
+  // Section stacks media under the text (2026-06-10 responsive QA fix).
+  const [viewportW, setViewportW] = useState(1920);
   useEffect(() => {
-    const compute = () => setIsMobile(window.innerWidth < 768);
+    const compute = () => {
+      setIsMobile(window.innerWidth < 768);
+      setViewportW(window.innerWidth);
+    };
     compute();
     window.addEventListener("resize", compute);
     return () => window.removeEventListener("resize", compute);
@@ -562,6 +585,12 @@ export default function PreviewV6Page() {
         // Static vh (not dvh) on purpose — dvh made the bot jiggle as the
         // bar animated (tried + reverted earlier).
         const fixedYVh = 72;
+        // 2026-06-10 (responsive QA): past the hero the full-width text
+        // column occupies the 59–72vh band, so the pinned bubble sat
+        // directly on headings/body at almost every scroll stop. Show the
+        // intro bubble on the hero only; Celly herself stays pinned.
+        const pastHero = window.scrollY > window.innerHeight * 0.6;
+        bubbleEl.style.display = pastHero ? "none" : "";
         el.style.left = `${fixedXVw}vw`;
         el.style.top = `${fixedYVh}vh`;
         el.style.transform = "translate(-50%, -50%) scale(0.6)";
@@ -1220,6 +1249,12 @@ export default function PreviewV6Page() {
         <Section
           key={i}
           isMobile={isMobile}
+          // Stack media under the text wherever the side-by-side wrapper
+          // can't fit beside the max-w-xl column (responsive QA 2026-06-10:
+          // every width 768–1640 had text painted over the cards; the
+          // MacBook's centered full-width canvas still hits the text at
+          // 1536 — verified by screenshot — so it stacks below 1920).
+          stacked={viewportW < (i === 4 ? 1920 : 1280)}
           {...s}
           media={
             i === 0 ? <Scene1IntroVideo />
@@ -1235,17 +1270,21 @@ export default function PreviewV6Page() {
             //  - Scenes 0, 2 have text on the LEFT, so media anchors RIGHT.
             //  - Scenes 1, 3 have text on the RIGHT, so media anchors LEFT.
             //  - Scene 4 (MacBook) uses the default wide wrapper.
+            // 2026-06-10 responsive fix: side-by-side only from xl: up
+            // (2xl: for the MacBook), and the xl-range anchors are bounded
+            // at the 52vw line so they can never cross the text column
+            // (text ends/starts at ≤48.75vw / ≥51.25vw in 1280–1536).
+            // From 2xl: up the original, wider anchors apply.
             i === 0
-              ? "absolute inset-y-[8vh] right-[4vw] hidden md:flex md:w-[50%] items-center justify-center pointer-events-auto"
+              ? "absolute inset-y-[8vh] right-[4vw] left-[52vw] 2xl:left-auto 2xl:w-[50%] hidden xl:flex items-center justify-center pointer-events-auto"
               : i === 2
-              ? // Lead Capture carousel — anchored on BOTH sides now
-                // (Shamil 2026-05-24): left edge closer to the text
-                // column on the left, right edge aligned with the right
-                // text edge of the section above. Replaces the previous
-                // md:w-[50%] fixed-width approach.
-                "absolute inset-y-[8vh] left-[38vw] right-[3vw] hidden md:flex items-center justify-center pointer-events-auto"
+              ? // Lead Capture carousel — anchored on BOTH sides
+                // (Shamil 2026-05-24). 2xl left edge moved 38vw → 42vw
+                // (2026-06-10): 38vw still crossed the text column up to
+                // ~1642px wide.
+                "absolute inset-y-[8vh] left-[52vw] right-[3vw] 2xl:left-[42vw] hidden xl:flex items-center justify-center pointer-events-auto"
               : i === 1 || i === 3
-              ? "absolute inset-y-[8vh] left-[4vw] hidden md:flex md:w-[55%] items-center justify-start pointer-events-auto"
+              ? "absolute inset-y-[8vh] left-[4vw] right-[52vw] 2xl:right-auto 2xl:w-[55%] hidden xl:flex items-center justify-start pointer-events-auto"
               : i === 4
               ? // MacBook scene — was using the wide default wrapper that
                 // extends -55vh above and -10vh below the section, causing
@@ -1254,7 +1293,7 @@ export default function PreviewV6Page() {
                 // Confine the canvas to section bounds; the lid open/close
                 // animation still plays via useScroll over the full
                 // start-end → end-start traversal range.
-                "absolute inset-y-0 inset-x-0 hidden md:flex items-center justify-center px-2 lg:px-4 pointer-events-none"
+                "absolute inset-y-0 inset-x-0 hidden 2xl:flex items-center justify-center px-2 lg:px-4 pointer-events-none"
               : undefined
           }
           // Step 4 keeps mediaAvoidCelly = true (Shamil round 46):
