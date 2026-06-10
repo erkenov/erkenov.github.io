@@ -1,92 +1,68 @@
 "use client";
 
 /**
- * Scene1IntroVideo — looping intro video of Shamil for the opener scene.
+ * Scene1IntroVideo — Shamil's intro video for the opener scene.
  *
- * Phase 1 (now): polished placeholder card. The video file lives at
- *   /public/intro.mp4
- * and will be wired in once Shamil records it. If the file is missing the
- * placeholder stays visible.
+ * The video is a VERTICAL (9:16) talking-head clip hosted on YouTube
+ * ("Video Introduction" — Pyj05i9-Quw). We use a lite-embed pattern:
+ * show the poster (the YouTube thumbnail, centre-cropped to the vertical
+ * frame so the player's blurred side-bars are hidden) with a play button;
+ * on click we swap in the real YouTube iframe and autoplay WITH sound
+ * (allowed because it's a user gesture). Hosting on YouTube = no bandwidth
+ * cost to us and no large file in /public.
  *
- * Phase 2 (when video ships): autoplay muted on loop, click to unmute.
- * Chrome autoplay policy requires muted=true for autoplay without user
- * gesture, so the unmute control is essential.
+ * Portrait card on every breakpoint because the source video is vertical.
  */
 
-import { useRef, useState, useEffect } from "react";
-import { IconPlayerPlayFilled, IconVolume, IconVolumeOff } from "@tabler/icons-react";
+import { useState } from "react";
+import { IconPlayerPlayFilled } from "@tabler/icons-react";
 
-const VIDEO_SRC = "/intro.mp4";
+const VIDEO_ID = "Pyj05i9-Quw";
+const POSTER = `https://i.ytimg.com/vi/${VIDEO_ID}/maxresdefault.jpg`;
 
 export function Scene1IntroVideo() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [muted, setMuted] = useState(true);
-  const [loaded, setLoaded] = useState(false);
-  const [errored, setErrored] = useState(false);
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    // Force load attempt. Browser will fire 'error' if the file doesn't exist.
-    v.load();
-  }, []);
-
-  const toggleMute = () => {
-    const v = videoRef.current;
-    if (!v) return;
-    v.muted = !v.muted;
-    setMuted(v.muted);
-  };
+  const [playing, setPlaying] = useState(false);
 
   return (
-    <div className="relative w-full max-w-[28rem] aspect-[9/16] md:aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl">
-      {/* Placeholder gradient — visible until video loads, and remains as
-          fallback if the file is missing */}
-      <div
-        className="absolute inset-0 flex flex-col items-center justify-center text-center px-6"
-        style={{
-          background:
-            "linear-gradient(135deg, #E89F1F 0%, #C76B58 60%, #7ea687 120%)",
-        }}
-      >
-        <div className="mono-label text-white/80 mb-3">Coming soon</div>
-        <IconPlayerPlayFilled
-          size={56}
-          className="text-white/90 mb-4"
-          strokeWidth={1}
+    <div className="relative w-full max-w-[22rem] aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black">
+      {playing ? (
+        <iframe
+          className="absolute inset-0 h-full w-full"
+          src={`https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&rel=0&playsinline=1&modestbranding=1`}
+          title="Video Introduction — Shamil Erkenov"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
         />
-        <div className="text-white font-bold text-xl md:text-2xl tracking-tight" style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}>
-          Quick intro from Shamil
-        </div>
-        <p className="mt-3 text-sm text-white/85 leading-relaxed max-w-[18rem]">
-          Sixty seconds on what Erken Systems is and why
-        </p>
-      </div>
-
-      {/* Real video — fades in over the placeholder once loaded */}
-      <video
-        ref={videoRef}
-        src={VIDEO_SRC}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        onLoadedData={() => setLoaded(true)}
-        onError={() => setErrored(true)}
-        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
-          loaded && !errored ? "opacity-100" : "opacity-0"
-        }`}
-      />
-
-      {/* Mute toggle — only visible once video plays */}
-      {loaded && !errored && (
+      ) : (
         <button
-          onClick={toggleMute}
-          aria-label={muted ? "Unmute" : "Mute"}
-          className="absolute bottom-4 right-4 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-all hover:bg-black/70"
+          type="button"
+          onClick={() => setPlaying(true)}
+          aria-label="Play Shamil's intro video"
+          className="group absolute inset-0 h-full w-full cursor-pointer"
         >
-          {muted ? <IconVolumeOff size={20} /> : <IconVolume size={20} />}
+          {/* Poster — YouTube thumbnail, centre-cropped to the vertical
+              frame (object-cover drops the blurred 16:9 side-bars). */}
+          <img
+            src={POSTER}
+            alt="Shamil, founder of Erken Systems"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          {/* Legibility gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/25" />
+          {/* Caption */}
+          <div className="absolute inset-x-0 bottom-0 p-5 text-left">
+            <div className="mono-label text-white/80 mb-1">A quick hello</div>
+            <div
+              className="text-white font-bold text-xl tracking-tight"
+              style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
+            >
+              Intro from Shamil
+            </div>
+          </div>
+          {/* Play button */}
+          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-black shadow-lg transition-transform duration-200 group-hover:scale-110">
+            <IconPlayerPlayFilled size={28} className="ml-0.5" />
+          </span>
         </button>
       )}
     </div>
