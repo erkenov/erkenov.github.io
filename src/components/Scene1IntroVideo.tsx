@@ -41,7 +41,7 @@ export function Scene1IntroVideo() {
         <video
           ref={videoRef}
           src="/intro.mp4"
-          poster="/intro-poster.jpg"
+          poster="/intro-poster.jpg?v=2"
           controls
           playsInline
           preload="auto"
@@ -57,7 +57,7 @@ export function Scene1IntroVideo() {
           {/* Poster frame from the video */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/intro-poster.jpg"
+            src="/intro-poster.jpg?v=2"
             alt="Shamil, founder of Erken Systems"
             className="absolute inset-0 h-full w-full object-cover"
           />
