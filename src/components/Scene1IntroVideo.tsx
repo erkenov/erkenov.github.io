@@ -3,47 +3,61 @@
 /**
  * Scene1IntroVideo — Shamil's intro video for the opener scene.
  *
- * The video is a VERTICAL (9:16) talking-head clip hosted on YouTube
- * ("Video Introduction" — Pyj05i9-Quw). We use a lite-embed pattern:
- * show the poster (the YouTube thumbnail, centre-cropped to the vertical
- * frame so the player's blurred side-bars are hidden) with a play button;
- * on click we swap in the real YouTube iframe and autoplay WITH sound
- * (allowed because it's a user gesture). Hosting on YouTube = no bandwidth
- * cost to us and no large file in /public.
+ * SELF-HOSTED (not YouTube) so it always plays at full 1080p quality with
+ * no adaptive downscaling and no YouTube branding/related-videos. The
+ * source is a vertical 9:16 talking-head clip; we compressed the 108 MB
+ * export down to ~12 MB (visually identical) and serve it from /public.
  *
- * Portrait card on every breakpoint because the source video is vertical.
+ * Lite pattern: show a poster frame + play button; on click, load the
+ * <video> and play WITH sound (allowed — it's a user gesture). The video
+ * only downloads when someone actually presses play (preload="none"), so
+ * it's light on bandwidth even during a traffic spike.
+ *
+ * Files: /public/intro.mp4 (12 MB, 1080×1920) + /public/intro-poster.jpg
  */
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { IconPlayerPlayFilled } from "@tabler/icons-react";
 
-const VIDEO_ID = "Pyj05i9-Quw";
-const POSTER = `https://i.ytimg.com/vi/${VIDEO_ID}/maxresdefault.jpg`;
-
 export function Scene1IntroVideo() {
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
+
+  const start = () => {
+    setPlaying(true);
+    // Play after the element mounts; with sound (user gesture).
+    requestAnimationFrame(() => {
+      const v = videoRef.current;
+      if (v) {
+        v.muted = false;
+        v.play().catch(() => {});
+      }
+    });
+  };
 
   return (
     <div className="relative w-full max-w-[22rem] aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black">
       {playing ? (
-        <iframe
-          className="absolute inset-0 h-full w-full"
-          src={`https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&rel=0&playsinline=1&modestbranding=1`}
-          title="Video Introduction — Shamil Erkenov"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
+        <video
+          ref={videoRef}
+          src="/intro.mp4"
+          poster="/intro-poster.jpg"
+          controls
+          playsInline
+          preload="auto"
+          className="absolute inset-0 h-full w-full object-cover"
         />
       ) : (
         <button
           type="button"
-          onClick={() => setPlaying(true)}
+          onClick={start}
           aria-label="Play Shamil's intro video"
           className="group absolute inset-0 h-full w-full cursor-pointer"
         >
-          {/* Poster — YouTube thumbnail, centre-cropped to the vertical
-              frame (object-cover drops the blurred 16:9 side-bars). */}
+          {/* Poster frame from the video */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={POSTER}
+            src="/intro-poster.jpg"
             alt="Shamil, founder of Erken Systems"
             className="absolute inset-0 h-full w-full object-cover"
           />
