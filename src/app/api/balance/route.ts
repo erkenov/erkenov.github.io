@@ -49,7 +49,18 @@ function parseCsv(text: string): string[][] {
   return rows;
 }
 
-async function loadLedger(locationId: string): Promise<LedgerRow[] | null> {
+/**
+ * Locations allowed to use this dashboard. The locationId rides in a public
+ * iframe URL, so without this check anyone could read any client's data with
+ * the agency's master key (IDOR). Comma-separated env BALANCE_ALLOWED_LOCATIONS,
+ * falling back to the agency's own GHL_LOCATION_ID. Empty allowlist = fail closed.
+ */
+function allowedLocations(): Set<string> {
+  const raw = process.env.BALANCE_ALLOWED_LOCATIONS || process.env.GHL_LOCATION_ID || "";
+  return new Set(raw.split(",").map((s) => s.trim()).filter(Boolean));
+}
+
+async function loadLedger(locationId: string, singleTenant: boolean): Promise<LedgerRow[] | null> {
   const url = process.env.BALANCE_SHEET_CSV_URL;
   if (!url) return null;
   try {
@@ -61,9 +72,12 @@ async function loadLedger(locationId: string): Promise<LedgerRow[] | null> {
     const idx = (name: string) => header.indexOf(name);
     const iDate = idx("date"), iLoc = idx("locationid"), iType = idx("type");
     const iAmt = idx("amount"), iNote = idx("note");
+    // A sheet without a locationId column can't scope rows per client — only
+    // safe while there's a single allowed location (fail closed otherwise).
+    if (iLoc < 0 && !singleTenant) return [];
     return rows.slice(1)
       .filter((r) => r.length > 1)
-      .filter((r) => iLoc < 0 || !locationId || (r[iLoc] || "").trim() === locationId)
+      .filter((r) => iLoc < 0 || (r[iLoc] || "").trim() === locationId)
       .map((r) => ({
         date: (r[iDate] || "").trim(),
         type: (r[iType] || "").trim().toLowerCase(),
@@ -103,8 +117,13 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const locationId = searchParams.get("locationId") || process.env.GHL_LOCATION_ID || "";
 
+  const allowed = allowedLocations();
+  if (!allowed.has(locationId)) {
+    return NextResponse.json({ error: "unknown location" }, { status: 403 });
+  }
+
   const [ledger, activity] = await Promise.all([
-    loadLedger(locationId),
+    loadLedger(locationId, allowed.size === 1),
     liveActivity(locationId),
   ]);
 
