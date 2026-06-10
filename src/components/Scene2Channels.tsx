@@ -9,9 +9,11 @@
  * animated visuals (Scene2VoiceAgentVisual etc.) and the Erken corner
  * badge — both fought with the new photographic covers.
  *
- * Order locked 2026-05-23 (Shamil): Voice agent FIRST (the flagship
- * outbound channel), then Google Maps prospecting, cold email, Meta
- * Business AI, LinkedIn outreach.
+ * Cards (Shamil 2026-06-05 audit): Google Maps prospecting (+ enrichment),
+ * then cold email at scale. Voice agent moved to Lead Capture as the
+ * inbound receptionist — cold AI-calling is a TCPA/robocall risk. Meta
+ * Business AI + LinkedIn outreach cut (can't deliver today / poor fit for
+ * local SMBs).
  */
 
 import { Carousel, Card } from "@/components/ui/apple-cards-carousel";
@@ -54,56 +56,7 @@ const IMG = {
 } as const;
 
 const CHANNELS: ChannelCard[] = [
-  // 1. AI voice agent that calls
-  {
-    category: "Outbound · voice",
-    title: "AI voice agent that calls",
-    src: ph("Voice agent", "C76B58"),
-    visual: <CardStyle2Photo src="/industries/card-voice-agent-photo.jpg" />,
-    content: (
-      <ChannelBodySteps
-        steps={[
-          {
-            title: "Your campaign starts — and dials thousands of prospects without burning out reps",
-            description:
-              "An AI agent makes the outbound call in YOUR brand voice with YOUR pitch. Hundreds of dials a day. Voicemails handled. Wrong numbers logged. Real conversations qualified and booked right on the call.",
-            image: "/industries/card-voice-agent-photo.jpg",
-            imageAlt: "Outbound calling campaign dashboard",
-          },
-          {
-            title: "Every call lands in your CRM — automatically",
-            description:
-              "Transcript, recording, prospect's answers, qualification notes — all saved against the contact record. Reps see full context before they pick up where the AI left off.",
-            image: IMG.step2Saved,
-            imageAlt: "Call records saved to CRM",
-          },
-          {
-            title: "Every prospect moves through your pipeline visibly",
-            description:
-              "Dialed → Connected → Qualified → Meeting booked. You see exactly where each campaign stands and which lists are actually producing.",
-            image: IMG.step3Pipeline,
-            imageAlt: "Outbound pipeline view",
-          },
-          {
-            title: "Booked meetings get the right follow-up — automatically",
-            description:
-              "Calendar invite the moment the call ends. Reminder text the day before. Reschedule link if they bail. All in your brand voice, all automatic.",
-            image: IMG.step4Messages,
-            imageAlt: "Automated follow-up sequence",
-          },
-          {
-            title: "Monday morning, you see what your campaign produced",
-            description:
-              "Dials. Pickups. Conversations. Meetings booked. No-shows. Per agent, per campaign, per list. A clean weekly summary — no spreadsheets.",
-            image: IMG.step5Report,
-            imageAlt: "Weekly campaign performance summary",
-          },
-        ]}
-        outcome="Replaces a team of three SDRs at a fraction of the cost. Most campaigns book ten to twenty meetings per week from a single list."
-      />
-    ),
-  },
-  // 2. Google Maps prospecting
+  // 1. Google Maps prospecting
   {
     category: "Outbound · scrape",
     title: "Google Maps prospecting",
@@ -136,7 +89,7 @@ const CHANNELS: ChannelCard[] = [
           {
             title: "Outreach kicks off across whatever channels you choose — automatically",
             description:
-              "Voice agent, cold email, LinkedIn, SMS — pick the channels per list. The system handles cadence, follow-up, and opt-out compliance.",
+              "Cold email, SMS, and your other channels — pick what to run per list. The system handles timing, follow-up, and unsubscribes for you.",
             image: IMG.step4Messages,
             imageAlt: "Automated multi-channel outreach",
           },
@@ -149,6 +102,55 @@ const CHANNELS: ChannelCard[] = [
           },
         ]}
         outcome="A typical city pull yields five hundred to two thousand qualified prospects per category. No lists to buy, no manual research."
+      />
+    ),
+  },
+  // 2. Lead enrichment
+  {
+    category: "Outbound · enrich",
+    title: "Lead enrichment",
+    src: ph("Enrichment", "6E8B5A"),
+    visual: <CardStyle2Photo src="/industries/card-activity-feed-photo.jpg" />,
+    content: (
+      <ChannelBodySteps
+        steps={[
+          {
+            title: "A raw list comes in — and becomes people you can actually reach",
+            description:
+              "A scrape gives you a business name and a phone number. Enrichment fills in what's missing: the owner's email, the name of the person who actually decides, and a verified way to reach them. A list of businesses becomes a list of people.",
+            image: "/industries/card-activity-feed-photo.jpg",
+            imageAlt: "Lead enrichment filling in contact details",
+          },
+          {
+            title: "Every record lands in your CRM — fully filled in, automatically",
+            description:
+              "Name, role, verified email, company size, socials — appended to each contact and tagged by source. No more half-empty rows you can't do anything with.",
+            image: "/industries/enrich-step2-enriched-contact.png",
+            imageAlt: "Enriched contact saved to CRM",
+          },
+          {
+            title: "Bad data gets caught before it costs you — automatically",
+            description:
+              "Dead emails, disconnected numbers, and duplicates are flagged and cleaned, so your outreach doesn't bounce, burn your sender reputation, or waste time on a number that rings nowhere.",
+            image: "/industries/enrich-step3-data-cleaning.png",
+            imageAlt: "Data verification and cleaning view",
+          },
+          {
+            title: "Enriched leads flow straight into outreach — automatically",
+            description:
+              "The moment a list is enriched and verified, it's ready for the next step — cold email, a call, or your sales team. No manual hand-off, no copy-paste between tools.",
+            image: "/industries/enrich-step4-route-to-outreach.png",
+            imageAlt: "Enriched leads routed to outreach",
+          },
+          {
+            title: "Monday morning, you see how reachable your list really is",
+            description:
+              "Match rate, email-found rate, verified-contact rate per list. A clean weekly summary so you know which sources give you real, reachable people and which give you dead ends.",
+            image: "/industries/enrich-step5-match-rate.png",
+            imageAlt: "Weekly enrichment match-rate summary",
+          },
+        ]}
+        outcome="Good enrichment lifts a raw scrape from phone-only to roughly sixty to eighty percent with a verified email — the difference between a list you can actually email and one you can only cold-call."
       />
     ),
   },
@@ -192,110 +194,12 @@ const CHANNELS: ChannelCard[] = [
           {
             title: "Monday morning, you see what your inboxes produced",
             description:
-              "Sends. Open rate. Reply rate. Booked rate. Sender-reputation health. A clean weekly summary so you can swap subject lines or rest tired inboxes before they get burned.",
+              "Sends. Open rate. Reply rate. Booked rate. Whether your emails are still landing in inboxes instead of spam. A clean weekly summary so you can swap subject lines or rest tired inboxes before they stop delivering.",
             image: IMG.step5Report,
             imageAlt: "Weekly cold email performance summary",
           },
         ]}
-        outcome="Warmed-up sender infrastructure plus per-prospect personalization typically holds reply rates between three and eight percent — several times generic cold email."
-      />
-    ),
-  },
-  // 4. Meta Business AI
-  {
-    category: "Paid · Meta",
-    title: "Meta Business AI",
-    src: ph("Meta ads", "E89F1F"),
-    visual: <CardStyle2Photo src="/industries/card-meta-ads-photo.jpg" />,
-    content: (
-      <ChannelBodySteps
-        steps={[
-          {
-            title: "Your Meta ads now talk back — twenty-four seven",
-            description:
-              "When someone clicks your Facebook or Instagram ad, an AI agent answers their questions, qualifies them, and books a call right inside Messenger. The ad budget you're already spending now actually books meetings.",
-            image: "/industries/card-meta-ads-photo.jpg",
-            imageAlt: "Instagram DM thread with AI agent reply",
-          },
-          {
-            title: "Every conversation lands in your CRM — automatically",
-            description:
-              "Name, what they asked, what they wanted, what objections they had — all saved against the lead record. Your sales team sees the full thread before they pick up.",
-            image: IMG.step2Saved,
-            imageAlt: "Ad-conversation lead saved to CRM",
-          },
-          {
-            title: "Every ad-driven lead moves through your pipeline visibly",
-            description:
-              "Ad clicked → Chatted → Qualified → Booked. You see which creative, which audience, and which day of the week produce actual bookings — not just clicks.",
-            image: IMG.step3Pipeline,
-            imageAlt: "Ad lead pipeline view",
-          },
-          {
-            title: "Follow-up runs across Messenger, Instagram, and SMS — automatically",
-            description:
-              "Booking confirmation. Day-before reminder. Win-back for ghosted threads. All in your brand voice, across whichever channel the lead prefers.",
-            image: IMG.step4Messages,
-            imageAlt: "Cross-channel ad follow-up sequence",
-          },
-          {
-            title: "Monday morning, you see what your ad spend actually bought",
-            description:
-              "Cost per ad-conversation. Cost per booked meeting. Best-performing creative. A clean weekly summary so you can kill the duds and double down on winners.",
-            image: IMG.step5Report,
-            imageAlt: "Weekly Meta ads performance summary",
-          },
-        ]}
-        outcome="Meta Business AI is free for eligible advertisers. Average cost-per-meeting drops thirty to fifty percent when ads can answer questions instead of just sending to a landing page."
-      />
-    ),
-  },
-  // 5. LinkedIn outreach
-  {
-    category: "Outbound · LinkedIn",
-    title: "LinkedIn outreach",
-    src: ph("LinkedIn", "A8B86C"),
-    visual: <CardStyle2Photo src="/industries/card-linkedin-photo.jpg" />,
-    content: (
-      <ChannelBodySteps
-        steps={[
-          {
-            title: "Targeted connection requests go out — at scale, in your voice",
-            description:
-              "Filter for your ideal customer — industry, company size, role, geography. The system sends personalized connection requests with a real first line tailored to each profile, not a copy-paste template.",
-            image: "/industries/card-linkedin-photo.jpg",
-            imageAlt: "LinkedIn outreach messaging interface",
-          },
-          {
-            title: "Every accepted connection lands in your CRM — automatically",
-            description:
-              "Name, role, company, what triggered the personalization, full conversation history — all saved. Reps see context before they message.",
-            image: IMG.step2Saved,
-            imageAlt: "LinkedIn connection saved to CRM",
-          },
-          {
-            title: "Every prospect moves through your LinkedIn pipeline visibly",
-            description:
-              "Invited → Accepted → Messaged → Replied → Booked. You see which job titles and industries actually convert vs which just collect connections.",
-            image: IMG.step3Pipeline,
-            imageAlt: "LinkedIn outreach pipeline view",
-          },
-          {
-            title: "Follow-up runs without you logging into LinkedIn — automatically",
-            description:
-              "First message after acceptance. Second touch a few days later. Third nudge with value, not pressure. All paced safely under LinkedIn's daily limits.",
-            image: IMG.step4Messages,
-            imageAlt: "Automated LinkedIn follow-up sequence",
-          },
-          {
-            title: "Monday morning, you see what your network actually produced",
-            description:
-              "Invites sent. Acceptance rate. Reply rate. Booked rate. By industry, by title, by message variant. A clean weekly summary so you can tune the targeting.",
-            image: IMG.step5Report,
-            imageAlt: "Weekly LinkedIn outreach summary",
-          },
-        ]}
-        outcome="B2B founders typically book two to five meetings per week per LinkedIn account, with the same outreach scaling cleanly across multiple seats."
+        outcome="Properly warmed-up sending accounts (so your emails stay out of spam) plus per-prospect personalization typically hold reply rates between three and eight percent — several times generic cold email."
       />
     ),
   },

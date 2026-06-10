@@ -19,7 +19,7 @@ import { MacbookFrame3D } from "@/components/MacbookFrame3D";
 import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
 import { Scene2Channels } from "@/components/Scene2Channels";
 import { Scene3LeadCaptureCarousel } from "@/components/Scene3LeadCaptureCarousel";
-import { Scene4ErkenPlatform } from "@/components/Scene4ErkenPlatform";
+import { Scene4LeadMgmtCarousel } from "@/components/Scene4LeadMgmtCarousel";
 import { SceneIndustriesCarousel } from "@/components/SceneIndustriesCarousel";
 import { CellDragonSprite } from "@/components/CellDragonSprite";
 import ErkenChatWidget, {
@@ -346,7 +346,11 @@ export default function PreviewV6Page() {
     const el = spriteContainerRef.current;
     if (el) {
       const r = el.getBoundingClientRect();
-      setChoiceMenu({ x: r.left + r.width / 2, y: r.top + r.height * 0.28 });
+      // Keep the (center-anchored) menu within the viewport sides so it can't
+      // clip off the left/right edges when Celly roams to a corner.
+      const half = 120;
+      const x = Math.max(half, Math.min(window.innerWidth - half, r.left + r.width / 2));
+      setChoiceMenu({ x, y: r.top + r.height * 0.28 });
     } else {
       setChoiceMenu({ x: window.innerWidth / 2, y: window.innerHeight * 0.5 });
     }
@@ -1221,7 +1225,7 @@ export default function PreviewV6Page() {
             i === 0 ? <Scene1IntroVideo />
             : i === 1 ? <Scene2Channels />
             : i === 2 ? <Scene3LeadCaptureCarousel />
-            : i === 3 ? <Scene4ErkenPlatform />
+            : i === 3 ? <Scene4LeadMgmtCarousel />
             : i === 4 ? <MacbookFrame3D />
             : null
           }
@@ -1368,7 +1372,12 @@ export default function PreviewV6Page() {
           style={{
             left: choiceMenu.x,
             top: choiceMenu.y,
-            transform: "translate(-50%, -115%)",
+            // Open ABOVE Celly normally; when she's near the top of the page the
+            // menu would be clipped behind the browser bar, so flip it to open
+            // BELOW her instead. (~190px ≈ menu height + a little margin.)
+            transform: choiceMenu.y < 190
+              ? "translate(-50%, 12%)"
+              : "translate(-50%, -115%)",
           }}
         >
           <div className="px-3 pb-1 pt-1 text-xs text-white/55">

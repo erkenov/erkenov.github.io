@@ -103,7 +103,7 @@ const CHANNELS: ChannelCard[] = [
             imageAlt: "Weekly call performance summary",
           },
         ]}
-        outcome="Most businesses recover ten to twenty after-hours and overflow calls per week that would have gone to voicemail."
+        outcome="Most businesses recover ten to twenty after-hours and overflow calls per week that would have gone to voicemail. The same agent can also make outbound calls — to your existing or opted-in customers — for appointment reminders, confirmations, or a quick demo when a prospect asks for one."
         replaces={["Dialzara", "Rosie", "Smith.ai", "missed-call voicemail"]}
       />
     ),
@@ -111,7 +111,7 @@ const CHANNELS: ChannelCard[] = [
   // 2. Web chat
   {
     category: "Inbound · web",
-    title: "Web chat that books appointments",
+    title: "AI web chat",
     src: ph("Web chat", "7ea687"),
     visual: <CardStyle2Photo src="/industries/card-web-chat-photo.jpg" />,
     content: (
@@ -258,57 +258,7 @@ const CHANNELS: ChannelCard[] = [
       />
     ),
   },
-  // 5. Web forms
-  {
-    category: "Inbound · form",
-    title: "Web forms routed straight to pipeline",
-    src: ph("Web forms", "8B7BB8"),
-    visual: <CardStyle2Photo src="/industries/card-web-form-photo.jpg" />,
-    content: (
-      <ChannelBodySteps
-        steps={[
-          {
-            title: "Someone fills out your form — and gets a response in seconds",
-            description:
-              "Contact form, quote request, intake form, appointment request — every submission triggers an instant intelligent reply. The visitor sees you're responsive before they bounce to a competitor's tab.",
-            image: "/industries/card-web-form-photo.jpg",
-            imageAlt: "Web form submission on a laptop",
-          },
-          {
-            title: "Their submission lands in your CRM — automatically",
-            description:
-              "Every form field saved, tagged by source so you know exactly which form on which page drove the lead. Ready for your team's review in seconds.",
-            image: IMG.step2Saved,
-            imageAlt: "Form submission saved to CRM",
-          },
-          {
-            title: "Every form lead moves through your pipeline visibly",
-            description:
-              "Submitted → Auto-replied → Qualified → Booked. You see which forms produce buyers and which produce tire-kickers.",
-            image: IMG.step3Pipeline,
-            imageAlt: "Form lead pipeline view",
-          },
-          {
-            title: "Follow-up runs even if they don't reply right away — automatically",
-            description:
-              "Instant confirmation. Booking link in the first message. Reminder if they don't book in 24 hours. Win-back a week later. All in your brand voice.",
-            image: IMG.step4Messages,
-            imageAlt: "Automated form-lead follow-up sequence",
-          },
-          {
-            title: "Monday morning, you see which forms actually work",
-            description:
-              "Submissions by form. Submission-to-booking conversion. Average response time. A clean weekly summary so you can kill the forms that don't convert and double down on what does.",
-            image: IMG.step5Report,
-            imageAlt: "Weekly form performance summary",
-          },
-        ]}
-        outcome="Pre-built form templates per industry mean no Zapier setup, no Typeform monthly fee, and instant routing to your pipeline."
-        replaces={["Typeform", "JotForm", "Google Forms + Zapier"]}
-      />
-    ),
-  },
-  // 6. Email-to-inbox aggregation
+  // 5. Email-to-inbox aggregation
   {
     category: "Inbound · email",
     title: "Email-to-inbox aggregation",

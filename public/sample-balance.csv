@@ -1,0 +1,4 @@
+date,locationId,type,amount,note
+2026-06-01,BSNXXkE5JiDxqdFxf1YV,topup,200,Initial top-up (Wise)
+2026-06-03,BSNXXkE5JiDxqdFxf1YV,usage,18.40,Voice minutes + texts
+2026-06-05,BSNXXkE5JiDxqdFxf1YV,usage,12.75,Voice minutes + texts

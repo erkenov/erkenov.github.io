@@ -1,0 +1,187 @@
+"use client";
+
+/**
+ * /balance — client Account Balance dashboard.
+ *
+ * Embedded inside the white-labeled GoHighLevel sub-account as a Custom Menu
+ * Link (iframe). GHL passes the sub-account id via the {{location.id}} merge
+ * field, so the link is e.g.  https://erken.systems/balance?locationId={{location.id}}
+ *
+ * Shows prepaid balance + usage (from the agency ledger sheet) and live
+ * activity pulled from the client's own GoHighLevel account. Iframe-friendly:
+ * no site nav/header, fills the frame, own dark background.
+ */
+
+import { useEffect, useState } from "react";
+
+type Ledger = { date: string; type: string; amount: number; note: string };
+type Data = {
+  currency: string;
+  configured: boolean;
+  connected: boolean;
+  toppedUp: number;
+  used: number;
+  remaining: number;
+  ledger: Ledger[];
+  liveActivity: { conversations: number } | null;
+  rates: { voicePerMin: number; smsEach: number };
+};
+
+const money = (n: number, c = "USD") =>
+  new Intl.NumberFormat("en-US", { style: "currency", currency: c }).format(n);
+
+export default function BalancePage() {
+  const [data, setData] = useState<Data | null>(null);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const locationId = params.get("locationId") || "";
+    fetch(`/api/balance?locationId=${encodeURIComponent(locationId)}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then(setData)
+      .catch(() => setError(true));
+  }, []);
+
+  const remaining = data?.remaining ?? 0;
+  const low = remaining < 20;
+
+  return (
+    <div
+      className="min-h-screen w-full text-[#E8EFE9] px-[5vw] py-[6vh]"
+      style={{
+        background:
+          "radial-gradient(120% 120% at 20% 0%, #16241d 0%, #0c140f 55%, #080d0a 100%)",
+        fontFamily:
+          "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif",
+      }}
+    >
+      <div className="mx-auto" style={{ maxWidth: 720 }}>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-2">
+            <span className="inline-block rounded-[3px]" style={{ width: 12, height: 12, background: "#7ea687" }} />
+            <span className="font-semibold tracking-tight">Erken Systems</span>
+          </div>
+          <span className="text-xs" style={{ color: "rgba(232,239,233,0.5)" }}>
+            Account balance
+          </span>
+        </div>
+
+        {!data && !error && (
+          <div className="text-sm" style={{ color: "rgba(232,239,233,0.6)" }}>Loading your balance…</div>
+        )}
+
+        {error && (
+          <div className="text-sm" style={{ color: "#E89F1F" }}>
+            Couldn&apos;t load your balance right now. Please refresh — if it keeps happening, contact Erken Systems.
+          </div>
+        )}
+
+        {data && (
+          <>
+            {/* Big remaining balance */}
+            <div
+              className="rounded-2xl px-7 py-8 mb-5"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: `1px solid ${low ? "rgba(199,107,88,0.5)" : "rgba(126,166,135,0.35)"}`,
+              }}
+            >
+              <div className="text-xs mb-2" style={{ color: "rgba(232,239,233,0.55)" }}>
+                Remaining balance
+              </div>
+              <div
+                className="font-bold tracking-tight"
+                style={{ fontSize: "clamp(34px,8vw,56px)", color: low ? "#E8A07A" : "#CDEBD2", letterSpacing: "-0.03em" }}
+              >
+                {money(remaining, data.currency)}
+              </div>
+              {!data.configured ? (
+                <div className="mt-2 text-sm" style={{ color: "rgba(232,239,233,0.5)" }}>
+                  Balance tracking is being set up for your account.
+                </div>
+              ) : low ? (
+                <div className="mt-2 text-sm" style={{ color: "#E8A07A" }}>
+                  Running low — top up to keep your voice agent and texts running.
+                </div>
+              ) : (
+                <div className="mt-2 text-sm" style={{ color: "rgba(232,239,233,0.5)" }}>
+                  Covers your voice minutes, texts, and AI usage.
+                </div>
+              )}
+            </div>
+
+            {/* Tiles */}
+            <div className="grid grid-cols-2 gap-4 mb-5">
+              <Tile label="Topped up" value={money(data.toppedUp, data.currency)} color="#7ea687" />
+              <Tile label="Used" value={money(data.used, data.currency)} color="#E89F1F" />
+            </div>
+
+            {/* Live activity from GHL */}
+            <div
+              className="rounded-xl px-5 py-4 mb-5 flex items-center justify-between"
+              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+            >
+              <span className="flex items-center gap-2 text-sm" style={{ color: "rgba(232,239,233,0.7)" }}>
+                <span
+                  className="inline-block rounded-full"
+                  style={{ width: 8, height: 8, background: data.connected ? "#7ea687" : "rgba(232,239,233,0.3)" }}
+                />
+                {data.connected ? "Live from your platform" : "Platform activity"}
+              </span>
+              <span className="text-sm font-medium">
+                {data.liveActivity ? `${data.liveActivity.conversations} conversations` : "—"}
+              </span>
+            </div>
+
+            {/* Recent ledger */}
+            {data.ledger.length > 0 && (
+              <div className="mb-5">
+                <div className="text-xs mb-2" style={{ color: "rgba(232,239,233,0.5)" }}>Recent activity</div>
+                <div className="space-y-2">
+                  {data.ledger.map((row, i) => {
+                    const isUsage = row.type === "usage";
+                    return (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between rounded-lg px-4 py-2.5 text-sm"
+                        style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.05)" }}
+                      >
+                        <span className="min-w-0 truncate">
+                          <span style={{ color: "rgba(232,239,233,0.45)" }}>{row.date} · </span>
+                          {row.note || (isUsage ? "Usage" : row.type === "topup" ? "Top-up" : "Adjustment")}
+                        </span>
+                        <span className="shrink-0 font-medium ml-3" style={{ color: isUsage ? "#E8A07A" : "#7ea687" }}>
+                          {isUsage ? "−" : "+"}{money(Math.abs(row.amount), data.currency)}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Rates footnote */}
+            <div className="text-xs" style={{ color: "rgba(232,239,233,0.4)" }}>
+              Usage rates: voice {money(data.rates.voicePerMin, data.currency)}/min · text {money(data.rates.smsEach, data.currency)} each.
+              Top up anytime through Erken Systems.
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Tile({ label, value, color }: { label: string; value: string; color: string }) {
+  return (
+    <div
+      className="rounded-xl px-5 py-4"
+      style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(255,255,255,0.06)" }}
+    >
+      <div className="text-xs mb-1" style={{ color: "rgba(232,239,233,0.5)" }}>{label}</div>
+      <div className="font-bold tracking-tight" style={{ fontSize: "clamp(18px,4vw,26px)", color }}>{value}</div>
+    </div>
+  );
+}

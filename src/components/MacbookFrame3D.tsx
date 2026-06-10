@@ -15,11 +15,81 @@
  * with the component regardless of which page hosts it.
  */
 
-import { Suspense, useRef, useEffect, useMemo } from "react";
+import { Suspense, useRef, useEffect, useMemo, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, Environment, ContactShadows, Center } from "@react-three/drei";
 import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
 import * as THREE from "three";
+import { LaptopScreenDashboard } from "@/components/LaptopScreenDashboard";
+
+/* ============================================================
+   Perspective-warp helpers — map the flat dashboard rectangle onto the
+   laptop screen's FOUR corners via a CSS matrix3d homography (the
+   franklinta.com technique). Unlike rotateX, this lets us pin each corner
+   independently to an exact point on the 3D screen. Corners are expressed
+   as fractions of the laptop wrapper box and tuned visually.
+   ============================================================ */
+function adjugate(m: number[]) {
+  return [
+    m[4] * m[8] - m[5] * m[7], m[2] * m[7] - m[1] * m[8], m[1] * m[5] - m[2] * m[4],
+    m[5] * m[6] - m[3] * m[8], m[0] * m[8] - m[2] * m[6], m[2] * m[3] - m[0] * m[5],
+    m[3] * m[7] - m[4] * m[6], m[1] * m[6] - m[0] * m[7], m[0] * m[4] - m[1] * m[3],
+  ];
+}
+function multMM(a: number[], b: number[]) {
+  const r = new Array(9);
+  for (let i = 0; i < 3; i++)
+    for (let j = 0; j < 3; j++) {
+      let s = 0;
+      for (let k = 0; k < 3; k++) s += a[3 * i + k] * b[3 * k + j];
+      r[3 * i + j] = s;
+    }
+  return r;
+}
+function multMV(m: number[], v: number[]) {
+  return [
+    m[0] * v[0] + m[1] * v[1] + m[2] * v[2],
+    m[3] * v[0] + m[4] * v[1] + m[5] * v[2],
+    m[6] * v[0] + m[7] * v[1] + m[8] * v[2],
+  ];
+}
+function basisToPoints(p: number[]) {
+  // p = [x1,y1, x2,y2, x3,y3, x4,y4]
+  const m = [p[0], p[2], p[4], p[1], p[3], p[5], 1, 1, 1];
+  const v = multMV(adjugate(m), [p[6], p[7], 1]);
+  return multMM(m, [v[0], 0, 0, 0, v[1], 0, 0, 0, v[2]]);
+}
+/** matrix3d string mapping the element box (w×h) → 4 dest points {tl,tr,br,bl}
+ *  given relative to the element's own top-left (transform-origin 0 0). */
+function quadMatrix3d(
+  w: number,
+  h: number,
+  c: { tl: number[]; tr: number[]; br: number[]; bl: number[] },
+) {
+  // src order TL,TR,BL,BR  →  dst order TL,TR,BL,BR
+  const s = basisToPoints([0, 0, w, 0, 0, h, w, h]);
+  const d = basisToPoints([
+    c.tl[0], c.tl[1], c.tr[0], c.tr[1], c.bl[0], c.bl[1], c.br[0], c.br[1],
+  ]);
+  const t = multMM(d, adjugate(s));
+  for (let i = 0; i < 9; i++) t[i] = t[i] / t[8];
+  const m = [
+    t[0], t[3], 0, t[6],
+    t[1], t[4], 0, t[7],
+    0, 0, 1, 0,
+    t[2], t[5], 0, t[8],
+  ];
+  return `matrix3d(${m.join(",")})`;
+}
+
+/* Laptop SCREEN corners as fractions of the laptop wrapper box.
+   Tuned visually so the dashboard pins to the open lid's glass. */
+const SCREEN_CORNERS = {
+  tl: [0.338, 0.300],
+  tr: [0.862, 0.300],
+  br: [0.866, 0.642],
+  bl: [0.336, 0.642],
+} as const;
 
 interface MacbookFrame3DProps {
   /** Future hook: HTML content to project onto the screen via drei <Html>. */
@@ -124,6 +194,51 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
     [0, 1, 1, 0],
   );
 
+  // Compute the matrix3d that warps the dashboard onto the screen's 4 corners.
+  // Recomputed on mount + whenever the laptop wrapper resizes (responsive).
+  const [dashStyle, setDashStyle] = useState<React.CSSProperties | null>(null);
+  useEffect(() => {
+    const wrap = ref.current;
+    if (!wrap) return;
+    const compute = () => {
+      const W = wrap.clientWidth;
+      const H = wrap.clientHeight;
+      if (!W || !H) return;
+      const c = SCREEN_CORNERS;
+      const pts = {
+        tl: [c.tl[0] * W, c.tl[1] * H],
+        tr: [c.tr[0] * W, c.tr[1] * H],
+        br: [c.br[0] * W, c.br[1] * H],
+        bl: [c.bl[0] * W, c.bl[1] * H],
+      };
+      const xs = [pts.tl[0], pts.tr[0], pts.br[0], pts.bl[0]];
+      const ys = [pts.tl[1], pts.tr[1], pts.br[1], pts.bl[1]];
+      const minX = Math.min(...xs);
+      const minY = Math.min(...ys);
+      const bw = Math.max(...xs) - minX;
+      const bh = Math.max(...ys) - minY;
+      const rel = {
+        tl: [pts.tl[0] - minX, pts.tl[1] - minY],
+        tr: [pts.tr[0] - minX, pts.tr[1] - minY],
+        br: [pts.br[0] - minX, pts.br[1] - minY],
+        bl: [pts.bl[0] - minX, pts.bl[1] - minY],
+      };
+      setDashStyle({
+        position: "absolute",
+        left: minX,
+        top: minY,
+        width: bw,
+        height: bh,
+        transform: quadMatrix3d(bw, bh, rel),
+        transformOrigin: "0 0",
+      });
+    };
+    compute();
+    const ro = new ResizeObserver(compute);
+    ro.observe(wrap);
+    return () => ro.disconnect();
+  }, []);
+
   return (
     <motion.div
       ref={ref}
@@ -155,6 +270,33 @@ export function MacbookFrame3D({ children: _children }: MacbookFrame3DProps) {
           zIndex: -1,
         }}
       />
+      {/* Live control-panel dashboard projected onto the laptop screen.
+          The lid is frozen fully open (static pose), so a fixed CSS overlay
+          aligns reliably with the screen rectangle. Position values mirror
+          the screen-avoid marker above and are tuned visually. A small
+          rotateX matches the open screen's backward tilt; perspective on the
+          wrapper gives it depth so it reads as a screen, not a sticker.
+          pointer-events-none — it's a visual, the section copy carries the
+          message. Hidden on mobile (laptop renders too small to be legible). */}
+      {dashStyle && (
+        <div
+          aria-hidden="true"
+          className="hidden md:block pointer-events-none z-10"
+          style={dashStyle}
+        >
+          <div
+            className="w-full h-full overflow-hidden"
+            style={{
+              borderRadius: "12px 12px 6px 6px",
+              boxShadow:
+                "0 0 0 1px rgba(0,0,0,0.45), 0 2px 16px rgba(0,0,0,0.4)",
+            }}
+          >
+            <LaptopScreenDashboard />
+          </div>
+        </div>
+      )}
+
       <div className="aspect-[4/3] md:aspect-[1/1] w-full">
         <Canvas
           camera={{ position: [0, 0.4, 3.2], fov: 32 }}
