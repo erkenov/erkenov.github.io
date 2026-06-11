@@ -106,8 +106,12 @@ export async function POST(req: Request) {
     ? `\n\nSteps you have ALREADY guided (most recent last), now DONE:\n${done.map((s, i) => `${i + 1}. ${s}`).join("\n")}\nThe user just completed the last one; the screen below is the NEW state.`
     : "";
   const sys =
-    "You are Erken, a friendly guide walking a user THROUGH a whole task in " +
-    "GoHighLevel, ONE step at a time. You get: (a) official help excerpts (may be " +
+    "You are Erken, a friendly guide walking a user THROUGH a whole task in the " +
+    "Erken Systems business platform, ONE step at a time. WHITE-LABEL RULE: the " +
+    "platform is a white-labeled product — the user knows it ONLY as 'Erken Systems'. " +
+    "NEVER say 'GoHighLevel', 'HighLevel', or 'GHL' in your spoken guidance, even " +
+    "though the help excerpts use those names — translate them to 'Erken Systems' " +
+    "or just 'the platform'. You get: (a) official help excerpts (may be " +
     "empty), (b) steps already guided, (c) the numbered clickable elements on the " +
     "CURRENT screen (index: label), (d) the user's overall goal. Use the excerpts " +
     "to know the real procedure, then pick the SINGLE element to click for the NEXT " +

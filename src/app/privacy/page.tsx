@@ -9,10 +9,10 @@ export default function PrivacyPage() {
       <h1 style={{ fontSize: 28, marginBottom: 8 }}>Privacy Policy — Erken Guide</h1>
       <p style={{ color: "#a0a0b8", marginBottom: 28 }}>Last updated: 11 June 2026</p>
 
-      <p>Erken Guide is a browser extension that helps you operate GoHighLevel by pointing at the right buttons on your screen and explaining what to do.</p>
+      <p>Erken is a browser extension that helps you operate your Erken Systems business platform by pointing at the right buttons on your screen and explaining what to do.</p>
 
       <h2 style={{ fontSize: 20, marginTop: 28 }}>What the extension accesses</h2>
-      <p>When you ask Erken a question, the extension reads only the <strong>text labels of the clickable buttons and menu items currently visible on your GoHighLevel page</strong> (e.g. &quot;Opportunities&quot;, &quot;Create Pipeline&quot;) and the <strong>question you type or speak</strong>. It does not read your contacts, messages, customer records, form contents, or any other page data.</p>
+      <p>When you ask Erken a question, the extension reads only the <strong>text labels of the clickable buttons and menu items currently visible on your platform page</strong> (e.g. &quot;Opportunities&quot;, &quot;Create Pipeline&quot;) and the <strong>question you type or speak</strong>. It does not read your contacts, messages, customer records, form contents, or any other page data.</p>
 
       <h2 style={{ fontSize: 20, marginTop: 28 }}>How that information is used</h2>
       <p>Your question and the list of visible button labels are sent over an encrypted connection to our server (erken.systems) solely to determine which button you should click next and to generate the guidance shown to you. The response is returned to your browser and displayed. We use this data only to provide the guidance you requested in that moment.</p>
@@ -21,7 +21,7 @@ export default function PrivacyPage() {
       <ul>
         <li>We do not sell or share your data with third parties for advertising.</li>
         <li>We do not build advertising or marketing profiles.</li>
-        <li>We do not collect your GoHighLevel login, passwords, or customer records.</li>
+        <li>We do not collect your platform login, passwords, or customer records.</li>
         <li>We do not store your questions or screen contents to track you.</li>
       </ul>
 
