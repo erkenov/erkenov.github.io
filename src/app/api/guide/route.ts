@@ -36,7 +36,7 @@ function kb(): Kb {
 }
 
 async function embed(question: string): Promise<number[] | null> {
-  const key = process.env.OPENAI_API_KEY;
+  const key = (process.env.OPENAI_API_KEY || "").trim();
   if (!key) return null;
   const r = await fetch("https://api.openai.com/v1/embeddings", {
     method: "POST",
@@ -81,7 +81,7 @@ export async function POST(req: Request) {
   if (!rateLimit(`guide:${clientIp(req)}`, 40, 60 * 60_000)) {
     return NextResponse.json({ error: "rate limit — try again shortly" }, { status: 429, headers: CORS });
   }
-  const akey = process.env.ANTHROPIC_API_KEY;
+  const akey = (process.env.ANTHROPIC_API_KEY || "").trim();
   if (!akey) return NextResponse.json({ error: "server not configured" }, { status: 500, headers: CORS });
 
   let body: { question?: string; elements?: { i: number; text: string }[]; stepsDone?: string[] };
