@@ -84,7 +84,7 @@ type SectionProps = typeof SECTIONS[number] & {
 };
 
 const DEFAULT_MEDIA_WRAPPER = (isLeft: boolean) =>
-  `absolute -top-[55vh] -bottom-[10vh] ${isLeft ? "-right-12" : "-left-12"} hidden xl:flex xl:w-[90%] items-center justify-center px-2 lg:px-4 pointer-events-none`;
+  `absolute -top-[55vh] -bottom-[10vh] ${isLeft ? "-right-12" : "-left-12"} hidden md:flex md:w-[90%] items-center justify-center px-2 lg:px-4 pointer-events-none`;
 
 function Section({
   kicker,
@@ -111,18 +111,23 @@ function Section({
           : "md:min-h-screen md:flex md:items-center md:py-0"
       }`}
     >
+      {/* 2026-06-10 responsive fix (Shamil: keep side-by-side at EVERY
+          width, never stack): the column takes 44% instead of 50% so the
+          media wrapper can anchor at the 48vw line without ever crossing
+          it, and the type scales down on narrow laptops/tablets instead
+          of overflowing into the media. */}
       <div
         data-celly-avoid
-        className={`relative z-30 w-full md:w-1/2 ${isLeft ? "md:mr-auto" : "md:ml-auto"} max-w-xl`}
+        className={`relative z-30 w-full md:w-[44%] ${isLeft ? "md:mr-auto" : "md:ml-auto"} max-w-xl`}
       >
         <div className="mono-label">{kicker}</div>
         <h2
-          className="mt-3 text-3xl md:text-5xl font-bold tracking-tight"
+          className="mt-3 text-3xl md:text-4xl xl:text-5xl font-bold tracking-tight"
           style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
         >
           {headline}
         </h2>
-        <p className="mt-5 text-base md:text-lg text-text-muted leading-relaxed">
+        <p className="mt-5 text-base xl:text-lg text-text-muted leading-relaxed">
           {body}
         </p>
         {cta && (
@@ -1249,12 +1254,12 @@ export default function PreviewV6Page() {
         <Section
           key={i}
           isMobile={isMobile}
-          // Stack media under the text wherever the side-by-side wrapper
-          // can't fit beside the max-w-xl column (responsive QA 2026-06-10:
-          // every width 768–1640 had text painted over the cards; the
-          // MacBook's centered full-width canvas still hits the text at
-          // 1536 — verified by screenshot — so it stacks below 1920).
-          stacked={viewportW < (i === 4 ? 1920 : 1280)}
+          // Side-by-side at EVERY md+ width (Shamil 2026-06-10: "carousel
+          // on one side, text on the other" must hold on TVs and small
+          // laptops too — no stacking). The non-overlap guarantee comes
+          // from the 44%-wide text column + media anchored at the 48vw
+          // line below. Stacking remains mobile-only (<768).
+          stacked={false}
           {...s}
           media={
             i === 0 ? <Scene1IntroVideo />
@@ -1270,30 +1275,29 @@ export default function PreviewV6Page() {
             //  - Scenes 0, 2 have text on the LEFT, so media anchors RIGHT.
             //  - Scenes 1, 3 have text on the RIGHT, so media anchors LEFT.
             //  - Scene 4 (MacBook) uses the default wide wrapper.
-            // 2026-06-10 responsive fix: side-by-side only from xl: up
-            // (2xl: for the MacBook), and the xl-range anchors are bounded
-            // at the 52vw line so they can never cross the text column
-            // (text ends/starts at ≤48.75vw / ≥51.25vw in 1280–1536).
-            // From 2xl: up the original, wider anchors apply.
+            // 2026-06-10 responsive fix: anchors bounded at the 48vw line
+            // so they can never cross the (44%-wide, max-w-xl-capped) text
+            // column at ANY md+ width — the old anchors mathematically
+            // overlapped it below ~1640px. From 2xl: up the original wider
+            // anchors apply (text is capped at 576px there, leaving room).
             i === 0
-              ? "absolute inset-y-[8vh] right-[4vw] left-[52vw] 2xl:left-auto 2xl:w-[50%] hidden xl:flex items-center justify-center pointer-events-auto"
+              ? "absolute inset-y-[8vh] right-[4vw] left-[48vw] 2xl:left-auto 2xl:w-[50%] hidden md:flex items-center justify-center pointer-events-auto"
               : i === 2
               ? // Lead Capture carousel — anchored on BOTH sides
                 // (Shamil 2026-05-24). 2xl left edge moved 38vw → 42vw
                 // (2026-06-10): 38vw still crossed the text column up to
                 // ~1642px wide.
-                "absolute inset-y-[8vh] left-[52vw] right-[3vw] 2xl:left-[42vw] hidden xl:flex items-center justify-center pointer-events-auto"
+                "absolute inset-y-[8vh] left-[48vw] right-[3vw] 2xl:left-[42vw] hidden md:flex items-center justify-center pointer-events-auto"
               : i === 1 || i === 3
-              ? "absolute inset-y-[8vh] left-[4vw] right-[52vw] 2xl:right-auto 2xl:w-[55%] hidden xl:flex items-center justify-start pointer-events-auto"
+              ? "absolute inset-y-[8vh] left-[4vw] right-[48vw] 2xl:right-auto 2xl:w-[55%] hidden md:flex items-center justify-start pointer-events-auto"
               : i === 4
-              ? // MacBook scene — was using the wide default wrapper that
-                // extends -55vh above and -10vh below the section, causing
-                // the closed laptop to bleed into the Industries section
-                // (Shamil 2026-05-25 evening, lid showing weird underside).
-                // Confine the canvas to section bounds; the lid open/close
-                // animation still plays via useScroll over the full
-                // start-end → end-start traversal range.
-                "absolute inset-y-0 inset-x-0 hidden 2xl:flex items-center justify-center px-2 lg:px-4 pointer-events-none"
+              ? // MacBook scene — confined to section bounds since
+                // 2026-05-25 (lid bleed). 2026-06-10: anchored to the
+                // RIGHT half below 1920px — the centered full-width canvas
+                // put the laptop model under the text column (verified by
+                // screenshot at 1536). At 1920+ the original centered
+                // full-bleed layout applies unchanged.
+                "absolute inset-y-0 left-[44vw] right-0 min-[1920px]:left-0 hidden md:flex items-center justify-center px-2 lg:px-4 pointer-events-none"
               : undefined
           }
           // Step 4 keeps mediaAvoidCelly = true (Shamil round 46):
