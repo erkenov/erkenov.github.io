@@ -14,12 +14,16 @@
  */
 
 import { useState } from "react";
+import { CellDragonSprite } from "@/components/CellDragonSprite";
+import ErkenChatWidget, { openErkenChat } from "@/components/ErkenChatWidget";
+import ErkenVoiceWidget from "@/components/ErkenVoiceWidget";
 
 type SendState = "idle" | "sending" | "sent" | "error";
 
 export default function StartPage() {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<SendState>("idle");
+  const [botMenu, setBotMenu] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,15 +121,52 @@ export default function StartPage() {
               </div>
               <div>🖥️ Desktop version on the way — it does tasks on your computer for you.</div>
             </div>
-            <a
-              href="/"
+            <button
+              onClick={() => setBotMenu(true)}
               className="mt-6 inline-block rounded-xl border border-border px-6 py-3 text-base font-medium text-text transition-colors hover:border-border-strong hover:bg-surface-2"
             >
               Meet Erken →
-            </a>
+            </button>
           </section>
         </div>
       </div>
+
+      {/* Erken lives here too — same chat + same Retell agent as the homepage */}
+      <ErkenChatWidget />
+      <ErkenVoiceWidget />
+      <div className="fixed bottom-6 right-6 z-[50] cursor-pointer">
+        <CellDragonSprite scale={0.75} onClick={() => setBotMenu((v) => !v)} />
+      </div>
+      {botMenu && (
+        <>
+          <div
+            className="fixed inset-0 z-[55]"
+            aria-hidden
+            onClick={() => setBotMenu(false)}
+          />
+          <div className="fixed bottom-40 right-6 z-[56] flex flex-col gap-1 rounded-2xl border border-white/15 bg-black/80 p-2 shadow-2xl backdrop-blur-md">
+            <div className="px-3 pb-1 pt-1 text-xs text-white/55">Talk to Erken</div>
+            <button
+              onClick={() => {
+                setBotMenu(false);
+                openErkenChat();
+              }}
+              className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
+            >
+              <span aria-hidden className="text-base">💬</span> Text chat
+            </button>
+            <button
+              onClick={() => {
+                setBotMenu(false);
+                window.__startErkenVoiceCall?.();
+              }}
+              className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
+            >
+              <span aria-hidden className="text-base">🎙️</span> Voice chat
+            </button>
+          </div>
+        </>
+      )}
     </main>
   );
 }
