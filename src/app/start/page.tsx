@@ -42,9 +42,9 @@ export default function StartPage() {
       <div className="mx-auto max-w-3xl">
         <a
           href="/"
-          className="mb-8 inline-flex items-center gap-2 text-sm text-text-muted transition-colors hover:text-text"
+          className="mb-8 inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
         >
-          ← erken.systems home
+          ← Back home
         </a>
         <p className="font-mono text-xs uppercase tracking-[0.05em] text-accent">
           Get started
