@@ -37,6 +37,12 @@ export default function StartPage() {
   return (
     <main className="min-h-screen bg-[#0A0E1A] px-6 py-20 text-[#EAF3EC] md:py-32">
       <div className="mx-auto max-w-3xl">
+        <a
+          href="/"
+          className="mb-8 inline-flex items-center gap-2 text-sm text-[#b8c4bf] transition-colors hover:text-white"
+        >
+          ← erken.systems home
+        </a>
         <p className="font-mono text-xs uppercase tracking-[0.05em] text-[#7ea687]">
           Get started
         </p>

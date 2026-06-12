@@ -34,7 +34,7 @@ const SECTIONS = [
     kicker: "Erken Systems",
     headline: "Full-spectrum business systems, with AI inside.",
     body: "If you can answer your phone, you can run an Erken system. Every business runs the same pipeline — leads come in, get captured, get tracked, get reported on. I build all four steps — bundled as one connected system, or piece by piece. Pick what you're missing. Workflow automation is the wiring between them. One operator. Any business.",
-    cta: "Talk to Shamil's AI assistant",
+    cta: "Try for free",
   },
   {
     side: "right" as const,
@@ -131,12 +131,14 @@ function Section({
           {body}
         </p>
         {cta && (
-          <button
-            onClick={() => window.__startErkenVoiceCall?.()}
+          /* CTA → the /start trial funnel (was the voice call — repositioned
+             2026-06-12: the site sells the products, Celly handles talking) */
+          <a
+            href="/start"
             className="mt-7 inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
           >
             {cta} →
-          </button>
+          </a>
         )}
       </div>
       {/* STACKED media — rendered OUTSIDE the text column so it breaks
