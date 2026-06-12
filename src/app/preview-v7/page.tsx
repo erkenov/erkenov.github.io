@@ -362,7 +362,40 @@ export default function PreviewV6Page() {
   const [choiceMenu, setChoiceMenu] = useState<{ x: number; y: number } | null>(
     null,
   );
+  // Sub-panel inside the choice menu (mirrors the extension menu — Shamil
+  // 2026-06-12): Feedback (any feedback → /api/feedback → his Telegram) and
+  // Roadmap (where Erken is going). null = the plain Text/Voice menu.
+  const [menuPanel, setMenuPanel] = useState<"feedback" | "roadmap" | null>(null);
+  const [fbText, setFbText] = useState("");
+  const [fbState, setFbState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const closeChoiceMenu = () => {
+    setChoiceMenu(null);
+    setMenuPanel(null);
+    setFbText("");
+    setFbState("idle");
+  };
+  const sendSiteFeedback = async () => {
+    const message = fbText.trim();
+    if (!message || fbState === "sending") return;
+    setFbState("sending");
+    try {
+      const r = await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          kind: "idea",
+          message,
+          url: window.location.href,
+          title: document.title,
+        }),
+      });
+      setFbState(r.ok ? "sent" : "error");
+    } catch {
+      setFbState("error");
+    }
+  };
   const openChoiceMenu = () => {
+    setMenuPanel(null);
     const el = spriteContainerRef.current;
     if (el) {
       const r = el.getBoundingClientRect();
@@ -389,9 +422,10 @@ export default function PreviewV6Page() {
   // stays stranded where Celly used to be after she repositions on stop.
   useEffect(() => {
     if (!choiceMenu) return;
-    const close = () => setChoiceMenu(null);
+    const close = () => closeChoiceMenu();
     window.addEventListener("scroll", close, { passive: true, once: true });
     return () => window.removeEventListener("scroll", close);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [choiceMenu]);
   // Mirror of bubbleVisible into a ref so the 60fps handleCellMove
   // callback (deps: []) can read the latest value without re-creating.
@@ -1406,7 +1440,7 @@ export default function PreviewV6Page() {
         <div
           className="fixed inset-0 z-[55]"
           aria-hidden
-          onClick={() => setChoiceMenu(null)}
+          onClick={closeChoiceMenu}
         />
         <div
           role="menu"
@@ -1417,41 +1451,122 @@ export default function PreviewV6Page() {
             top: choiceMenu.y,
             // Open ABOVE Celly normally; when she's near the top of the page the
             // menu would be clipped behind the browser bar, so flip it to open
-            // BELOW her instead. (~190px ≈ menu height + a little margin.)
-            transform: choiceMenu.y < 190
+            // BELOW her instead. (~260px ≈ tallest panel height + margin.)
+            transform: choiceMenu.y < 260
               ? "translate(-50%, 12%)"
               : "translate(-50%, -115%)",
           }}
         >
-          <div className="px-3 pb-1 pt-1 text-xs text-white/55">
-            Talk to Erken
-          </div>
-          <button
-            role="menuitem"
-            onClick={() => {
-              setChoiceMenu(null);
-              openErkenChat();
-            }}
-            className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-          >
-            <span aria-hidden className="text-base">
-              💬
-            </span>{" "}
-            Text chat
-          </button>
-          <button
-            role="menuitem"
-            onClick={() => {
-              setChoiceMenu(null);
-              window.__startErkenVoiceCall?.();
-            }}
-            className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-          >
-            <span aria-hidden className="text-base">
-              🎙️
-            </span>{" "}
-            Voice chat
-          </button>
+          {menuPanel === null && (
+            <>
+              <div className="px-3 pb-1 pt-1 text-xs text-white/55">
+                Talk to Erken
+              </div>
+              <button
+                role="menuitem"
+                onClick={() => {
+                  closeChoiceMenu();
+                  openErkenChat();
+                }}
+                className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
+              >
+                <span aria-hidden className="text-base">
+                  💬
+                </span>{" "}
+                Text chat
+              </button>
+              <button
+                role="menuitem"
+                onClick={() => {
+                  closeChoiceMenu();
+                  window.__startErkenVoiceCall?.();
+                }}
+                className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
+              >
+                <span aria-hidden className="text-base">
+                  🎙️
+                </span>{" "}
+                Voice chat
+              </button>
+              <div className="mx-2 h-px bg-white/10" aria-hidden />
+              <button
+                role="menuitem"
+                onClick={() => setMenuPanel("feedback")}
+                className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
+              >
+                <span aria-hidden className="text-base">
+                  📝
+                </span>{" "}
+                Feedback
+              </button>
+              <button
+                role="menuitem"
+                onClick={() => setMenuPanel("roadmap")}
+                className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
+              >
+                <span aria-hidden className="text-base">
+                  🗺️
+                </span>{" "}
+                Roadmap
+              </button>
+            </>
+          )}
+          {menuPanel === "roadmap" && (
+            <div className="w-[280px] px-3 py-2 text-sm text-white">
+              <div className="pb-1.5 text-xs text-white/55">
+                Where Erken is going
+              </div>
+              <div className="flex flex-col gap-1.5 leading-snug">
+                <div>
+                  📚 <b>New skills in training:</b> Excel &amp; Google Sheets,
+                  Canva, QuickBooks — taught step by step
+                </div>
+                <div>🔊 Voice answers on every page</div>
+                <div>
+                  🧠 <b>Personal memory:</b> Erken remembers you — your
+                  business, your setup, what you&apos;ve already learned
+                </div>
+              </div>
+              <div className="pt-2 text-xs text-white/55">
+                Your vote decides what Erken learns next — tell us via 📝
+                Feedback.
+              </div>
+            </div>
+          )}
+          {menuPanel === "feedback" && (
+            <div className="w-[280px] px-3 py-2">
+              <div className="pb-1.5 text-xs text-white/55">
+                Your feedback — bugs, ideas, anything
+              </div>
+              {fbState === "sent" ? (
+                <div className="py-2 text-sm text-white">
+                  ✅ Got it — passed along. Thank you!
+                </div>
+              ) : (
+                <>
+                  <textarea
+                    value={fbText}
+                    onChange={(e) => setFbText(e.target.value)}
+                    rows={3}
+                    autoFocus
+                    className="w-full resize-none rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/40 outline-none focus:border-white/30"
+                    placeholder="Tell us…"
+                  />
+                  <button
+                    onClick={sendSiteFeedback}
+                    disabled={fbState === "sending" || !fbText.trim()}
+                    className="mt-1.5 w-full rounded-xl bg-white/15 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-white/25 disabled:opacity-40"
+                  >
+                    {fbState === "sending"
+                      ? "Sending…"
+                      : fbState === "error"
+                        ? "Couldn't send — try again"
+                        : "Send"}
+                  </button>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </>
     )}
