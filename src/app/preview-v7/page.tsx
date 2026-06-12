@@ -32,15 +32,15 @@ const SECTIONS = [
   {
     side: "left" as const,
     kicker: "Erken Systems",
-    headline: "Full-spectrum business systems, with AI inside.",
-    body: "If you can answer your phone, you can run an Erken system. Every business runs the same pipeline — leads come in, get captured, get tracked, get reported on. I build all four steps — bundled as one connected system, or piece by piece. Pick what you're missing. Workflow automation is the wiring between them. One operator. Any business.",
+    headline: "One platform runs your business. Erken teaches you how.",
+    body: "If you can answer your phone, you can run this. Every business runs the same pipeline — leads come in, get captured, get tracked, get reported on. The platform runs all four steps. And Erken — the assistant living on every screen — shows you the right button and walks you through any task, out loud. $97 a month after a free week. The assistant is free.",
     cta: "Try for free",
   },
   {
     side: "right" as const,
     kicker: "Step 1 · Lead generation",
     headline: "Where your next ten customers come from.",
-    body: "Your channel, my approach. Google Maps scraping for local businesses. Cold email at scale. AI voice agent that runs outbound calls — qualifies, pitches, books. Meta Business AI agents on Instagram and Facebook ads. LinkedIn outreach when the work is white-collar. Every method ends the same way — leads land structured, ready for the next step.",
+    body: "Funnels and landing pages that capture attention. Forms and surveys that qualify it. A social planner that keeps your pages alive. Review automation that grows your Google rating — the first thing local customers check. And when a call gets missed, an instant text-back brings the lead back before they dial a competitor. Every channel lands structured, ready for the next step.",
   },
   {
     side: "left" as const,
@@ -1387,6 +1387,47 @@ export default function PreviewV6Page() {
         </div>
         <div data-celly-avoid className="relative z-10">
           <SceneIndustriesCarousel />
+        </div>
+      </section>
+
+      {/* Meet Erken — the assistant sold as a PRODUCT (added 2026-06-12,
+          same day the extension went live in the Chrome Web Store). The
+          repositioned page sells two products; this is the second one. */}
+      <section className="relative px-6 md:px-12 pt-24 md:pt-36 pb-16 md:pb-24">
+        <div
+          data-celly-avoid
+          className="relative z-30 max-w-3xl mx-auto text-center"
+        >
+          <div className="mono-label">Meet Erken</div>
+          <h2
+            className="mt-3 text-3xl md:text-5xl font-bold tracking-tight"
+            style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
+          >
+            The assistant who teaches you the whole platform.
+          </h2>
+          <p className="mt-5 text-base md:text-lg text-text-muted leading-relaxed">
+            Ask anything — by voice or text. Erken points at the real button
+            and walks you through the whole task, step by step, out loud. It
+            lives on this site, in your browser as an extension, and soon on
+            your desktop. It learns new skills constantly — and your votes
+            decide what it learns next. Free.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <a
+              href="https://chromewebstore.google.com/detail/erken/mggcbjggcbdpmbglbodkadgmpapcmelc"
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
+            >
+              🧩 Add Erken to your browser — free
+            </a>
+            <a
+              href="/start"
+              className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-3 text-sm font-medium text-text transition-colors hover:border-border-strong hover:bg-surface"
+            >
+              Start the platform&apos;s free week →
+            </a>
+          </div>
         </div>
       </section>
 
