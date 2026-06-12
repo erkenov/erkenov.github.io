@@ -33,8 +33,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "invalid email" }, { status: 400 });
   }
 
-  const key = (process.env.GHL_API_KEY || "").trim();
-  const locationId = (process.env.GHL_LOCATION_ID || "").trim();
+  // Signup-specific credentials: the generic GHL_API_KEY/GHL_LOCATION_ID on
+  // Vercel are scoped to the CLIENT balance-dashboard location — trial signups
+  // must land in the Erken Systems sub-account instead (found 2026-06-12 when
+  // the live test's contact appeared in the wrong location).
+  const key = (process.env.GHL_SIGNUP_API_KEY || process.env.GHL_API_KEY || "").trim();
+  const locationId = (process.env.GHL_SIGNUP_LOCATION_ID || process.env.GHL_LOCATION_ID || "").trim();
   if (!key || !locationId) {
     return NextResponse.json({ ok: false, error: "not configured" }, { status: 500 });
   }
