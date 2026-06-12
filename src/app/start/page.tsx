@@ -8,6 +8,9 @@
  * everything else gets discussed after Shamil reaches out. The bot column has
  * no form at all — downloads stay friction-free, contact capture happens
  * in-product later.
+ *
+ * Styled with the site's light-cream tokens (globals.css) — NOT the dark
+ * palette (first version mismatched; Shamil flagged it 2026-06-12).
  */
 
 import { useState } from "react";
@@ -35,35 +38,35 @@ export default function StartPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0A0E1A] px-6 py-20 text-[#EAF3EC] md:py-32">
+    <main className="min-h-screen bg-bg px-6 py-20 text-text md:py-28">
       <div className="mx-auto max-w-3xl">
         <a
           href="/"
-          className="mb-8 inline-flex items-center gap-2 text-sm text-[#b8c4bf] transition-colors hover:text-white"
+          className="mb-8 inline-flex items-center gap-2 text-sm text-text-muted transition-colors hover:text-text"
         >
           ← erken.systems home
         </a>
-        <p className="font-mono text-xs uppercase tracking-[0.05em] text-[#7ea687]">
+        <p className="font-mono text-xs uppercase tracking-[0.05em] text-accent">
           Get started
         </p>
         <h1 className="mt-3 text-3xl font-bold tracking-[-0.03em] md:text-5xl">
           Your business, running itself.
         </h1>
-        <p className="mt-4 max-w-2xl text-base leading-relaxed text-[#b8c4bf]">
+        <p className="mt-4 max-w-2xl text-base leading-relaxed text-text-muted">
           One platform that answers, books, follows up and reports — with Erken,
           the assistant that teaches you the whole thing as you use it.
         </p>
 
         <div className="mt-12 grid gap-6 md:grid-cols-2">
           {/* CRM trial — the one-field form */}
-          <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-8">
+          <section className="rounded-2xl border border-border bg-surface p-8">
             <h2 className="text-xl font-semibold">The platform</h2>
-            <p className="mt-1 text-sm text-[#b8c4bf]">
+            <p className="mt-1 text-sm text-text-muted">
               CRM, pipelines, calendars, automations —{" "}
-              <span className="text-[#EAF3EC]">$97/month after a free week</span>.
+              <span className="text-text">$97/month after a free week</span>.
             </p>
             {state === "sent" ? (
-              <div className="mt-6 rounded-xl border border-[#7ea687]/40 bg-[#7ea687]/10 p-4 text-sm leading-relaxed">
+              <div className="mt-6 rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm leading-relaxed">
                 ✅ You&apos;re in. We&apos;re setting up your account and
                 you&apos;ll hear from us shortly — usually within a few hours.
               </div>
@@ -75,12 +78,12 @@ export default function StartPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@yourbusiness.com"
-                  className="w-full rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-base text-white placeholder-white/35 outline-none transition-colors focus:border-[#7ea687]"
+                  className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-base text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
                 />
                 <button
                   type="submit"
                   disabled={state === "sending"}
-                  className="mt-3 w-full rounded-xl bg-[#7ea687] px-6 py-3 text-base font-semibold text-[#0A0E1A] transition-all hover:bg-[#B8D4BD] disabled:opacity-50"
+                  className="mt-3 w-full rounded-xl bg-accent px-6 py-3 text-base font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
                 >
                   {state === "sending"
                     ? "One second…"
@@ -88,7 +91,7 @@ export default function StartPage() {
                       ? "Didn't go through — try again"
                       : "Start my free week"}
                 </button>
-                <p className="mt-3 text-xs text-[#6a7a72]">
+                <p className="mt-3 text-xs text-text-dim">
                   No card. No questionnaire. Just your email — we set everything
                   up and reach out.
                 </p>
@@ -97,17 +100,17 @@ export default function StartPage() {
           </section>
 
           {/* Erkenbot — free, zero friction, no form */}
-          <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-8">
+          <section className="rounded-2xl border border-border bg-surface p-8">
             <h2 className="text-xl font-semibold">Erken, the assistant</h2>
-            <p className="mt-1 text-sm text-[#b8c4bf]">
+            <p className="mt-1 text-sm text-text-muted">
               Talks, teaches, walks you through any task step by step.{" "}
-              <span className="text-[#EAF3EC]">Free.</span>
+              <span className="text-text">Free.</span>
             </p>
-            <div className="mt-6 flex flex-col gap-3 text-sm leading-relaxed text-[#b8c4bf]">
+            <div className="mt-6 flex flex-col gap-3 text-sm leading-relaxed text-text-muted">
               <div>💬 Try it right now — it&apos;s the creature on our homepage.</div>
               <div>
                 🧩 Browser extension —{" "}
-                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/55">
+                <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] uppercase tracking-wide text-text-muted">
                   rolling out
                 </span>{" "}
                 pending store approval.
@@ -116,7 +119,7 @@ export default function StartPage() {
             </div>
             <a
               href="/"
-              className="mt-6 inline-block rounded-xl border border-white/15 px-6 py-3 text-base font-medium text-white transition-colors hover:border-white/35 hover:bg-white/5"
+              className="mt-6 inline-block rounded-xl border border-border px-6 py-3 text-base font-medium text-text transition-colors hover:border-border-strong hover:bg-surface-2"
             >
               Meet Erken →
             </a>
