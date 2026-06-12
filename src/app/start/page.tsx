@@ -113,11 +113,15 @@ export default function StartPage() {
             <div className="mt-6 flex flex-col gap-3 text-sm leading-relaxed text-text-muted">
               <div>💬 Try it right now — it&apos;s the creature on our homepage.</div>
               <div>
-                🧩 Browser extension —{" "}
-                <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] uppercase tracking-wide text-text-muted">
-                  rolling out
-                </span>{" "}
-                pending store approval.
+                🧩{" "}
+                <a
+                  href="https://chromewebstore.google.com/detail/erken/mggcbjggcbdpmbglbodkadgmpapcmelc"
+                  target="_blank"
+                  rel="noopener"
+                  className="font-medium text-accent underline-offset-2 hover:underline"
+                >
+                  Browser extension — install from the Chrome Web Store
+                </a>
               </div>
               <div>🖥️ Desktop version on the way — it does tasks on your computer for you.</div>
             </div>
