@@ -1509,6 +1509,21 @@ export default function PreviewV6Page() {
                 </span>{" "}
                 Roadmap
               </button>
+              {/* Placeholder until the Chrome Web Store listing is approved —
+                  swap in the store link and drop the disabled state then. */}
+              <button
+                role="menuitem"
+                disabled
+                className="flex cursor-default items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white/45"
+              >
+                <span aria-hidden className="text-base">
+                  🧩
+                </span>{" "}
+                Add the browser extension
+                <span className="ml-auto rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/55">
+                  soon
+                </span>
+              </button>
             </>
           )}
           {menuPanel === "roadmap" && (
@@ -1525,6 +1540,10 @@ export default function PreviewV6Page() {
                 <div>
                   🧠 <b>Personal memory:</b> Erken remembers you — your
                   business, your setup, what you&apos;ve already learned
+                </div>
+                <div>
+                  🖥️ <b>Desktop version on the way</b> — unlike the browser
+                  extension, it can do tasks on your computer for you
                 </div>
               </div>
               <div className="pt-2 text-xs text-white/55">
