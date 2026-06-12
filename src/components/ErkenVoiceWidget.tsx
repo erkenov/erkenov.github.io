@@ -41,6 +41,20 @@ export default function ErkenVoiceWidget() {
     client.on("agent_stop_talking", () => setAgentTalking(false));
     client.on("error", (err) => {
       console.error("Retell web call error:", err);
+      // auto-telemetry: visitors never report a dead call — we do it for them
+      // (same feedback pipe as the bots; reviewed in the supervisor sweep)
+      try {
+        fetch("/api/feedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            kind: "error",
+            message: "[auto:error] site voice call failed: " + String(err).slice(0, 600),
+            url: window.location.href,
+            title: document.title,
+          }),
+        });
+      } catch {}
       activeRef.current = false;
       setState("idle");
       setAgentTalking(false);
