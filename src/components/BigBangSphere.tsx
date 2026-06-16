@@ -41,9 +41,11 @@ export function BigBangSphere() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Three forms — all spheres. Explosion fires in the gaps, then reforms.
-    const forms = [sphereForm(COUNT), sphereForm(COUNT), sphereForm(COUNT)];
-    const SEGMENTS = forms.length - 1;
+    // Single sphere "home" for every particle. Expansion is driven globally
+    // by scroll (see E below): starts EXPANDED at the top, then breathes
+    // assemble↔expand as you scroll (Shamil 2026-06-16).
+    const sphere = sphereForm(COUNT);
+    const CYCLES = 2; // assemble↔expand breaths across the full page scroll
 
     const positions = new Float32Array(COUNT * 3);
     const colors = new Float32Array(COUNT * 3);
@@ -66,9 +68,9 @@ export function BigBangSphere() {
       colors[i * 3 + 1] = col.g;
       colors[i * 3 + 2] = col.b;
       sizes[i] = 0.6 + Math.random() * 1.4;
-      positions[i * 3] = forms[0][i * 3];
-      positions[i * 3 + 1] = forms[0][i * 3 + 1];
-      positions[i * 3 + 2] = forms[0][i * 3 + 2];
+      positions[i * 3] = sphere[i * 3];
+      positions[i * 3 + 1] = sphere[i * 3 + 1];
+      positions[i * 3 + 2] = sphere[i * 3 + 2];
     }
 
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
@@ -125,7 +127,6 @@ export function BigBangSphere() {
     resize();
     window.addEventListener("resize", resize);
 
-    const smooth = (t: number) => t * t * (3 - 2 * t);
     const EXPLODE = 2.6;
     const clock = new THREE.Clock();
     let raf = 0;
@@ -133,23 +134,18 @@ export function BigBangSphere() {
       const t = clock.getElapsedTime();
       p += (target - p) * 0.08;
 
-      const f = p * SEGMENTS;
-      let i0 = Math.floor(f);
-      if (i0 >= SEGMENTS) i0 = SEGMENTS - 1;
-      const i1 = i0 + 1;
-      const local = f - i0;
-      const from = forms[i0],
-        to = forms[i1];
-      const morph = smooth(local);
-      const bulge = Math.sin(local * Math.PI);
+      // Expansion E: 1 = fully expanded (Big-Bang scatter), 0 = tight sphere.
+      // cos(0)=1 → starts EXPANDED at the top, then breathes in/out as you
+      // scroll, CYCLES full breaths across the page.
+      const E = (1 + Math.cos(p * Math.PI * 2 * CYCLES)) / 2;
 
       const pos = geo.attributes.position.array as Float32Array;
       for (let i = 0; i < COUNT; i++) {
         const o = i * 3;
-        let x = from[o] + (to[o] - from[o]) * morph;
-        let y = from[o + 1] + (to[o + 1] - from[o + 1]) * morph;
-        let z = from[o + 2] + (to[o + 2] - from[o + 2]) * morph;
-        const ex = bulge * EXPLODE;
+        let x = sphere[o];
+        let y = sphere[o + 1];
+        let z = sphere[o + 2];
+        const ex = E * EXPLODE;
         x += dirs[o] * ex;
         y += dirs[o + 1] * ex;
         z += dirs[o + 2] * ex;
