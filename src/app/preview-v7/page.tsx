@@ -1569,6 +1569,12 @@ export default function PreviewV6Page() {
           )}
           {menuPanel === "roadmap" && (
             <div className="w-[280px] px-3 py-2 text-sm text-white">
+              <button
+                onClick={() => setMenuPanel(null)}
+                className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm font-medium text-white/90 transition-colors hover:bg-white/15"
+              >
+                <span aria-hidden>←</span> Back to main menu
+              </button>
               <div className="pb-1.5 text-xs text-white/55">
                 Where Erken is going
               </div>
@@ -1587,14 +1593,26 @@ export default function PreviewV6Page() {
                   extension, it can do tasks on your computer for you
                 </div>
               </div>
-              <div className="pt-2 text-xs text-white/55">
-                Your vote decides what Erken learns next — tell us via 📝
-                Feedback.
+              <div className="mt-2 border-t border-white/10 pt-2 text-xs text-white/55">
+                Your vote decides what Erken learns next — tell us via{" "}
+                <button
+                  onClick={() => setMenuPanel("feedback")}
+                  className="underline decoration-white/40 underline-offset-2 transition-colors hover:text-white/90"
+                >
+                  📝 Feedback
+                </button>
+                .
               </div>
             </div>
           )}
           {menuPanel === "feedback" && (
             <div className="w-[280px] px-3 py-2">
+              <button
+                onClick={() => setMenuPanel(null)}
+                className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm font-medium text-white/90 transition-colors hover:bg-white/15"
+              >
+                <span aria-hidden>←</span> Back to main menu
+              </button>
               <div className="pb-1.5 text-xs text-white/55">
                 Your feedback — bugs, ideas, anything
               </div>

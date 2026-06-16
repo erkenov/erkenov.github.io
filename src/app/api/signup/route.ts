@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { clientIp, rateLimit } from "@/lib/api-guard";
+import { createTrialOpportunity } from "@/lib/ghl-opportunity";
 
 /**
  * POST /api/signup — the /start trial form (ONE field: email).
@@ -61,6 +62,18 @@ export async function POST(req: Request) {
   });
   if (!r.ok) {
     return NextResponse.json({ ok: false, error: "hub" }, { status: 502 });
+  }
+
+  // 1b · drop the lead into the Trials pipeline (best-effort — never fail the signup)
+  try {
+    const d = (await r.json().catch(() => ({}))) as Record<string, unknown>;
+    const c = (d.contact as Record<string, unknown>) || d;
+    const contactId = (c?.id as string) || "";
+    if (contactId) {
+      await createTrialOpportunity({ key, locationId, contactId, name: `Trial: ${email}` });
+    }
+  } catch (e) {
+    console.error("signup: opportunity step failed", e);
   }
 
   // 2 · ping Shamil (best-effort — a Telegram hiccup must not fail the signup)

@@ -134,7 +134,7 @@ export default function StartPage() {
                 <button
                   type="submit"
                   disabled={state === "sending"}
-                  className="mt-3 w-full rounded-xl bg-accent px-6 py-3 text-base font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
+                  className="mt-3 w-full cursor-pointer rounded-xl bg-accent px-6 py-3 text-base font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
                 >
                   {state === "sending"
                     ? "One second…"
@@ -174,7 +174,7 @@ export default function StartPage() {
             </div>
             <button
               onClick={() => setBotMenu(true)}
-              className="mt-6 inline-block rounded-xl border border-border px-6 py-3 text-base font-medium text-text transition-colors hover:border-border-strong hover:bg-surface-2"
+              className="mt-6 inline-block cursor-pointer rounded-xl bg-accent px-6 py-3 text-base font-medium text-bg transition-colors hover:bg-accent-hover"
             >
               Meet Erken →
             </button>
@@ -278,6 +278,12 @@ export default function StartPage() {
             )}
             {menuPanel === "roadmap" && (
               <div className="w-[280px] px-3 py-2 text-sm text-white">
+                <button
+                  onClick={() => setMenuPanel(null)}
+                  className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm font-medium text-white/90 transition-colors hover:bg-white/15"
+                >
+                  <span aria-hidden>←</span> Back to main menu
+                </button>
                 <div className="pb-1.5 text-xs text-white/55">Where Erken is going</div>
                 <div className="flex flex-col gap-1.5 leading-snug">
                   <div>
@@ -294,13 +300,26 @@ export default function StartPage() {
                     it can do tasks on your computer for you
                   </div>
                 </div>
-                <div className="pt-2 text-xs text-white/55">
-                  Your vote decides what Erken learns next — tell us via 📝 Feedback.
+                <div className="mt-2 border-t border-white/10 pt-2 text-xs text-white/55">
+                  Your vote decides what Erken learns next — tell us via{" "}
+                  <button
+                    onClick={() => setMenuPanel("feedback")}
+                    className="underline decoration-white/40 underline-offset-2 transition-colors hover:text-white/90"
+                  >
+                    📝 Feedback
+                  </button>
+                  .
                 </div>
               </div>
             )}
             {menuPanel === "feedback" && (
               <div className="w-[280px] px-3 py-2">
+                <button
+                  onClick={() => setMenuPanel(null)}
+                  className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm font-medium text-white/90 transition-colors hover:bg-white/15"
+                >
+                  <span aria-hidden>←</span> Back to main menu
+                </button>
                 <div className="pb-1.5 text-xs text-white/55">
                   Your feedback — bugs, ideas, anything
                 </div>

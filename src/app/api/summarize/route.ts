@@ -15,6 +15,27 @@ import { clientIp, rateLimit } from "@/lib/api-guard";
 const MODEL = "claude-haiku-4-5";
 const MAX_INPUT = 14000; // chars of page text we accept
 
+// Premium voice for the spoken summary: OpenAI Shimmer (same key already used by
+// /api/guide for embeddings — lives in Vercel env). ~1.5¢ per summary. Returns a
+// base64 mp3 the extension plays; null on any failure so the caller falls back to
+// the browser's (robotic) speech synthesis. v1 = no cache (fresh each time).
+const TTS_MODEL = "gpt-4o-mini-tts";
+const TTS_VOICE = "shimmer";
+async function speechBase64(text: string): Promise<string | null> {
+  const okey = (process.env.OPENAI_API_KEY || "").trim();
+  if (!okey || !text) return null;
+  try {
+    const r = await fetch("https://api.openai.com/v1/audio/speech", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${okey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ model: TTS_MODEL, voice: TTS_VOICE, input: text, response_format: "mp3" }),
+    });
+    if (!r.ok) return null;
+    const buf = Buffer.from(await r.arrayBuffer());
+    return buf.toString("base64");
+  } catch { return null; }
+}
+
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -54,8 +75,14 @@ export async function POST(req: Request) {
     "web page and asked for the gist. Summarize the page in 3-5 short sentences " +
     "of natural SPOKEN English — it will be read aloud. Lead with what the page " +
     "IS (article, product, docs, profile...), then the key points a busy person " +
-    "wants. No headers, no lists, no markdown, no URLs. If the text looks like a " +
-    "login wall or cookie notice, say there's not much to read here yet.";
+    "wants. No headers, no lists, no markdown, no URLs. " +
+    "CODE PAGES: if the page is primarily SOURCE CODE or a script, do NOT just say " +
+    "'this is code' or read it line by line — explain in plain language WHAT THE CODE " +
+    "DOES, for a smart non-programmer: state its overall purpose in one sentence, then " +
+    "walk its MAIN STEPS in order, using the pattern \"This script ...: first it [step one], " +
+    "then [step two], then [step three]\". Name the real things it touches (e.g. Gmail, a " +
+    "Google Sheet, prices, suppliers) and skip syntax, variable names, and line detail. " +
+    "If the text looks like a login wall or cookie notice, say there's not much to read here yet.";
 
   const r = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -72,5 +99,8 @@ export async function POST(req: Request) {
     .map((c: { text: string }) => c.text)
     .join("")
     .trim();
-  return NextResponse.json({ say }, { headers: CORS });
+  // Generate the premium Shimmer voice. Backward-compatible: old clients ignore
+  // `audio` and keep using `say`; new clients play `audio` and fall back to `say`.
+  const audio = await speechBase64(say);
+  return NextResponse.json({ say, audio }, { headers: CORS });
 }

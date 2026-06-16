@@ -91,5 +91,39 @@ export async function POST(req: Request) {
     } catch {}
   }
 
+  // 3 · forward everything to PostHog product analytics (server-side capture).
+  // phc_ is a public write-only ingest key — fine to send from the server. Host
+  // defaults to the US cloud; override with POSTHOG_HOST. Best-effort.
+  const phKey = (process.env.POSTHOG_KEY || "").trim();
+  if (phKey) {
+    const phHost = (process.env.POSTHOG_HOST || "https://us.i.posthog.com").replace(/\/$/, "");
+    try {
+      await fetch(`${phHost}/capture/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          api_key: phKey,
+          event: payload.event,
+          distinct_id: payload.session_id || "anonymous",
+          timestamp: payload.ts,
+          properties: {
+            ...payload.data,
+            // $ip = the REAL visitor's IP (from x-forwarded-for) so PostHog
+            // resolves true geography. Without it, server-side events geo-locate
+            // to the datacenter (the confusing "Virginia" Shamil saw). $current_url
+            // / $referrer light up PostHog's web-analytics views.
+            $ip: clientIp(req),
+            $current_url: (payload.data?.url as string) || undefined,
+            $referrer: (payload.data?.referrer as string) || undefined,
+            $lib: payload.version === "site" ? "erken-website" : "erken-extension",
+            extension_version: payload.version,
+            session_id: payload.session_id,
+            received_at: payload.received_at,
+          },
+        }),
+      });
+    } catch {}
+  }
+
   return NextResponse.json({ ok: true }, { headers: CORS });
 }

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import PageViewTracker from "@/components/PageViewTracker";
+import PostHogProvider from "@/components/PostHogProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -39,6 +41,11 @@ export default function RootLayout({
       className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-bg text-text">
+        <PostHogProvider
+          apiKey={process.env.POSTHOG_KEY || ""}
+          host={process.env.POSTHOG_HOST || "https://us.i.posthog.com"}
+        />
+        <PageViewTracker />
         {children}
       </body>
     </html>
