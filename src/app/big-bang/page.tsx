@@ -249,14 +249,16 @@ export default function BigBangCombinedPage() {
         <div className="h-[20vh]" />
       </main>
 
-      {/* Pinned Erken bot — fixed bottom-left, no roaming / dragon / dust. */}
+      {/* Pinned Erken bot — fixed bottom-RIGHT so it already sits beside the
+          GHL chat panel when it opens (Shamil 2026-06-16: no jumping needed).
+          No roaming / dragon / dust. */}
       <div
-        className="fixed z-40 left-[7vw] bottom-[6vh] md:left-[5vw] md:bottom-[7vh]"
-        style={{ transform: "scale(0.62)", transformOrigin: "bottom left" }}
+        className="fixed z-40 right-[7vw] bottom-[6vh] md:right-[6vw] md:bottom-[7vh]"
+        style={{ transform: "scale(0.62)", transformOrigin: "bottom right" }}
       >
         <CellDragonSprite
           scale={1}
-          pointDirection="right"
+          pointDirection="left"
           showOuterShell={false}
           bubbleText={null}
           onClick={() => {
@@ -272,7 +274,7 @@ export default function BigBangCombinedPage() {
           <div
             role="menu"
             aria-label="How would you like to talk to Erken?"
-            className="fixed z-[56] left-[6vw] bottom-[24vh] flex flex-col gap-1 rounded-2xl border border-white/15 bg-black/80 p-2 shadow-2xl backdrop-blur-md"
+            className="fixed z-[56] right-[5vw] bottom-[24vh] flex flex-col gap-1 rounded-2xl border border-white/15 bg-black/80 p-2 shadow-2xl backdrop-blur-md"
           >
             {menuPanel === null && (
               <>
