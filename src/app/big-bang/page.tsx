@@ -253,7 +253,7 @@ export default function BigBangCombinedPage() {
           GHL chat panel when it opens (Shamil 2026-06-16: no jumping needed).
           No roaming / dragon / dust. */}
       <div
-        className="fixed z-40 right-[7vw] bottom-[6vh] md:right-[6vw] md:bottom-[7vh]"
+        className="fixed z-40 right-[7vw] bottom-[1vh] md:right-[6vw] md:bottom-[1.5vh]"
         style={{ transform: "scale(0.62)", transformOrigin: "bottom right" }}
       >
         <CellDragonSprite
