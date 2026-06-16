@@ -19,6 +19,9 @@ import { Scene3LeadCaptureCarousel } from "@/components/Scene3LeadCaptureCarouse
 import { Scene4LeadMgmtCarousel } from "@/components/Scene4LeadMgmtCarousel";
 import { SceneIndustriesCarousel } from "@/components/SceneIndustriesCarousel";
 import { MacbookFrame3D } from "@/components/MacbookFrame3D";
+import { CellDragonSprite } from "@/components/CellDragonSprite";
+import ErkenChatWidget, { openErkenChat } from "@/components/ErkenChatWidget";
+import ErkenVoiceWidget from "@/components/ErkenVoiceWidget";
 
 const SECTIONS = [
   {
@@ -116,6 +119,39 @@ export default function BigBangCombinedPage() {
     return () => window.removeEventListener("resize", compute);
   }, []);
 
+  // Pinned Erken bot menu (text / voice / feedback / roadmap). Same actions
+  // as the homepage, minus the roaming/dragon/dust machinery.
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuPanel, setMenuPanel] = useState<"feedback" | "roadmap" | null>(null);
+  const [fbText, setFbText] = useState("");
+  const [fbState, setFbState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const closeMenu = () => {
+    setMenuOpen(false);
+    setMenuPanel(null);
+    setFbText("");
+    setFbState("idle");
+  };
+  const sendSiteFeedback = async () => {
+    const message = fbText.trim();
+    if (!message || fbState === "sending") return;
+    setFbState("sending");
+    try {
+      const r = await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          kind: "idea",
+          message,
+          url: window.location.href,
+          title: document.title,
+        }),
+      });
+      setFbState(r.ok ? "sent" : "error");
+    } catch {
+      setFbState("error");
+    }
+  };
+
   const mediaFor = (i: number): React.ReactNode =>
     i === 0 ? <Scene1IntroVideo />
     : i === 1 ? <Scene2Channels />
@@ -212,6 +248,128 @@ export default function BigBangCombinedPage() {
 
         <div className="h-[20vh]" />
       </main>
+
+      {/* Pinned Erken bot — fixed bottom-left, no roaming / dragon / dust. */}
+      <div
+        className="fixed z-40 left-[7vw] bottom-[6vh] md:left-[5vw] md:bottom-[7vh]"
+        style={{ transform: "scale(0.62)", transformOrigin: "bottom left" }}
+      >
+        <CellDragonSprite
+          scale={1}
+          pointDirection="right"
+          showOuterShell={false}
+          bubbleText={null}
+          onClick={() => {
+            setMenuPanel(null);
+            setMenuOpen((v) => !v);
+          }}
+        />
+      </div>
+
+      {menuOpen && (
+        <>
+          <div className="fixed inset-0 z-[55]" aria-hidden onClick={closeMenu} />
+          <div
+            role="menu"
+            aria-label="How would you like to talk to Erken?"
+            className="fixed z-[56] left-[6vw] bottom-[24vh] flex flex-col gap-1 rounded-2xl border border-white/15 bg-black/80 p-2 shadow-2xl backdrop-blur-md"
+          >
+            {menuPanel === null && (
+              <>
+                <div className="px-3 pb-1 pt-1 text-xs text-white/55">Talk to Erken</div>
+                <button
+                  role="menuitem"
+                  onClick={() => {
+                    closeMenu();
+                    openErkenChat();
+                  }}
+                  className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
+                >
+                  <span aria-hidden className="text-base">💬</span> Text chat
+                </button>
+                <button
+                  role="menuitem"
+                  onClick={() => {
+                    closeMenu();
+                    window.__startErkenVoiceCall?.();
+                  }}
+                  className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
+                >
+                  <span aria-hidden className="text-base">🎙️</span> Voice chat
+                </button>
+                <div className="mx-2 h-px bg-white/10" aria-hidden />
+                <button
+                  role="menuitem"
+                  onClick={() => setMenuPanel("feedback")}
+                  className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
+                >
+                  <span aria-hidden className="text-base">📝</span> Feedback
+                </button>
+                <button
+                  role="menuitem"
+                  onClick={() => setMenuPanel("roadmap")}
+                  className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
+                >
+                  <span aria-hidden className="text-base">🗺️</span> Roadmap
+                </button>
+              </>
+            )}
+            {menuPanel === "roadmap" && (
+              <div className="w-[280px] px-3 py-2 text-sm text-white">
+                <button
+                  onClick={() => setMenuPanel(null)}
+                  className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm font-medium text-white/90 transition-colors hover:bg-white/15"
+                >
+                  <span aria-hidden>←</span> Back to main menu
+                </button>
+                <div className="pb-1.5 text-xs text-white/55">Where Erken is going</div>
+                <div className="flex flex-col gap-1.5 leading-snug">
+                  <div>📚 <b>New skills in training:</b> Excel &amp; Google Sheets, Canva, QuickBooks — taught step by step</div>
+                  <div>🔊 Voice answers on every page</div>
+                  <div>🧠 <b>Personal memory:</b> Erken remembers you — your business, your setup, what you&apos;ve learned</div>
+                  <div>🖥️ <b>Desktop version on the way</b> — it can do tasks on your computer for you</div>
+                </div>
+              </div>
+            )}
+            {menuPanel === "feedback" && (
+              <div className="w-[280px] px-3 py-2">
+                <button
+                  onClick={() => setMenuPanel(null)}
+                  className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm font-medium text-white/90 transition-colors hover:bg-white/15"
+                >
+                  <span aria-hidden>←</span> Back to main menu
+                </button>
+                <div className="pb-1.5 text-xs text-white/55">Your feedback — bugs, ideas, anything</div>
+                {fbState === "sent" ? (
+                  <div className="py-2 text-sm text-white">✅ Got it — passed along. Thank you!</div>
+                ) : (
+                  <>
+                    <textarea
+                      value={fbText}
+                      onChange={(e) => setFbText(e.target.value)}
+                      rows={3}
+                      autoFocus
+                      className="w-full resize-none rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/40 outline-none focus:border-white/30"
+                      placeholder="Tell us…"
+                    />
+                    <button
+                      onClick={sendSiteFeedback}
+                      disabled={fbState === "sending" || !fbText.trim()}
+                      className="mt-1.5 w-full rounded-xl bg-white/15 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-white/25 disabled:opacity-40"
+                    >
+                      {fbState === "sending" ? "Sending…" : fbState === "error" ? "Couldn't send — try again" : "Send"}
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* Chat + voice machinery (panels + window.__startErkenVoiceCall). */}
+      <ErkenChatWidget />
+      <ErkenVoiceWidget />
     </>
   );
 }
