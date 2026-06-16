@@ -257,9 +257,9 @@ export default function BigBangCombinedPage() {
         style={{
           transform: "scale(0.62)",
           transformOrigin: "bottom right",
-          // Above the GHL chat widget (~2.1e9) so the bot sits IN FRONT of the
-          // chat panel (Shamil 2026-06-16) — chat opens behind the bot.
-          zIndex: 2147483600,
+          // Max 32-bit z so the bot sits IN FRONT of the GHL chat panel
+          // (Shamil 2026-06-16) — chat opens behind the bot.
+          zIndex: 2147483647,
         }}
       >
         <CellDragonSprite
