@@ -274,7 +274,7 @@ export default function BigBangCombinedPage() {
           <div
             role="menu"
             aria-label="How would you like to talk to Erken?"
-            className="fixed z-[56] right-[5vw] bottom-[24vh] flex flex-col gap-1 rounded-2xl border border-white/15 bg-black/80 p-2 shadow-2xl backdrop-blur-md"
+            className="fixed z-[56] right-[3vw] bottom-[12vh] flex flex-col gap-1 rounded-2xl border border-white/15 bg-black/80 p-2 shadow-2xl backdrop-blur-md"
           >
             {menuPanel === null && (
               <>
