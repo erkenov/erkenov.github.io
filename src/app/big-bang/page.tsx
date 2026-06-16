@@ -253,8 +253,14 @@ export default function BigBangCombinedPage() {
           GHL chat panel when it opens (Shamil 2026-06-16: no jumping needed).
           No roaming / dragon / dust. */}
       <div
-        className="fixed z-40 right-[3vw] bottom-[-1.5vh] md:right-[2.5vw] md:bottom-[-1.5vh]"
-        style={{ transform: "scale(0.62)", transformOrigin: "bottom right" }}
+        className="fixed right-[3vw] bottom-[-1.5vh] md:right-[2.5vw] md:bottom-[-1.5vh]"
+        style={{
+          transform: "scale(0.62)",
+          transformOrigin: "bottom right",
+          // Above the GHL chat widget (~2.1e9) so the bot sits IN FRONT of the
+          // chat panel (Shamil 2026-06-16) — chat opens behind the bot.
+          zIndex: 2147483600,
+        }}
       >
         <CellDragonSprite
           scale={1}
@@ -270,11 +276,17 @@ export default function BigBangCombinedPage() {
 
       {menuOpen && (
         <>
-          <div className="fixed inset-0 z-[55]" aria-hidden onClick={closeMenu} />
+          <div
+            className="fixed inset-0"
+            style={{ zIndex: 2147483640 }}
+            aria-hidden
+            onClick={closeMenu}
+          />
           <div
             role="menu"
             aria-label="How would you like to talk to Erken?"
-            className="fixed z-[56] right-[3vw] bottom-[12vh] flex flex-col gap-1 rounded-2xl border border-white/15 bg-black/80 p-2 shadow-2xl backdrop-blur-md"
+            className="fixed right-[3vw] bottom-[12vh] flex flex-col gap-1 rounded-2xl border border-white/15 bg-black/80 p-2 shadow-2xl backdrop-blur-md"
+            style={{ zIndex: 2147483646 }}
           >
             {menuPanel === null && (
               <>
