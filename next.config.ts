@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "placehold.co" },
     ],
   },
+  // Serve the standalone Big Bang particle page (public/big-bang/index.html)
+  // at the clean URL /big-bang. Additive — does not affect any other route.
+  async rewrites() {
+    return [{ source: "/big-bang", destination: "/big-bang/index.html" }];
+  },
 };
 
 export default nextConfig;
