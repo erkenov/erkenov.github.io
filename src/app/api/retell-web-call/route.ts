@@ -4,7 +4,7 @@ import { clientIp, originAllowed, rateLimit } from "@/lib/api-guard";
 // Creates a Retell web call server-side so the secret RETELL_API_KEY never
 // reaches the browser. Returns a short-lived access_token the browser SDK
 // uses to start the in-browser voice call with Erken (the site voice agent).
-const AGENT_ID = "agent_366d0925268245e195b394ac58"; // Erken Public Site Bot (native) — retell-llm (claude-4.5-haiku), 3-min cap, leads -> /api/retell/capture-lead -> GoHighLevel. Replaced the laptop bridge (old custom-llm agent agent_758d5b0c75ba4091b0fbdb4e8a, kept dormant for revert). Old Discovery agent agent_cca2ee6a721faf88d9beda90b8 still on the phone line.
+const AGENT_ID = "agent_cca2ee6a721faf88d9beda90b8"; // Shamil AI Discovery (web) — conversation-flow agent: business AI-automation assessment + leave-a-message, web-helper persona (rewritten phone->web 2026-06-17), 5-min cap, leads -> n8n retell-to-ghl -> GoHighLevel. Swapped 2026-06-17 from the native GHL-pitch bot agent_366d0925268245e195b394ac58 (kept for revert). Phone +19016331400 detached from this agent. Pre-edit Retell snapshots in vault/06-memory/retell-snapshots/.
 
 // Hard daily spend cap (USD) for the public bot. Retell only BILLS — it won't
 // auto-stop — so the ceiling lives here (like the old bridge did). We sum the
