@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import PageViewTracker from "@/components/PageViewTracker";
 import PostHogProvider from "@/components/PostHogProvider";
+import GhlWidgetLoader from "@/components/GhlWidgetLoader";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -46,6 +47,7 @@ export default function RootLayout({
           host={process.env.POSTHOG_HOST || "https://us.i.posthog.com"}
         />
         <PageViewTracker />
+        <GhlWidgetLoader />
         {children}
       </body>
     </html>
