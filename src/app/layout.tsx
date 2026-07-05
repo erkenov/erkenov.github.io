@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import PageViewTracker from "@/components/PageViewTracker";
 import PostHogProvider from "@/components/PostHogProvider";
@@ -48,12 +47,6 @@ export default function RootLayout({
         />
         <PageViewTracker />
         {children}
-        <Script
-          src="https://widgets.leadconnectorhq.com/loader.js"
-          data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js"
-          data-widget-id="6a4a18bfc5790660801f7b13"
-          data-source="WEB_USER"
-        />
       </body>
     </html>
   );
