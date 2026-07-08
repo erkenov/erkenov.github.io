@@ -22,6 +22,7 @@ import { Scene3LeadCaptureCarousel } from "@/components/Scene3LeadCaptureCarouse
 import { Scene4LeadMgmtCarousel } from "@/components/Scene4LeadMgmtCarousel";
 import { SceneIndustriesCarousel } from "@/components/SceneIndustriesCarousel";
 import { CellDragonSprite } from "@/components/CellDragonSprite";
+import { CallbackSection } from "@/components/CallbackSection";
 import ErkenChatWidget, {
   openErkenChat,
   useErkenChatOpen,
@@ -1430,6 +1431,11 @@ export default function PreviewV6Page() {
           </div>
         </div>
       </section>
+
+      {/* Request-a-call — the live-demo capture door (2026-07-08).
+          Form Submitted → Voice AI outbound call, so the section IS the
+          product demo. Sits last: after both products, the proof. */}
+      <CallbackSection />
 
       {/* Trailing space so scroll has room to finish its tween */}
       <div className="h-[20vh]" />
