@@ -20,6 +20,17 @@ import ErkenVoiceWidget from "@/components/ErkenVoiceWidget";
 
 type SendState = "idle" | "sending" | "sent" | "error";
 
+// Prepay tiers (Shamil 2026-07-08): three options only — month / 6 months /
+// year. $97 monthly is the anchor (matches the platform's own entry price,
+// never discounted); prepay earns the discount. Manual billing (Wise/
+// Payoneer) means fewer, bigger payments = less collection friction.
+const PLANS = [
+  { id: "monthly", label: "Monthly", price: "$97/mo", note: "billed monthly" },
+  { id: "6-months", label: "6 months", price: "$87/mo", note: "$522 once — save 10%" },
+  { id: "yearly", label: "Yearly", price: "$81/mo", note: "$970 once — 2 months free" },
+] as const;
+type PlanId = (typeof PLANS)[number]["id"];
+
 // drifting cell-particles around Celly — a lightweight CSS echo of the
 // homepage's 3D dust cloud (deterministic, index-seeded; no Three.js here)
 const DUST = Array.from({ length: 22 }, (_, i) => {
@@ -39,6 +50,7 @@ const DUST = Array.from({ length: 22 }, (_, i) => {
 
 export default function StartPage() {
   const [email, setEmail] = useState("");
+  const [plan, setPlan] = useState<PlanId>("monthly");
   const [state, setState] = useState<SendState>("idle");
   const [botMenu, setBotMenu] = useState(false);
   const [menuPanel, setMenuPanel] = useState<"feedback" | "roadmap" | null>(null);
@@ -80,7 +92,7 @@ export default function StartPage() {
       const r = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({ email: email.trim(), plan }),
       });
       setState(r.ok ? "sent" : "error");
     } catch {
@@ -115,6 +127,7 @@ export default function StartPage() {
             <p className="mt-1 text-sm text-text-muted">
               CRM, pipelines, calendars, automations —{" "}
               <span className="text-text">$97/month after a free week</span>.
+              Prepay and save.
             </p>
             {state === "sent" ? (
               <div className="mt-6 rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm leading-relaxed">
@@ -123,13 +136,38 @@ export default function StartPage() {
               </div>
             ) : (
               <form onSubmit={submit} className="mt-6">
+                <div className="flex flex-col gap-2" role="radiogroup" aria-label="Plan">
+                  {PLANS.map((p) => {
+                    const active = plan === p.id;
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        role="radio"
+                        aria-checked={active}
+                        onClick={() => setPlan(p.id)}
+                        className={`flex w-full cursor-pointer items-baseline justify-between rounded-xl border px-4 py-3 text-left transition-colors ${
+                          active
+                            ? "border-accent bg-accent/10"
+                            : "border-border bg-surface-2 hover:border-border-strong"
+                        }`}
+                      >
+                        <span className="text-sm font-medium">{p.label}</span>
+                        <span className="text-right">
+                          <span className="text-sm font-semibold">{p.price}</span>
+                          <span className="ml-2 text-xs text-text-dim">{p.note}</span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your email"
-                  className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-base text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
+                  className="mt-3 w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-base text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
                 />
                 <button
                   type="submit"

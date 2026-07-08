@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "limit" }, { status: 429 });
   }
 
-  let body: { email?: string };
+  let body: { email?: string; plan?: string };
   try { body = await req.json(); } catch {
     return NextResponse.json({ ok: false, error: "bad request" }, { status: 400 });
   }
@@ -33,6 +33,12 @@ export async function POST(req: Request) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
     return NextResponse.json({ ok: false, error: "invalid email" }, { status: 400 });
   }
+  // Prepay tier from the /start selector (2026-07-08). Whitelisted; anything
+  // else (including old clients sending no plan) falls back to monthly.
+  const PLAN_IDS = ["monthly", "6-months", "yearly"] as const;
+  const plan = PLAN_IDS.includes(body.plan as (typeof PLAN_IDS)[number])
+    ? (body.plan as (typeof PLAN_IDS)[number])
+    : "monthly";
 
   // Signup-specific credentials: the generic GHL_API_KEY/GHL_LOCATION_ID on
   // Vercel are scoped to the CLIENT balance-dashboard location — trial signups
@@ -56,7 +62,7 @@ export async function POST(req: Request) {
     body: JSON.stringify({
       locationId,
       email,
-      tags: ["trial-signup", "crm-trial"],
+      tags: ["trial-signup", "crm-trial", `plan-${plan}`],
       source: "erken.systems /start",
     }),
   });
@@ -86,7 +92,7 @@ export async function POST(req: Request) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: chat,
-          text: `🚀 NEW CRM TRIAL SIGNUP\n\n${email}\n\nContact is in GoHighLevel (tags: trial-signup, crm-trial). Set up their access + reach out.`,
+          text: `🚀 NEW CRM TRIAL SIGNUP\n\n${email}\nPlan chosen: ${plan}\n\nContact is in GoHighLevel (tags: trial-signup, crm-trial, plan-${plan}). Set up their access + reach out.`,
         }),
       });
     } catch {}
