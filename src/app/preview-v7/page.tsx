@@ -368,7 +368,7 @@ export default function PreviewV6Page() {
   // Sub-panel inside the choice menu (mirrors the extension menu — Shamil
   // 2026-06-12): Feedback (any feedback → /api/feedback → his Telegram) and
   // Roadmap (where Erken is going). null = the plain Text/Voice menu.
-  const [menuPanel, setMenuPanel] = useState<"feedback" | "roadmap" | null>(null);
+  const [menuPanel, setMenuPanel] = useState<"feedback" | "roadmap" | "whatsnew" | null>(null);
   const [fbText, setFbText] = useState("");
   const [fbState, setFbState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const closeChoiceMenu = () => {
@@ -1558,6 +1558,16 @@ export default function PreviewV6Page() {
                 </span>{" "}
                 Roadmap
               </button>
+              <button
+                role="menuitem"
+                onClick={() => setMenuPanel("whatsnew")}
+                className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
+              >
+                <span aria-hidden className="text-base">
+                  ✨
+                </span>{" "}
+                What&apos;s new
+              </button>
               {/* LIVE on the Chrome Web Store since 2026-06-12 🎉 */}
               <a
                 role="menuitem"
@@ -1586,21 +1596,67 @@ export default function PreviewV6Page() {
               </div>
               <div className="flex flex-col gap-1.5 leading-snug">
                 <div>
-                  📚 <b>New skills in training:</b> Excel &amp; Google Sheets,
-                  Canva, QuickBooks — taught step by step
-                </div>
-                <div>🔊 Voice answers on every page</div>
-                <div>
-                  🧠 <b>Personal memory:</b> Erken remembers you — your
-                  business, your setup, what you&apos;ve already learned
+                  🧠 <b>Memory is here</b> — Erken remembers you, your
+                  business, and where you left off. It keeps getting smarter
+                  over time.
                 </div>
                 <div>
-                  🖥️ <b>Desktop version on the way</b> — unlike the browser
-                  extension, it can do tasks on your computer for you
+                  🌐 <b>Works on GoHighLevel today</b> — expanding to Zapier,
+                  QuickBooks, and the popular apps you already connect
+                </div>
+                <div>
+                  🧰 <b>Universal helpers on the way</b> — summarize any page,
+                  size up a competitor, quick market research
+                </div>
+                <div>
+                  💬 <b>Real conversation</b> — talk back-and-forth by voice,
+                  not one question at a time
+                </div>
+                <div>
+                  🖥️ <b>A desktop companion</b> — Erken on your screen,
+                  eventually doing tasks for you, not just guiding
                 </div>
               </div>
               <div className="mt-2 border-t border-white/10 pt-2 text-xs text-white/55">
                 Your vote decides what Erken learns next — tell us via{" "}
+                <button
+                  onClick={() => setMenuPanel("feedback")}
+                  className="underline decoration-white/40 underline-offset-2 transition-colors hover:text-white/90"
+                >
+                  📝 Feedback
+                </button>
+                .
+              </div>
+            </div>
+          )}
+          {menuPanel === "whatsnew" && (
+            <div className="w-[280px] px-3 py-2 text-sm text-white">
+              <button
+                onClick={() => setMenuPanel(null)}
+                className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm font-medium text-white/90 transition-colors hover:bg-white/15"
+              >
+                <span aria-hidden>←</span> Back to main menu
+              </button>
+              <div className="pb-1.5 text-xs text-white/55">
+                What&apos;s new in Erken
+              </div>
+              <div className="flex flex-col gap-1.5 leading-snug">
+                <div>
+                  🧭 <b>Meet the Platform</b> — a guided tour of everything the
+                  platform can do
+                </div>
+                <div>
+                  📂 Erken now <b>opens the menu for you</b> so it can point
+                  things out
+                </div>
+                <div>
+                  🚩 <b>&ldquo;Wrong instruction&rdquo; button</b> — flag Erken
+                  if it points at the wrong spot
+                </div>
+                <div>🔊 Smoother step-by-step voice walkthroughs</div>
+              </div>
+              <div className="mt-2 border-t border-white/10 pt-2 text-xs text-white/55">
+                Got an idea or found a bug? Tell us via{" "}
                 <button
                   onClick={() => setMenuPanel("feedback")}
                   className="underline decoration-white/40 underline-offset-2 transition-colors hover:text-white/90"
