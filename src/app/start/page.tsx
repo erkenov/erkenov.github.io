@@ -128,7 +128,7 @@ export default function StartPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@yourbusiness.com"
+                  placeholder="your email"
                   className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-base text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
                 />
                 <button
