@@ -16,7 +16,9 @@
 
 import { useEffect } from "react";
 
-const SRH_WIDGET_ID = "6a4a18bfc5790660801f7b13";
+// Widget swapped 2026-07-09 during the GHL A2P support call — support issued a
+// fresh widget id to register as the site's opt-in. Old id: 6a4a18bfc5790660801f7b13.
+const SRH_WIDGET_ID = "6a4f6d5988718db6dd6bd252";
 
 function hideBubble(w: Element & { shadowRoot: ShadowRoot | null }) {
   if (!w.shadowRoot) return false;
