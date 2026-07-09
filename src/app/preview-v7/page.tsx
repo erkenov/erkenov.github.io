@@ -1432,10 +1432,13 @@ export default function PreviewV6Page() {
         </div>
       </section>
 
-      {/* Request-a-call — the live-demo capture door (2026-07-08).
-          Form Submitted → Voice AI outbound call, so the section IS the
-          product demo. Sits last: after both products, the proof. */}
-      <CallbackSection />
+      {/* Request-a-call section REMOVED from the homepage 2026-07-09 during
+          the GHL A2P support call: the registered opt-in page (this site,
+          with the compliance chat widget) must not also carry a
+          phone-collecting form. The component is kept — re-mount it on a
+          separate page (e.g. /callback) once A2P approves, or restore here
+          if the compliance constraint changes. */}
+      {/* <CallbackSection /> */}
 
       {/* Trailing space so scroll has room to finish its tween */}
       <div className="h-[20vh]" />
