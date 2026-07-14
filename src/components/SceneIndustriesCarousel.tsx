@@ -14,7 +14,8 @@
  */
 
 import { Carousel, Card } from "@/components/ui/apple-cards-carousel";
-import { IconDental, IconHome } from "@tabler/icons-react";
+import { IconDental, IconHome, IconArrowUpRight } from "@tabler/icons-react";
+import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
 
 /* ============================================================
    A/B/C/D/E card-visual experiment (Shamil 2026-05-26 afternoon).
@@ -122,6 +123,63 @@ const IMG = {
 } as const;
 
 const INDUSTRIES: IndustryCard[] = [
+  // 0. Roofing contractors — FIRST card (the flagship: only industry with a
+  // LIVE demo subdomain + the new video-first popup treatment, 2026-07-14).
+  {
+    category: "Trades · roofing",
+    title: "Roofing contractors",
+    src: ph("Roofing", "B8786A"),
+    visual: <CardStyle2Photo src="/industries/card-roofing-photo.jpg" />,
+    content: (
+      <>
+        <IndustryDemoShowcase
+          demoUrl="https://stormroofingheroes.erken.systems"
+          headline="A real roofing setup, running live right now"
+          sub="This isn't a mockup. It's a complete roofing company system — website, online booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a test inspection and watch what your customers would experience."
+        />
+        <IndustryBodySteps
+          steps={[
+            {
+              title: "A storm hits — every homeowner who calls gets answered first",
+              description:
+                "Your AI receptionist picks up immediately. It sounds professional and tailored to your roofing business. It qualifies storm damage vs scheduled replacement, captures roof age, damage type, and insurance status, and books a same-day inspection slot. Wins the bid because you got there first.",
+              image: IMG.step1,
+              imageAlt: "AI receptionist booking a roof inspection",
+            },
+            {
+              title: "Their roof details land in one place — automatically",
+              description:
+                "Name, address, roof age, damage type, insurance carrier — all dropped into your job list. Ready for the inspector's morning route before they leave the yard.",
+              image: IMG.step2,
+              imageAlt: "Roof inspection details saved automatically",
+            },
+            {
+              title: "Every job is visible from inquiry to install",
+              description:
+                "Inquiry → Inspection booked → Estimate sent → Insurance coordination → Job scheduled → Completed. You see which estimates are stuck waiting on insurance and which are ready to schedule.",
+              image: IMG.step3,
+              imageAlt: "Roofing job pipeline view",
+            },
+            {
+              title: "Customers and adjusters get the right update — automatically",
+              description:
+                "Inspection-scheduled confirmation. Estimate delivery. Insurance claim coordination workflow. Install-date confirmation. Post-install warranty info + referral request. All automatic.",
+              image: IMG.step4,
+              imageAlt: "Automated roofing customer + insurance messages",
+            },
+            {
+              title: "Monday morning, you see what closed last week",
+              description:
+                "Inspections booked. Estimate-to-job conversion. Average project value. Insurance coordination time. A clean weekly summary so you can spot bottlenecks and shift resources.",
+              image: IMG.step5,
+              imageAlt: "Weekly roofing performance summary",
+            },
+          ]}
+          outcome="Roofers competing for storm-damage jobs win significantly more bids with same-day inspection booking."
+        />
+      </>
+    ),
+  },
   // 1. Dental practices — visual STYLE 2 (full-bleed real photo, like vet)
   {
     category: "Healthcare · HIPAA",
@@ -514,55 +572,6 @@ const INDUSTRIES: IndustryCard[] = [
       />
     ),
   },
-  // 9. Roofing contractors
-  {
-    category: "Trades · roofing",
-    title: "Roofing contractors",
-    src: ph("Roofing", "B8786A"),
-    visual: <CardStyle2Photo src="/industries/card-roofing-photo.jpg" />,
-    content: (
-      <IndustryBodySteps
-        steps={[
-          {
-            title: "A storm hits — every homeowner who calls gets answered first",
-            description:
-              "Your AI receptionist picks up immediately. It sounds professional and tailored to your roofing business. It qualifies storm damage vs scheduled replacement, captures roof age, damage type, and insurance status, and books a same-day inspection slot. Wins the bid because you got there first.",
-            image: IMG.step1,
-            imageAlt: "AI receptionist booking a roof inspection",
-          },
-          {
-            title: "Their roof details land in one place — automatically",
-            description:
-              "Name, address, roof age, damage type, insurance carrier — all dropped into your job list. Ready for the inspector's morning route before they leave the yard.",
-            image: IMG.step2,
-            imageAlt: "Roof inspection details saved automatically",
-          },
-          {
-            title: "Every job is visible from inquiry to install",
-            description:
-              "Inquiry → Inspection booked → Estimate sent → Insurance coordination → Job scheduled → Completed. You see which estimates are stuck waiting on insurance and which are ready to schedule.",
-            image: IMG.step3,
-            imageAlt: "Roofing job pipeline view",
-          },
-          {
-            title: "Customers and adjusters get the right update — automatically",
-            description:
-              "Inspection-scheduled confirmation. Estimate delivery. Insurance claim coordination workflow. Install-date confirmation. Post-install warranty info + referral request. All automatic.",
-            image: IMG.step4,
-            imageAlt: "Automated roofing customer + insurance messages",
-          },
-          {
-            title: "Monday morning, you see what closed last week",
-            description:
-              "Inspections booked. Estimate-to-job conversion. Average project value. Insurance coordination time. A clean weekly summary so you can spot bottlenecks and shift resources.",
-            image: IMG.step5,
-            imageAlt: "Weekly roofing performance summary",
-          },
-        ]}
-        outcome="Roofers competing for storm-damage jobs win significantly more bids with same-day inspection booking."
-      />
-    ),
-  },
   // 10. Real estate agents
   {
     category: "Real estate",
@@ -907,6 +916,56 @@ const INDUSTRIES: IndustryCard[] = [
     ),
   },
 ];
+
+/**
+ * IndustryDemoShowcase — video-first header for an industry card popup
+ * (Shamil 2026-07-14: "as many videos and clickable things as possible").
+ * Vertical demo video on the left (placeholder = the main-page intro clip
+ * for now; per-industry demo videos swap in later), pitch + "try the live
+ * demo" CTA on the right, the step-by-step breakdown stays below.
+ * Rolled out on the roofing card first; other industries follow once the
+ * treatment is approved and each has a live demo subdomain.
+ */
+function IndustryDemoShowcase({
+  demoUrl,
+  headline,
+  sub,
+}: {
+  demoUrl: string;
+  headline: string;
+  sub: string;
+}) {
+  return (
+    <div className="mb-12 flex flex-col md:flex-row gap-8 md:gap-12 items-center md:items-start">
+      {/* Vertical demo video — placeholder: the main-page intro clip */}
+      <div className="w-full max-w-[18rem] shrink-0">
+        <Scene1IntroVideo />
+      </div>
+      {/* Pitch + CTA */}
+      <div className="flex-1 md:pt-4">
+        <div className="mono-label text-accent text-xs mb-3">See it working</div>
+        <h4
+          className="text-xl md:text-2xl font-semibold text-text leading-snug"
+          style={{ letterSpacing: "-0.02em" }}
+        >
+          {headline}
+        </h4>
+        <p className="mt-3 text-[15px] md:text-base text-text-muted leading-relaxed max-w-lg">
+          {sub}
+        </p>
+        <a
+          href={demoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-6 inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-white transition-transform duration-200 hover:scale-[1.02]"
+        >
+          Try the live demo
+          <IconArrowUpRight size={18} stroke={2} />
+        </a>
+      </div>
+    </div>
+  );
+}
 
 /**
  * Step-by-step body — plain-language walkthrough of how the system
