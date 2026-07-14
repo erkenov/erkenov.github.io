@@ -105,7 +105,17 @@ type IndustryCard = {
    *  When provided, replaces the default colored BlurImage background.
    *  Used for the A/B/C/D/E card-visual experiment. */
   visual?: React.ReactNode;
+  /** Live demo subdomain for this industry. When set, the popup's video
+   *  showcase renders the primary "Try the live demo" CTA. When absent,
+   *  the showcase says the demo is coming and links to the roofing one. */
+  demoUrl?: string;
+  /** Optional per-industry override for the showcase headline/sub. */
+  demoHeadline?: string;
+  demoSub?: string;
 };
+
+/** The one live demo that exists today — linked from no-demo cards too. */
+const ROOFING_DEMO_URL = "https://stormroofingheroes.erken.systems";
 
 const ph = (label: string, bg: string, fg = "F5F1E8") =>
   `https://placehold.co/640x800/${bg}/${fg}?text=${encodeURIComponent(label)}&font=inter`;
@@ -130,13 +140,12 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Roofing contractors",
     src: ph("Roofing", "B8786A"),
     visual: <CardStyle2Photo src="/industries/card-roofing-photo.jpg" />,
+    demoUrl: ROOFING_DEMO_URL,
+    demoHeadline: "A real roofing setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete roofing company system — website, online booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a test inspection and watch what your customers would experience.",
     content: (
       <>
-        <IndustryDemoShowcase
-          demoUrl="https://stormroofingheroes.erken.systems"
-          headline="A real roofing setup, running live right now"
-          sub="This isn't a mockup. It's a complete roofing company system — website, online booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a test inspection and watch what your customers would experience."
-        />
         <IndustryBodySteps
           steps={[
             {
@@ -931,7 +940,7 @@ function IndustryDemoShowcase({
   headline,
   sub,
 }: {
-  demoUrl: string;
+  demoUrl?: string;
   headline: string;
   sub: string;
 }) {
@@ -953,15 +962,30 @@ function IndustryDemoShowcase({
         <p className="mt-3 text-[15px] md:text-base text-text-muted leading-relaxed max-w-lg">
           {sub}
         </p>
-        <a
-          href={demoUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-6 inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-white transition-transform duration-200 hover:scale-[1.02]"
-        >
-          Try the live demo
-          <IconArrowUpRight size={18} stroke={2} />
-        </a>
+        {demoUrl ? (
+          <a
+            href={demoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-white transition-transform duration-200 hover:scale-[1.02]"
+          >
+            Try the live demo
+            <IconArrowUpRight size={18} stroke={2} />
+          </a>
+        ) : (
+          <p className="mt-6 text-[15px] text-text-dim">
+            A live demo for this industry is on the way. Meanwhile,{" "}
+            <a
+              href={ROOFING_DEMO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-accent hover:text-accent-hover underline underline-offset-4"
+            >
+              click through the live roofing demo
+            </a>{" "}
+            to see the platform running for a real business.
+          </p>
+        )}
       </div>
     </div>
   );
@@ -1193,7 +1217,28 @@ function Step1CallSvg() {
 }
 
 export function SceneIndustriesCarousel() {
-  const items = INDUSTRIES.map((c, i) => <Card key={c.title} card={c} index={i} />);
+  // Every popup opens with the video showcase (2026-07-14: "every piece of
+  // info on the site has a video twin"). Cards with a live demo get the
+  // primary CTA; the rest point at the roofing demo until theirs exists.
+  const items = INDUSTRIES.map((c, i) => {
+    const card: IndustryCard = {
+      ...c,
+      content: (
+        <>
+          <IndustryDemoShowcase
+            demoUrl={c.demoUrl}
+            headline={c.demoHeadline ?? "See the system working before you buy it"}
+            sub={
+              c.demoSub ??
+              `The same platform, pre-configured for ${c.title.toLowerCase()} — AI receptionist, online booking, automated follow-ups, and a pipeline you can actually read.`
+            }
+          />
+          {c.content}
+        </>
+      ),
+    };
+    return <Card key={c.title} card={card} index={i} />;
+  });
   return (
     <div className="w-full">
       <Carousel items={items} />
