@@ -1,0 +1,97 @@
+/*
+ * Storm Roofing Heroes v2 — scoped storm theme.
+ *
+ * The root layout's globals.css defines a cream palette on :root via CSS
+ * custom properties, and Tailwind v4 maps utilities (bg-bg, text-text,
+ * border-border, bg-accent, …) to those variables via @theme inline.
+ * Re-declaring the same variables on this wrapper re-skins every one of
+ * those utilities for the whole subtree — no new utility classes needed,
+ * and nothing outside /storm-v2 is touched.
+ */
+.theme {
+  --bg: #0b1220;
+  --surface: #111b2d;
+  --surface-2: #182640;
+  --border: #233450;
+  --border-strong: #36496c;
+  --text: #f2f5fa;
+  --text-muted: #a3b3ca;
+  --text-dim: #67788f;
+  --accent: #f5a83c; /* storm amber — hazard-light warmth against the navy */
+  --accent-hover: #ffbd5f;
+  --accent-soft: rgba(245, 168, 60, 0.12);
+  --success: #4ade80;
+
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Diagonal rain streaks — very low opacity texture for the hero sky. */
+.rain {
+  background-image: repeating-linear-gradient(
+    115deg,
+    transparent 0px,
+    transparent 46px,
+    rgba(163, 179, 202, 0.05) 46px,
+    rgba(163, 179, 202, 0.05) 47px
+  );
+}
+
+/* Storm sky — layered radial glows: a cold front rolling in from the
+   top-left, one warm break of light where the accent CTA sits. */
+.sky {
+  background:
+    radial-gradient(ellipse 1200px 700px at 18% -10%, rgba(54, 73, 108, 0.55), transparent 60%),
+    radial-gradient(ellipse 900px 500px at 85% 0%, rgba(24, 38, 64, 0.9), transparent 65%),
+    radial-gradient(ellipse 700px 420px at 50% 105%, rgba(245, 168, 60, 0.07), transparent 60%);
+}
+
+/* Full-bleed diagonal band — the SRH take on KPost's slanted sections.
+   The band's background layer is skewed; content inside stays level. */
+.band {
+  position: relative;
+  isolation: isolate;
+}
+.band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  transform: skewY(-2.25deg);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.bandDark::before {
+  background: #0a101b;
+}
+
+/* Service-card visual header: gradient panel with a clipped diagonal
+   bottom edge — echoes the band language at component scale. */
+.cardArt {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), 0 100%);
+  background:
+    radial-gradient(ellipse 220px 140px at 80% -20%, rgba(245, 168, 60, 0.14), transparent 65%),
+    linear-gradient(160deg, var(--surface-2) 0%, #131f34 100%);
+}
+
+/* Slanted leading edge on the two hero fork buttons. */
+.forkBtn {
+  clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+}
+
+/* Hairline gradient divider (design-system pattern). */
+.hairline {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border-strong), transparent);
+}
+
+/* Kicker label — storm variant of the site's mono-label. */
+.kicker {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 500;
+}
