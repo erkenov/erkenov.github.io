@@ -1,56 +1,76 @@
 /*
- * Storm Roofing Heroes v2 — scoped storm theme.
+ * Storm Roofing Heroes v2 — scoped blue theme (revision 2, Shamil feedback).
  *
  * The root layout's globals.css defines a cream palette on :root via CSS
  * custom properties, and Tailwind v4 maps utilities (bg-bg, text-text,
  * border-border, bg-accent, …) to those variables via @theme inline.
- * Re-declaring the same variables on this wrapper re-skins every one of
- * those utilities for the whole subtree — no new utility classes needed,
- * and nothing outside /storm-v2 is touched.
+ * Re-declaring the variables re-skins every utility for the subtree.
+ *
+ * Two contexts, KPost-style light/blue alternation but our own blue:
+ *   .theme — LIGHT default (steel-white, daylight-professional)
+ *   .dark  — deep confident blue bands (hero, territory, storm, footer)
  */
 .theme {
-  --bg: #0b1220;
-  --surface: #111b2d;
-  --surface-2: #182640;
-  --border: #233450;
-  --border-strong: #36496c;
-  --text: #f2f5fa;
-  --text-muted: #a3b3ca;
-  --text-dim: #67788f;
-  --accent: #f5a83c; /* storm amber — hazard-light warmth against the navy */
-  --accent-hover: #ffbd5f;
-  --accent-soft: rgba(245, 168, 60, 0.12);
-  --success: #4ade80;
+  --bg: #f2f6fa;
+  --surface: #ffffff;
+  --surface-2: #e7eef6;
+  --border: #d5e0ec;
+  --border-strong: #b3c7db;
+  --text: #14283d;
+  --text-muted: #46607a;
+  --text-dim: #7b90a5;
+  --accent: #1470b4; /* SRH blue — steel-leaning, not KPost's */
+  --accent-hover: #1e83cc;
+  --accent-soft: rgba(20, 112, 180, 0.1);
+  --success: #2f9e63;
 
   background: var(--bg);
   color: var(--text);
 }
 
-/* Diagonal rain streaks — very low opacity texture for the hero sky. */
+.dark {
+  --bg: #0e2f52;
+  --surface: #16406b;
+  --surface-2: #1c4c7d;
+  --border: #29578a;
+  --border-strong: #3d6ea3;
+  --text: #f4f8fc;
+  --text-muted: #b6cbdf;
+  --text-dim: #83a2bd;
+  --accent: #63b3f0; /* sky blue reads as the accent on deep blue */
+  --accent-hover: #85c5f5;
+  --accent-soft: rgba(99, 179, 240, 0.14);
+
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Diagonal rain streaks — faint texture for the hero sky. */
 .rain {
   background-image: repeating-linear-gradient(
     115deg,
     transparent 0px,
     transparent 46px,
-    rgba(163, 179, 202, 0.05) 46px,
-    rgba(163, 179, 202, 0.05) 47px
+    rgba(255, 255, 255, 0.045) 46px,
+    rgba(255, 255, 255, 0.045) 47px
   );
 }
 
-/* Storm sky — layered radial glows: a cold front rolling in from the
-   top-left, one warm break of light where the accent CTA sits. */
+/* Hero sky — deep blue front rolling over, daylight breaking at the horizon. */
 .sky {
   background:
-    radial-gradient(ellipse 1200px 700px at 18% -10%, rgba(54, 73, 108, 0.55), transparent 60%),
-    radial-gradient(ellipse 900px 500px at 85% 0%, rgba(24, 38, 64, 0.9), transparent 65%),
-    radial-gradient(ellipse 700px 420px at 50% 105%, rgba(245, 168, 60, 0.07), transparent 60%);
+    radial-gradient(ellipse 1100px 620px at 20% -12%, rgba(9, 30, 54, 0.85), transparent 62%),
+    radial-gradient(ellipse 820px 480px at 50% 108%, rgba(133, 197, 245, 0.28), transparent 62%),
+    linear-gradient(180deg, #0a2440 0%, #113a63 48%, #1b5187 78%, #276499 100%);
 }
 
 /* Full-bleed diagonal band — the SRH take on KPost's slanted sections.
-   The band's background layer is skewed; content inside stays level. */
+   Background layer is skewed; content inside stays level. Colors come
+   from the surrounding context's variables (pair with .dark for blue). */
 .band {
   position: relative;
   isolation: isolate;
+  background: transparent;
 }
 .band::before {
   content: "";
@@ -58,24 +78,25 @@
   inset: 0;
   z-index: -1;
   transform: skewY(-2.25deg);
-  background: var(--surface);
+  background: var(--bg);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
 }
-.bandDark::before {
-  background: #0a101b;
-}
 
-/* Service-card visual header: gradient panel with a clipped diagonal
-   bottom edge — echoes the band language at component scale. */
-.cardArt {
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), 0 100%);
+/* Storm band variant: licensed photo (Unsplash) under a deep-blue wash. */
+.bandPhoto::before {
   background:
-    radial-gradient(ellipse 220px 140px at 80% -20%, rgba(245, 168, 60, 0.14), transparent 65%),
-    linear-gradient(160deg, var(--surface-2) 0%, #131f34 100%);
+    linear-gradient(180deg, rgba(9, 34, 61, 0.92) 0%, rgba(9, 34, 61, 0.86) 55%, rgba(9, 34, 61, 0.94) 100%),
+    url("/storm-v2/storm-band.jpg") center / cover no-repeat;
 }
 
-/* Slanted leading edge on the two hero fork buttons. */
+/* Service-card photo header: clipped diagonal bottom edge — the band
+   language at component scale. */
+.photoClip {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), 0 100%);
+}
+
+/* Slanted leading edge on the hero fork + submit buttons. */
 .forkBtn {
   clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
 }
@@ -86,7 +107,7 @@
   background: linear-gradient(to right, transparent, var(--border-strong), transparent);
 }
 
-/* Kicker label — storm variant of the site's mono-label. */
+/* Kicker label — mono variant of the site's mono-label. */
 .kicker {
   font-family: var(--font-jetbrains), ui-monospace, monospace;
   font-size: 0.75rem;
@@ -94,4 +115,9 @@
   text-transform: uppercase;
   color: var(--accent);
   font-weight: 500;
+}
+
+/* The one amber survivor — review stars only (tiny trust highlight). */
+.star {
+  color: #f0a63b;
 }

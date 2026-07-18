@@ -23,35 +23,47 @@ export const PROOF_POINTS = [
   "Licensed and insured in the State of Texas",
 ];
 
-/* Six service cards — KPost's grid, SRH's offerings */
-export const SERVICES: { icon: string; title: string; line: string }[] = [
+/* Six service cards — KPost's grid, SRH's offerings.
+   Photos: Unsplash license (free commercial use, no attribution required),
+   downloaded to /public/storm-v2/. Source photo ids for traceability:
+   residential 1566071634551-224a639a1c7d · repair 1635424825057-7fb6dcd651ef ·
+   storm 1488226941561-6d7a806ae42a · insurance 1450101499163-c8848c66ca85 ·
+   commercial 1602193458517-db6caca8f1fe · maintenance 1744044155829-610dded4cead ·
+   storm-band 1527519717877-1811d652ef60 */
+export const SERVICES: { photo: string; alt: string; title: string; line: string }[] = [
   {
-    icon: "house",
+    photo: "/storm-v2/residential.jpg",
+    alt: "Shingle roof of a family home in afternoon light",
     title: "Residential Roof Replacement",
     line: "Full tear-off and re-roof — shingle, metal, or tile — finished in days, not weeks.",
   },
   {
-    icon: "wrench",
+    photo: "/storm-v2/repair.jpg",
+    alt: "Roofer in safety harness fastening shingles on a pitched roof",
     title: "Emergency Roof Repair",
     line: "Tarp-out and leak stop within hours, so one storm doesn't become a ceiling repair.",
   },
   {
-    icon: "hail",
+    photo: "/storm-v2/storm.jpg",
+    alt: "Dark storm front rolling over a lit building at dusk",
     title: "Storm & Hail Restoration",
     line: "Free inspection after every hail line — we document damage the adjuster can't argue with.",
   },
   {
-    icon: "doc",
+    photo: "/storm-v2/insurance.jpg",
+    alt: "Homeowner signing insurance claim paperwork with a pen",
     title: "Insurance Claim Support",
     line: "We meet your adjuster on the roof and speak their language. You pay your deductible, period.",
   },
   {
-    icon: "warehouse",
+    photo: "/storm-v2/commercial.jpg",
+    alt: "Standing-seam metal roof of a commercial building under clouds",
     title: "Commercial Roofing",
     line: "TPO, modified bitumen, and metal for retail, office, and light industrial — minimal downtime.",
   },
   {
-    icon: "calendar",
+    photo: "/storm-v2/maintenance.jpg",
+    alt: "Close-up of a clogged gutter line against a blue sky",
     title: "Maintenance Plans",
     line: "Twice-a-year inspections that catch $200 problems before they become $20,000 ones.",
   },

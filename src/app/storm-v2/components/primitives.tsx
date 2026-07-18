@@ -174,12 +174,12 @@ export function Roofline({ className }: { className?: string }) {
       {/* back row — distant commercial blocks */}
       <path
         d="M0 160V96h90l20-18 20 18h80V70l60-6 60 6v50h70V88h110l30-26 30 26h90V60h120v46h80l25-22 25 22h95V78l55-8 55 8v42h90l22-20 22 20h91v60H0Z"
-        fill="#0e1626"
+        fill="#0c2a4a"
       />
       {/* front row — pitched residential roofs */}
       <path
         d="M0 160v-36l70-34 70 34v10h50l60-42 60 42h44v-14l64-30 64 30v20h58l52-38 52 38h60v-10l68-32 68 32h64l58-40 58 40h50v-12l66-30 66 30v42H0Z"
-        fill="#080d17"
+        fill="#081f38"
       />
     </svg>
   );

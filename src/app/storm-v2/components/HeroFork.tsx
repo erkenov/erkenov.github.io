@@ -7,6 +7,7 @@
  * split the visitor — Residential or Commercial — so every later section
  * lands on someone who already told us who they are. Picking a fork
  * pre-selects the property-type radio in the lead form and scrolls to it.
+ * Deep-blue context (styles.dark); the page below alternates light/blue.
  */
 
 import { motion } from "framer-motion";
@@ -22,7 +23,7 @@ const rise = (delay: number) => ({
 
 export function TopBar() {
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-bg/95" style={{ background: "var(--bg)" }}>
+    <header className={`${styles.dark} sticky top-0 z-50 border-b border-border`}>
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6 md:px-8">
         <a href="#top" className="flex items-center gap-3">
           <ShieldMark size={28} />
@@ -30,7 +31,7 @@ export function TopBar() {
         </a>
         <div className="flex items-center gap-6">
           <div className="hidden items-center gap-1.5 sm:flex" aria-label="5.0 star Google rating">
-            <Icon name="star" className="h-3.5 w-3.5 text-accent" />
+            <Icon name="star" className={`h-3.5 w-3.5 ${styles.star}`} />
             <span className="font-mono text-xs text-text-muted">5.0 · 51 Google reviews</span>
           </div>
           <a
@@ -50,7 +51,7 @@ export function HeroFork({ onPick }: { onPick: (t: PropertyType) => void }) {
   return (
     <section
       id="top"
-      className={`relative flex min-h-[calc(100svh-3.5rem)] flex-col items-center justify-center overflow-hidden px-6 ${styles.sky}`}
+      className={`${styles.dark} ${styles.sky} relative flex min-h-[calc(100svh-3.5rem)] flex-col items-center justify-center overflow-hidden px-6`}
     >
       <div className={`pointer-events-none absolute inset-0 ${styles.rain}`} />
       <Roofline className="pointer-events-none absolute inset-x-0 bottom-0 h-24 w-full md:h-40" />
@@ -83,15 +84,15 @@ export function HeroFork({ onPick }: { onPick: (t: PropertyType) => void }) {
         >
           <button
             onClick={() => onPick("residential")}
-            className={`${styles.forkBtn} group flex flex-1 items-center justify-center gap-3 bg-accent px-8 py-6 text-lg font-semibold text-[#0b1220] transition-all duration-200 hover:bg-accent-hover`}
+            className={`${styles.forkBtn} group flex flex-1 items-center justify-center gap-3 bg-white px-8 py-6 text-lg font-semibold text-[#0e2f52] transition-all duration-200 hover:bg-[#dcecfa]`}
           >
-            <Icon name="house" className="h-6 w-6" />
+            <Icon name="house" className="h-6 w-6 text-[#1470b4]" />
             Residential
             <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
           </button>
           <button
             onClick={() => onPick("commercial")}
-            className={`${styles.forkBtn} group flex flex-1 items-center justify-center gap-3 border border-border-strong bg-surface px-8 py-6 text-lg font-semibold text-text transition-all duration-200 hover:border-accent hover:bg-surface-2`}
+            className={`${styles.forkBtn} group flex flex-1 items-center justify-center gap-3 border border-border-strong bg-[rgba(255,255,255,0.06)] px-8 py-6 text-lg font-semibold text-text transition-all duration-200 hover:border-accent hover:bg-[rgba(255,255,255,0.12)]`}
           >
             <Icon name="warehouse" className="h-6 w-6 text-accent" />
             Commercial

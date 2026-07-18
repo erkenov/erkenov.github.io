@@ -136,10 +136,10 @@ export function LeadForm({ propertyType, onPropertyType }: {
                     {(["residential", "commercial"] as const).map((t) => (
                       <label
                         key={t}
-                        className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-medium capitalize transition-colors ${
+                        className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm capitalize transition-colors ${
                           propertyType === t
-                            ? "border-accent bg-[var(--accent-soft)] text-text"
-                            : "border-border bg-surface-2 text-text-muted hover:border-border-strong"
+                            ? "border-accent bg-[var(--accent-soft)] font-semibold text-accent"
+                            : "border-border bg-surface-2 font-medium text-text-muted hover:border-border-strong"
                         }`}
                       >
                         <input
@@ -181,7 +181,7 @@ export function LeadForm({ propertyType, onPropertyType }: {
               <button
                 type="submit"
                 disabled={status === "sending"}
-                className={`${styles.forkBtn} mt-8 w-full bg-accent px-8 py-4 text-base font-semibold text-[#0b1220] transition-all duration-200 hover:bg-accent-hover disabled:opacity-60`}
+                className={`${styles.forkBtn} mt-8 w-full bg-accent px-8 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-accent-hover disabled:opacity-60`}
               >
                 {status === "sending" ? "Sending…" : "Request my free inspection"}
               </button>
@@ -204,7 +204,7 @@ export function LeadForm({ propertyType, onPropertyType }: {
 
 export function Footer() {
   return (
-    <footer className="border-t border-border">
+    <footer className={`${styles.dark} border-t border-border`}>
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-6 py-12 text-center md:px-8">
         <div className="flex items-center gap-3">
           <span className="text-sm font-semibold">Storm Roofing Heroes</span>
