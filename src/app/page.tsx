@@ -1,14 +1,33 @@
-/**
- * Homepage → preview-v7 (Shamil 2026-06-03).
- *
- * The preview-v7 page is now the production homepage. We re-export
- * its default to avoid duplicating the large client component,
- * so both `/` and `/preview-v7` always render the same thing.
- *
- * preview-v7 = dragon-cell + roaming bot + 3D laptop variant.
- * The prior preview-v6 homepage is still reachable at /preview-v6,
- * and the original v3 cell-dragon homepage is preserved in git
- * history at commit 869e8a8 if we ever need to roll back.
- */
+import type { Metadata } from "next";
+import HomeV8Client from "./home-v8-draft/HomeV8Client";
 
-export { default } from "./preview-v7/page";
+/**
+ * Homepage → the v8 page (Shamil approved 2026-07-20).
+ *
+ * `/` now renders the same client tree as /home-v8-draft — the restructured
+ * homepage (hero → industries → pipeline → AI → Meet Erken → pricing → stack
+ * comparison → custom solutions → integrations marquee) with the live
+ * SphereScrollStage + roaming Celly. This route carries PRODUCTION metadata
+ * and is INDEXABLE; /home-v8-draft keeps its own noindex metadata as a draft
+ * alias.
+ *
+ * ROLLBACK: the previous homepage was preview-v7. To roll back, replace this
+ * whole file with:  export { default } from "./preview-v7/page";
+ * /preview-v7 is still reachable and unchanged, so rollback is instant.
+ */
+export const metadata: Metadata = {
+  title: "Erken Systems — Smart Business Systems Builder",
+  description:
+    "One platform runs your business — leads captured, tracked, and reported on automatically — with built-in AI and Erken, the assistant that teaches you every step. Voice agents, CRM, automations, dashboards; built by an operator, not an agency. $97/mo, first week free.",
+  robots: { index: true, follow: true },
+  openGraph: {
+    title: "Erken Systems — Smart Business Systems Builder",
+    description:
+      "One platform runs your business, with built-in AI and an assistant that teaches you every step. $97/mo, first week free.",
+    type: "website",
+  },
+};
+
+export default function HomePage() {
+  return <HomeV8Client />;
+}
