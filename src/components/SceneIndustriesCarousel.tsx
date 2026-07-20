@@ -1220,7 +1220,15 @@ function Step1CallSvg() {
   );
 }
 
-export function SceneIndustriesCarousel() {
+export function SceneIndustriesCarousel({
+  arrowsPosition,
+  arrowsTrailing,
+}: {
+  /** Forwarded to the underlying Carousel. Opt-in; omit for the live
+   *  (left-arrows) behavior. */
+  arrowsPosition?: "left" | "right" | "center";
+  arrowsTrailing?: React.ReactNode;
+} = {}) {
   // Every popup opens with the video showcase (2026-07-14: "every piece of
   // info on the site has a video twin"). Cards with a live demo get the
   // primary CTA; the rest point at the roofing demo until theirs exists.
@@ -1245,7 +1253,7 @@ export function SceneIndustriesCarousel() {
   });
   return (
     <div className="w-full">
-      <Carousel items={items} />
+      <Carousel items={items} arrowsPosition={arrowsPosition} arrowsTrailing={arrowsTrailing} />
     </div>
   );
 }

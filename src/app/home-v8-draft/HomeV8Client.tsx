@@ -396,21 +396,6 @@ function SectionKicker({ children }: { children: React.ReactNode }) {
   return <div className="mono-label">{children}</div>;
 }
 
-/** Repeated CTA row — used after Industries, Pipeline, and Meet Erken so
- *  the trial offer stays close by without scrolling back up. */
-function TryForFreeCta({ label = "Try for free" }: { label?: string }) {
-  return (
-    <div className="mt-12 flex justify-center">
-      <a
-        href="/start"
-        className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
-      >
-        {label} →
-      </a>
-    </div>
-  );
-}
-
 /** Sticky header — logo + Industries / How it works / Pricing anchors +
  *  persistent "Try for free". z-50 (not z-40) matches the live Header.tsx
  *  and clears SceneIndustriesCarousel's z-40 arrow buttons (the carousel
@@ -478,11 +463,23 @@ function IndustriesSection() {
           </p>
         </motion.div>
       </div>
+      {/* Carousel + ONE centered control cluster directly under it: the two
+          (heavier) arrows then the Try-for-free button, as a single row
+          (rev-3 live fix — the arrows were easy to miss and the CTA floated
+          like an orphan below). The arrows hide on mobile (finger-scroll);
+          the button stays centered at both widths. */}
       <div data-celly-avoid className="mt-4">
-        <SceneIndustriesCarousel />
-      </div>
-      <div className="mx-auto max-w-6xl px-6 md:px-8">
-        <TryForFreeCta />
+        <SceneIndustriesCarousel
+          arrowsPosition="center"
+          arrowsTrailing={
+            <a
+              href="/start"
+              className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
+            >
+              Try for free →
+            </a>
+          }
+        />
       </div>
     </section>
   );
@@ -841,7 +838,7 @@ function MeetErkenSection({
           on mobile. */}
       <div
         data-celly-avoid
-        className="relative z-30 mx-auto flex max-w-3xl flex-col items-center gap-6 text-center md:flex-row md:items-center md:gap-8 md:text-left"
+        className="relative z-30 mx-auto flex max-w-3xl flex-col items-center gap-6 text-center md:flex-row md:items-center md:gap-14 md:text-left"
       >
         {/* A static, section-embedded Erken (rev-3 addendum — the section had
             text + buttons but no Erken herself). Same pattern /start uses:
@@ -861,8 +858,13 @@ function MeetErkenSection({
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") onSpriteClick(e.currentTarget);
           }}
-          // md:-ml-[75px] shifts her ~75px (≈2cm) further left than the plain
-          // gap-8 spacing (rev-3 live correction, supersedes the earlier 1cm).
+          // Two mechanisms (rev-3 diagnosis): md:-ml-[75px] hangs her box to
+          // the LEFT of the centered max-w-3xl block (absolute leftward
+          // position). The REAL daylight between her and the text comes from
+          // the row's md:gap-14 (56px) — a negative margin alone just shifts
+          // the whole row and leaves the sprite↔text gap unchanged, which is
+          // why the earlier -ml looked like "no move." With gap-14 the sprite
+          // visual center sits ~108px left of the text block's left edge.
           // Vertical alignment is handled by the row's md:items-center.
           className="shrink-0 cursor-pointer md:-ml-[75px]"
         >

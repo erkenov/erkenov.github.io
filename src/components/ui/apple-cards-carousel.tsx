@@ -26,8 +26,15 @@ interface CarouselProps {
   loop?: boolean;
   /** Where to place the prev/next arrow buttons relative to the card row.
    *  "left" (default) keeps existing behavior; "right" justify-end pushes
-   *  them to the far side. */
-  arrowsPosition?: "left" | "right";
+   *  them to the far side; "center" (added 2026-07-20, opt-in) centers the
+   *  arrows as a control cluster, gives them a slight visual-weight bump,
+   *  and renders `arrowsTrailing` (e.g. a CTA button) inline after them so
+   *  they read as one row. Live callers pass nothing → unchanged. */
+  arrowsPosition?: "left" | "right" | "center";
+  /** Only used with arrowsPosition="center": a node rendered inline after
+   *  the arrow pair (kept in the row even on mobile, where the arrows
+   *  themselves hide) so a CTA can sit in the same centered cluster. */
+  arrowsTrailing?: React.ReactNode;
 }
 
 type Card = {
@@ -54,7 +61,7 @@ export const CarouselContext = createContext<{
   currentIndex: 0,
 });
 
-export const Carousel = ({ items, initialScroll = 0, loop = false, arrowsPosition = "left" }: CarouselProps) => {
+export const Carousel = ({ items, initialScroll = 0, loop = false, arrowsPosition = "left", arrowsTrailing }: CarouselProps) => {
   const carouselRef = React.useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = React.useState(false);
   const [canScrollRight, setCanScrollRight] = React.useState(true);
@@ -290,33 +297,61 @@ export const Carousel = ({ items, initialScroll = 0, loop = false, arrowsPositio
             ))}
           </div>
         </div>
-        <div
-          className={cn(
-            // Mobile users scroll with their finger; arrows just take up
-            // space and rarely get tapped (Shamil 2026-05-25).
-            "hidden md:flex gap-2",
-            arrowsPosition === "right"
-              ? "mr-4 justify-end"
-              : "ml-4 justify-start"
-          )}
-        >
-          <button
-            className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-accent text-bg shadow-sm transition-colors hover:bg-accent-hover disabled:opacity-40"
-            onClick={scrollLeft}
-            disabled={!canScrollLeft}
-            aria-label="Previous card"
+        {arrowsPosition === "center" ? (
+          // Centered control cluster (opt-in): the arrow pair (desktop only —
+          // mobile scrolls by finger) plus an optional trailing CTA, all
+          // horizontally centered as one row. Arrows get a size + ring bump
+          // so they're not easy to miss.
+          <div className="mt-2 flex items-center justify-center gap-4">
+            <div className="hidden md:flex gap-2">
+              <button
+                className="relative z-40 flex h-12 w-12 items-center justify-center rounded-full bg-accent text-bg shadow-md ring-2 ring-accent/25 transition-colors hover:bg-accent-hover disabled:opacity-40"
+                onClick={scrollLeft}
+                disabled={!canScrollLeft}
+                aria-label="Previous card"
+              >
+                <IconArrowNarrowLeft className="h-6 w-6" />
+              </button>
+              <button
+                className="relative z-40 flex h-12 w-12 items-center justify-center rounded-full bg-accent text-bg shadow-md ring-2 ring-accent/25 transition-colors hover:bg-accent-hover disabled:opacity-40"
+                onClick={scrollRight}
+                disabled={!canScrollRight}
+                aria-label="Next card"
+              >
+                <IconArrowNarrowRight className="h-6 w-6" />
+              </button>
+            </div>
+            {arrowsTrailing}
+          </div>
+        ) : (
+          <div
+            className={cn(
+              // Mobile users scroll with their finger; arrows just take up
+              // space and rarely get tapped (Shamil 2026-05-25).
+              "hidden md:flex gap-2",
+              arrowsPosition === "right"
+                ? "mr-4 justify-end"
+                : "ml-4 justify-start"
+            )}
           >
-            <IconArrowNarrowLeft className="h-6 w-6" />
-          </button>
-          <button
-            className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-accent text-bg shadow-sm transition-colors hover:bg-accent-hover disabled:opacity-40"
-            onClick={scrollRight}
-            disabled={!canScrollRight}
-            aria-label="Next card"
-          >
-            <IconArrowNarrowRight className="h-6 w-6" />
-          </button>
-        </div>
+            <button
+              className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-accent text-bg shadow-sm transition-colors hover:bg-accent-hover disabled:opacity-40"
+              onClick={scrollLeft}
+              disabled={!canScrollLeft}
+              aria-label="Previous card"
+            >
+              <IconArrowNarrowLeft className="h-6 w-6" />
+            </button>
+            <button
+              className="relative z-40 flex h-10 w-10 items-center justify-center rounded-full bg-accent text-bg shadow-sm transition-colors hover:bg-accent-hover disabled:opacity-40"
+              onClick={scrollRight}
+              disabled={!canScrollRight}
+              aria-label="Next card"
+            >
+              <IconArrowNarrowRight className="h-6 w-6" />
+            </button>
+          </div>
+        )}
       </div>
     </CarouselContext.Provider>
   );
