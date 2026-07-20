@@ -15,8 +15,9 @@ import HomeV8Client from "./HomeV8Client";
  *   4. Meet Erken — five sell bullets + three CTAs in one row
  *   5. Pricing — full /start-style plan cards
  *   6. Custom solutions
- *   7. Get leads door (coming soon)
- *   (no footer)
+ *   (the get-leads / "you want customers" section was removed; the real
+ *    coming-soon card still lives on /start)
+ *   (no footer, no divider lines between sections)
  *
  * preview-v7 / page.tsx / /home-draft are all untouched. Split into a server
  * page (metadata) + client tree because the client tree is "use client".

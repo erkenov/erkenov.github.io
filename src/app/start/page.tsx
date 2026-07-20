@@ -444,7 +444,10 @@ function ContactMethods({
 /** Custom GoHighLevel / snapshot work — voice call, or a typed form with dictation. */
 function CustomSolutionsCard() {
   return (
-    <section className="flex flex-col rounded-2xl border border-border bg-surface p-8">
+    // id + scroll-mt so /home-v8-draft's "Get a custom offer" deep-link
+    // (/start#custom-solutions) lands right on this card, clear of any sticky
+    // header (2026-07-20).
+    <section id="custom-solutions" className="flex scroll-mt-24 flex-col rounded-2xl border border-border bg-surface p-8">
       <h3 className="text-lg font-semibold">Custom solutions</h3>
       <p className="mt-1 text-sm text-text-muted">
         Want your snapshot configured for you, or any custom platform
@@ -695,7 +698,11 @@ export default function StartPage() {
               <div
                 ref={spriteRef}
                 onClick={() => (botMenu ? closeBotMenu() : openBotMenu())}
-                className="shrink-0 cursor-pointer"
+                // mt-3: nudge the sprite DOWN (vertical only) so it sits
+                // centered between the header and the lower text block
+                // (Shamil 2026-07-20: was misaligned upward). No horizontal
+                // change; text clearance preserved by the row's gap-8.
+                className="mt-3 shrink-0 cursor-pointer"
                 title="Chat with Erken"
               >
                 <CellDragonSprite scale={0.42} />

@@ -929,11 +929,11 @@ const INDUSTRIES: IndustryCard[] = [
 /**
  * IndustryDemoShowcase — video-first header for an industry card popup
  * (Shamil 2026-07-14: "as many videos and clickable things as possible").
- * Vertical demo video on the left (placeholder = the main-page intro clip
- * for now; per-industry demo videos swap in later), pitch + "try the live
- * demo" CTA on the right, the step-by-step breakdown stays below.
- * Rolled out on the roofing card first; other industries follow once the
- * treatment is approved and each has a live demo subdomain.
+ * Horizontal 16:9 demo video on top (placeholder = the main-page intro clip
+ * for now; per-industry streamer-style demo videos swap in later), pitch +
+ * "try the live demo" CTA below it, the step-by-step breakdown stays under
+ * that. Rolled out on the roofing card first; other industries follow once
+ * the treatment is approved and each has a live demo subdomain.
  */
 function IndustryDemoShowcase({
   demoUrl,
@@ -945,13 +945,17 @@ function IndustryDemoShowcase({
   sub: string;
 }) {
   return (
-    <div className="mb-12 flex flex-col md:flex-row gap-8 md:gap-12 items-center md:items-start">
-      {/* Vertical demo video — placeholder: the main-page intro clip */}
-      <div className="w-full max-w-[18rem] shrink-0">
-        <Scene1IntroVideo />
+    // Horizontal 16:9 demo video ON TOP (streamer-style: full screen + cam in
+    // the corner), pitch + CTA below (2026-07-20: was a narrow vertical clip
+    // beside the text). Same video source; the frame is now landscape and the
+    // text sits under the wide player where it reads naturally.
+    <div className="mb-12 flex flex-col gap-6">
+      {/* Horizontal 16:9 demo video — placeholder: the main-page intro clip */}
+      <div className="mx-auto w-full max-w-2xl">
+        <Scene1IntroVideo orientation="landscape" />
       </div>
       {/* Pitch + CTA */}
-      <div className="flex-1 md:pt-4">
+      <div className="mx-auto w-full max-w-2xl">
         <div className="mono-label text-accent text-xs mb-3">See it working</div>
         <h4
           className="text-xl md:text-2xl font-semibold text-text leading-snug"
@@ -959,7 +963,7 @@ function IndustryDemoShowcase({
         >
           {headline}
         </h4>
-        <p className="mt-3 text-[15px] md:text-base text-text-muted leading-relaxed max-w-lg">
+        <p className="mt-3 text-[15px] md:text-base text-text-muted leading-relaxed">
           {sub}
         </p>
         {demoUrl ? (

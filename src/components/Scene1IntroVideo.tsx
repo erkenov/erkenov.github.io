@@ -19,9 +19,18 @@
 import { useRef, useState } from "react";
 import { IconPlayerPlayFilled } from "@tabler/icons-react";
 
-export function Scene1IntroVideo() {
+export function Scene1IntroVideo({
+  orientation = "portrait",
+}: {
+  /** "portrait" = the 9:16 hero clip (default). "landscape" = a 16:9 frame
+   *  for the streamer-style recording (full screen + cam in corner) used in
+   *  the industry popups (2026-07-20). Same video source either way; the
+   *  frame/aspect changes. */
+  orientation?: "portrait" | "landscape";
+} = {}) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
+  const isLandscape = orientation === "landscape";
 
   const start = () => {
     setPlaying(true);
@@ -36,7 +45,11 @@ export function Scene1IntroVideo() {
   };
 
   return (
-    <div className="relative w-full max-w-[22rem] aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black">
+    <div
+      className={`relative w-full overflow-hidden rounded-2xl bg-black shadow-2xl ${
+        isLandscape ? "aspect-video" : "max-w-[22rem] aspect-[9/16]"
+      }`}
+    >
       {playing ? (
         <video
           ref={videoRef}

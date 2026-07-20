@@ -17,10 +17,10 @@
  *     Scene2Channels / Scene3LeadCaptureCarousel / Scene4LeadMgmtCarousel /
  *     MacbookFrame3D) are REPLACED by a HubSpot-style sticky-column
  *     pipeline section (Shamil-approved mid-build 2026-07-20): a pinned
- *     left story column + a right-side PHASE ACCORDION modeled on the
+ *     left story column + a right-side stack of PHASE PANELS modeled on the
  *     customer-growth pipeline (Capture / Nurture / Close / fans /
- *     win-back). Selecting a phase reveals its checklist with a smooth
- *     height animation. Flat-SVG phase icons in the home-draft style.
+ *     win-back). All phases are always expanded (rev-3), each showing its
+ *     full checklist in a 2-col grid. Flat-SVG phase icons, home-draft style.
  *   - Industries moved UP to 2nd (right after the hero).
  *   - Hero keeps the live founder video + gains the price tease and a
  *     "See your industry" secondary button.
@@ -37,7 +37,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { SphereScrollStage, type CellPositionInfo } from "@/components/SphereScrollStage";
 import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
@@ -103,7 +103,8 @@ function Section({
   mediaAvoidCelly = true,
   isMobile = false,
   stacked = false,
-}: SectionProps & { isMobile?: boolean; stacked?: boolean }) {
+  heroBackground = false,
+}: SectionProps & { isMobile?: boolean; stacked?: boolean; heroBackground?: boolean }) {
   const isLeft = side === "left";
   const wrapperClass = mediaWrapperClassName ?? DEFAULT_MEDIA_WRAPPER(isLeft);
   return (
@@ -111,12 +112,21 @@ function Section({
     // row — otherwise the w-full media lands BESIDE the text column and
     // overflows the viewport (2026-06-10 responsive QA).
     <section
-      className={`relative px-6 md:px-12 py-10 ${
+      className={`relative px-6 md:px-12 py-10 ${heroBackground ? "overflow-hidden " : ""}${
         stacked && media
           ? "md:py-16"
           : "md:min-h-screen md:flex md:items-center md:py-0"
       }`}
     >
+      {/* Hero background (home-draft port): a soft top radial glow + the faint
+          tile grid, both under the content (and under the fixed 3D dust
+          canvas at z-45). aria-hidden, non-interactive. */}
+      {heroBackground && (
+        <>
+          <div className="hero-glow pointer-events-none absolute inset-0" aria-hidden />
+          <div className="grid-bg pointer-events-none absolute inset-0 opacity-60" aria-hidden />
+        </>
+      )}
       {/* 2026-06-10 responsive fix (Shamil: keep side-by-side at EVERY
           width, never stack): the column takes 44% instead of 50% so the
           media wrapper can anchor at the 48vw line without ever crossing
@@ -444,7 +454,7 @@ function DraftHeader() {
 /* ---- Industries (moved up to 2nd — the self-identification hook) ---- */
 function IndustriesSection() {
   return (
-    <section id="industries" className="border-t border-border/40 py-20 md:py-28">
+    <section id="industries" className="py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6 md:px-8">
         <motion.div
           data-celly-avoid
@@ -480,9 +490,10 @@ function IndustriesSection() {
 
 /* ---- Pipeline section (HubSpot-style sticky-column, v8 mid-build change,
  * Shamil-approved 2026-07-20). LEFT column pins (CSS sticky) with the story;
- * the RIGHT column is a phase accordion (Capture / Nurture / Close / fans /
- * win-back) — selecting a phase reveals its checklist. Replaces both the
- * Variant-A stepper and the capability-card grid.
+ * the RIGHT column is a stack of always-expanded phase panels (Capture /
+ * Nurture / Close / fans / win-back), each showing its full checklist in a
+ * 2-col grid. Replaces the Variant-A stepper, the capability-card grid, and
+ * the earlier accordion.
  *
  * Flat-SVG illustrations (soft rounded shapes, sage/clay/cream + neutral)
  * serve as the phase icons. Palette hardcoded (not CSS var()) so the SVGs
@@ -581,20 +592,22 @@ function IllustrationAssistant() {
   );
 }
 
-// The customer-growth pipeline as phases (the model GoHighLevel's own
-// homepage uses — Capture / Nurture / Close / Evangelize / Reactivate). We
-// run the same platform, so their per-phase feature lists are our honest
-// source. Adapted here to plain-operator English, zero platform-vendor
-// mentions, and cross-checked against our What's-included promise: every
-// line below maps to CRM+pipelines / calendars+booking / automations+
-// follow-ups / AI voice receptionist / reputation+reviews / websites+
-// funnels. DELIBERATELY DROPPED (they list them, we don't promise them
-// here): webinar funnels, ad manager, biz-card scanner, QR codes,
-// prospecting tool, social planner; ringless voicemail, mobile app; the
-// entire payments/close stack — invoicing, estimates & proposals, payment
-// integrations, upsell/downsell funnels, memberships & courses,
-// text-2-pay / tap-2-pay, gift cards, loyalty programs; affiliate/referral
-// tracking; content AI, newsletter automation. See the worker report.
+// The customer-growth pipeline as phases (the model the underlying platform's
+// own homepage uses — Capture / Nurture / Close / Evangelize / Reactivate).
+// We resell full platform sub-accounts, so every capability the platform
+// lists genuinely exists for our clients — these are the FULL per-phase
+// lists (rev-3 reverses the earlier conservative trim), rewritten in
+// plain-operator English with ZERO platform-vendor mentions.
+//
+// DROPPED THIS PASS: nothing. The earlier draft trimmed the payments/close
+// stack (invoicing, estimates & proposals, payments, upsells/downsells,
+// memberships & courses, text/tap-to-pay, gift cards, loyalty), affiliate/
+// referral tracking, ringless voicemail, mobile app, content AI, webinar &
+// ad tooling, biz-card scanner, QR codes — all now RESTORED because the
+// sub-account genuinely includes them. PRUNE-LATER CANDIDATES (flag for
+// Shamil, not yet removed): "Business-card scanner" and "QR codes" (niche);
+// "Prospecting Tool" was omitted as too vague to promise. Keep this note in
+// sync as we prune with him.
 const PHASES: {
   name: string;
   tagline: string;
@@ -606,11 +619,20 @@ const PHASES: {
     tagline: "Get more leads in the door",
     Illustration: IllustrationLeadGen,
     items: [
-      "Websites, funnels & landing pages that pull people in",
-      "Forms, surveys & quizzes that qualify them",
-      "An AI voice receptionist that answers every call",
-      "Web chat that books the appointment on the spot",
-      "Missed-call text-back before they dial a competitor",
+      "Websites & landing pages",
+      "Sales funnels",
+      "Webinar funnels",
+      "Forms & surveys",
+      "Quizzes",
+      "AI voice receptionist",
+      "Web chat widget",
+      "Missed-call text-back",
+      "Call tracking",
+      "Inbound texts & DMs",
+      "Social media planner",
+      "Google & Facebook ads",
+      "QR codes",
+      "Business-card scanner",
     ],
   },
   {
@@ -618,11 +640,17 @@ const PHASES: {
     tagline: "Turn interest into trust",
     Illustration: IllustrationAssistant,
     items: [
-      "Every conversation — texts, DMs, chat — in one inbox",
-      "Pipelines that track exactly where each lead stands",
-      "Automated follow-ups that never forget to reach out",
-      "Calendars and booking built right in",
-      "Appointment reminders sent for you",
+      "One unified inbox",
+      "Text, Messenger, IG & WhatsApp",
+      "Conversation AI replies",
+      "Sales pipelines",
+      "Workflows & automations",
+      "Booking calendars",
+      "Appointment reminders",
+      "Saved reply snippets",
+      "Ringless voicemail drops",
+      "Automated outbound calls",
+      "Mobile app + video messages",
     ],
   },
   {
@@ -630,10 +658,19 @@ const PHASES: {
     tagline: "Turn conversations into customers",
     Illustration: IllustrationLeadMgmt,
     items: [
-      "Lead scoring so you work the hottest ones first",
-      "Follow-up sequences that run until they book",
-      "Booking calendars that lock the time in",
-      "Reminders that cut no-shows",
+      "Lead scoring",
+      "Estimates & proposals",
+      "Invoicing",
+      "Card payments built in",
+      "Text-to-pay links",
+      "Tap-to-pay on your phone",
+      "Paid booking calendars",
+      "Order forms",
+      "Upsells & downsells",
+      "One-click upsell funnels",
+      "Memberships & courses",
+      "Gift cards",
+      "Loyalty programs",
     ],
   },
   {
@@ -641,10 +678,16 @@ const PHASES: {
     tagline: "Reviews that bring the next one in",
     Illustration: IllustrationReviews,
     items: [
-      "Review requests sent automatically after every job",
-      "A growing Google rating — the first thing locals check",
-      "Replies to reviews handled for you",
-      "Review widgets that show the proof on your site",
+      "Automated review requests",
+      "Reputation management",
+      "AI review replies",
+      "Website review widgets",
+      "Video review capture",
+      "Referral & affiliate tracking",
+      "Auto-post reviews to social",
+      "Recommendation automations",
+      "Customer communities",
+      "Loyalty rewards",
     ],
   },
   {
@@ -652,97 +695,70 @@ const PHASES: {
     tagline: "Get back on their radar",
     Illustration: IllustrationAutomations,
     items: [
-      "Email and text broadcasts to your whole list",
-      "Smart lists that pick exactly who to reach",
-      "Automated birthday and seasonal campaigns",
-      "Reactivation that revives cold leads on a schedule",
+      "Email, SMS & WhatsApp blasts",
+      "Smart lists & segmenting",
+      "Automated birthday campaigns",
+      "Seasonal campaigns",
+      "Reactivation templates",
+      "Newsletter automation",
+      "Content AI for copy",
+      "Loyalty programs",
     ],
   },
 ];
 
-/** Phase accordion — one panel open at a time. Selecting a phase reveals
- *  its checklist with a smooth framer-motion height animation (no abrupt
- *  layout jump — the panel animates open/closed, and the section reflows
- *  continuously over the tween rather than snapping). Mobile: the phases
- *  stack full-width and tap to expand, same component. */
+/** Static, always-expanded phase panels (Shamil's rev-3 call: no accordion —
+ *  every phase shows its full checklist at once). Each phase's items render
+ *  in a 2-column grid so five fully-open phases don't become one mile-long
+ *  column beside the sticky-left story. Each panel still fades in on scroll
+ *  (whileInView) for the smooth feel, but nothing collapses. Mobile: phases
+ *  stack full-width; the item grid stays 2-col (items are short) but drops
+ *  to 1 col on the very narrowest widths. */
 function PipelinePhases() {
-  const [openIndex, setOpenIndex] = useState(0);
   return (
-    <div data-celly-avoid className="flex flex-col gap-3">
-      {PHASES.map((phase, i) => {
-        const isOpen = openIndex === i;
-        const panelId = `phase-panel-${i}`;
-        return (
-          <div
-            key={phase.name}
-            className={`overflow-hidden rounded-2xl border bg-surface transition-colors duration-200 ${
-              isOpen ? "border-accent" : "border-border hover:border-border-strong"
-            }`}
-          >
-            <button
-              type="button"
-              onClick={() => setOpenIndex(isOpen ? -1 : i)}
-              aria-expanded={isOpen}
-              aria-controls={panelId}
-              className="flex w-full cursor-pointer items-center gap-4 p-5 text-left"
-            >
-              <phase.Illustration />
-              <span className="flex-1">
-                <span
-                  className="block text-base font-semibold text-text"
-                  style={{ letterSpacing: "-0.01em" }}
-                >
-                  {phase.name}
-                </span>
-                <span className="mt-0.5 block text-xs text-text-muted md:text-sm">
-                  {phase.tagline}
-                </span>
-              </span>
-              {/* Chevron rotates when open. */}
-              <svg
-                viewBox="0 0 20 20"
-                className="h-5 w-5 shrink-0 text-text-dim transition-transform duration-300"
-                style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
-                fill="none"
-                aria-hidden
+    <div data-celly-avoid className="flex flex-col gap-4">
+      {PHASES.map((phase, i) => (
+        <motion.div
+          key={phase.name}
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.45, ease, delay: i * 0.05 }}
+          className="rounded-2xl border border-border bg-surface p-5"
+        >
+          <div className="flex items-center gap-4">
+            <phase.Illustration />
+            <div>
+              <div
+                className="text-base font-semibold text-text"
+                style={{ letterSpacing: "-0.01em" }}
               >
-                <path d="M6 8 L10 12 L14 8" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  key="panel"
-                  id={panelId}
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.28, ease }}
-                  className="overflow-hidden"
-                >
-                  <ul className="space-y-2.5 border-t border-dashed border-border px-5 pb-5 pt-4">
-                    {phase.items.map((it) => (
-                      <li key={it} className="flex items-start gap-2.5 text-sm leading-relaxed text-text-muted">
-                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" strokeWidth={2.5} />
-                        <span>{it}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                {phase.name}
+              </div>
+              <div className="mt-0.5 text-xs text-text-muted md:text-sm">
+                {phase.tagline}
+              </div>
+            </div>
           </div>
-        );
-      })}
+          <ul className="mt-4 grid grid-cols-1 gap-x-5 gap-y-2 border-t border-dashed border-border pt-4 min-[420px]:grid-cols-2">
+            {phase.items.map((it) => (
+              <li key={it} className="flex items-start gap-2 text-sm leading-snug text-text-muted">
+                <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" strokeWidth={2.5} />
+                <span>{it}</span>
+              </li>
+            ))}
+          </ul>
+        </motion.div>
+      ))}
     </div>
   );
 }
 
 /** HubSpot-style two-column pipeline section: sticky story on the left, the
- *  phase accordion on the right. */
+ *  always-expanded phase panels on the right. */
 function PipelineSection() {
   return (
-    <section id="pipeline" className="border-t border-border/40 py-20 md:py-28">
+    <section id="pipeline" className="py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6 md:px-8">
         <div className="grid gap-10 md:grid-cols-2 md:items-start md:gap-12 lg:gap-16">
           {/* LEFT — the story, pinned below the header while the cards
@@ -811,10 +827,48 @@ const ERKEN_BULLETS = [
   { emoji: "🧩", bold: "Already in your browser", rest: " — free extension, installs in one click" },
 ];
 
-function MeetErkenSection() {
+function MeetErkenSection({
+  onSpriteClick,
+}: {
+  onSpriteClick: (anchorEl: HTMLElement | null) => void;
+}) {
   return (
     <section id="meet-erken" className="relative px-6 md:px-12 pt-24 md:pt-36 pb-16 md:pb-24">
-      <div data-celly-avoid className="relative z-30 mx-auto max-w-3xl text-center">
+      {/* Sprite to the LEFT of the text (rev-3 live corrections). flex row on
+          md+; md:items-center vertically centers the sprite against the WHOLE
+          text block (header → buttons row inclusive), so her vertical center
+          sits at the middle of that block. Stacks (sprite on top, centered)
+          on mobile. */}
+      <div
+        data-celly-avoid
+        className="relative z-30 mx-auto flex max-w-3xl flex-col items-center gap-6 text-center md:flex-row md:items-center md:gap-8 md:text-left"
+      >
+        {/* A static, section-embedded Erken (rev-3 addendum — the section had
+            text + buttons but no Erken herself). Same pattern /start uses:
+            a modest second CellDragonSprite whose click opens the FULL bot
+            menu (Text / Voice / Feedback / Roadmap / What's new / extension)
+            anchored beside it — reuses the roaming Celly's openChoiceMenu via
+            the onSpriteClick prop (rev-3 live correction: was opening the raw
+            chat). Independent of the page-level roaming Celly (which auto-
+            hides/repositions), so no conflict. The sprite's own hover float +
+            eye-follow come from CellDragonSprite and stay. */}
+        <div
+          role="button"
+          tabIndex={0}
+          title="Chat with Erken"
+          aria-label="Chat with Erken"
+          onClick={(e) => onSpriteClick(e.currentTarget)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") onSpriteClick(e.currentTarget);
+          }}
+          // md:-ml-[75px] shifts her ~75px (≈2cm) further left than the plain
+          // gap-8 spacing (rev-3 live correction, supersedes the earlier 1cm).
+          // Vertical alignment is handled by the row's md:items-center.
+          className="shrink-0 cursor-pointer md:-ml-[75px]"
+        >
+          <CellDragonSprite scale={0.5} pointDirection="right" />
+        </div>
+        <div className="flex-1">
         <SectionKicker>Meet Erken</SectionKicker>
         <h2
           className="mt-3 text-3xl md:text-5xl font-bold tracking-tight"
@@ -822,7 +876,7 @@ function MeetErkenSection() {
         >
           The assistant who teaches you the whole platform.
         </h2>
-        <div className="mx-auto mt-6 flex max-w-xl flex-col gap-2.5 text-left text-sm leading-relaxed text-text-muted md:text-base">
+        <div className="mt-6 flex flex-col gap-2.5 text-left text-sm leading-relaxed text-text-muted md:text-base">
           {ERKEN_BULLETS.map((b) => (
             <div key={b.bold}>
               <span aria-hidden>{b.emoji}</span>{" "}
@@ -834,7 +888,7 @@ function MeetErkenSection() {
         {/* Three CTAs in one row (Download stays the one accent-filled
             primary; the other two are bordered secondaries so the row
             doesn't become three competing accent buttons). Wraps on mobile. */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3 md:justify-start">
           <a
             href={CHROME_EXTENSION_URL}
             target="_blank"
@@ -856,6 +910,7 @@ function MeetErkenSection() {
           >
             Try for free →
           </a>
+        </div>
         </div>
       </div>
     </section>
@@ -927,11 +982,13 @@ function PlanCardTease({ tier }: { tier: (typeof PRICE_TIERS)[number] }) {
           </li>
         ))}
       </ul>
+      {/* All three cards share the same CTA label (rev-3 addendum): the old
+          "Start with {tier}" duplicated the card header. Still → /start. */}
       <a
         href="/start"
         className="mt-6 inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
       >
-        Start with {tier.label.toLowerCase()} →
+        Try for free →
       </a>
     </motion.div>
   );
@@ -939,7 +996,7 @@ function PlanCardTease({ tier }: { tier: (typeof PRICE_TIERS)[number] }) {
 
 function PricingSection() {
   return (
-    <section id="pricing" className="border-t border-border/40 py-20 md:py-28">
+    <section id="pricing" className="py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6 md:px-8">
         <motion.div
           data-celly-avoid
@@ -975,7 +1032,7 @@ function PricingSection() {
  * framing — mirrors /start's CustomSolutionsCard). ---- */
 function CustomSolutionsSection() {
   return (
-    <section id="custom-solutions" className="border-t border-border/40 py-20 md:py-28">
+    <section id="custom-solutions" className="py-20 md:py-28">
       <div className="mx-auto max-w-4xl px-6 text-center md:px-8">
         <motion.div
           data-celly-avoid
@@ -998,8 +1055,11 @@ function CustomSolutionsSection() {
             assess it.
           </p>
           <div className="mt-8 flex justify-center">
+            {/* Deep-links straight to the Custom solutions card on /start
+                (rev-3 addendum 2) so the visitor doesn't land at the top of
+                the plan cards and have to hunt for it. */}
             <a
-              href="/start"
+              href="/start#custom-solutions"
               className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
             >
               Get a custom offer →
@@ -1011,50 +1071,13 @@ function CustomSolutionsSection() {
   );
 }
 
-/* ---- Get leads door — its own honest angle (companies that want
- * customers, not software). Coming-soon tone; CTA routes to /start where
- * the real inactive "Coming soon" card lives. ---- */
-function GetLeadsSection() {
-  return (
-    <section id="get-leads" className="border-t border-border/40 py-20 md:py-28">
-      <div className="mx-auto max-w-4xl px-6 text-center md:px-8">
-        <motion.div
-          data-celly-avoid
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.5, ease }}
-        >
-          <span className="inline-block rounded-full bg-[var(--clay)] px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-bg">
-            Coming soon
-          </span>
-          <h2
-            className="mt-4 text-3xl font-bold tracking-tight md:text-5xl"
-            style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
-          >
-            You don&apos;t want software — you want customers.
-          </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-text-muted md:text-lg">
-            We run and market our own lead-generating sites in your industry.
-            Partner with us and we hand you live leads — delivered by phone —
-            for a share of the revenue.
-          </p>
-          <p className="mt-4 text-sm text-text-dim">This offer isn&apos;t live yet.</p>
-          <div className="mt-6 flex justify-center">
-            <a
-              href="/start"
-              className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
-            >
-              See it on our plans page →
-            </a>
-          </div>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
+// Get-leads / "you want customers" section REMOVED from the homepage entirely
+// (rev-3 addendum): it was a coming-soon dead end here. The real inactive
+// "Coming soon" GetLeadsCard still lives on /start (untouched).
 
 export default function HomeV8Client() {
+  // (rev-3 complete: always-expanded phases, fuller lists, sprite left +
+  // vertically centered, hero bg, no dividers, get-leads removed, 16:9 demo.)
   // Sprite container we'll move imperatively (60fps onUpdate calls would
   // thrash React if we used setState).
   const spriteContainerRef = useRef<HTMLDivElement>(null);
@@ -1102,9 +1125,14 @@ export default function HomeV8Client() {
       setFbState("error");
     }
   };
-  const openChoiceMenu = () => {
+  // Opens the Text/Voice/Feedback/Roadmap/What's-new/extension menu. Anchors
+  // to the roaming Celly by default; pass an element (e.g. the section-
+  // embedded Meet-Erken sprite) to anchor the same menu beside it instead —
+  // same pattern /start's Erken card uses (rev-3 live correction: the section
+  // sprite must open this FULL menu, not the raw chat widget).
+  const openChoiceMenu = (anchorEl?: HTMLElement | null) => {
     setMenuPanel(null);
-    const el = spriteContainerRef.current;
+    const el = anchorEl ?? spriteContainerRef.current;
     if (el) {
       const r = el.getBoundingClientRect();
       // Keep the (center-anchored) menu within the viewport sides so it can't
@@ -1999,6 +2027,7 @@ export default function HomeV8Client() {
       <Section
         isMobile={isMobile}
         stacked={false}
+        heroBackground
         {...SECTIONS[0]}
         media={<Scene1IntroVideo />}
         // Same right-anchored media wrapper the live hero (scene 0) used, so
@@ -2011,14 +2040,14 @@ export default function HomeV8Client() {
       <IndustriesSection />
 
       {/* 3. Pipeline — HubSpot-style sticky-column section: pinned left
-          story + right-side phase accordion (Capture/Nurture/Close/fans/
-          win-back, reveal-on-select). Replaces the four full-screen step
-          scenes (Scene2/3/4 + MacbookFrame3D). */}
+          story + right-side always-expanded phase panels (Capture/Nurture/
+          Close/fans/win-back). Replaces the four full-screen step scenes
+          (Scene2/3/4 + MacbookFrame3D). */}
       <PipelineSection />
 
       {/* 4. Meet Erken — live centered section, five sell bullets + three
           CTAs in one row. */}
-      <MeetErkenSection />
+      <MeetErkenSection onSpriteClick={openChoiceMenu} />
 
       {/* 5. Pricing — full /start-style plan cards (CTAs → /start). */}
       <PricingSection />
@@ -2026,8 +2055,9 @@ export default function HomeV8Client() {
       {/* 6. Custom solutions (from home-draft). */}
       <CustomSolutionsSection />
 
-      {/* 7. Get leads door (from home-draft, coming-soon tone). */}
-      <GetLeadsSection />
+      {/* Get-leads / "you want customers" section REMOVED from the homepage
+          (rev-3 addendum: it was a coming-soon dead end here; the real
+          inactive card still lives on /start). */}
 
       {/* No footer (Shamil's call, home-draft v5). */}
 
