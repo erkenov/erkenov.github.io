@@ -44,15 +44,44 @@
  * toggle (Variant A / Variant B pills, not part of the proposed final
  * design) so Shamil can compare them side by side — no second carousel,
  * per his explicit note.
+ *
+ * v5 (Shamil post-review verdicts):
+ *  - Pipeline: Variant A won. Removed Variant B + the toggle entirely.
+ *    Upgraded A's node icons to inline-SVG flat illustrations (soft
+ *    rounded shapes, sage/clay/cream + a neutral, ~96px) — a small scene
+ *    per step instead of a glyph, in the style of GoHighLevel's snapshot
+ *    marketplace cards / Canva flat-illustration sets.
+ *  - Meet Erken: the three buttons (Download for free / Try it on this
+ *    page / Try for free) now sit in one row, same size/rhythm, wrapping
+ *    on mobile — replaces the separate trailing TryForFreeCta, which read
+ *    as a redundant fourth button stacked right below the other two.
+ *  - Pricing: full /start-style plan cards (complete "What's included"
+ *    feature list per tier, no email form — that's /start's job — a
+ *    per-card CTA button to /start). Supersedes an earlier "compact tease
+ *    card" pass; Shamil's call: seeing everything included beats a tease.
+ *    Monthly gets a "Default" outline tag (it's the anchor price used
+ *    everywhere else on the page), Yearly gets a filled "Best value" badge.
+ *  - Get leads: the "See it on our plans page" text link is now a proper
+ *    button, same CTA language as the rest of the page.
+ *  - Footer removed (Shamil's call — parked earlier, now decided).
+ *  - Erken is no longer a static sprite. FloatingErken (fixed-corner,
+ *    non-roaming) is REPLACED by RoamingErken (./RoamingErken.tsx) — a
+ *    faithful port of the live homepage's roaming/auto-positioning Celly,
+ *    click-to-chat menu, and chat-dock behavior. See that file's header
+ *    comment for exactly what was ported verbatim vs. the two named
+ *    simplifications (no WebGL dust-trail canvas, no per-section offset
+ *    table) that a true SphereScrollStage port would require.
+ *    `data-celly-avoid` is now tagged on every section's main content
+ *    block so the ported findEmptySpot() auto-positioner has real
+ *    geometry to avoid, same as production.
  */
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Play, Megaphone, PhoneIncoming, ListChecks, LayoutDashboard } from "lucide-react";
+import { motion } from "framer-motion";
+import { Play, Check } from "lucide-react";
 import { CellDragonSprite } from "@/components/CellDragonSprite";
 import { SceneIndustriesCarousel } from "@/components/SceneIndustriesCarousel";
-import ErkenChatWidget, { openErkenChat } from "@/components/ErkenChatWidget";
-import ErkenVoiceWidget from "@/components/ErkenVoiceWidget";
+import { openErkenChat } from "@/components/ErkenChatWidget";
+import RoamingErken from "./RoamingErken";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -78,31 +107,6 @@ function TryForFreeCta({ label = "Try for free" }: { label?: string }) {
   );
 }
 
-/**
- * FloatingErken — persistent fixed-corner companion (Shamil live review:
- * "where did the Erken go" — with the hero sprite swapped for the video
- * placeholder in v2, there was no visible Erken until the Meet Erken
- * section far down the page). Small static sprite pinned bottom-left,
- * always on screen, clicking it opens the chat via openErkenChat() — the
- * same trigger pattern preview-v7 and /start use. This is a simplified
- * stand-in for preview-v7's roaming/auto-positioning Celly (not ported
- * here, see file header) — it doesn't move with scroll, it just stays put
- * so the chat entry point is never missing.
- * z-30: below the header (z-50) and the carousel's closed-card arrows
- * (z-40) so it can never cover either; well below the industry-detail
- * modal (z-[200]), which should cover it when open.
- */
-function FloatingErken() {
-  return (
-    <div
-      className="fixed bottom-4 left-4 z-30 md:bottom-6 md:left-6"
-      title="Chat with Erken"
-    >
-      <CellDragonSprite scale={0.45} pointDirection="right" onClick={() => openErkenChat()} />
-    </div>
-  );
-}
-
 /* ------------------------------------------------------------------ */
 /* Header + Footer — light, minimal, matches the live token system.   */
 /* Kept local to this draft rather than reusing src/components/Header  */
@@ -120,7 +124,7 @@ function DraftHeader() {
     // overlay contained within the carousel's own box, badges z-50 only
     // inside card thumbnails) except the industry-detail modal (z-[200]),
     // which SHOULD cover the header when open — that's expected, not a bug.
-    <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-bg/85 backdrop-blur-md">
+    <header data-celly-avoid className="sticky top-0 z-50 w-full border-b border-border/60 bg-bg/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-8">
         <a href="/" className="font-mono text-sm font-medium tracking-tight uppercase text-text">
           erken<span className="text-accent"> </span>systems
@@ -146,24 +150,6 @@ function DraftHeader() {
         </a>
       </div>
     </header>
-  );
-}
-
-function DraftFooter() {
-  return (
-    <footer className="border-t border-border/40 py-10">
-      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 md:flex-row md:items-center md:justify-between md:px-8">
-        <div className="font-mono text-sm font-medium text-text">
-          erken<span className="text-accent"> </span>systems
-        </div>
-        <div className="flex items-center gap-6 text-xs text-text-dim">
-          <a href="mailto:shamil.erkenovv@gmail.com" className="transition-colors hover:text-text">
-            shamil.erkenovv@gmail.com
-          </a>
-          <span>© {new Date().getFullYear()} Erken Systems</span>
-        </div>
-      </div>
-    </footer>
   );
 }
 
@@ -199,6 +185,7 @@ function HeroSection() {
       <div className="grid-bg pointer-events-none absolute inset-0 opacity-60" aria-hidden />
       <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-12 md:flex-row md:items-center">
         <motion.div
+          data-celly-avoid
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease }}
@@ -239,6 +226,7 @@ function HeroSection() {
           </div>
         </motion.div>
         <motion.div
+          data-celly-avoid
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, ease, delay: 0.15 }}
@@ -259,6 +247,7 @@ function IndustriesSection() {
     <section id="industries" data-section="industries" className="border-t border-border/40 py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6 md:px-8">
         <motion.div
+          data-celly-avoid
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
@@ -279,7 +268,7 @@ function IndustriesSection() {
           </p>
         </motion.div>
       </div>
-      <div className="mt-4">
+      <div data-celly-avoid className="mt-4">
         <SceneIndustriesCarousel />
       </div>
       <div className="mx-auto max-w-6xl px-6 md:px-8">
@@ -290,83 +279,132 @@ function IndustriesSection() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Section 3 — Pipeline proof. Shamil found the flat 4-card grid       */
-/* "unfinished" on live review and asked to see two alternative        */
-/* treatments side by side with a draft-only toggle (no second         */
-/* carousel). Both variants read PIPELINE_STEPS; toggle just swaps     */
-/* which one renders below the shared section heading + CTA.           */
+/* Section 3 — Pipeline proof. v5: Variant A (the connected stepper)   */
+/* won Shamil's side-by-side review; Variant B + the toggle are gone.  */
+/* Node icons upgraded to inline-SVG flat illustrations — see the      */
+/* Illustration* components below, shared 3-tone palette + neutral.    */
 /* ------------------------------------------------------------------ */
+
+// Shared illustration palette — matches the brand tokens used elsewhere
+// on the site (sage accent, clay badge color, cream surfaces) plus one
+// neutral for card/column backdrops. Hardcoded hex (not CSS var()) so the
+// SVGs render correctly regardless of how the browser resolves custom
+// properties inside inline SVG presentation attributes.
+const ILLO_SAGE = "#7ea687";
+const ILLO_CLAY = "#a8503f";
+const ILLO_CREAM = "#F5F1E8";
+const ILLO_NEUTRAL = "#D4CDB8";
+
+/** Shared rounded backdrop every step illustration sits on — keeps the
+ *  four scenes reading as one consistent set. */
+function IllustrationBackdrop({ children }: { children: React.ReactNode }) {
+  return (
+    <svg viewBox="0 0 120 120" className="h-20 w-20 md:h-24 md:w-24" aria-hidden>
+      <rect x="1" y="1" width="118" height="118" rx="28" fill={ILLO_CREAM} stroke={ILLO_NEUTRAL} strokeWidth="1.5" />
+      {children}
+    </svg>
+  );
+}
+
+/** Step 1 — lead generation: a megaphone with radiating captured leads. */
+function IllustrationLeadGen() {
+  return (
+    <IllustrationBackdrop>
+      <path d="M40 46 L74 34 L74 78 L40 66 Z" fill={ILLO_CLAY} />
+      <rect x="28" y="50" width="14" height="12" rx="4" fill={ILLO_CLAY} />
+      <rect x="70" y="30" width="7" height="52" rx="3.5" fill={ILLO_SAGE} />
+      <circle cx="90" cy="40" r="4.5" fill={ILLO_SAGE} />
+      <circle cx="98" cy="53" r="3.5" fill={ILLO_SAGE} opacity="0.75" />
+      <circle cx="102" cy="67" r="2.5" fill={ILLO_SAGE} opacity="0.5" />
+    </IllustrationBackdrop>
+  );
+}
+
+/** Step 2 — lead capture: a phone answering into an active chat bubble. */
+function IllustrationLeadCapture() {
+  return (
+    <IllustrationBackdrop>
+      <rect x="30" y="26" width="30" height="54" rx="10" fill={ILLO_SAGE} />
+      <rect x="36" y="34" width="18" height="32" rx="4" fill={ILLO_CREAM} />
+      <rect x="60" y="48" width="32" height="24" rx="9" fill={ILLO_CLAY} />
+      <path d="M64 70 L58 78 L70 72 Z" fill={ILLO_CLAY} />
+      <circle cx="69" cy="60" r="2.4" fill={ILLO_CREAM} />
+      <circle cx="77" cy="60" r="2.4" fill={ILLO_CREAM} />
+      <circle cx="85" cy="60" r="2.4" fill={ILLO_CREAM} />
+    </IllustrationBackdrop>
+  );
+}
+
+/** Step 3 — lead management: a tiny pipeline board with staged cards. */
+function IllustrationLeadMgmt() {
+  return (
+    <IllustrationBackdrop>
+      <rect x="22" y="28" width="24" height="64" rx="6" fill={ILLO_NEUTRAL} opacity="0.55" />
+      <rect x="50" y="28" width="24" height="64" rx="6" fill={ILLO_NEUTRAL} opacity="0.55" />
+      <rect x="78" y="28" width="24" height="64" rx="6" fill={ILLO_NEUTRAL} opacity="0.55" />
+      <rect x="26" y="34" width="16" height="11" rx="3" fill={ILLO_SAGE} />
+      <rect x="54" y="34" width="16" height="11" rx="3" fill={ILLO_CLAY} />
+      <rect x="54" y="49" width="16" height="11" rx="3" fill={ILLO_SAGE} />
+      <rect x="82" y="34" width="16" height="11" rx="3" fill={ILLO_CLAY} />
+      <rect x="82" y="49" width="16" height="11" rx="3" fill={ILLO_CLAY} />
+      <rect x="82" y="64" width="16" height="11" rx="3" fill={ILLO_SAGE} />
+    </IllustrationBackdrop>
+  );
+}
+
+/** Step 4 — the control panel: a small dashboard with a bar chart + a
+ *  live-status dot. */
+function IllustrationControlPanel() {
+  return (
+    <IllustrationBackdrop>
+      <rect x="24" y="26" width="72" height="56" rx="8" fill={ILLO_NEUTRAL} opacity="0.45" />
+      <circle cx="84" cy="36" r="4" fill={ILLO_SAGE} />
+      <rect x="34" y="56" width="9" height="18" rx="2.5" fill={ILLO_SAGE} />
+      <rect x="47" y="48" width="9" height="26" rx="2.5" fill={ILLO_CLAY} />
+      <rect x="60" y="40" width="9" height="34" rx="2.5" fill={ILLO_SAGE} />
+      <rect x="73" y="52" width="9" height="22" rx="2.5" fill={ILLO_CLAY} />
+    </IllustrationBackdrop>
+  );
+}
+
 const PIPELINE_STEPS = [
   {
     step: "01",
     kicker: "Lead generation",
     title: "Where your next ten customers come from.",
     body: "Funnels, forms, a social planner, and review automation that grows your rating. Miss a call and an instant text-back brings the lead back before they dial a competitor.",
-    icon: Megaphone,
+    Illustration: IllustrationLeadGen,
   },
   {
     step: "02",
     kicker: "Lead capture",
     title: "Every channel answered.",
     body: "Phone, inbox, DMs, forms — all wired into one pipeline. The AI voice receptionist picks up in two rings. Web chat books appointments. Nothing goes to voicemail.",
-    icon: PhoneIncoming,
+    Illustration: IllustrationLeadCapture,
   },
   {
     step: "03",
     kicker: "Lead management",
     title: "Every lead tracked, every follow-up automated.",
     body: "Your branded CRM, your pipeline, your automation. Leads get scored, routed, and followed up — no manual touchpoints, no lead left waiting.",
-    icon: ListChecks,
+    Illustration: IllustrationLeadMgmt,
   },
   {
     step: "04",
     kicker: "The control panel",
     title: "Your whole operation, one screen.",
     body: "Calls, chats, forms, emails, deals — all visible in one dashboard. Workflow automation runs underneath. You see where every customer is. You read the dashboard.",
-    icon: LayoutDashboard,
+    Illustration: IllustrationControlPanel,
   },
 ];
 
-/** Draft-only variant switcher — not part of the proposed final design,
- *  just how Shamil compares the two treatments on this review page. */
-function PipelineVariantToggle({
-  variant,
-  onChange,
-}: {
-  variant: "a" | "b";
-  onChange: (v: "a" | "b") => void;
-}) {
-  const pill = (v: "a" | "b", label: string) => (
-    <button
-      key={v}
-      type="button"
-      onClick={() => onChange(v)}
-      className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${
-        variant === v
-          ? "bg-accent text-bg"
-          : "text-text-muted hover:text-text"
-      }`}
-    >
-      {label}
-    </button>
-  );
+/** The winning treatment: 4 illustrated nodes joined by a connecting
+ *  line — horizontal row + line on desktop, vertical stack + line on
+ *  mobile (375px). */
+function PipelineStepper() {
   return (
-    <div className="mt-6 inline-flex items-center gap-1 rounded-full border border-border bg-surface p-1">
-      {pill("a", "Variant A — Stepper")}
-      {pill("b", "Variant B — Sticky scroll")}
-    </div>
-  );
-}
-
-/** VARIANT A — connected pipeline stepper: 4 numbered/iconed nodes joined
- *  by a flowing line, communicating "one pipeline the lead travels
- *  automatically." Horizontal line + row on desktop, vertical line +
- *  stack on mobile (375px). */
-function PipelineVariantStepper() {
-  return (
-    <div className="mt-12 flex flex-col gap-10 md:flex-row md:items-start md:gap-0">
+    <div data-celly-avoid className="mt-12 flex flex-col gap-10 md:flex-row md:items-start md:gap-0">
       {PIPELINE_STEPS.map((s, i) => {
-        const Icon = s.icon;
         const isLast = i === PIPELINE_STEPS.length - 1;
         return (
           <motion.div
@@ -378,21 +416,22 @@ function PipelineVariantStepper() {
             className="relative flex flex-1 flex-row items-start gap-4 md:flex-col md:items-center md:px-3 md:text-center"
           >
             {/* Connector to the next node — vertical on mobile (down from
-                the icon), horizontal on desktop (across, through the row). */}
+                the illustration), horizontal on desktop (across, through
+                the row). */}
             {!isLast && (
               <>
                 <div
-                  className="absolute left-7 top-14 h-[calc(100%-2.5rem)] w-px bg-border md:hidden"
+                  className="absolute left-10 top-20 h-[calc(100%-3.5rem)] w-px bg-border md:hidden"
                   aria-hidden
                 />
                 <div
-                  className="absolute top-7 left-1/2 hidden h-px w-full bg-border md:block"
+                  className="absolute top-10 left-1/2 hidden h-px w-full bg-border md:top-12 md:block"
                   aria-hidden
                 />
               </>
             )}
-            <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent text-bg">
-              <Icon size={22} strokeWidth={2} />
+            <div className="relative z-10 shrink-0">
+              <s.Illustration />
             </div>
             <div className="md:mt-4">
               <div className="font-mono text-xs uppercase tracking-widest text-text-dim">
@@ -410,75 +449,12 @@ function PipelineVariantStepper() {
   );
 }
 
-/** VARIANT B — compact sticky-scroll: one visual panel (miniature of the
- *  live homepage's pinned-media scene pattern) that swaps its active step
- *  as four short text blocks scroll past beside it. Sticky on desktop
- *  only; degrades to a static panel followed by stacked text on mobile. */
-function PipelineVariantStickyScroll() {
-  const [active, setActive] = useState(0);
-  return (
-    <div className="mt-12 grid gap-8 md:grid-cols-2 md:items-start md:gap-12">
-      <div className="md:sticky md:top-24">
-        <div className="flex min-h-[14rem] flex-col justify-center rounded-2xl border border-border bg-surface p-8">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={active}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.3, ease }}
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent text-bg">
-                {(() => {
-                  const Icon = PIPELINE_STEPS[active].icon;
-                  return <Icon size={20} strokeWidth={2} />;
-                })()}
-              </div>
-              <div className="mt-4 font-mono text-xs uppercase tracking-widest text-text-dim">
-                {PIPELINE_STEPS[active].step} · {PIPELINE_STEPS[active].kicker}
-              </div>
-              <h3 className="mt-1 text-xl font-semibold leading-snug text-text" style={{ letterSpacing: "-0.02em" }}>
-                {PIPELINE_STEPS[active].title}
-              </h3>
-            </motion.div>
-          </AnimatePresence>
-          <div className="mt-6 flex gap-1.5">
-            {PIPELINE_STEPS.map((s, i) => (
-              <span
-                key={s.step}
-                className={`h-1.5 flex-1 rounded-full transition-colors ${
-                  i === active ? "bg-accent" : "bg-border"
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-      <div className="flex flex-col gap-16 md:gap-28">
-        {PIPELINE_STEPS.map((s, i) => (
-          <motion.div
-            key={s.step}
-            onViewportEnter={() => setActive(i)}
-            viewport={{ amount: 0.6, margin: "-10% 0px -10% 0px" }}
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-            className="min-h-[8rem]"
-          >
-            <p className="text-sm leading-relaxed text-text-muted">{s.body}</p>
-          </motion.div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function PipelineSection() {
-  const [variant, setVariant] = useState<"a" | "b">("a");
   return (
     <section id="pipeline" data-section="pipeline" className="border-t border-border/40 py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6 md:px-8">
         <motion.div
+          data-celly-avoid
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
@@ -495,10 +471,9 @@ function PipelineSection() {
           <p className="mt-4 text-base text-text-muted md:text-lg">
             The same four-step pipeline runs underneath every business on Erken.
           </p>
-          <PipelineVariantToggle variant={variant} onChange={setVariant} />
         </motion.div>
 
-        {variant === "a" ? <PipelineVariantStepper /> : <PipelineVariantStickyScroll />}
+        <PipelineStepper />
 
         <TryForFreeCta />
       </div>
@@ -521,7 +496,7 @@ function MeetErkenSection() {
   return (
     <section id="meet-erken" data-section="meet-erken" className="border-t border-border/40 py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6 md:px-8">
-        <div className="grid gap-12 md:grid-cols-2 md:items-center">
+        <div data-celly-avoid className="grid gap-12 md:grid-cols-2 md:items-center">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -561,7 +536,14 @@ function MeetErkenSection() {
                 </div>
               ))}
             </div>
-            <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row">
+            {/* v5: all three buttons in one row, same size/rhythm, wrap on
+                mobile — was two buttons here plus a separate trailing
+                TryForFreeCta stacked right below, which read as a
+                redundant fourth button. Download stays the one accent-
+                filled button (the primary free-extension CTA); the other
+                two are bordered secondaries so the row doesn't turn into
+                three competing accent buttons. */}
+            <div className="mt-8 flex flex-wrap items-center gap-3">
               <a
                 href={CHROME_EXTENSION_URL}
                 target="_blank"
@@ -577,32 +559,113 @@ function MeetErkenSection() {
               >
                 Try it on this page
               </button>
+              <a
+                href="/start"
+                className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3.5 text-base font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
+              >
+                Try for free →
+              </a>
             </div>
           </motion.div>
         </div>
-
-        <TryForFreeCta />
       </div>
     </section>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/* Section 5 — Pricing (full 3-tier). Moved late per Shamil v2 review — */
-/* appears once, right before the closing Custom-solutions/Get-leads   */
-/* offers, after the trial CTA has already repeated three times above. */
+/* Section 5 — Pricing. Moved late per Shamil v2 review — appears once, */
+/* right before the closing Custom-solutions/Get-leads offers, after   */
+/* the trial CTA has already repeated three times above.               */
+/*                                                                      */
+/* v5 addendum: full /start-style plan cards, not a compact tease row — */
+/* Shamil's call: showing everything included right on the homepage    */
+/* beats a tease. Same card language as /start's PlanCard (border, tier */
+/* name, large price, note, "What's included" list) minus the email    */
+/* capture form — each card's CTA just sends you to /start.            */
 /* ------------------------------------------------------------------ */
-const PRICE_TIERS = [
-  { label: "Monthly", price: "$97/mo", note: "billed monthly" },
-  { label: "6 months", price: "$87/mo", note: "$522 once — save 10%" },
-  { label: "Yearly", price: "$81/mo", note: "$970 once — 2 months free" },
+
+// Mirrors /start's PLAN_FEATURES exactly — same platform, every tier,
+// the only difference is the prepay term.
+const PLAN_FEATURES = [
+  "CRM + pipelines",
+  "Calendars + booking",
+  "Automations + follow-ups",
+  "AI voice receptionist",
+  "Reputation + review management",
+  "Erken assistant included",
+  "Free first week",
 ];
+
+const PRICE_TIERS: {
+  label: string;
+  price: string;
+  note: string;
+  badge?: "default" | "best-value";
+}[] = [
+  { label: "Monthly", price: "$97/mo", note: "billed monthly", badge: "default" },
+  { label: "6 months", price: "$87/mo", note: "$522 once — save 10%" },
+  { label: "Yearly", price: "$81/mo", note: "$970 once — 2 months free", badge: "best-value" },
+];
+
+function PlanCardTease({ tier }: { tier: (typeof PRICE_TIERS)[number] }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.5, ease }}
+      whileHover={{ y: -2 }}
+      className={`relative flex flex-col rounded-2xl border bg-surface p-8 transition-colors duration-200 ${
+        tier.badge === "default"
+          ? "border-2 border-accent hover:border-accent-hover"
+          : "border-border hover:border-border-strong"
+      }`}
+    >
+      {tier.badge === "default" && (
+        <span className="absolute right-6 top-6 rounded-full border border-accent px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-accent">
+          Default
+        </span>
+      )}
+      {tier.badge === "best-value" && (
+        <span className="absolute right-6 top-6 rounded-full bg-accent px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-bg">
+          Best value
+        </span>
+      )}
+      <h3 className="text-lg font-semibold text-text">{tier.label}</h3>
+      <div className="mt-2">
+        <span className="text-3xl font-bold tracking-tight text-text" style={{ letterSpacing: "-0.03em" }}>
+          {tier.price}
+        </span>
+        <span className="ml-2 text-xs text-text-dim">{tier.note}</span>
+      </div>
+      <p className="mt-4 font-mono text-xs uppercase tracking-[0.05em] text-text-dim">
+        What&apos;s included
+      </p>
+      <ul className="mt-2 flex-1 space-y-1.5 text-sm text-text-muted">
+        {PLAN_FEATURES.map((f) => (
+          <li key={f} className="flex items-start gap-2">
+            <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" strokeWidth={2.5} />
+            <span>{f}</span>
+          </li>
+        ))}
+      </ul>
+      <a
+        href="/start"
+        className="mt-6 inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
+      >
+        Start with {tier.label.toLowerCase()} →
+      </a>
+    </motion.div>
+  );
+}
 
 function PricingSection() {
   return (
     <section id="pricing" data-section="pricing" className="border-t border-border/40 py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6 md:px-8">
         <motion.div
+          data-celly-avoid
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
@@ -617,36 +680,14 @@ function PricingSection() {
             $97 a month. First week free. Prepay and save.
           </h2>
           <p className="mt-4 text-base text-text-muted md:text-lg">
-            One flat price for the whole platform. No setup fee, no per-minute
-            charges, no surprise tiers.
+            Same platform, every tier — the only difference is the prepay term.
           </p>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.5, ease, delay: 0.1 }}
-          className="mt-10 grid gap-4 sm:grid-cols-3"
-        >
+        <div data-celly-avoid className="mt-10 grid gap-6 md:grid-cols-3">
           {PRICE_TIERS.map((t) => (
-            <div key={t.label} className="rounded-2xl border border-border bg-surface p-6 text-center">
-              <div className="mono-label">{t.label}</div>
-              <div className="mt-2 text-3xl font-bold tracking-tight text-text" style={{ letterSpacing: "-0.03em" }}>
-                {t.price}
-              </div>
-              <div className="mt-1 text-xs text-text-dim">{t.note}</div>
-            </div>
+            <PlanCardTease key={t.label} tier={t} />
           ))}
-        </motion.div>
-
-        <div className="mt-8 flex justify-center">
-          <a
-            href="/start"
-            className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
-          >
-            See all plans →
-          </a>
         </div>
       </div>
     </section>
@@ -662,6 +703,7 @@ function CustomSolutionsSection() {
     <section id="custom-solutions" data-section="custom-solutions" className="border-t border-border/40 py-20 md:py-28">
       <div className="mx-auto max-w-4xl px-6 text-center md:px-8">
         <motion.div
+          data-celly-avoid
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
@@ -705,6 +747,7 @@ function GetLeadsSection() {
     <section id="get-leads" data-section="get-leads" className="border-t border-border/40 py-20 md:py-28">
       <div className="mx-auto max-w-4xl px-6 text-center md:px-8">
         <motion.div
+          data-celly-avoid
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
@@ -724,15 +767,19 @@ function GetLeadsSection() {
             Partner with us and we hand you live leads — delivered by phone —
             for a share of the revenue.
           </p>
-          <p className="mt-6 text-sm text-text-dim">
-            This offer isn&apos;t live yet.{" "}
+          <p className="mt-4 text-sm text-text-dim">This offer isn&apos;t live yet.</p>
+          {/* v5 addendum: was a plain text link — now a proper button, same
+              CTA language as the rest of the page. Still routes to /start,
+              where it lands on the real inactive "Coming soon" card
+              (GetLeadsCard) — not a dead end, just not a live signup here. */}
+          <div className="mt-6 flex justify-center">
             <a
               href="/start"
-              className="text-accent underline underline-offset-4 transition-colors hover:text-accent-hover"
+              className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
             >
               See it on our plans page →
             </a>
-          </p>
+          </div>
         </motion.div>
       </div>
     </section>
@@ -750,10 +797,9 @@ export default function HomeDraftClient() {
       <PricingSection />
       <CustomSolutionsSection />
       <GetLeadsSection />
-      <DraftFooter />
-      <FloatingErken />
-      <ErkenChatWidget />
-      <ErkenVoiceWidget />
+      {/* Footer removed (Shamil's call, v5). RoamingErken mounts
+          ErkenChatWidget + ErkenVoiceWidget itself — see that file. */}
+      <RoamingErken />
     </main>
   );
 }
