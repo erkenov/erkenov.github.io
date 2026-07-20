@@ -15,7 +15,7 @@
  * palette (first version mismatched; Shamil flagged it 2026-06-12).
  */
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CellDragonSprite } from "@/components/CellDragonSprite";
 import ErkenChatWidget, { openErkenChat } from "@/components/ErkenChatWidget";
 import ErkenVoiceWidget from "@/components/ErkenVoiceWidget";
@@ -395,8 +395,14 @@ function CustomSolutionsCard() {
   );
 }
 
-/** Rent-leads partnership — light by design, details still being worked out. */
-function RentLeadsCard() {
+/**
+ * Rent-leads partnership — light by design, details still being worked
+ * out. Display name changed to "Get leads" (Shamil 2026-07-20); the
+ * underlying kind value stays "rent-leads" (wired to the
+ * "rent-leads-applicant" GHL tag in /api/custom-request) — this is a
+ * display-only rename, not a re-tagging.
+ */
+function GetLeadsCard() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [company, setCompany] = useState("");
@@ -425,7 +431,7 @@ function RentLeadsCard() {
 
   return (
     <section className="flex flex-col rounded-2xl border border-border bg-surface p-8">
-      <h3 className="text-lg font-semibold">Rent leads</h3>
+      <h3 className="text-lg font-semibold">Get leads</h3>
       <p className="mt-1 text-sm text-text-muted">
         We build and market our own lead-generating sites in your industry.
         Partner with us and we hand you live leads — delivered by phone — for
@@ -477,6 +483,57 @@ export default function StartPage() {
   const [menuPanel, setMenuPanel] = useState<"feedback" | "roadmap" | "whatsnew" | null>(null);
   const [fbText, setFbText] = useState("");
   const [fbState, setFbState] = useState<SendState>("idle");
+
+  // Bot-menu is a popover anchored to the card sprite (Shamil 2026-07-20:
+  // it used to float at a fixed page position that matched the old
+  // page-level roaming sprite, which no longer exists now that Erken
+  // lives only on her card). Position is computed from the sprite's own
+  // on-screen rect each time it's opened, viewport-clamped so it never
+  // runs off-screen on narrow/mobile widths.
+  const spriteRef = useRef<HTMLDivElement>(null);
+  const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null);
+  const MENU_WIDTH = 280;
+  const MENU_MARGIN = 16;
+  // Tallest panel measured live is the main menu (label + 6 rows) at
+  // ~335px — pad generously since sub-panels (roadmap/what's new) wrap
+  // more text and can run taller.
+  const MENU_EST_HEIGHT = 380;
+
+  const positionBotMenu = () => {
+    const el = spriteRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    let left = Math.min(rect.left, window.innerWidth - MENU_WIDTH - MENU_MARGIN);
+    left = Math.max(MENU_MARGIN, left);
+
+    // Open on whichever side of the sprite actually has more room — a
+    // fixed "flip if it doesn't fit below" rule can pick the cramped side
+    // when the sprite sits near the top of a short viewport.
+    const spaceBelow = window.innerHeight - rect.bottom - MENU_MARGIN;
+    const spaceAbove = rect.top - MENU_MARGIN;
+    const openBelow = spaceBelow >= MENU_EST_HEIGHT || spaceBelow >= spaceAbove;
+    let top = openBelow ? rect.bottom + 12 : rect.top - MENU_EST_HEIGHT - 12;
+    // Final safety clamp so it's always fully on-screen even if neither
+    // side has the full estimated height (very short viewport).
+    top = Math.min(top, window.innerHeight - MENU_EST_HEIGHT - MENU_MARGIN);
+    top = Math.max(MENU_MARGIN, top);
+    setMenuPos({ top, left });
+  };
+
+  const openBotMenu = () => {
+    positionBotMenu();
+    setBotMenu(true);
+  };
+
+  // Keep the popover glued to the sprite if the viewport resizes while open
+  // (e.g. rotating a phone).
+  useEffect(() => {
+    if (!botMenu) return;
+    const onResize = () => positionBotMenu();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [botMenu]);
 
   const closeBotMenu = () => {
     setBotMenu(false);
@@ -534,7 +591,8 @@ export default function StartPage() {
           <section className="flex flex-col rounded-2xl border border-border bg-surface p-8">
             <div className="flex items-start gap-8">
               <div
-                onClick={() => (botMenu ? closeBotMenu() : setBotMenu(true))}
+                ref={spriteRef}
+                onClick={() => (botMenu ? closeBotMenu() : openBotMenu())}
                 className="shrink-0 cursor-pointer"
                 title="Chat with Erken"
               >
@@ -562,7 +620,7 @@ export default function StartPage() {
           </section>
 
           <CustomSolutionsCard />
-          <RentLeadsCard />
+          <GetLeadsCard />
         </div>
       </div>
 
@@ -574,7 +632,12 @@ export default function StartPage() {
       {botMenu && (
         <>
           <div className="fixed inset-0 z-[55]" aria-hidden onClick={closeBotMenu} />
-          <div className="fixed bottom-1/3 right-[6rem] z-[56] flex flex-col gap-1 rounded-2xl border border-white/15 bg-black/80 p-2 shadow-2xl backdrop-blur-md max-lg:bottom-36 max-lg:right-4">
+          <div
+            className={`fixed z-[56] flex w-[280px] flex-col gap-1 rounded-2xl border border-white/15 bg-black/80 p-2 shadow-2xl backdrop-blur-md ${
+              menuPos ? "" : "bottom-1/3 right-[6rem] max-lg:bottom-36 max-lg:right-4"
+            }`}
+            style={menuPos ? { top: menuPos.top, left: menuPos.left } : undefined}
+          >
             {menuPanel === null && (
               <>
                 <div className="px-3 pb-1 pt-1 text-xs text-white/55">Talk to Erken</div>
