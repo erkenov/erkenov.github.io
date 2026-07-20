@@ -1490,7 +1490,7 @@ function StackComparisonSection() {
             <div className="border-t-2 border-border bg-[var(--accent-soft)]" />
             <div className="flex flex-col justify-center border-t-2 border-border bg-[var(--accent-soft)] px-3 py-5">
               <div className="text-2xl font-bold tracking-tight md:text-3xl">
-                <span className="text-text-dim line-through decoration-[var(--clay)]/70 decoration-2">
+                <span className="text-[var(--clay)] line-through decoration-[var(--clay)]/70 decoration-2">
                   ${STACK_TOTAL.toLocaleString()}
                 </span>
               </div>
@@ -1540,7 +1540,7 @@ function StackComparisonSection() {
             ))}
             <div className="flex items-center justify-between border-t-2 border-border bg-[var(--accent-soft)] px-5 py-4">
               <span className="text-sm font-semibold text-text">The whole stack</span>
-              <span className="text-2xl font-bold tracking-tight text-text-dim line-through decoration-[var(--clay)]/70 decoration-2">
+              <span className="text-2xl font-bold tracking-tight text-[var(--clay)] line-through decoration-[var(--clay)]/70 decoration-2">
                 ${STACK_TOTAL.toLocaleString()}
                 <span className="ml-1 text-sm font-normal">/mo</span>
               </span>
