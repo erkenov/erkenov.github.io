@@ -624,10 +624,25 @@ export default function StartPage() {
             </div>
             <div className="mt-8 flex flex-1 flex-col gap-2 text-sm leading-relaxed text-text-muted">
               <div>
-                Talks, teaches, walks you through any task step by step.
+                🗣️ <b>Ask it anything</b> — by voice or chat, about the
+                platform or your business
               </div>
-              <div>💬 Try it right now — it&apos;s the creature on our homepage.</div>
-              <div>🖥️ Desktop version on the way — it does tasks on your computer for you.</div>
+              <div>
+                👉 <b>Shows you the exact button</b> — walks you through any
+                task on screen, out loud, step by step
+              </div>
+              <div>
+                🧠 <b>Remembers you</b> — your business, your setup, where
+                you left off
+              </div>
+              <div>
+                ⚡ <b>Actions on the way</b> — soon it won&apos;t just guide,
+                it&apos;ll do the task for you
+              </div>
+              <div>
+                🧩 <b>Free browser extension</b> — desktop version on the
+                way
+              </div>
             </div>
             <a
               href="https://chromewebstore.google.com/detail/erken/mggcbjggcbdpmbglbodkadgmpapcmelc"
