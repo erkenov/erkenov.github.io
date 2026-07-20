@@ -1604,6 +1604,11 @@ export default function PreviewV6Page() {
                   over time.
                 </div>
                 <div>
+                  ⚡ <b>Actions are coming</b> — Erken won&apos;t just show
+                  you the button, it will do the task for you, right in your
+                  account.
+                </div>
+                <div>
                   🌐 <b>Works on the Erken platform today</b> — expanding to
                   Zapier, QuickBooks, and the popular apps you already
                   connect
@@ -1618,7 +1623,7 @@ export default function PreviewV6Page() {
                 </div>
                 <div>
                   🖥️ <b>A desktop companion</b> — Erken on your screen,
-                  eventually doing tasks for you, not just guiding
+                  working across every app you use, not just this one
                 </div>
               </div>
               <div className="mt-2 border-t border-white/10 pt-2 text-xs text-white/55">

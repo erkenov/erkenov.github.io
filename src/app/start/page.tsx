@@ -313,7 +313,7 @@ function CustomSolutionsCard() {
         <button
           type="button"
           onClick={() => window.__startErkenVoiceCall?.()}
-          className="flex items-center gap-2.5 rounded-xl border border-border bg-surface-2 px-4 py-3 text-left text-sm font-medium text-text transition-colors hover:border-border-strong"
+          className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-border bg-surface-2 px-6 py-3 text-left text-base font-medium text-text transition-colors hover:border-border-strong"
         >
           <span aria-hidden>🎙️</span> Talk to the voice AI
         </button>
@@ -321,12 +321,12 @@ function CustomSolutionsCard() {
           type="button"
           onClick={handleAudioButtonClick}
           disabled={audioButtonDisabled}
-          className={`flex items-center gap-2.5 rounded-xl border px-4 py-3 text-left text-sm font-medium transition-colors ${
+          className={`flex items-center gap-2.5 rounded-xl border px-6 py-3 text-left text-base font-medium transition-colors ${
             recState === "recording"
-              ? "border-accent bg-accent/10 text-text"
+              ? "cursor-pointer border-accent bg-accent/10 text-text"
               : audioButtonDisabled
                 ? "cursor-default border-border bg-surface-2 text-text-dim"
-                : "border-border bg-surface-2 text-text hover:border-border-strong"
+                : "cursor-pointer border-border bg-surface-2 text-text hover:border-border-strong"
           }`}
         >
           <span aria-hidden>🎤</span> {audioButtonLabel}
@@ -355,7 +355,7 @@ function CustomSolutionsCard() {
                   type="button"
                   onClick={sendAudioRequest}
                   disabled={recState === "sending"}
-                  className="w-full cursor-pointer rounded-xl bg-accent px-6 py-2.5 text-sm font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
+                  className="w-full cursor-pointer rounded-xl bg-accent px-6 py-3 text-base font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
                 >
                   {recState === "sending"
                     ? "Sending…"
@@ -399,7 +399,7 @@ function CustomSolutionsCard() {
               <button
                 type="submit"
                 disabled={formState === "sending"}
-                className="mt-1 w-full cursor-pointer rounded-xl bg-accent px-6 py-2.5 text-sm font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
+                className="mt-1 w-full cursor-pointer rounded-xl bg-accent px-6 py-3 text-base font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
               >
                 {formState === "sending"
                   ? "Sending…"
@@ -488,7 +488,7 @@ function GetLeadsCard() {
           <button
             type="submit"
             disabled={state === "sending"}
-            className="mt-1 w-full cursor-pointer rounded-xl bg-accent px-6 py-2.5 text-sm font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
+            className="mt-1 w-full cursor-pointer rounded-xl bg-accent px-6 py-3 text-base font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
           >
             {state === "sending" ? "Sending…" : state === "error" ? "Didn't go through — try again" : "Apply"}
           </button>
@@ -709,7 +709,7 @@ export default function StartPage() {
               </>
             )}
             {menuPanel === "roadmap" && (
-              <div className="w-[280px] px-3 py-2 text-sm text-white">
+              <div className="w-full px-3 py-2 text-sm text-white">
                 <button
                   onClick={() => setMenuPanel(null)}
                   className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm font-medium text-white/90 transition-colors hover:bg-white/15"
@@ -721,6 +721,11 @@ export default function StartPage() {
                   <div>
                     🧠 <b>Memory is here</b> — Erken remembers you, your business, and
                     where you left off. It keeps getting smarter over time.
+                  </div>
+                  <div>
+                    ⚡ <b>Actions are coming</b> — Erken won&apos;t just show you
+                    the button, it will do the task for you, right in your
+                    account.
                   </div>
                   <div>
                     🌐 <b>Works on the Erken platform today</b> — expanding
@@ -736,8 +741,8 @@ export default function StartPage() {
                     question at a time
                   </div>
                   <div>
-                    🖥️ <b>A desktop companion</b> — Erken on your screen, eventually
-                    doing tasks for you, not just guiding
+                    🖥️ <b>A desktop companion</b> — Erken on your screen, working
+                    across every app you use, not just this one
                   </div>
                 </div>
                 <div className="mt-2 border-t border-white/10 pt-2 text-xs text-white/55">
@@ -753,7 +758,7 @@ export default function StartPage() {
               </div>
             )}
             {menuPanel === "whatsnew" && (
-              <div className="w-[280px] px-3 py-2 text-sm text-white">
+              <div className="w-full px-3 py-2 text-sm text-white">
                 <button
                   onClick={() => setMenuPanel(null)}
                   className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm font-medium text-white/90 transition-colors hover:bg-white/15"
@@ -789,7 +794,7 @@ export default function StartPage() {
               </div>
             )}
             {menuPanel === "feedback" && (
-              <div className="w-[280px] px-3 py-2">
+              <div className="w-full px-3 py-2">
                 <button
                   onClick={() => setMenuPanel(null)}
                   className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm font-medium text-white/90 transition-colors hover:bg-white/15"
