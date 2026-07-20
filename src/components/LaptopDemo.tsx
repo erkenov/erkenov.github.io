@@ -416,7 +416,7 @@ function LeadsView() {
         </div>
       </div>
       <div className="border-t border-border bg-bg/40 px-6 py-2 font-mono text-xs text-text-dim">
-        Google Maps · Yelp · GoHighLevel · Cron 06:00 UTC daily
+        Google Maps · Yelp · Erken platform · Cron 06:00 UTC daily
       </div>
     </div>
   );

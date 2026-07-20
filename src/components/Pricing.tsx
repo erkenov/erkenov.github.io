@@ -11,7 +11,7 @@ const includes = [
   "After-hours, overflow, and missed-call coverage",
   "Calendar integration (Google / Outlook / your existing tool)",
   "Customer SMS confirmations and follow-ups",
-  "GoHighLevel CRM under your brand",
+  "CRM under your brand",
   "Monthly call recordings + summary report",
   "Bilingual English + Spanish",
   "First week free — cancel anytime in the trial",

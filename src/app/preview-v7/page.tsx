@@ -1604,8 +1604,9 @@ export default function PreviewV6Page() {
                   over time.
                 </div>
                 <div>
-                  🌐 <b>Works on GoHighLevel today</b> — expanding to Zapier,
-                  QuickBooks, and the popular apps you already connect
+                  🌐 <b>Works on the Erken platform today</b> — expanding to
+                  Zapier, QuickBooks, and the popular apps you already
+                  connect
                 </div>
                 <div>
                   🧰 <b>Universal helpers on the way</b> — summarize any page,

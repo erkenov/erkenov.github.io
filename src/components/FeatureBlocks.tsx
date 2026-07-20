@@ -149,9 +149,9 @@ export function FeatureCrm() {
       id="crm"
       kicker="02 · CRM & CONTACT TIMELINE"
       title="Every caller becomes a contact, automatically."
-      description="The system logs every call into a GoHighLevel-powered CRM under your brand. You get a full timeline per customer — calls, texts, bookings, no-shows, repeat visits. Nothing falls through the cracks."
+      description="The system logs every call into a CRM under your brand. You get a full timeline per customer — calls, texts, bookings, no-shows, repeat visits. Nothing falls through the cracks."
       bullets={[
-        "White-labelled GoHighLevel CRM",
+        "White-labelled CRM, branded as yours",
         "Auto-tagged by service type and urgency",
         "Texts the customer confirmations and reminders",
         "Marks no-shows and triggers a follow-up sequence",

@@ -58,7 +58,7 @@ export function Scene4ErkenPlatform() {
       {/* Footer — migration callout (kept compact, single line) */}
       <div className="pt-3 border-t border-text-muted/15">
         <p className="text-xs md:text-sm text-text-muted/85">
-          <span className="font-semibold">Already on HubSpot, Pipedrive, or GoHighLevel?</span>{" "}
+          <span className="font-semibold">Already on HubSpot, Pipedrive, or another CRM?</span>{" "}
           Same operator — I migrate your contacts, pipelines, and workflows over.
         </p>
       </div>

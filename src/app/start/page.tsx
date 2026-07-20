@@ -141,10 +141,10 @@ function PlanCard({ plan }: { plan: (typeof PLANS)[number] }) {
   );
 }
 
-type CustomRoute = null | "form" | "audio";
 type RecState =
-  | "idle"
-  | "recording"
+  | "idle" // "🎤 Send an audio message" — first click arms it
+  | "armed" // "● Start recording" — second click actually starts
+  | "recording" // "■ Stop recording"
   | "transcribing"
   | "ready"
   | "sending"
@@ -152,16 +152,19 @@ type RecState =
   | "error" // recording/permission/transcription failure — back to the record button
   | "send-error"; // POST to /api/custom-request failed — keep transcript + email, offer retry
 
-/** Custom GoHighLevel / snapshot work — voice call, typed form, or a recorded audio message. */
+/** Custom GoHighLevel / snapshot work — voice call, recorded audio message, or a typed form. */
 function CustomSolutionsCard() {
-  const [route, setRoute] = useState<CustomRoute>(null);
-
-  // typed-form sub-flow
+  // typed-form sub-flow — always-visible now (Shamil 2026-07-20: no more
+  // "Fill out a form" button/route toggle)
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
   const [formState, setFormState] = useState<SendState>("idle");
 
-  // audio sub-flow
+  // audio sub-flow — the "Send an audio message" button IS the record
+  // control (Shamil 2026-07-20: it used to open a second "Start recording"
+  // button below itself, which spawned/removed elements in the button row
+  // and made the row jump; now the one button just relabels through its
+  // states). Nothing else in the button row ever appears/disappears.
   const [recState, setRecState] = useState<RecState>("idle");
   const [transcript, setTranscript] = useState("");
   const [audioEmail, setAudioEmail] = useState("");
@@ -232,6 +235,41 @@ function CustomSolutionsCard() {
     mediaRecorderRef.current?.stop();
   };
 
+  // Single entry point for the morphing audio button — arm on first click,
+  // start on second, stop while recording. A page refresh is the "reset";
+  // no dedicated reset control needed.
+  const handleAudioButtonClick = () => {
+    if (recState === "idle") {
+      setRecState("armed");
+    } else if (recState === "armed" || recState === "error") {
+      startRecording();
+    } else if (recState === "recording") {
+      stopRecording();
+    }
+    // transcribing / ready / sending / sent / send-error: button is
+    // disabled, no-op — those states are handled by the panel below.
+  };
+
+  const audioButtonDisabled =
+    recState === "transcribing" ||
+    recState === "ready" ||
+    recState === "sending" ||
+    recState === "sent" ||
+    recState === "send-error";
+
+  const audioButtonLabel =
+    recState === "idle"
+      ? "Send an audio message"
+      : recState === "armed"
+        ? "● Start recording"
+        : recState === "recording"
+          ? "■ Stop recording"
+          : recState === "transcribing"
+            ? "Transcribing…"
+            : recState === "error"
+              ? "Couldn't record — try again"
+              : "Audio message recorded";
+
   const sendAudioRequest = async () => {
     if (recState === "sending" || !audioEmail.trim() || !transcript.trim()) return;
     setRecState("sending");
@@ -256,13 +294,19 @@ function CustomSolutionsCard() {
     }
   };
 
+  const showAudioPanel =
+    recState === "ready" ||
+    recState === "sending" ||
+    recState === "sent" ||
+    recState === "send-error";
+
   return (
     <section className="flex flex-col rounded-2xl border border-border bg-surface p-8">
       <h3 className="text-lg font-semibold">Custom solutions</h3>
       <p className="mt-1 text-sm text-text-muted">
-        Want your snapshot configured for you, or custom GoHighLevel
-        configuration? Describe what you need — we&apos;ll assess it and send
-        you an offer.
+        Want your snapshot configured for you, or any custom platform
+        configuration? Describe what you need — we&apos;ll assess it and
+        send you an offer.
       </p>
 
       <div className="mt-6 flex flex-col gap-2">
@@ -275,100 +319,33 @@ function CustomSolutionsCard() {
         </button>
         <button
           type="button"
-          onClick={() => setRoute(route === "form" ? null : "form")}
+          onClick={handleAudioButtonClick}
+          disabled={audioButtonDisabled}
           className={`flex items-center gap-2.5 rounded-xl border px-4 py-3 text-left text-sm font-medium transition-colors ${
-            route === "form"
+            recState === "recording"
               ? "border-accent bg-accent/10 text-text"
-              : "border-border bg-surface-2 text-text hover:border-border-strong"
+              : audioButtonDisabled
+                ? "cursor-default border-border bg-surface-2 text-text-dim"
+                : "border-border bg-surface-2 text-text hover:border-border-strong"
           }`}
         >
-          <span aria-hidden>📝</span> Fill out a form
+          <span aria-hidden>🎤</span> {audioButtonLabel}
         </button>
-        <button
-          type="button"
-          onClick={() => setRoute(route === "audio" ? null : "audio")}
-          className={`flex items-center gap-2.5 rounded-xl border px-4 py-3 text-left text-sm font-medium transition-colors ${
-            route === "audio"
-              ? "border-accent bg-accent/10 text-text"
-              : "border-border bg-surface-2 text-text hover:border-border-strong"
-          }`}
-        >
-          <span aria-hidden>🎤</span> Send an audio message
-        </button>
-      </div>
 
-      {route === "form" &&
-        (formState === "sent" ? (
-          <div className="mt-4 rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm leading-relaxed">
-            ✅ Got it — we&apos;ll review and send you an offer shortly.
-          </div>
-        ) : (
-          <form onSubmit={submitForm} className="mt-4 flex flex-col gap-2">
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={3}
-              required
-              autoFocus
-              placeholder="What do you need?"
-              className="w-full resize-none rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
-            />
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="your email"
-              className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
-            />
-            <button
-              type="submit"
-              disabled={formState === "sending"}
-              className="mt-1 w-full cursor-pointer rounded-xl bg-accent px-6 py-2.5 text-sm font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
-            >
-              {formState === "sending"
-                ? "Sending…"
-                : formState === "error"
-                  ? "Didn't go through — try again"
-                  : "Send request"}
-            </button>
-          </form>
-        ))}
-
-      {route === "audio" &&
-        (recState === "sent" ? (
-          <div className="mt-4 rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm leading-relaxed">
-            ✅ Got it — we&apos;ll review and send you an offer shortly.
-          </div>
-        ) : (
-          <div className="mt-4 flex flex-col gap-2">
-            {recState === "idle" || recState === "error" ? (
-              <button
-                type="button"
-                onClick={startRecording}
-                className="w-full rounded-xl border border-border bg-surface-2 px-4 py-2.5 text-sm font-medium text-text transition-colors hover:border-border-strong"
-              >
-                {recState === "error" ? "Couldn't record — try again" : "● Start recording"}
-              </button>
-            ) : recState === "recording" ? (
-              <button
-                type="button"
-                onClick={stopRecording}
-                className="w-full rounded-xl border border-accent bg-accent/10 px-4 py-2.5 text-sm font-medium text-text"
-              >
-                ■ Stop recording
-              </button>
-            ) : recState === "transcribing" ? (
-              <div className="px-1 text-sm text-text-muted">Transcribing…</div>
+        {showAudioPanel && (
+          <div className="min-h-[10rem]">
+            {recState === "sent" ? (
+              <div className="rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm leading-relaxed">
+                ✅ Got it — we&apos;ll review and send you an offer shortly.
+              </div>
             ) : (
-              <>
+              <div className="flex flex-col gap-2">
                 <div className="rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text-muted">
                   &ldquo;{transcript}&rdquo;
                 </div>
                 <input
                   type="email"
                   required
-                  autoFocus
                   value={audioEmail}
                   onChange={(e) => setAudioEmail(e.target.value)}
                   placeholder="your email"
@@ -386,10 +363,54 @@ function CustomSolutionsCard() {
                       ? "Couldn't send — try again"
                       : "Send request"}
                 </button>
-              </>
+              </div>
             )}
           </div>
-        ))}
+        )}
+      </div>
+
+      <div className="mt-6">
+        <p className="font-mono text-xs uppercase tracking-[0.05em] text-text-dim">
+          Ask by text
+        </p>
+        <div className="mt-2 min-h-[12rem]">
+          {formState === "sent" ? (
+            <div className="rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm leading-relaxed">
+              ✅ Got it — we&apos;ll review and send you an offer shortly.
+            </div>
+          ) : (
+            <form onSubmit={submitForm} className="flex flex-col gap-2">
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                rows={3}
+                required
+                placeholder="Describe the solution you need"
+                className="w-full resize-none rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
+              />
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your email"
+                className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
+              />
+              <button
+                type="submit"
+                disabled={formState === "sending"}
+                className="mt-1 w-full cursor-pointer rounded-xl bg-accent px-6 py-2.5 text-sm font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
+              >
+                {formState === "sending"
+                  ? "Sending…"
+                  : formState === "error"
+                    ? "Didn't go through — try again"
+                    : "Send request"}
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
     </section>
   );
 }
@@ -702,8 +723,9 @@ export default function StartPage() {
                     where you left off. It keeps getting smarter over time.
                   </div>
                   <div>
-                    🌐 <b>Works on GoHighLevel today</b> — expanding to Zapier,
-                    QuickBooks, and the popular apps you already connect
+                    🌐 <b>Works on the Erken platform today</b> — expanding
+                    to Zapier, QuickBooks, and the popular apps you already
+                    connect
                   </div>
                   <div>
                     🧰 <b>Universal helpers on the way</b> — summarize any page, size up

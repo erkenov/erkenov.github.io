@@ -100,7 +100,7 @@ const MODULES: ModuleCard[] = [
     title: "Branded mobile app",
     src: ph("Mobile app", "5e8268"),
     content: (
-      <ModuleBody replaces={["GoHighLevel mobile app", "Pipedrive mobile"]}>
+      <ModuleBody replaces={["your CRM's mobile app", "Pipedrive mobile"]}>
         <p>
           Your operation in your pocket. Reply to leads, take calls, see the
           pipeline, mark deals — all under your brand on iOS and Android.
