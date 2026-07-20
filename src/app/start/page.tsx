@@ -176,7 +176,7 @@ type MicState =
  * v2 (Shamil 2026-07-20): the old "Send an audio message" button + its
  * morph-into-a-panel flow is gone — two complaints: the transcript wasn't
  * editable, and the panel reflowed the card. Replaced with a small mic
- * icon inside the "Ask by text" textarea (Telegram/WhatsApp style):
+ * icon inside the "or send us a message" textarea (Telegram/WhatsApp style):
  * record → transcribe via the existing /api/transcribe → insert the text
  * into the textarea, fully editable, sent through the normal form submit.
  * Zero layout shift — the icon is absolutely positioned over the
@@ -328,17 +328,21 @@ function ContactMethods({
       </div>
 
       <div className="mt-6">
-        {/* Reserved error-hint line lives here, above the "Ask by text"
-            label (Shamil 2026-07-20 live review), not between the textarea
-            and email input below — putting it there made that gap bigger
-            than the email-to-phone gap. Fixed height so it never shifts
-            layout; the empty default state is the intentional wider
-            breathing room above "Ask by text". */}
+        {/* Reserved error-hint line lives here, above the "or send us a
+            message" label (Shamil 2026-07-20 live review), not between the
+            textarea and email input below — putting it there made that gap
+            bigger than the email-to-phone gap. Fixed height so it never
+            shifts layout; the empty default state is the intentional wider
+            breathing room above the label. */}
         <p className="h-4 text-xs text-red-500">
           {micState === "error" ? micError : ""}
         </p>
+        {/* Batch 13 (Shamil 2026-07-20): renamed from "Ask by text" so the
+            card reads as one sentence flowing from the voice button —
+            "Talk to our receptionist" / "or send us a message". Same
+            mono-label styling. */}
         <p className="mt-2 font-mono text-xs uppercase tracking-[0.05em] text-text-dim">
-          Ask by text
+          or send us a message
         </p>
         <div className="mt-2 min-h-[15rem]">
           {formState === "sent" ? (
