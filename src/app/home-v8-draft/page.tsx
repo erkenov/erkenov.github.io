@@ -10,11 +10,13 @@ import HomeV8Client from "./HomeV8Client";
  * natively — reordered to the approved story:
  *   1. Hero (kept live, + price tease + "See your industry" button)
  *   2. Industries — moved up to section 2 (self-identification hook)
- *   3. Compressed illustrated pipeline — replaces the four full-screen
- *      step scenes with home-draft's Variant-A stepper + inline-SVG illos
- *   4. Meet Erken — five sell bullets + three CTAs in one row
- *   5. Pricing — full /start-style plan cards
- *   6. Custom solutions
+ *   3. Pipeline — HubSpot-style sticky-column, always-expanded phase panels
+ *   4. AI section — "Built-in AI that works for you 24/7" (3 agent cards)
+ *   5. Meet Erken — five sell bullets + three CTAs in one row
+ *   6. Pricing — full /start-style plan cards
+ *   7. Stack-comparison — replace-your-stack table ($400–700/mo vs $97)
+ *   8. Custom solutions
+ *   9. Integrations marquee — last section (auto-scroll ticker)
  *   (the get-leads / "you want customers" section was removed; the real
  *    coming-soon card still lives on /start)
  *   (no footer, no divider lines between sections)

@@ -1077,6 +1077,328 @@ function CustomSolutionsSection() {
 // (rev-3 addendum): it was a coming-soon dead end here. The real inactive
 // "Coming soon" GetLeadsCard still lives on /start (untouched).
 
+/* ================================================================== */
+/* ROUND 3 sections (grounded in vault/03-research/2026-07-20-ghl-       */
+/* integrations-and-ai-lineup.md). Brand-neutral: never name the         */
+/* underlying platform vendor. Honest ranges only.                      */
+/* ================================================================== */
+
+/* ---- AI section (HubSpot "Breeze"-style: warm gradient block, headline
+ * left + promise right, then a 3-card grid of AI agents with mini UI
+ * vignettes). AI lineup reframed brand-neutral per the research (Voice AI →
+ * AI phone agent, Conversation AI → AI chat agent, Reviews AI → AI review
+ * replies; Content/Website/Workflow AI as smaller mentions). Upsell hint,
+ * no hard prices. Placed between pipeline and Meet Erken. ---- */
+function VignettePhone() {
+  return (
+    <div className="rounded-xl border border-border bg-surface-2 p-3">
+      <div className="flex items-center gap-2">
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/15 text-sm">📞</span>
+        <div className="text-xs leading-tight">
+          <div className="font-medium text-text">Incoming call</div>
+          <div className="text-text-dim">answering in 2 rings…</div>
+        </div>
+      </div>
+      <div className="mt-3 flex items-center gap-1.5 rounded-lg bg-accent/10 px-3 py-2 text-xs text-text">
+        <Check className="h-3.5 w-3.5 shrink-0 text-accent" strokeWidth={2.5} /> Booked — Tue 2:00 PM
+      </div>
+    </div>
+  );
+}
+function VignetteChat() {
+  return (
+    <div className="space-y-2 rounded-xl border border-border bg-surface-2 p-3">
+      <div className="flex justify-end">
+        <span className="max-w-[85%] rounded-2xl rounded-br-sm bg-accent px-3 py-1.5 text-xs text-bg">
+          Any openings Friday?
+        </span>
+      </div>
+      <div className="flex justify-start">
+        <span className="max-w-[85%] rounded-2xl rounded-bl-sm border border-border bg-surface px-3 py-1.5 text-xs text-text">
+          Yes — 10 AM or 3 PM. Which works?
+        </span>
+      </div>
+    </div>
+  );
+}
+function VignetteReview() {
+  return (
+    <div className="rounded-xl border border-border bg-surface-2 p-3">
+      <div className="text-xs tracking-widest text-accent">★★★★★</div>
+      <div className="mt-1 text-xs text-text">&ldquo;Fast and friendly — highly recommend.&rdquo;</div>
+      <div className="mt-2 rounded-lg bg-accent/10 px-3 py-1.5 text-xs text-text-muted">
+        <span className="font-medium text-text">Auto-reply:</span> Thank you, Maria! 🙏
+      </div>
+    </div>
+  );
+}
+
+const AI_CARDS: { title: string; desc: string; Vignette: () => React.ReactElement }[] = [
+  {
+    title: "AI phone agent",
+    desc: "Answers every call in two rings, checks your live calendar, and books the job — day or night.",
+    Vignette: VignettePhone,
+  },
+  {
+    title: "AI chat agent",
+    desc: "Replies on web chat, SMS, and DMs, qualifies the lead, and books the appointment in the same thread.",
+    Vignette: VignetteChat,
+  },
+  {
+    title: "AI review replies",
+    desc: "Responds to every Google and Facebook review in your voice — on autopilot or one tap to approve.",
+    Vignette: VignetteReview,
+  },
+];
+
+function AISection() {
+  return (
+    <section
+      id="ai"
+      className="relative overflow-hidden py-20 md:py-28"
+      // Warm sage→cream gradient block (our palette, not HubSpot orange).
+      style={{
+        background:
+          "linear-gradient(155deg, rgba(126,166,135,0.14) 0%, rgba(250,246,236,0.85) 46%, var(--bg) 100%)",
+      }}
+    >
+      <div className="mx-auto max-w-6xl px-6 md:px-8">
+        <div className="grid gap-6 md:grid-cols-2 md:items-end">
+          <motion.div
+            data-celly-avoid
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5, ease }}
+          >
+            <SectionKicker>Your AI team</SectionKicker>
+            <h2
+              className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
+              style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
+            >
+              Built-in AI that works for you 24/7.
+            </h2>
+          </motion.div>
+          <motion.p
+            data-celly-avoid
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5, ease, delay: 0.1 }}
+            className="text-base leading-relaxed text-text-muted md:text-lg"
+          >
+            Chat, calls, reviews, content, and workflows — a whole AI team,
+            included and working together from day one. It answers, books,
+            replies, and writes while you run the business.
+          </motion.p>
+        </div>
+
+        <div data-celly-avoid className="mt-12 grid gap-6 md:grid-cols-3">
+          {AI_CARDS.map((card, i) => (
+            <motion.div
+              key={card.title}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.45, ease, delay: i * 0.08 }}
+              className="flex flex-col rounded-2xl border border-border bg-surface p-5 shadow-sm"
+            >
+              <card.Vignette />
+              <h3 className="mt-4 text-base font-semibold text-text" style={{ letterSpacing: "-0.01em" }}>
+                {card.title}
+              </h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-text-muted">{card.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        <p data-celly-avoid className="mt-8 text-center text-sm text-text-muted">
+          Also included: <b className="text-text">an AI content writer</b>,{" "}
+          <b className="text-text">AI-assisted page building</b>, and an{" "}
+          <b className="text-text">AI workflow assistant</b>.
+        </p>
+        <p className="mt-2 text-center text-xs text-text-dim">
+          Included on every plan — with pay-as-you-go and unlimited AI tiers as you scale.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+/* ---- Stack-comparison table ("replace your whole stack"). Categories +
+ * plain-text tool chips + sanity-checked typical monthly ranges + Included,
+ * with the research's honest total framing ($400–$700/mo typical, up to
+ * ~$1,400 full stack — NOT the unverified $1,876). Placed after pricing. ---- */
+const STACK_ROWS: { cat: string; tools: string[]; price: string }[] = [
+  { cat: "CRM", tools: ["HubSpot", "Pipedrive"], price: "$20–50/mo" },
+  { cat: "Email marketing & automation", tools: ["ActiveCampaign", "Mailchimp"], price: "$30–80/mo" },
+  { cat: "Funnels & landing pages", tools: ["ClickFunnels", "Leadpages"], price: "$97–297/mo" },
+  { cat: "Appointment booking", tools: ["Calendly", "Acuity"], price: "$10–30/mo" },
+  { cat: "Reviews & reputation", tools: ["Podium", "Birdeye"], price: "$150–400/mo" },
+  { cat: "SMS & phone system", tools: ["Twilio", "SimpleTexting"], price: "$25–100/mo" },
+  { cat: "Website & hosting", tools: ["WordPress", "page builder"], price: "$20–50/mo" },
+  { cat: "Automation glue", tools: ["Zapier"], price: "$20–49/mo" },
+];
+
+function ToolChip({ name }: { name: string }) {
+  return (
+    <span className="inline-flex items-center rounded-md border border-border bg-surface-2 px-2 py-0.5 text-xs text-text-muted">
+      {name}
+    </span>
+  );
+}
+
+function StackComparisonSection() {
+  return (
+    <section id="replace-your-stack" className="py-20 md:py-28">
+      <div className="mx-auto max-w-6xl px-6 md:px-8">
+        <motion.div
+          data-celly-avoid
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.5, ease }}
+          className="max-w-2xl"
+        >
+          <SectionKicker>Replace your whole stack</SectionKicker>
+          <h2
+            className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
+            style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
+          >
+            One platform instead of eight subscriptions.
+          </h2>
+          <p className="mt-4 text-base text-text-muted md:text-lg">
+            Everything below is the same platform, under one login — and one bill.
+          </p>
+        </motion.div>
+
+        <div data-celly-avoid className="mt-10 overflow-hidden rounded-2xl border border-border bg-surface">
+          {/* Header row (desktop only) */}
+          <div className="hidden grid-cols-[1.4fr_2fr_0.9fr_auto] gap-4 bg-surface-2 px-6 py-3 font-mono text-[11px] uppercase tracking-[0.08em] text-text-dim md:grid">
+            <div>Category</div>
+            <div>The tools you&apos;d buy</div>
+            <div>Typical / mo</div>
+            <div className="text-center">Included</div>
+          </div>
+          {STACK_ROWS.map((row) => (
+            <div
+              key={row.cat}
+              className="grid grid-cols-1 gap-2 border-t border-border px-6 py-4 md:grid-cols-[1.4fr_2fr_0.9fr_auto] md:items-center md:gap-4"
+            >
+              <div className="font-medium text-text">{row.cat}</div>
+              <div className="flex flex-wrap gap-1.5">
+                {row.tools.map((t) => (
+                  <ToolChip key={t} name={t} />
+                ))}
+              </div>
+              <div className="text-sm text-text-muted">{row.price}</div>
+              <div className="flex items-center gap-1.5 md:justify-center">
+                <Check className="h-4 w-4 shrink-0 text-accent" strokeWidth={2.5} />
+                <span className="text-xs text-text-dim md:hidden">Included</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Contrast footer */}
+        <div data-celly-avoid className="mt-6 grid gap-4 md:grid-cols-2">
+          <div className="rounded-2xl border border-border bg-surface p-6">
+            <div className="text-sm text-text-muted">Typical total, running separately</div>
+            <div className="mt-1 text-3xl font-bold tracking-tight text-text">
+              <span className="text-text-dim line-through decoration-[var(--clay)]/60 decoration-2">$400–$700</span>
+              <span className="ml-1 text-base font-normal text-text-dim">/mo</span>
+            </div>
+            <div className="mt-1 text-xs text-text-dim">up to ~$1,400/mo for a full stack</div>
+          </div>
+          <div className="flex flex-col justify-between rounded-2xl border-2 border-accent bg-[var(--accent-soft)] p-6">
+            <div>
+              <div className="text-sm text-text-muted">All of it, included</div>
+              <div className="mt-1 text-3xl font-bold tracking-tight text-accent">
+                $97<span className="text-base font-normal">/mo</span>
+              </div>
+            </div>
+            <a
+              href="/start"
+              className="mt-4 inline-flex w-fit items-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
+            >
+              Try for free →
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---- Integrations marquee (last section — no footer). Right-to-left CSS
+ * ticker of confirmed-native integration names as text chips, duplicated
+ * track for a seamless loop, pause on hover, reduced-motion fallback = a
+ * static centered wrap. Only research-confirmed native names (no TikTok/
+ * Yext/Clio). ---- */
+const INTEGRATION_NAMES = [
+  "Gmail",
+  "Google Calendar",
+  "Outlook",
+  "Stripe",
+  "PayPal",
+  "QuickBooks",
+  "Shopify",
+  "Facebook",
+  "Instagram",
+  "Google Business Profile",
+  "Zapier",
+  "Make",
+  "Webhooks",
+];
+
+function IntegrationsMarquee() {
+  return (
+    <section id="integrations" className="py-20 md:py-28">
+      <div className="mx-auto max-w-3xl px-6 text-center md:px-8">
+        <SectionKicker>Integrations</SectionKicker>
+        <h2
+          className="mx-auto mt-3 max-w-2xl text-2xl font-bold tracking-tight md:text-4xl"
+          style={{ letterSpacing: "-0.02em", lineHeight: 1.15 }}
+        >
+          Works with the tools you already use — plus 1,500+ more through our
+          marketplace and Zapier.
+        </h2>
+      </div>
+
+      <div
+        className="v8mq mt-10 w-full overflow-hidden"
+        style={{
+          WebkitMaskImage:
+            "linear-gradient(to right, transparent, black 7%, black 93%, transparent)",
+          maskImage:
+            "linear-gradient(to right, transparent, black 7%, black 93%, transparent)",
+        }}
+      >
+        <div className="v8mq-track flex w-max">
+          {[...INTEGRATION_NAMES, ...INTEGRATION_NAMES].map((name, i) => (
+            <span
+              key={i}
+              className="mr-3 inline-flex items-center whitespace-nowrap rounded-full border border-border bg-surface px-5 py-2.5 text-sm font-medium text-text-muted shadow-sm"
+            >
+              {name}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <style>{`
+        .v8mq-track { animation: v8mq-scroll 48s linear infinite; will-change: transform; }
+        .v8mq:hover .v8mq-track { animation-play-state: paused; }
+        @keyframes v8mq-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @media (prefers-reduced-motion: reduce) {
+          .v8mq { overflow: visible; -webkit-mask-image: none; mask-image: none; }
+          .v8mq-track { animation: none; width: 100%; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+        }
+      `}</style>
+    </section>
+  );
+}
+
 export default function HomeV8Client() {
   // (rev-3 complete: always-expanded phases, fuller lists, sprite left +
   // vertically centered, hero bg, no dividers, get-leads removed, 16:9 demo.)
@@ -2047,15 +2369,24 @@ export default function HomeV8Client() {
           (Scene2/3/4 + MacbookFrame3D). */}
       <PipelineSection />
 
-      {/* 4. Meet Erken — live centered section, five sell bullets + three
+      {/* 4. AI section (ROUND 3) — "Built-in AI that works for you 24/7". */}
+      <AISection />
+
+      {/* 5. Meet Erken — live centered section, five sell bullets + three
           CTAs in one row. */}
       <MeetErkenSection onSpriteClick={openChoiceMenu} />
 
-      {/* 5. Pricing — full /start-style plan cards (CTAs → /start). */}
+      {/* 6. Pricing — full /start-style plan cards (CTAs → /start). */}
       <PricingSection />
 
-      {/* 6. Custom solutions (from home-draft). */}
+      {/* 7. Stack-comparison table (ROUND 3) — replace-your-stack. */}
+      <StackComparisonSection />
+
+      {/* 8. Custom solutions (from home-draft). */}
       <CustomSolutionsSection />
+
+      {/* 9. Integrations marquee (ROUND 3) — LAST section (no footer). */}
+      <IntegrationsMarquee />
 
       {/* Get-leads / "you want customers" section REMOVED from the homepage
           (rev-3 addendum: it was a coming-soon dead end here; the real
