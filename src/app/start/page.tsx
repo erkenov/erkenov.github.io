@@ -43,6 +43,23 @@ const PLAN_FEATURES = [
   "Free first week",
 ];
 
+// Batch 14 (Shamil 2026-07-20): with the Get leads card parked, 5 cards
+// remain — Shamil's preference is all 5 in one row at wide desktop.
+// Tried at the xl breakpoint (1280px, Tailwind default) first; the page's
+// max-w-6xl container is a fixed ~1152px there regardless of monitor
+// size, which only leaves ~211px per card after gaps — too tight for the
+// "What's included" bullet lists (long lines like "Reputation + review
+// management" wrap badly even after shrinking type/padding one notch).
+// So: true 5-up only kicks in at a custom ≥1400px breakpoint, where the
+// container is also widened (see max-w-6xl min-[1400px]:max-w-[84rem]!
+// below) to give each card real room. Between lg (1024px) and 1400px —
+// which includes 1280px — cards stay 3-up; the leftover pair (Erken +
+// Custom solutions) centers itself via flex-wrap + justify-content:
+// center rather than grid column math, which centers any leftover-row
+// count for free. Mobile (<768px) stays a single stacked column.
+const CARD_BASIS =
+  "w-full md:basis-[calc(50%-0.75rem)] lg:basis-[calc(33.333%-1rem)] min-[1400px]:basis-[calc(20%-1.2rem)]!";
+
 function blobToBase64(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -90,16 +107,16 @@ function PlanCard({ plan }: { plan: (typeof PLANS)[number] }) {
   };
 
   return (
-    <section className="flex flex-col rounded-2xl border border-border bg-surface p-8">
-      <h3 className="text-lg font-semibold">{plan.label}</h3>
+    <section className="flex h-full flex-col rounded-2xl border border-border bg-surface p-8 min-[1400px]:p-6!">
+      <h3 className="text-lg font-semibold min-[1400px]:text-base!">{plan.label}</h3>
       <div className="mt-2">
-        <span className="text-2xl font-bold">{plan.price}</span>
+        <span className="text-2xl font-bold min-[1400px]:text-xl!">{plan.price}</span>
         <span className="ml-2 text-xs text-text-dim">{plan.note}</span>
       </div>
       <p className="mt-4 text-xs uppercase tracking-[0.05em] text-text-dim">
         What&apos;s included
       </p>
-      <ul className="mt-2 flex-1 space-y-1.5 text-sm text-text-muted">
+      <ul className="mt-2 flex-1 space-y-1.5 text-sm text-text-muted min-[1400px]:space-y-1! min-[1400px]:text-xs!">
         {PLAN_FEATURES.map((f) => (
           <li key={f} className="flex items-start gap-2">
             <span className="mt-0.5 text-accent">✓</span>
@@ -444,9 +461,9 @@ function ContactMethods({
 /** Custom GoHighLevel / snapshot work — voice call, or a typed form with dictation. */
 function CustomSolutionsCard() {
   return (
-    <section className="flex flex-col rounded-2xl border border-border bg-surface p-8">
-      <h3 className="text-lg font-semibold">Custom solutions</h3>
-      <p className="mt-1 text-sm text-text-muted">
+    <section className="flex h-full flex-col rounded-2xl border border-border bg-surface p-8 min-[1400px]:p-6!">
+      <h3 className="text-lg font-semibold min-[1400px]:text-base!">Custom solutions</h3>
+      <p className="mt-1 text-sm text-text-muted min-[1400px]:text-xs!">
         Want your snapshot configured for you, or any custom platform
         configuration? Describe what you need — we&apos;ll assess it and
         send you an offer.
@@ -460,16 +477,23 @@ function CustomSolutionsCard() {
 }
 
 /**
- * Rent-leads partnership — light by design, details still being worked
- * out. Display name changed to "Get leads" (Shamil 2026-07-20); the
- * underlying kind value stays "rent-leads" (wired to the
- * "rent-leads-applicant" GHL tag in /api/custom-request) — this is a
- * display-only rename, not a re-tagging. Contact structure matched to
- * CustomSolutionsCard (Shamil 2026-07-20): voice call or typed form via
- * the shared ContactMethods component, phone kept since a leads
- * partnership needs a callback number. NOTE (Shamil): a further copy
- * pass for this card is coming as a follow-up — don't invent more text
- * beyond what's here.
+ * Parked 2026-07-20 (Batch 14, Shamil's call) — future offering, not a
+ * present one: no lead-gen sites exist yet to actually deliver leads
+ * from. Component kept intact and unrendered (not deleted) so it's a
+ * one-line re-add to the grid below once the lead-gen sites exist. The
+ * shared ContactMethods component it depends on stays live — Custom
+ * solutions still uses it — and /api/custom-request's "rent-leads" kind
+ * keeps working (harmless to leave wired, nothing points at it right now).
+ *
+ * Original context, still accurate for whenever this comes back: display
+ * name is "Get leads" (Shamil 2026-07-20); the underlying kind value
+ * stays "rent-leads" (wired to the "rent-leads-applicant" GHL tag in
+ * /api/custom-request) — that was a display-only rename, not a
+ * re-tagging. Contact structure matches CustomSolutionsCard: voice call
+ * or typed form via the shared ContactMethods component, phone kept
+ * since a leads partnership needs a callback number. NOTE (Shamil): a
+ * further copy pass for this card was pending as a follow-up — don't
+ * invent more text beyond what's here when it comes back.
  */
 function GetLeadsCard() {
   return (
@@ -574,7 +598,7 @@ export default function StartPage() {
 
   return (
     <main className="min-h-screen bg-bg px-6 py-20 text-text md:py-28">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-6xl min-[1400px]:max-w-[84rem]!">
         <a
           href="/"
           className="mb-8 inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
@@ -592,60 +616,73 @@ export default function StartPage() {
           the assistant that teaches you the whole thing as you use it.
         </p>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Batch 14 (Shamil 2026-07-20): Get leads card parked (see
+            GetLeadsCard below) — 5 cards left, all in one row at wide
+            desktop. flex-wrap + justify-center (not CSS grid) so a
+            leftover row of fewer-than-N cards centers itself as a group
+            automatically, no column-math needed. Each card is wrapped in
+            a CARD_BASIS div that sets its width per breakpoint; the card's
+            own root keeps h-full so flex's default row-stretch still
+            equalizes height across a row, same as the old grid did. */}
+        <div className="mt-12 flex flex-wrap justify-center gap-6">
           {PLANS.map((p) => (
-            <PlanCard key={p.id} plan={p} />
+            <div key={p.id} className={CARD_BASIS}>
+              <PlanCard plan={p} />
+            </div>
           ))}
 
           {/* Erkenbot — free, zero friction, lives on her own card now */}
-          <section className="flex flex-col rounded-2xl border border-border bg-surface p-8">
-            <div className="flex items-start gap-8">
-              <div
-                ref={spriteRef}
-                onClick={() => (botMenu ? closeBotMenu() : openBotMenu())}
-                className="shrink-0 cursor-pointer"
-                title="Chat with Erken"
+          <div className={CARD_BASIS}>
+            <section className="flex h-full flex-col rounded-2xl border border-border bg-surface p-8 min-[1400px]:p-6!">
+              <div className="flex items-start gap-8 min-[1400px]:gap-4!">
+                <div
+                  ref={spriteRef}
+                  onClick={() => (botMenu ? closeBotMenu() : openBotMenu())}
+                  className="shrink-0 cursor-pointer"
+                  title="Chat with Erken"
+                >
+                  <CellDragonSprite scale={0.42} />
+                </div>
+                <div className="pt-1">
+                  <h3 className="text-lg font-semibold min-[1400px]:text-base!">Erken, the assistant</h3>
+                </div>
+              </div>
+              <div className="mt-12 flex flex-1 flex-col justify-end gap-2 text-sm leading-relaxed text-text-muted min-[1400px]:mt-8! min-[1400px]:text-xs!">
+                <div>
+                  🗣️ <b>Ask it anything</b> — by voice or chat, about the
+                  platform or your business
+                </div>
+                <div>
+                  👉 <b>Shows you the exact button</b> — walks you through any
+                  task on screen, out loud, step by step
+                </div>
+                <div>
+                  🧠 <b>Remembers you</b> — your business, your setup, where
+                  you left off
+                </div>
+                <div>
+                  ⚡ <b>Actions on the way</b> — soon it won&apos;t just guide,
+                  it&apos;ll do the task for you
+                </div>
+                <div>
+                  🧩 <b>Already in your browser</b> — free extension,
+                  installs in one click. Desktop version on the way.
+                </div>
+              </div>
+              <a
+                href="https://chromewebstore.google.com/detail/erken/mggcbjggcbdpmbglbodkadgmpapcmelc"
+                target="_blank"
+                rel="noopener"
+                className="mt-6 inline-block w-full cursor-pointer rounded-xl bg-accent px-6 py-3 text-center text-base font-medium text-bg transition-colors hover:bg-accent-hover min-[1400px]:px-4! min-[1400px]:py-2.5! min-[1400px]:text-sm!"
               >
-                <CellDragonSprite scale={0.42} />
-              </div>
-              <div className="pt-1">
-                <h3 className="text-lg font-semibold">Erken, the assistant</h3>
-              </div>
-            </div>
-            <div className="mt-12 flex flex-1 flex-col justify-end gap-2 text-sm leading-relaxed text-text-muted">
-              <div>
-                🗣️ <b>Ask it anything</b> — by voice or chat, about the
-                platform or your business
-              </div>
-              <div>
-                👉 <b>Shows you the exact button</b> — walks you through any
-                task on screen, out loud, step by step
-              </div>
-              <div>
-                🧠 <b>Remembers you</b> — your business, your setup, where
-                you left off
-              </div>
-              <div>
-                ⚡ <b>Actions on the way</b> — soon it won&apos;t just guide,
-                it&apos;ll do the task for you
-              </div>
-              <div>
-                🧩 <b>Already in your browser</b> — free extension,
-                installs in one click. Desktop version on the way.
-              </div>
-            </div>
-            <a
-              href="https://chromewebstore.google.com/detail/erken/mggcbjggcbdpmbglbodkadgmpapcmelc"
-              target="_blank"
-              rel="noopener"
-              className="mt-6 inline-block w-full cursor-pointer rounded-xl bg-accent px-6 py-3 text-center text-base font-medium text-bg transition-colors hover:bg-accent-hover"
-            >
-              Download for free
-            </a>
-          </section>
+                Download for free
+              </a>
+            </section>
+          </div>
 
-          <CustomSolutionsCard />
-          <GetLeadsCard />
+          <div className={CARD_BASIS}>
+            <CustomSolutionsCard />
+          </div>
         </div>
       </div>
 
