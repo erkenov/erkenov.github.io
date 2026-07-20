@@ -152,12 +152,32 @@ type RecState =
   | "error" // recording/permission/transcription failure — back to the record button
   | "send-error"; // POST to /api/custom-request failed — keep transcript + email, offer retry
 
-/** Custom GoHighLevel / snapshot work — voice call, recorded audio message, or a typed form. */
-function CustomSolutionsCard() {
-  // typed-form sub-flow — always-visible now (Shamil 2026-07-20: no more
-  // "Fill out a form" button/route toggle)
+type ContactKind = "custom-solution" | "rent-leads";
+
+/**
+ * ContactMethods — the shared three-route contact block (voice / audio /
+ * typed form) used by both CustomSolutionsCard and GetLeadsCard (Shamil
+ * 2026-07-20: extracted rather than duplicated so the state machine —
+ * especially the audio morph-button logic that's already been through a
+ * couple of careful bug fixes — lives in exactly one place). `kind` picks
+ * the /api/custom-request tag. Phone is always offered, on both the typed
+ * form and the post-transcription audio step, and always OPTIONAL — email
+ * is the one required field, phone is a low-friction "leave it if you
+ * want a callback" extra (the endpoint forwards `phone` to the GHL
+ * contact for any `kind`, not just rent-leads — see /api/custom-request).
+ */
+function ContactMethods({
+  kind,
+  textareaPlaceholder,
+}: {
+  kind: ContactKind;
+  textareaPlaceholder: string;
+}) {
+  // typed-form sub-flow — always-visible (Shamil 2026-07-20: no expand/
+  // collapse toggle)
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [formState, setFormState] = useState<SendState>("idle");
 
   // audio sub-flow — the "Send an audio message" button IS the record
@@ -168,6 +188,7 @@ function CustomSolutionsCard() {
   const [recState, setRecState] = useState<RecState>("idle");
   const [transcript, setTranscript] = useState("");
   const [audioEmail, setAudioEmail] = useState("");
+  const [audioPhone, setAudioPhone] = useState("");
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
 
@@ -182,8 +203,9 @@ function CustomSolutionsCard() {
         body: JSON.stringify({
           email: email.trim(),
           message: message.trim(),
-          kind: "custom-solution",
+          kind,
           channel: "form",
+          ...(phone.trim() ? { phone: phone.trim() } : {}),
         }),
       });
       setFormState(r.ok ? "sent" : "error");
@@ -280,8 +302,9 @@ function CustomSolutionsCard() {
         body: JSON.stringify({
           email: audioEmail.trim(),
           message: transcript.trim(),
-          kind: "custom-solution",
+          kind,
           channel: "audio",
+          ...(audioPhone.trim() ? { phone: audioPhone.trim() } : {}),
         }),
       });
       // A failed POST is a send failure, not a recording failure — keep the
@@ -301,14 +324,7 @@ function CustomSolutionsCard() {
     recState === "send-error";
 
   return (
-    <section className="flex flex-col rounded-2xl border border-border bg-surface p-8">
-      <h3 className="text-lg font-semibold">Custom solutions</h3>
-      <p className="mt-1 text-sm text-text-muted">
-        Want your snapshot configured for you, or any custom platform
-        configuration? Describe what you need — we&apos;ll assess it and
-        send you an offer.
-      </p>
-
+    <>
       <div className="mt-6 flex flex-col gap-2">
         <button
           type="button"
@@ -333,7 +349,7 @@ function CustomSolutionsCard() {
         </button>
 
         {showAudioPanel && (
-          <div className="min-h-[10rem]">
+          <div className="min-h-[14rem]">
             {recState === "sent" ? (
               <div className="rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm leading-relaxed">
                 ✅ Got it — we&apos;ll review and send you an offer shortly.
@@ -349,6 +365,13 @@ function CustomSolutionsCard() {
                   value={audioEmail}
                   onChange={(e) => setAudioEmail(e.target.value)}
                   placeholder="your email"
+                  className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
+                />
+                <input
+                  type="tel"
+                  value={audioPhone}
+                  onChange={(e) => setAudioPhone(e.target.value)}
+                  placeholder="phone (optional)"
                   className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
                 />
                 <button
@@ -373,7 +396,7 @@ function CustomSolutionsCard() {
         <p className="font-mono text-xs uppercase tracking-[0.05em] text-text-dim">
           Ask by text
         </p>
-        <div className="mt-2 min-h-[12rem]">
+        <div className="mt-2 min-h-[15rem]">
           {formState === "sent" ? (
             <div className="rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm leading-relaxed">
               ✅ Got it — we&apos;ll review and send you an offer shortly.
@@ -385,7 +408,7 @@ function CustomSolutionsCard() {
                 onChange={(e) => setMessage(e.target.value)}
                 rows={3}
                 required
-                placeholder="Describe the solution you need"
+                placeholder={textareaPlaceholder}
                 className="w-full resize-none rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
               />
               <input
@@ -394,6 +417,13 @@ function CustomSolutionsCard() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your email"
+                className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
+              />
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="phone (optional)"
                 className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
               />
               <button
@@ -411,6 +441,24 @@ function CustomSolutionsCard() {
           )}
         </div>
       </div>
+    </>
+  );
+}
+
+/** Custom GoHighLevel / snapshot work — voice call, recorded audio message, or a typed form. */
+function CustomSolutionsCard() {
+  return (
+    <section className="flex flex-col rounded-2xl border border-border bg-surface p-8">
+      <h3 className="text-lg font-semibold">Custom solutions</h3>
+      <p className="mt-1 text-sm text-text-muted">
+        Want your snapshot configured for you, or any custom platform
+        configuration? Describe what you need — we&apos;ll assess it and
+        send you an offer.
+      </p>
+      <ContactMethods
+        kind="custom-solution"
+        textareaPlaceholder="Describe the solution you need"
+      />
     </section>
   );
 }
@@ -420,80 +468,26 @@ function CustomSolutionsCard() {
  * out. Display name changed to "Get leads" (Shamil 2026-07-20); the
  * underlying kind value stays "rent-leads" (wired to the
  * "rent-leads-applicant" GHL tag in /api/custom-request) — this is a
- * display-only rename, not a re-tagging.
+ * display-only rename, not a re-tagging. Contact structure matched to
+ * CustomSolutionsCard (Shamil 2026-07-20): voice / audio / typed form via
+ * the shared ContactMethods component, phone kept since a leads
+ * partnership needs a callback number. NOTE (Shamil): a further copy
+ * pass for this card is coming as a follow-up — don't invent more text
+ * beyond what's here.
  */
 function GetLeadsCard() {
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [company, setCompany] = useState("");
-  const [state, setState] = useState<SendState>("idle");
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (state === "sending" || !email.trim()) return;
-    setState("sending");
-    try {
-      const r = await fetch("/api/custom-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email.trim(),
-          phone: phone.trim(),
-          company: company.trim(),
-          kind: "rent-leads",
-        }),
-      });
-      setState(r.ok ? "sent" : "error");
-    } catch {
-      setState("error");
-    }
-  };
-
   return (
     <section className="flex flex-col rounded-2xl border border-border bg-surface p-8">
       <h3 className="text-lg font-semibold">Get leads</h3>
       <p className="mt-1 text-sm text-text-muted">
-        We build and market our own lead-generating sites in your industry.
+        We run and market our own lead-generating sites in your industry.
         Partner with us and we hand you live leads — delivered by phone — for
         a share of the revenue.
       </p>
-      {state === "sent" ? (
-        <div className="mt-6 rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm leading-relaxed">
-          ✅ Got it — we&apos;ll be in touch to talk details.
-        </div>
-      ) : (
-        <form onSubmit={submit} className="mt-6 flex flex-1 flex-col justify-end gap-2">
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="your email"
-            className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
-          />
-          <input
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="phone number"
-            className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
-          />
-          <input
-            type="text"
-            value={company}
-            onChange={(e) => setCompany(e.target.value)}
-            placeholder="company / industry"
-            className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
-          />
-          <button
-            type="submit"
-            disabled={state === "sending"}
-            className="mt-1 w-full cursor-pointer rounded-xl bg-accent px-6 py-3 text-base font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
-          >
-            {state === "sending" ? "Sending…" : state === "error" ? "Didn't go through — try again" : "Apply"}
-          </button>
-        </form>
-      )}
+      <ContactMethods
+        kind="rent-leads"
+        textareaPlaceholder="Tell us about your company and the leads you need"
+      />
     </section>
   );
 }
@@ -640,8 +634,8 @@ export default function StartPage() {
                 it&apos;ll do the task for you
               </div>
               <div>
-                🧩 <b>Free browser extension</b> — desktop version on the
-                way
+                🧩 <b>Already in your browser</b> — free extension,
+                installs in one click. Desktop version on the way.
               </div>
             </div>
             <a
