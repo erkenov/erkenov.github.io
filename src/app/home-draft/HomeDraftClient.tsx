@@ -27,10 +27,28 @@
  * and Pipeline are grid/carousel layouts (not a single text+visual pair)
  * so the alternating rule doesn't apply there. Custom solutions and Get
  * leads are text-only offer blocks — no visual to alternate.
+ *
+ * v3 (Shamil live-scroll review): restored the full nav link set in the
+ * header (a one-link menu "looked weird" — pruning decided later); fixed a
+ * z-index bug where SceneIndustriesCarousel's closed-card arrow buttons
+ * (z-40) rendered on top of the sticky header because the header was also
+ * z-40 and lost the later-DOM-order tiebreak — header is now z-50, matching
+ * the live site's Header.tsx; added FloatingErken, a persistent fixed-corner
+ * sprite so Erken is visible from page load (previously only appeared at
+ * the Meet Erken section once the hero sprite was swapped for the video
+ * placeholder in v2 — Shamil scrolled partway and asked "where did the
+ * Erken go").
+ *
+ * v4 (Shamil live review, pipeline section): the flat 4-card grid read as
+ * "unfinished." Added two alternative treatments behind a draft-only
+ * toggle (Variant A / Variant B pills, not part of the proposed final
+ * design) so Shamil can compare them side by side — no second carousel,
+ * per his explicit note.
  */
 
-import { motion } from "framer-motion";
-import { Play } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Play, Megaphone, PhoneIncoming, ListChecks, LayoutDashboard } from "lucide-react";
 import { CellDragonSprite } from "@/components/CellDragonSprite";
 import { SceneIndustriesCarousel } from "@/components/SceneIndustriesCarousel";
 import ErkenChatWidget, { openErkenChat } from "@/components/ErkenChatWidget";
@@ -60,6 +78,31 @@ function TryForFreeCta({ label = "Try for free" }: { label?: string }) {
   );
 }
 
+/**
+ * FloatingErken — persistent fixed-corner companion (Shamil live review:
+ * "where did the Erken go" — with the hero sprite swapped for the video
+ * placeholder in v2, there was no visible Erken until the Meet Erken
+ * section far down the page). Small static sprite pinned bottom-left,
+ * always on screen, clicking it opens the chat via openErkenChat() — the
+ * same trigger pattern preview-v7 and /start use. This is a simplified
+ * stand-in for preview-v7's roaming/auto-positioning Celly (not ported
+ * here, see file header) — it doesn't move with scroll, it just stays put
+ * so the chat entry point is never missing.
+ * z-30: below the header (z-50) and the carousel's closed-card arrows
+ * (z-40) so it can never cover either; well below the industry-detail
+ * modal (z-[200]), which should cover it when open.
+ */
+function FloatingErken() {
+  return (
+    <div
+      className="fixed bottom-4 left-4 z-30 md:bottom-6 md:left-6"
+      title="Chat with Erken"
+    >
+      <CellDragonSprite scale={0.45} pointDirection="right" onClick={() => openErkenChat()} />
+    </div>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /* Header + Footer — light, minimal, matches the live token system.   */
 /* Kept local to this draft rather than reusing src/components/Header  */
@@ -68,12 +111,29 @@ function TryForFreeCta({ label = "Try for free" }: { label?: string }) {
 /* ------------------------------------------------------------------ */
 function DraftHeader() {
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-bg/85 backdrop-blur-md">
+    // z-50 (not z-40): matches the live site's Header.tsx sticky z-index.
+    // Bug found in Shamil's live scroll review: at z-40 the header tied
+    // with SceneIndustriesCarousel's z-40 arrow buttons, and later-DOM-order
+    // won, so the arrows rendered on top of the menu while scrolling. z-50
+    // clears every z-index used inside the carousel's closed-card view
+    // (arrows z-40, edge fade z-[1000] is a non-interactive decorative
+    // overlay contained within the carousel's own box, badges z-50 only
+    // inside card thumbnails) except the industry-detail modal (z-[200]),
+    // which SHOULD cover the header when open — that's expected, not a bug.
+    <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-bg/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-8">
         <a href="/" className="font-mono text-sm font-medium tracking-tight uppercase text-text">
           erken<span className="text-accent"> </span>systems
         </a>
+        {/* Restored (Shamil live review): a one-link menu looked wrong.
+            Full original link set is back; pruning gets decided later. */}
         <nav className="hidden items-center gap-8 md:flex">
+          <a href="#industries" className="text-sm text-text-muted transition-colors hover:text-text">
+            Industries
+          </a>
+          <a href="#pipeline" className="text-sm text-text-muted transition-colors hover:text-text">
+            How it works
+          </a>
           <a href="#pricing" className="text-sm text-text-muted transition-colors hover:text-text">
             Pricing
           </a>
@@ -230,7 +290,11 @@ function IndustriesSection() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Section 3 — Pipeline proof, compressed to four compact cards       */
+/* Section 3 — Pipeline proof. Shamil found the flat 4-card grid       */
+/* "unfinished" on live review and asked to see two alternative        */
+/* treatments side by side with a draft-only toggle (no second         */
+/* carousel). Both variants read PIPELINE_STEPS; toggle just swaps     */
+/* which one renders below the shared section heading + CTA.           */
 /* ------------------------------------------------------------------ */
 const PIPELINE_STEPS = [
   {
@@ -238,28 +302,179 @@ const PIPELINE_STEPS = [
     kicker: "Lead generation",
     title: "Where your next ten customers come from.",
     body: "Funnels, forms, a social planner, and review automation that grows your rating. Miss a call and an instant text-back brings the lead back before they dial a competitor.",
+    icon: Megaphone,
   },
   {
     step: "02",
     kicker: "Lead capture",
     title: "Every channel answered.",
     body: "Phone, inbox, DMs, forms — all wired into one pipeline. The AI voice receptionist picks up in two rings. Web chat books appointments. Nothing goes to voicemail.",
+    icon: PhoneIncoming,
   },
   {
     step: "03",
     kicker: "Lead management",
     title: "Every lead tracked, every follow-up automated.",
     body: "Your branded CRM, your pipeline, your automation. Leads get scored, routed, and followed up — no manual touchpoints, no lead left waiting.",
+    icon: ListChecks,
   },
   {
     step: "04",
     kicker: "The control panel",
     title: "Your whole operation, one screen.",
     body: "Calls, chats, forms, emails, deals — all visible in one dashboard. Workflow automation runs underneath. You see where every customer is. You read the dashboard.",
+    icon: LayoutDashboard,
   },
 ];
 
+/** Draft-only variant switcher — not part of the proposed final design,
+ *  just how Shamil compares the two treatments on this review page. */
+function PipelineVariantToggle({
+  variant,
+  onChange,
+}: {
+  variant: "a" | "b";
+  onChange: (v: "a" | "b") => void;
+}) {
+  const pill = (v: "a" | "b", label: string) => (
+    <button
+      key={v}
+      type="button"
+      onClick={() => onChange(v)}
+      className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${
+        variant === v
+          ? "bg-accent text-bg"
+          : "text-text-muted hover:text-text"
+      }`}
+    >
+      {label}
+    </button>
+  );
+  return (
+    <div className="mt-6 inline-flex items-center gap-1 rounded-full border border-border bg-surface p-1">
+      {pill("a", "Variant A — Stepper")}
+      {pill("b", "Variant B — Sticky scroll")}
+    </div>
+  );
+}
+
+/** VARIANT A — connected pipeline stepper: 4 numbered/iconed nodes joined
+ *  by a flowing line, communicating "one pipeline the lead travels
+ *  automatically." Horizontal line + row on desktop, vertical line +
+ *  stack on mobile (375px). */
+function PipelineVariantStepper() {
+  return (
+    <div className="mt-12 flex flex-col gap-10 md:flex-row md:items-start md:gap-0">
+      {PIPELINE_STEPS.map((s, i) => {
+        const Icon = s.icon;
+        const isLast = i === PIPELINE_STEPS.length - 1;
+        return (
+          <motion.div
+            key={s.step}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5, ease, delay: i * 0.1 }}
+            className="relative flex flex-1 flex-row items-start gap-4 md:flex-col md:items-center md:px-3 md:text-center"
+          >
+            {/* Connector to the next node — vertical on mobile (down from
+                the icon), horizontal on desktop (across, through the row). */}
+            {!isLast && (
+              <>
+                <div
+                  className="absolute left-7 top-14 h-[calc(100%-2.5rem)] w-px bg-border md:hidden"
+                  aria-hidden
+                />
+                <div
+                  className="absolute top-7 left-1/2 hidden h-px w-full bg-border md:block"
+                  aria-hidden
+                />
+              </>
+            )}
+            <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent text-bg">
+              <Icon size={22} strokeWidth={2} />
+            </div>
+            <div className="md:mt-4">
+              <div className="font-mono text-xs uppercase tracking-widest text-text-dim">
+                {s.step} · {s.kicker}
+              </div>
+              <h3 className="mt-1 text-base font-semibold leading-snug text-text" style={{ letterSpacing: "-0.01em" }}>
+                {s.title}
+              </h3>
+              <p className="mt-2 max-w-xs text-sm leading-relaxed text-text-muted">{s.body}</p>
+            </div>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+}
+
+/** VARIANT B — compact sticky-scroll: one visual panel (miniature of the
+ *  live homepage's pinned-media scene pattern) that swaps its active step
+ *  as four short text blocks scroll past beside it. Sticky on desktop
+ *  only; degrades to a static panel followed by stacked text on mobile. */
+function PipelineVariantStickyScroll() {
+  const [active, setActive] = useState(0);
+  return (
+    <div className="mt-12 grid gap-8 md:grid-cols-2 md:items-start md:gap-12">
+      <div className="md:sticky md:top-24">
+        <div className="flex min-h-[14rem] flex-col justify-center rounded-2xl border border-border bg-surface p-8">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={active}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.3, ease }}
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent text-bg">
+                {(() => {
+                  const Icon = PIPELINE_STEPS[active].icon;
+                  return <Icon size={20} strokeWidth={2} />;
+                })()}
+              </div>
+              <div className="mt-4 font-mono text-xs uppercase tracking-widest text-text-dim">
+                {PIPELINE_STEPS[active].step} · {PIPELINE_STEPS[active].kicker}
+              </div>
+              <h3 className="mt-1 text-xl font-semibold leading-snug text-text" style={{ letterSpacing: "-0.02em" }}>
+                {PIPELINE_STEPS[active].title}
+              </h3>
+            </motion.div>
+          </AnimatePresence>
+          <div className="mt-6 flex gap-1.5">
+            {PIPELINE_STEPS.map((s, i) => (
+              <span
+                key={s.step}
+                className={`h-1.5 flex-1 rounded-full transition-colors ${
+                  i === active ? "bg-accent" : "bg-border"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col gap-16 md:gap-28">
+        {PIPELINE_STEPS.map((s, i) => (
+          <motion.div
+            key={s.step}
+            onViewportEnter={() => setActive(i)}
+            viewport={{ amount: 0.6, margin: "-10% 0px -10% 0px" }}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+            className="min-h-[8rem]"
+          >
+            <p className="text-sm leading-relaxed text-text-muted">{s.body}</p>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function PipelineSection() {
+  const [variant, setVariant] = useState<"a" | "b">("a");
   return (
     <section id="pipeline" data-section="pipeline" className="border-t border-border/40 py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6 md:px-8">
@@ -280,31 +495,10 @@ function PipelineSection() {
           <p className="mt-4 text-base text-text-muted md:text-lg">
             The same four-step pipeline runs underneath every business on Erken.
           </p>
+          <PipelineVariantToggle variant={variant} onChange={setVariant} />
         </motion.div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {PIPELINE_STEPS.map((s, i) => (
-            <motion.div
-              key={s.step}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.5, ease, delay: i * 0.08 }}
-              className="flex flex-col rounded-2xl border border-border bg-surface p-6"
-            >
-              <div className="flex items-baseline gap-2">
-                <span className="font-mono text-2xl font-bold text-accent tabular-nums" style={{ letterSpacing: "-0.02em" }}>
-                  {s.step}
-                </span>
-                <span className="mono-label">{s.kicker}</span>
-              </div>
-              <h3 className="mt-3 text-lg font-semibold leading-snug text-text" style={{ letterSpacing: "-0.01em" }}>
-                {s.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-text-muted">{s.body}</p>
-            </motion.div>
-          ))}
-        </div>
+        {variant === "a" ? <PipelineVariantStepper /> : <PipelineVariantStickyScroll />}
 
         <TryForFreeCta />
       </div>
@@ -557,6 +751,7 @@ export default function HomeDraftClient() {
       <CustomSolutionsSection />
       <GetLeadsSection />
       <DraftFooter />
+      <FloatingErken />
       <ErkenChatWidget />
       <ErkenVoiceWidget />
     </main>
