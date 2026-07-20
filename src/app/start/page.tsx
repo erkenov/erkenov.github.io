@@ -616,7 +616,7 @@ export default function StartPage() {
                 <h3 className="text-lg font-semibold">Erken, the assistant</h3>
               </div>
             </div>
-            <div className="mt-8 flex flex-1 flex-col gap-2 text-sm leading-relaxed text-text-muted">
+            <div className="mt-16 flex flex-1 flex-col justify-end gap-2 text-sm leading-relaxed text-text-muted">
               <div>
                 🗣️ <b>Ask it anything</b> — by voice or chat, about the
                 platform or your business
