@@ -153,30 +153,35 @@ function PlanCard({ plan }: { plan: (typeof PLANS)[number] }) {
   );
 }
 
-type RecState =
-  | "idle" // "🎤 Send an audio message" — first click arms it
-  | "armed" // "● Start recording" — second click actually starts
-  | "recording" // "■ Stop recording"
-  | "transcribing"
-  | "ready"
-  | "sending"
-  | "sent"
-  | "error" // recording/permission/transcription failure — back to the record button
-  | "send-error"; // POST to /api/custom-request failed — keep transcript + email, offer retry
-
 type ContactKind = "custom-solution" | "rent-leads";
 
+type MicState =
+  | "idle" // ready — click to start recording
+  | "recording" // click again to stop
+  | "transcribing" // POSTing to /api/transcribe
+  | "denied" // getUserMedia rejected — icon disabled
+  | "error"; // transcription failed — icon back to idle, hint line shows why
+
 /**
- * ContactMethods — the shared three-route contact block (voice / audio /
- * typed form) used by both CustomSolutionsCard and GetLeadsCard (Shamil
- * 2026-07-20: extracted rather than duplicated so the state machine —
- * especially the audio morph-button logic that's already been through a
- * couple of careful bug fixes — lives in exactly one place). `kind` picks
- * the /api/custom-request tag. Phone is always offered, on both the typed
- * form and the post-transcription audio step, and always OPTIONAL — email
- * is the one required field, phone is a low-friction "leave it if you
- * want a callback" extra (the endpoint forwards `phone` to the GHL
- * contact for any `kind`, not just rent-leads — see /api/custom-request).
+ * ContactMethods — the shared contact block (voice call, or a typed
+ * message with an in-textarea mic for dictation) used by both
+ * CustomSolutionsCard and GetLeadsCard (Shamil 2026-07-20: extracted
+ * rather than duplicated so the state machine lives in exactly one
+ * place). `kind` picks the /api/custom-request tag. Phone is always
+ * offered and always OPTIONAL — email is the one required field, phone is
+ * a low-friction "leave it if you want a callback" extra (the endpoint
+ * forwards `phone` to the GHL contact for any `kind`, not just
+ * rent-leads — see /api/custom-request).
+ *
+ * v2 (Shamil 2026-07-20): the old "Send an audio message" button + its
+ * morph-into-a-panel flow is gone — two complaints: the transcript wasn't
+ * editable, and the panel reflowed the card. Replaced with a small mic
+ * icon inside the "Ask by text" textarea (Telegram/WhatsApp style):
+ * record → transcribe via the existing /api/transcribe → insert the text
+ * into the textarea, fully editable, sent through the normal form submit.
+ * Zero layout shift — the icon is absolutely positioned over the
+ * textarea, and the error hint line below it is always reserved (empty
+ * when unused) so nothing ever moves between states.
  */
 function ContactMethods({
   kind,
@@ -186,23 +191,38 @@ function ContactMethods({
   textareaPlaceholder: string;
 }) {
   // typed-form sub-flow — always-visible (Shamil 2026-07-20: no expand/
-  // collapse toggle)
+  // collapse toggle). The mic icon inside the textarea (v2, same day)
+  // records via MediaRecorder, transcribes through the existing
+  // /api/transcribe endpoint, and inserts the result into the textarea so
+  // it stays fully editable before sending.
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [formState, setFormState] = useState<SendState>("idle");
 
-  // audio sub-flow — the "Send an audio message" button IS the record
-  // control (Shamil 2026-07-20: it used to open a second "Start recording"
-  // button below itself, which spawned/removed elements in the button row
-  // and made the row jump; now the one button just relabels through its
-  // states). Nothing else in the button row ever appears/disappears.
-  const [recState, setRecState] = useState<RecState>("idle");
-  const [transcript, setTranscript] = useState("");
-  const [audioEmail, setAudioEmail] = useState("");
-  const [audioPhone, setAudioPhone] = useState("");
+  const [micState, setMicState] = useState<MicState>("idle");
+  const [micError, setMicError] = useState("");
+  // True once any transcribed text has been inserted into the current
+  // message — drives channel:"audio" vs "form" on submit. Reset when the
+  // textarea is cleared back to empty so a fully-retyped message reports
+  // as "form".
+  const [audioContributed, setAudioContributed] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
+
+  // Release the mic on unmount even if a recording is mid-flight.
+  useEffect(() => {
+    return () => {
+      streamRef.current?.getTracks().forEach((t) => t.stop());
+    };
+  }, []);
+
+  const onMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const v = e.target.value;
+    setMessage(v);
+    if (!v.trim()) setAudioContributed(false);
+  };
 
   const submitForm = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -216,7 +236,7 @@ function ContactMethods({
           email: email.trim(),
           message: message.trim(),
           kind,
-          channel: "form",
+          channel: audioContributed ? "audio" : "form",
           ...(phone.trim() ? { phone: phone.trim() } : {}),
         }),
       });
@@ -226,19 +246,22 @@ function ContactMethods({
     }
   };
 
-  const startRecording = async () => {
+  const startMicRecording = async () => {
+    setMicError("");
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
       const mr = new MediaRecorder(stream);
       chunksRef.current = [];
       mr.ondataavailable = (ev) => {
         if (ev.data.size > 0) chunksRef.current.push(ev.data);
       };
       mr.onstop = async () => {
-        stream.getTracks().forEach((t) => t.stop());
+        streamRef.current?.getTracks().forEach((t) => t.stop());
+        streamRef.current = null;
         const mime = mr.mimeType || "audio/webm";
         const blob = new Blob(chunksRef.current, { type: mime });
-        setRecState("transcribing");
+        setMicState("transcribing");
         try {
           const b64 = await blobToBase64(blob);
           const r = await fetch("/api/transcribe", {
@@ -248,92 +271,47 @@ function ContactMethods({
           });
           const d = (await r.json().catch(() => ({ text: "" }))) as { text?: string };
           if (r.ok && d.text) {
-            setTranscript(d.text);
-            setRecState("ready");
+            setMessage((prev) => (prev.trim() ? `${prev.trim()} ${d.text}` : String(d.text)));
+            setAudioContributed(true);
+            setMicState("idle");
           } else {
-            setRecState("error");
+            setMicError("Couldn't transcribe — try again");
+            setMicState("error");
           }
         } catch {
-          setRecState("error");
+          setMicError("Couldn't transcribe — try again");
+          setMicState("error");
         }
       };
       mediaRecorderRef.current = mr;
       mr.start();
-      setRecState("recording");
+      setMicState("recording");
     } catch {
-      setRecState("error");
+      setMicState("denied");
     }
   };
 
-  const stopRecording = () => {
+  const stopMicRecording = () => {
     mediaRecorderRef.current?.stop();
   };
 
-  // Single entry point for the morphing audio button — arm on first click,
-  // start on second, stop while recording. A page refresh is the "reset";
-  // no dedicated reset control needed.
-  const handleAudioButtonClick = () => {
-    if (recState === "idle") {
-      setRecState("armed");
-    } else if (recState === "armed" || recState === "error") {
-      startRecording();
-    } else if (recState === "recording") {
-      stopRecording();
+  const handleMicClick = () => {
+    if (micState === "idle" || micState === "error") {
+      startMicRecording();
+    } else if (micState === "recording") {
+      stopMicRecording();
     }
-    // transcribing / ready / sending / sent / send-error: button is
-    // disabled, no-op — those states are handled by the panel below.
+    // transcribing / denied: no-op (both render disabled anyway).
   };
 
-  const audioButtonDisabled =
-    recState === "transcribing" ||
-    recState === "ready" ||
-    recState === "sending" ||
-    recState === "sent" ||
-    recState === "send-error";
-
-  const audioButtonLabel =
-    recState === "idle"
-      ? "Send an audio message"
-      : recState === "armed"
-        ? "● Start recording"
-        : recState === "recording"
-          ? "■ Stop recording"
-          : recState === "transcribing"
-            ? "Transcribing…"
-            : recState === "error"
-              ? "Couldn't record — try again"
-              : "Audio message recorded";
-
-  const sendAudioRequest = async () => {
-    if (recState === "sending" || !audioEmail.trim() || !transcript.trim()) return;
-    setRecState("sending");
-    try {
-      const r = await fetch("/api/custom-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: audioEmail.trim(),
-          message: transcript.trim(),
-          kind,
-          channel: "audio",
-          ...(audioPhone.trim() ? { phone: audioPhone.trim() } : {}),
-        }),
-      });
-      // A failed POST is a send failure, not a recording failure — keep the
-      // transcript + email on screen and let the user retry the send
-      // (Shamil 2026-07-20: previously shared the "error" state with
-      // recording failures, which silently dropped the transcript).
-      setRecState(r.ok ? "sent" : "send-error");
-    } catch {
-      setRecState("send-error");
-    }
-  };
-
-  const showAudioPanel =
-    recState === "ready" ||
-    recState === "sending" ||
-    recState === "sent" ||
-    recState === "send-error";
+  const micTooltip =
+    micState === "recording"
+      ? "Recording — click to stop"
+      : micState === "denied"
+        ? "Microphone access denied"
+        : micState === "transcribing"
+          ? "Transcribing…"
+          : "Record a voice message";
 
   return (
     <>
@@ -345,67 +323,19 @@ function ContactMethods({
         >
           <span aria-hidden>🎙️</span> Talk to the voice AI
         </button>
-        <button
-          type="button"
-          onClick={handleAudioButtonClick}
-          disabled={audioButtonDisabled}
-          className={`flex items-center gap-2.5 rounded-xl border px-6 py-3 text-left text-base font-medium transition-colors ${
-            recState === "recording"
-              ? "cursor-pointer border-accent bg-accent/10 text-text"
-              : audioButtonDisabled
-                ? "cursor-default border-border bg-surface-2 text-text-dim"
-                : "cursor-pointer border-border bg-surface-2 text-text hover:border-border-strong"
-          }`}
-        >
-          <span aria-hidden>🎤</span> {audioButtonLabel}
-        </button>
-
-        {showAudioPanel && (
-          <div className="min-h-[14rem]">
-            {recState === "sent" ? (
-              <div className="rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm leading-relaxed">
-                ✅ Got it — we&apos;ll review and send you an offer shortly.
-              </div>
-            ) : (
-              <div className="flex flex-col gap-2">
-                <div className="rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text-muted">
-                  &ldquo;{transcript}&rdquo;
-                </div>
-                <input
-                  type="email"
-                  required
-                  value={audioEmail}
-                  onChange={(e) => setAudioEmail(e.target.value)}
-                  placeholder="your email"
-                  className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
-                />
-                <input
-                  type="tel"
-                  value={audioPhone}
-                  onChange={(e) => setAudioPhone(e.target.value)}
-                  placeholder="phone (optional)"
-                  className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
-                />
-                <button
-                  type="button"
-                  onClick={sendAudioRequest}
-                  disabled={recState === "sending"}
-                  className="w-full cursor-pointer rounded-xl bg-accent px-6 py-3 text-base font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
-                >
-                  {recState === "sending"
-                    ? "Sending…"
-                    : recState === "send-error"
-                      ? "Couldn't send — try again"
-                      : "Send request"}
-                </button>
-              </div>
-            )}
-          </div>
-        )}
       </div>
 
       <div className="mt-6">
-        <p className="font-mono text-xs uppercase tracking-[0.05em] text-text-dim">
+        {/* Reserved error-hint line lives here, above the "Ask by text"
+            label (Shamil 2026-07-20 live review), not between the textarea
+            and email input below — putting it there made that gap bigger
+            than the email-to-phone gap. Fixed height so it never shifts
+            layout; the empty default state is the intentional wider
+            breathing room above "Ask by text". */}
+        <p className="h-4 text-xs text-red-500">
+          {micState === "error" ? micError : ""}
+        </p>
+        <p className="mt-2 font-mono text-xs uppercase tracking-[0.05em] text-text-dim">
           Ask by text
         </p>
         <div className="mt-2 min-h-[15rem]">
@@ -415,14 +345,55 @@ function ContactMethods({
             </div>
           ) : (
             <form onSubmit={submitForm} className="flex flex-col gap-2">
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                rows={3}
-                required
-                placeholder={textareaPlaceholder}
-                className="w-full resize-none rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
-              />
+              <div className="relative">
+                <textarea
+                  value={message}
+                  onChange={onMessageChange}
+                  rows={3}
+                  required
+                  placeholder={textareaPlaceholder}
+                  className="block w-full resize-none rounded-xl border border-border bg-surface-2 px-4 py-3 pr-12 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
+                />
+                <button
+                  type="button"
+                  onClick={handleMicClick}
+                  disabled={micState === "denied" || micState === "transcribing"}
+                  title={micTooltip}
+                  aria-label={micTooltip}
+                  className={`absolute bottom-2.5 right-2.5 flex h-7 w-7 items-center justify-center rounded-md border transition-colors ${
+                    micState === "recording"
+                      ? "cursor-pointer border-red-500/40 bg-red-500/10 text-red-500 animate-pulse"
+                      : micState === "denied"
+                        ? "cursor-not-allowed border-border bg-surface-2 text-text-dim opacity-50"
+                        : micState === "transcribing"
+                          ? "cursor-default border-border bg-surface-2 text-text-dim"
+                          : "cursor-pointer border-border bg-surface-2 text-text-dim hover:border-border-strong hover:text-text"
+                  }`}
+                >
+                  {micState === "transcribing" ? (
+                    <span
+                      aria-hidden
+                      className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-text-dim border-t-transparent"
+                    />
+                  ) : (
+                    <svg
+                      aria-hidden
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-4 w-4"
+                    >
+                      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                      <line x1="12" y1="19" x2="12" y2="22" />
+                      {micState === "denied" && <line x1="4" y1="4" x2="20" y2="20" />}
+                    </svg>
+                  )}
+                </button>
+              </div>
               <input
                 type="email"
                 required
@@ -457,7 +428,7 @@ function ContactMethods({
   );
 }
 
-/** Custom GoHighLevel / snapshot work — voice call, recorded audio message, or a typed form. */
+/** Custom GoHighLevel / snapshot work — voice call, or a typed form with dictation. */
 function CustomSolutionsCard() {
   return (
     <section className="flex flex-col rounded-2xl border border-border bg-surface p-8">
@@ -481,7 +452,7 @@ function CustomSolutionsCard() {
  * underlying kind value stays "rent-leads" (wired to the
  * "rent-leads-applicant" GHL tag in /api/custom-request) — this is a
  * display-only rename, not a re-tagging. Contact structure matched to
- * CustomSolutionsCard (Shamil 2026-07-20): voice / audio / typed form via
+ * CustomSolutionsCard (Shamil 2026-07-20): voice call or typed form via
  * the shared ContactMethods component, phone kept since a leads
  * partnership needs a callback number. NOTE (Shamil): a further copy
  * pass for this card is coming as a follow-up — don't invent more text
