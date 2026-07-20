@@ -36,7 +36,7 @@
  *     generic anchor is correct here — see the SCENE_OFFSETS note below).
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, Fragment } from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
@@ -520,74 +520,97 @@ function IllustrationBackdrop({
   );
 }
 
-/** Step 1 — lead generation: a megaphone with radiating captured leads. */
-function IllustrationLeadGen() {
+// Phase icons redrawn for the 1-second "name-the-concept" test (Shamil).
+// Same flat sage/clay/cream style.
+
+// A small 5-point star centered at the origin (outer r 7, inner r 2.8) — used
+// by the Fans icon; placed via a translate transform.
+const STAR_D =
+  "M0 -7 L1.65 -2.26 L6.66 -2.16 L2.66 0.87 L4.11 5.66 L0 2.8 L-4.11 5.66 L-2.66 0.87 L-6.66 -2.16 L-1.65 -2.26 Z";
+
+/** CAPTURE — a VERTICAL funnel with lead-dots falling into it. */
+function IllustrationCapture() {
   return (
     <IllustrationBackdrop>
-      <path d="M40 46 L74 34 L74 78 L40 66 Z" fill={ILLO_CLAY} />
-      <rect x="28" y="50" width="14" height="12" rx="4" fill={ILLO_CLAY} />
-      <rect x="70" y="30" width="7" height="52" rx="3.5" fill={ILLO_SAGE} />
-      <circle cx="90" cy="40" r="4.5" fill={ILLO_SAGE} />
-      <circle cx="98" cy="53" r="3.5" fill={ILLO_SAGE} opacity="0.75" />
-      <circle cx="102" cy="67" r="2.5" fill={ILLO_SAGE} opacity="0.5" />
+      {/* leads falling in */}
+      <circle cx="46" cy="34" r="4" fill={ILLO_CLAY} />
+      <circle cx="60" cy="28" r="4.5" fill={ILLO_CLAY} />
+      <circle cx="74" cy="34" r="4" fill={ILLO_CLAY} />
+      {/* vertical funnel */}
+      <path d="M32 48 L88 48 L66 76 L66 90 L54 90 L54 76 Z" fill={ILLO_SAGE} />
+      {/* rim highlight */}
+      <rect x="32" y="46" width="56" height="5" rx="2.5" fill={ILLO_NEUTRAL} />
+      {/* captured lead coming out the bottom */}
+      <circle cx="60" cy="102" r="4.5" fill={ILLO_CLAY} />
     </IllustrationBackdrop>
   );
 }
 
-/** Lead management / pipeline: a tiny pipeline board with staged cards. */
-function IllustrationLeadMgmt() {
+/** NURTURE — a small plant growing, with water drops above (tending/growth). */
+function IllustrationNurture() {
   return (
     <IllustrationBackdrop>
-      <rect x="22" y="28" width="24" height="64" rx="6" fill={ILLO_NEUTRAL} opacity="0.55" />
-      <rect x="50" y="28" width="24" height="64" rx="6" fill={ILLO_NEUTRAL} opacity="0.55" />
-      <rect x="78" y="28" width="24" height="64" rx="6" fill={ILLO_NEUTRAL} opacity="0.55" />
-      <rect x="26" y="34" width="16" height="11" rx="3" fill={ILLO_SAGE} />
-      <rect x="54" y="34" width="16" height="11" rx="3" fill={ILLO_CLAY} />
-      <rect x="54" y="49" width="16" height="11" rx="3" fill={ILLO_SAGE} />
-      <rect x="82" y="34" width="16" height="11" rx="3" fill={ILLO_CLAY} />
-      <rect x="82" y="49" width="16" height="11" rx="3" fill={ILLO_CLAY} />
-      <rect x="82" y="64" width="16" height="11" rx="3" fill={ILLO_SAGE} />
+      {/* water drops */}
+      <circle cx="48" cy="30" r="3" fill={ILLO_SAGE} opacity="0.65" />
+      <circle cx="60" cy="26" r="3.5" fill={ILLO_SAGE} opacity="0.65" />
+      <circle cx="72" cy="30" r="3" fill={ILLO_SAGE} opacity="0.65" />
+      {/* pot */}
+      <path d="M46 78 L74 78 L70 94 L50 94 Z" fill={ILLO_CLAY} />
+      <rect x="45" y="74" width="30" height="6" rx="3" fill={ILLO_NEUTRAL} />
+      {/* stem */}
+      <path d="M60 74 V50" stroke={ILLO_SAGE} strokeWidth="4" strokeLinecap="round" />
+      {/* leaves */}
+      <path d="M60 62 Q46 58 46 44 Q58 46 60 62 Z" fill={ILLO_SAGE} />
+      <path d="M60 56 Q74 52 74 40 Q63 42 60 56 Z" fill={ILLO_SAGE} />
     </IllustrationBackdrop>
   );
 }
 
-/** Automations / re-engage — three connected nodes (a small flow graph). */
-function IllustrationAutomations() {
+/** CLOSE — a signed document with a bold green check (deal done). */
+function IllustrationClose() {
   return (
     <IllustrationBackdrop>
-      <path d="M40 44 H80" stroke={ILLO_NEUTRAL} strokeWidth="3.5" strokeLinecap="round" />
-      <path d="M44 51 L58 74" stroke={ILLO_NEUTRAL} strokeWidth="3.5" strokeLinecap="round" />
-      <path d="M76 51 L62 74" stroke={ILLO_NEUTRAL} strokeWidth="3.5" strokeLinecap="round" />
-      <circle cx="40" cy="44" r="10" fill={ILLO_SAGE} />
-      <circle cx="80" cy="44" r="10" fill={ILLO_NEUTRAL} />
-      <circle cx="60" cy="80" r="10" fill={ILLO_CLAY} />
+      {/* paper */}
+      <rect x="36" y="26" width="44" height="58" rx="6" fill="#FFFFFF" stroke={ILLO_NEUTRAL} strokeWidth="2" />
+      {/* text lines */}
+      <rect x="44" y="36" width="28" height="4" rx="2" fill={ILLO_NEUTRAL} />
+      <rect x="44" y="46" width="28" height="4" rx="2" fill={ILLO_NEUTRAL} />
+      <rect x="44" y="56" width="18" height="4" rx="2" fill={ILLO_NEUTRAL} />
+      {/* signature */}
+      <path d="M44 70 q5 -7 10 0 t10 0" stroke={ILLO_CLAY} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+      {/* bold check badge */}
+      <circle cx="82" cy="82" r="16" fill={ILLO_SAGE} />
+      <path d="M74 82 L80 88 L91 75" stroke="#FFFFFF" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
     </IllustrationBackdrop>
   );
 }
 
-/** Reputation + reviews — a five-point star. */
-function IllustrationReviews() {
+/** TURN CUSTOMERS INTO FANS — a row of 5 stars above a happy face. */
+function IllustrationFans() {
   return (
     <IllustrationBackdrop>
-      <path
-        d="M60 30 L66.5 49.1 L86.6 49.4 L70.5 61.4 L76.5 80.7 L60 69 L43.5 80.7 L49.5 61.4 L33.4 49.4 L53.5 49.1 Z"
-        fill={ILLO_CLAY}
-      />
+      {[34, 46, 58, 70, 82].map((cx) => (
+        <path key={cx} d={STAR_D} transform={`translate(${cx} 40)`} fill={ILLO_CLAY} />
+      ))}
+      <circle cx="60" cy="78" r="18" fill={ILLO_SAGE} />
+      <circle cx="53" cy="74" r="2.6" fill={ILLO_CREAM} />
+      <circle cx="67" cy="74" r="2.6" fill={ILLO_CREAM} />
+      <path d="M52 82 Q60 90 68 82" stroke={ILLO_CREAM} strokeWidth="3" fill="none" strokeLinecap="round" />
     </IllustrationBackdrop>
   );
 }
 
-/** Conversation / nurture — two chat bubbles going back and forth. */
-function IllustrationAssistant() {
+/** WIN BACK OLD CUSTOMERS — a person with a strong returning-loop arrow. */
+function IllustrationWinback() {
   return (
     <IllustrationBackdrop>
-      <rect x="26" y="32" width="50" height="34" rx="12" fill={ILLO_SAGE} />
-      <path d="M36 64 L33 78 L48 66 Z" fill={ILLO_SAGE} />
-      <circle cx="40" cy="49" r="3.2" fill={ILLO_CREAM} />
-      <circle cx="51" cy="49" r="3.2" fill={ILLO_CREAM} />
-      <circle cx="62" cy="49" r="3.2" fill={ILLO_CREAM} />
-      <rect x="64" y="60" width="30" height="26" rx="10" fill={ILLO_CLAY} />
-      <path d="M86 84 L90 95 L75 86 Z" fill={ILLO_CLAY} />
+      {/* person */}
+      <circle cx="58" cy="58" r="8" fill={ILLO_CLAY} />
+      <path d="M45 86 Q45 70 58 70 Q71 70 71 86 Z" fill={ILLO_CLAY} />
+      {/* returning loop arrow sweeping over the top */}
+      <path d="M86 70 A29 29 0 1 0 55 30" fill="none" stroke={ILLO_SAGE} strokeWidth="4.5" strokeLinecap="round" />
+      {/* arrowhead pointing back down toward the person */}
+      <path d="M55 30 L63 27 M55 30 L58 38" stroke={ILLO_SAGE} strokeWidth="4.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
     </IllustrationBackdrop>
   );
 }
@@ -617,7 +640,7 @@ const PHASES: {
   {
     name: "Capture",
     tagline: "Get more leads in the door",
-    Illustration: IllustrationLeadGen,
+    Illustration: IllustrationCapture,
     items: [
       "Websites & landing pages",
       "Sales funnels",
@@ -638,7 +661,7 @@ const PHASES: {
   {
     name: "Nurture",
     tagline: "Turn interest into trust",
-    Illustration: IllustrationAssistant,
+    Illustration: IllustrationNurture,
     items: [
       "One unified inbox",
       "Text, Messenger, IG & WhatsApp",
@@ -656,7 +679,7 @@ const PHASES: {
   {
     name: "Close",
     tagline: "Turn conversations into customers",
-    Illustration: IllustrationLeadMgmt,
+    Illustration: IllustrationClose,
     items: [
       "Lead scoring",
       "Estimates & proposals",
@@ -676,7 +699,7 @@ const PHASES: {
   {
     name: "Turn customers into fans",
     tagline: "Reviews that bring the next one in",
-    Illustration: IllustrationReviews,
+    Illustration: IllustrationFans,
     items: [
       "Automated review requests",
       "Reputation management",
@@ -693,7 +716,7 @@ const PHASES: {
   {
     name: "Win back old customers",
     tagline: "Get back on their radar",
-    Illustration: IllustrationAutomations,
+    Illustration: IllustrationWinback,
     items: [
       "Email, SMS & WhatsApp blasts",
       "Smart lists & segmenting",
@@ -1369,33 +1392,32 @@ const STACK_ROWS: { cat: string; tools: string[]; price: number }[] = [
   { cat: "Analytics & dashboards", tools: ["Google Analytics", "Databox"], price: 79 },
 ];
 const STACK_TOTAL = STACK_ROWS.reduce((s, r) => s + r.price, 0); // 1191
-const STACK_GRID = "md:grid-cols-[1.25fr_1.9fr_0.75fr_0.75fr]";
 
-/** A tool as a real logo pill (Simple Icons vendored) when we have the mark,
- *  otherwise a clean text pill. Same pill shape either way. */
+/** A tool as a uniform pill: a real logo (Simple Icons vendored) when we have
+ *  the mark, otherwise a monogram square (first letter) so text-only tools
+ *  carry the same visual weight and the column reads uniform. */
 function ToolMark({ name }: { name: string }) {
   const logo = STACK_LOGOS[name];
+  const initial = (name.replace(/[^A-Za-z0-9]/g, "")[0] || "•").toUpperCase();
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-2 px-2 py-1 text-xs text-text-muted"
+      className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-2 px-2 py-1 text-xs font-medium text-text-muted"
       title={name}
     >
-      {logo && (
-        <svg viewBox="0 0 24 24" role="img" aria-label={name} className="h-3.5 w-3.5" fill={logo.color}>
+      {logo ? (
+        <svg viewBox="0 0 24 24" role="img" aria-label={name} className="h-3.5 w-3.5 shrink-0" fill={logo.color}>
           <title>{name}</title>
           <path d={logo.path} />
         </svg>
+      ) : (
+        <span
+          aria-hidden
+          className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[3px] bg-text-dim/20 text-[8px] font-bold text-text-dim"
+        >
+          {initial}
+        </span>
       )}
       {name}
-    </span>
-  );
-}
-
-function IncludedCheck() {
-  // Approved filled-sage-circle check (Shamil: keep as-is).
-  return (
-    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent shadow-sm">
-      <Check className="h-3.5 w-3.5 text-bg" strokeWidth={3} />
     </span>
   );
 }
@@ -1424,46 +1446,49 @@ function StackComparisonSection() {
           </p>
         </motion.div>
 
-        <div
-          data-celly-avoid
-          className="mt-10 overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_18px_50px_-24px_rgba(42,38,32,0.35)]"
-        >
-          {/* Header BAND — sage-tinted. Right columns pulled left of the edge
-              for breathing room (content left-aligned in each). */}
-          <div className={`hidden ${STACK_GRID} gap-4 border-b border-border bg-[var(--accent-soft)] px-6 py-3.5 font-mono text-[11px] uppercase tracking-[0.08em] text-text md:grid md:px-8`}>
-            <div>Category</div>
-            <div>The tools you&apos;d buy</div>
-            <div>Price on its own</div>
-            <div>Included</div>
-          </div>
-          {STACK_ROWS.map((row, i) => (
-            <div
-              key={row.cat}
-              className={`grid grid-cols-1 gap-2 px-6 py-3.5 ${STACK_GRID} md:items-center md:gap-4 md:px-8 ${
-                i % 2 === 1 ? "bg-surface-2/60" : "bg-surface"
-              } ${i > 0 ? "border-t border-border/50 md:border-t-0" : ""}`}
-            >
-              <div className="font-semibold text-text">{row.cat}</div>
-              <div className="flex flex-wrap gap-1.5">
-                {row.tools.map((t) => (
-                  <ToolMark key={t} name={t} />
-                ))}
-              </div>
-              <div className="text-sm font-semibold text-text-muted">${row.price}/mo</div>
-              <div className="flex items-center gap-2">
-                <IncludedCheck />
-                <span className="text-xs font-medium text-text-muted md:hidden">Included</span>
-              </div>
-            </div>
-          ))}
+        {/* DESKTOP — highlighted-plan-column pattern: the Included column is a
+            solid green column (white checks) that EXTENDS BELOW the table as a
+            rounded overhang holding $97 + Try-for-free. Struck total stays
+            under Price. One CSS grid guarantees row alignment across columns.
+            mb reserves space for the overhang. */}
+        <div data-celly-avoid className="relative mb-24 mt-10 hidden md:block">
+          <div className="grid grid-cols-[1.3fr_2fr_0.85fr_150px] overflow-hidden rounded-t-2xl rounded-bl-2xl shadow-[0_18px_50px_-24px_rgba(42,38,32,0.35)]">
+            {/* Header */}
+            <div className="bg-[var(--accent-soft)] px-6 py-3.5 font-mono text-[11px] uppercase tracking-[0.08em] text-text">Category</div>
+            <div className="bg-[var(--accent-soft)] px-3 py-3.5 font-mono text-[11px] uppercase tracking-[0.08em] text-text">The tools you&apos;d buy</div>
+            <div className="bg-[var(--accent-soft)] px-3 py-3.5 font-mono text-[11px] uppercase tracking-[0.08em] text-text">Price on its own</div>
+            <div className="flex items-center justify-center bg-accent px-3 py-3.5 font-mono text-[11px] uppercase tracking-[0.08em] text-white">Included</div>
 
-          {/* TOTALS ROW — each column's total sits directly under its column:
-              the struck grand total under Price, "$97/mo all included" under
-              Included. Eye follows each column straight down. */}
-          <div className={`grid grid-cols-1 gap-2 border-t-2 border-border bg-[var(--accent-soft)] px-6 py-5 ${STACK_GRID} md:items-end md:gap-4 md:px-8`}>
-            <div className="text-sm font-semibold text-text">The whole stack</div>
-            <div className="hidden md:block" />
-            <div>
+            {/* Rows */}
+            {STACK_ROWS.map((row, i) => {
+              const zebra = i % 2 === 1 ? "bg-surface-2/60" : "bg-surface";
+              const bt = i > 0 ? "border-t border-border/50" : "";
+              return (
+                <Fragment key={row.cat}>
+                  <div className={`flex items-center px-6 py-3.5 font-semibold text-text ${zebra} ${bt}`}>{row.cat}</div>
+                  <div className={`flex items-center px-3 py-3.5 ${zebra} ${bt}`}>
+                    <div className="flex flex-wrap gap-1.5">
+                      {row.tools.map((t) => (
+                        <ToolMark key={t} name={t} />
+                      ))}
+                    </div>
+                  </div>
+                  <div className={`flex items-center px-3 py-3.5 text-sm font-semibold text-text-muted ${zebra} ${bt}`}>
+                    ${row.price}/mo
+                  </div>
+                  <div className={`flex items-center justify-center bg-accent ${i > 0 ? "border-t border-white/15" : ""}`}>
+                    <Check className="h-5 w-5 text-white" strokeWidth={3} />
+                  </div>
+                </Fragment>
+              );
+            })}
+
+            {/* Totals row */}
+            <div className="flex items-center border-t-2 border-border bg-[var(--accent-soft)] px-6 py-5 text-sm font-semibold text-text">
+              The whole stack
+            </div>
+            <div className="border-t-2 border-border bg-[var(--accent-soft)]" />
+            <div className="flex flex-col justify-center border-t-2 border-border bg-[var(--accent-soft)] px-3 py-5">
               <div className="text-2xl font-bold tracking-tight md:text-3xl">
                 <span className="text-text-dim line-through decoration-[var(--clay)]/70 decoration-2">
                   ${STACK_TOTAL.toLocaleString()}
@@ -1471,42 +1496,75 @@ function StackComparisonSection() {
               </div>
               <div className="text-[11px] text-text-dim">/mo, billed separately</div>
             </div>
-            <div>
+            <div className="flex flex-col items-center justify-center border-t-2 border-white/25 bg-accent py-5 text-white">
               <div className="flex items-end gap-1">
-                <span className="text-3xl font-bold tracking-tight text-accent md:text-4xl" style={{ letterSpacing: "-0.02em" }}>
-                  $97
-                </span>
-                <span className="mb-1 text-sm font-medium text-accent/85">/mo</span>
+                <span className="text-3xl font-bold tracking-tight md:text-4xl" style={{ letterSpacing: "-0.02em" }}>$97</span>
+                <span className="mb-1 text-sm font-medium text-white/85">/mo</span>
               </div>
-              <div className="text-[11px] font-medium text-text-muted">all included</div>
+              <div className="text-[11px] font-medium text-white/85">all included</div>
             </div>
+          </div>
+          {/* Overhang — green column extends past the table's bottom, CTA inside. */}
+          <div className="absolute right-0 top-full w-[150px] rounded-b-2xl bg-accent px-3 pb-4 pt-3 text-center shadow-[0_18px_40px_-16px_rgba(126,166,135,0.85)]">
+            <a
+              href="/start"
+              className="inline-flex w-full items-center justify-center gap-1 rounded-lg bg-white px-3 py-2.5 text-xs font-semibold text-accent shadow-sm transition-transform hover:scale-[1.02]"
+            >
+              Try for free →
+            </a>
+            <div className="mt-1.5 text-[11px] text-white/90">First week free</div>
           </div>
         </div>
 
-        {/* Celebratory $97 / Try-free CTA (Shamil-approved treatment). */}
-        <div
-          data-celly-avoid
-          className="relative mt-6 flex flex-col items-start justify-between gap-5 overflow-hidden rounded-2xl p-6 text-bg shadow-[0_18px_44px_-18px_rgba(126,166,135,0.75)] sm:flex-row sm:items-center md:p-8"
-          style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-hover))" }}
-        >
-          <div>
-            <div className="flex items-end gap-2">
-              <span className="text-4xl font-bold tracking-tight md:text-5xl" style={{ letterSpacing: "-0.03em" }}>
-                $97
+        {/* MOBILE — stacked rows + a full-width green footer card (the green
+            column treatment collapses to a footer so stacking never breaks). */}
+        <div data-celly-avoid className="mt-10 md:hidden">
+          <div className="overflow-hidden rounded-2xl border border-border">
+            {STACK_ROWS.map((row, i) => (
+              <div key={row.cat} className={`px-5 py-4 ${i > 0 ? "border-t border-border/50" : ""}`}>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-semibold text-text">{row.cat}</span>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <span className="text-sm font-semibold text-text-muted">${row.price}/mo</span>
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent">
+                      <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {row.tools.map((t) => (
+                    <ToolMark key={t} name={t} />
+                  ))}
+                </div>
+              </div>
+            ))}
+            <div className="flex items-center justify-between border-t-2 border-border bg-[var(--accent-soft)] px-5 py-4">
+              <span className="text-sm font-semibold text-text">The whole stack</span>
+              <span className="text-2xl font-bold tracking-tight text-text-dim line-through decoration-[var(--clay)]/70 decoration-2">
+                ${STACK_TOTAL.toLocaleString()}
+                <span className="ml-1 text-sm font-normal">/mo</span>
               </span>
-              <span className="mb-1.5 text-base font-medium text-bg/85">/mo, everything included</span>
-            </div>
-            <div className="mt-1 text-sm text-bg/90">
-              That&apos;s about{" "}
-              <b>${(STACK_TOTAL - 97).toLocaleString()} a month</b> back in your pocket. First week free.
             </div>
           </div>
-          <a
-            href="/start"
-            className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-bg px-6 py-3.5 text-sm font-semibold text-text shadow-sm transition-transform hover:scale-[1.02]"
+          {/* Green footer card */}
+          <div
+            className="relative mt-4 overflow-hidden rounded-2xl p-6 text-white shadow-[0_18px_44px_-18px_rgba(126,166,135,0.75)]"
+            style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-hover))" }}
           >
-            Try for free →
-          </a>
+            <div className="flex items-end gap-2">
+              <span className="text-4xl font-bold tracking-tight" style={{ letterSpacing: "-0.03em" }}>$97</span>
+              <span className="mb-1 text-base font-medium text-white/85">/mo, everything included</span>
+            </div>
+            <div className="mt-1 text-sm text-white/90">
+              About <b>${(STACK_TOTAL - 97).toLocaleString()} a month</b> back in your pocket. First week free.
+            </div>
+            <a
+              href="/start"
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-accent shadow-sm transition-transform hover:scale-[1.02]"
+            >
+              Try for free →
+            </a>
+          </div>
         </div>
       </div>
     </section>

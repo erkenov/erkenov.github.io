@@ -149,42 +149,35 @@ const INDUSTRIES: IndustryCard[] = [
         <IndustryBodySteps
           steps={[
             {
-              title: "A storm hits — every homeowner who calls gets answered first",
+              title: "Capture — every call, chat, and form gets answered",
               description:
-                "Your AI receptionist picks up immediately. It sounds professional and tailored to your roofing business. It qualifies storm damage vs scheduled replacement, captures roof age, damage type, and insurance status, and books a same-day inspection slot. Wins the bid because you got there first.",
+                "Your AI receptionist picks up on the first ring, day or night. Web chat, contact forms, and an online booking calendar catch everyone else. A homeowner asking about their roof gets qualified — roof age, damage type, insurance status — and booked into an open inspection slot on the spot. Nothing missed, no lead lost.",
               image: IMG.step1,
               imageAlt: "AI receptionist booking a roof inspection",
             },
             {
-              title: "Their roof details land in one place — automatically",
+              title: "Organized — every inquiry lands in one place automatically",
               description:
-                "Name, address, roof age, damage type, insurance carrier — all dropped into your job list. Ready for the inspector's morning route before they leave the yard.",
+                "Name, address, roof details, insurance carrier, what they need — all dropped into one organized job list the moment they reach out. Nothing to type up, nothing on a sticky note. Your crew sees the full picture before they leave the yard.",
               image: IMG.step2,
               imageAlt: "Roof inspection details saved automatically",
             },
             {
-              title: "Every job is visible from inquiry to install",
+              title: "Automatic — follow-ups, updates, and reminders run themselves",
               description:
-                "Inquiry → Inspection booked → Estimate sent → Insurance coordination → Job scheduled → Completed. You see which estimates are stuck waiting on insurance and which are ready to schedule.",
+                "Booking confirmation, estimate delivery, appointment reminders, install-date updates, and a post-job review request — all sent automatically in your company's voice. The customer stays in the loop at every step without you lifting a finger.",
+              image: IMG.step4,
+              imageAlt: "Automated roofing customer messages",
+            },
+            {
+              title: "Visible — every job trackable from first call to final install",
+              description:
+                "Inquiry → inspection booked → estimate sent → scheduled → completed. One clear board shows exactly what's moving, what's stuck, and what closed — so you always know where every job stands and where to push.",
               image: IMG.step3,
               imageAlt: "Roofing job pipeline view",
             },
-            {
-              title: "Customers and adjusters get the right update — automatically",
-              description:
-                "Inspection-scheduled confirmation. Estimate delivery. Insurance claim coordination workflow. Install-date confirmation. Post-install warranty info + referral request. All automatic.",
-              image: IMG.step4,
-              imageAlt: "Automated roofing customer + insurance messages",
-            },
-            {
-              title: "Monday morning, you see what closed last week",
-              description:
-                "Inspections booked. Estimate-to-job conversion. Average project value. Insurance coordination time. A clean weekly summary so you can spot bottlenecks and shift resources.",
-              image: IMG.step5,
-              imageAlt: "Weekly roofing performance summary",
-            },
           ]}
-          outcome="Roofers competing for storm-damage jobs win significantly more bids with same-day inspection booking."
+          outcome="The same system runs behind every job — leads get answered, details get captured, follow-ups run themselves, and you see the whole operation at a glance."
         />
       </>
     ),
@@ -966,18 +959,30 @@ function IndustryDemoShowcase({
         <p className="mt-3 text-[15px] md:text-base text-text-muted leading-relaxed">
           {sub}
         </p>
-        {demoUrl ? (
+        {/* Try for free is the primary next step (→ /start); the live-demo
+            link sits beside it as the industry-specific proof. */}
+        <div className="mt-6 flex flex-wrap items-center gap-3">
           <a
-            href={demoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-white transition-transform duration-200 hover:scale-[1.02]"
+            href="/start"
+            className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-white transition-transform duration-200 hover:scale-[1.02]"
           >
-            Try the live demo
-            <IconArrowUpRight size={18} stroke={2} />
+            Try for free
+            <span aria-hidden>→</span>
           </a>
-        ) : (
-          <p className="mt-6 text-[15px] text-text-dim">
+          {demoUrl && (
+            <a
+              href={demoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 font-medium text-text transition-colors hover:border-border-strong hover:bg-surface"
+            >
+              Try the live demo
+              <IconArrowUpRight size={18} stroke={2} />
+            </a>
+          )}
+        </div>
+        {!demoUrl && (
+          <p className="mt-4 text-[15px] text-text-dim">
             A live demo for this industry is on the way. Meanwhile,{" "}
             <a
               href={ROOFING_DEMO_URL}
