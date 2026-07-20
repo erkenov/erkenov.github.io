@@ -484,11 +484,17 @@ function CustomSolutionsCard() {
 function GetLeadsCard() {
   return (
     <section className="relative flex flex-col rounded-2xl border border-border bg-surface p-8">
-      {/* High-contrast on purpose (Shamil 2026-07-20 live review: first
-          pass — muted border pill — read as too faint). Filled accent, sits
-          outside the dimmed/opacity-50 wrapper below so only the badge pops
-          while the rest of the card stays visibly inert. */}
-      <span className="absolute right-6 top-6 rounded-full bg-accent px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-bg">
+      {/* Badge color history (Shamil 2026-07-20 live review, two rounds):
+          muted border pill read as too faint -> filled sage accent (matched
+          the rest of the site's one accent color, but read as a positive/
+          active signal, wrong tone for "not available yet") -> filled clay
+          (--clay in globals.css: a desaturated terracotta/brick red picked
+          specifically to harmonize with the sage+cream palette rather than
+          clash against it — checked at ~4.8:1 contrast against the light
+          --bg text color it pairs with here, meets WCAG AA for small text).
+          Full opacity, sits outside the dimmed/opacity-50 wrapper below so
+          only the badge pops while the rest of the card stays visibly inert. */}
+      <span className="absolute right-6 top-6 rounded-full bg-[var(--clay)] px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-bg">
         Coming soon
       </span>
       <div className="pointer-events-none flex flex-1 flex-col opacity-50" aria-disabled="true">

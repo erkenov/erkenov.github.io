@@ -14,6 +14,17 @@
   --accent-hover: #5e8268;
   --accent-soft: rgba(126, 166, 135, 0.12);
   --success: #5e8268;
+  /* Muted terracotta/clay — desaturated warm red that harmonizes with the
+     sage+cream palette (Shamil 2026-07-20, /start "Coming soon" badge).
+     Darkened from the #B85C4A family reference to clear 4.5:1 contrast
+     against light text (checked against --bg as the fill's text color).
+     Use directly as an arbitrary value — `bg-[var(--clay)]` — not a named
+     `@theme` color token: adding `--color-clay` there didn't generate a
+     `bg-clay` utility on this Tailwind v4 + Turbopack dev server (existing
+     tokens like --color-accent still worked fine; a newly-added one
+     didn't pick up without a full server restart). The arbitrary-value
+     form reads this custom property directly and needs no such step. */
+  --clay: #a8503f;
 }
 
 @theme inline {
