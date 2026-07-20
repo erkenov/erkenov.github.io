@@ -43,23 +43,6 @@ const PLAN_FEATURES = [
   "Free first week",
 ];
 
-// drifting cell-particles around Celly — a lightweight CSS echo of the
-// homepage's 3D dust cloud (deterministic, index-seeded; no Three.js here)
-const DUST = Array.from({ length: 22 }, (_, i) => {
-  const COLORS = ["#7ea687", "#B8D4BD", "#EAF3EC", "#7ea687", "#F2C94C"];
-  const ang = (i / 22) * Math.PI * 2 + (i % 3) * 0.7;
-  const rad = 7 + ((i * 37) % 10) * 0.55; // rem from center
-  return {
-    left: 9 + Math.cos(ang) * rad,
-    top: 9 + Math.sin(ang) * rad * 0.85,
-    size: 0.18 + ((i * 13) % 10) * 0.035,
-    color: COLORS[i % COLORS.length],
-    opacity: 0.35 + ((i * 7) % 10) * 0.06,
-    dur: 5 + ((i * 11) % 10) * 0.6,
-    delay: -((i * 17) % 10) * 0.7,
-  };
-});
-
 function blobToBase64(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -160,7 +143,15 @@ function PlanCard({ plan }: { plan: (typeof PLANS)[number] }) {
 }
 
 type CustomRoute = null | "form" | "audio";
-type RecState = "idle" | "recording" | "transcribing" | "ready" | "sending" | "sent" | "error";
+type RecState =
+  | "idle"
+  | "recording"
+  | "transcribing"
+  | "ready"
+  | "sending"
+  | "sent"
+  | "error" // recording/permission/transcription failure — back to the record button
+  | "send-error"; // POST to /api/custom-request failed — keep transcript + email, offer retry
 
 /** Custom GoHighLevel / snapshot work — voice call, typed form, or a recorded audio message. */
 function CustomSolutionsCard() {
@@ -256,9 +247,13 @@ function CustomSolutionsCard() {
           channel: "audio",
         }),
       });
-      setRecState(r.ok ? "sent" : "error");
+      // A failed POST is a send failure, not a recording failure — keep the
+      // transcript + email on screen and let the user retry the send
+      // (Shamil 2026-07-20: previously shared the "error" state with
+      // recording failures, which silently dropped the transcript).
+      setRecState(r.ok ? "sent" : "send-error");
     } catch {
-      setRecState("error");
+      setRecState("send-error");
     }
   };
 
@@ -354,7 +349,7 @@ function CustomSolutionsCard() {
                 onClick={startRecording}
                 className="w-full rounded-xl border border-border bg-surface-2 px-4 py-2.5 text-sm font-medium text-text transition-colors hover:border-border-strong"
               >
-                {recState === "error" ? "Couldn't send — try again" : "● Start recording"}
+                {recState === "error" ? "Couldn't record — try again" : "● Start recording"}
               </button>
             ) : recState === "recording" ? (
               <button
@@ -386,7 +381,11 @@ function CustomSolutionsCard() {
                   disabled={recState === "sending"}
                   className="w-full cursor-pointer rounded-xl bg-accent px-6 py-2.5 text-sm font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
                 >
-                  {recState === "sending" ? "Sending…" : "Send request"}
+                  {recState === "sending"
+                    ? "Sending…"
+                    : recState === "send-error"
+                      ? "Couldn't send — try again"
+                      : "Send request"}
                 </button>
               </>
             )}
@@ -533,7 +532,7 @@ export default function StartPage() {
 
           {/* Erkenbot — free, zero friction, lives on her own card now */}
           <section className="flex flex-col rounded-2xl border border-border bg-surface p-8">
-            <div className="flex items-center gap-4">
+            <div className="flex items-start gap-8">
               <div
                 onClick={() => (botMenu ? closeBotMenu() : setBotMenu(true))}
                 className="shrink-0 cursor-pointer"
@@ -541,14 +540,11 @@ export default function StartPage() {
               >
                 <CellDragonSprite scale={0.42} />
               </div>
-              <div>
+              <div className="pt-1">
                 <h3 className="text-lg font-semibold">Erken, the assistant</h3>
-                <p className="mt-1 text-sm text-text-muted">
-                  <span className="text-text">Free.</span>
-                </p>
               </div>
             </div>
-            <div className="mt-4 flex flex-1 flex-col gap-2 text-sm leading-relaxed text-text-muted">
+            <div className="mt-8 flex flex-1 flex-col gap-2 text-sm leading-relaxed text-text-muted">
               <div>
                 Talks, teaches, walks you through any task step by step.
               </div>
@@ -570,52 +566,11 @@ export default function StartPage() {
         </div>
       </div>
 
-      {/* Erken lives here too — same look (sprite + drifting cell particles),
-          same chat + same Retell agent as the homepage. STATIC by design:
-          she sits in the free space right of the cards (Shamil 2026-06-12),
-          no roaming on this page. */}
+      {/* Erken lives on her own card now (see the grid above) — this just
+          keeps the chat + voice engines mounted so the card sprite's click
+          handler (botMenu state) and the Retell agent stay wired up. */}
       <ErkenChatWidget />
       <ErkenVoiceWidget />
-      <div
-        className="fixed z-[50] hidden cursor-pointer lg:block"
-        style={{ right: "max(1.5rem, calc(50vw - 24rem - 19rem))", top: "50%", transform: "translateY(-50%)" }}
-        onClick={() => (botMenu ? closeBotMenu() : setBotMenu(true))}
-      >
-        <div className="pointer-events-none absolute inset-0" aria-hidden>
-          {DUST.map((d, i) => (
-            <i
-              key={i}
-              style={{
-                position: "absolute",
-                left: `${d.left}rem`,
-                top: `${d.top}rem`,
-                width: `${d.size}rem`,
-                height: `${d.size}rem`,
-                borderRadius: "50%",
-                background: d.color,
-                opacity: d.opacity,
-                filter: "blur(0.5px)",
-                boxShadow: `0 0 6px ${d.color}`,
-                animation: `startDust ${d.dur}s ease-in-out ${d.delay}s infinite`,
-              }}
-            />
-          ))}
-        </div>
-        <CellDragonSprite scale={1} />
-      </div>
-      {/* small screens: corner Celly so the page still has her */}
-      <div
-        className="fixed bottom-5 right-4 z-[50] cursor-pointer lg:hidden"
-        onClick={() => (botMenu ? closeBotMenu() : setBotMenu(true))}
-      >
-        <CellDragonSprite scale={0.6} />
-      </div>
-      <style>{`
-        @keyframes startDust {
-          0%, 100% { transform: translate(0, 0); }
-          50% { transform: translate(0.6rem, -0.8rem); }
-        }
-      `}</style>
       {botMenu && (
         <>
           <div className="fixed inset-0 z-[55]" aria-hidden onClick={closeBotMenu} />
