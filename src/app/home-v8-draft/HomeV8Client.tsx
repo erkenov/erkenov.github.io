@@ -39,6 +39,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
+import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
+import { INTEGRATION_LOGOS } from "./integration-logos";
+import { STACK_LOGOS } from "./stack-logos";
 import { SphereScrollStage, type CellPositionInfo } from "@/components/SphereScrollStage";
 import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
 import { SceneIndustriesCarousel } from "@/components/SceneIndustriesCarousel";
@@ -1083,52 +1086,41 @@ function CustomSolutionsSection() {
 /* underlying platform vendor. Honest ranges only.                      */
 /* ================================================================== */
 
-/* ---- AI section (HubSpot "Breeze"-style: warm gradient block, headline
- * left + promise right, then a 3-card grid of AI agents with mini UI
- * vignettes). AI lineup reframed brand-neutral per the research (Voice AI →
- * AI phone agent, Conversation AI → AI chat agent, Reviews AI → AI review
- * replies; Content/Website/Workflow AI as smaller mentions). Upsell hint,
- * no hard prices. Placed between pipeline and Meet Erken. ---- */
+/* ---- AI section — modeled beat-for-beat on HubSpot's Breeze "Built-in AI
+ * agents that work for you 24/7" section: a bright-but-subtle colorful warm
+ * wash (theirs peach→pink; ours a peach/sage/gold wash on cream), headline
+ * top-left + promise top-right, and an auto-advancing card carousel (center
+ * card raised + white, side cards tinted + recessed, side arrows, dots,
+ * pause on hover/focus) with the mini UI vignettes inside. AI lineup reframed
+ * brand-neutral per the research (Voice AI → AI phone agent, Conversation AI
+ * → AI chat agent, Reviews AI → AI review replies). Copy stays no-hard-claims
+ * (billing/included decision still open). Between pipeline and Meet Erken. -- */
+// Minimal vignettes (Shamil: HubSpot's are ONE clean floating mini-window,
+// not several stacked pieces). Each returns a single small window; the card
+// provides the tinted padded backdrop it floats on.
 function VignettePhone() {
   return (
-    <div className="rounded-xl border border-border bg-surface-2 p-3">
-      <div className="flex items-center gap-2">
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/15 text-sm">📞</span>
-        <div className="text-xs leading-tight">
-          <div className="font-medium text-text">Incoming call</div>
-          <div className="text-text-dim">answering in 2 rings…</div>
-        </div>
-      </div>
-      <div className="mt-3 flex items-center gap-1.5 rounded-lg bg-accent/10 px-3 py-2 text-xs text-text">
-        <Check className="h-3.5 w-3.5 shrink-0 text-accent" strokeWidth={2.5} /> Booked — Tue 2:00 PM
+    <div className="flex items-center gap-2.5">
+      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent/15 text-base">📞</span>
+      <div className="text-left text-xs leading-tight">
+        <div className="font-semibold text-text">Call booked</div>
+        <div className="text-text-dim">Tue · 2:00 PM</div>
       </div>
     </div>
   );
 }
 function VignetteChat() {
   return (
-    <div className="space-y-2 rounded-xl border border-border bg-surface-2 p-3">
-      <div className="flex justify-end">
-        <span className="max-w-[85%] rounded-2xl rounded-br-sm bg-accent px-3 py-1.5 text-xs text-bg">
-          Any openings Friday?
-        </span>
-      </div>
-      <div className="flex justify-start">
-        <span className="max-w-[85%] rounded-2xl rounded-bl-sm border border-border bg-surface px-3 py-1.5 text-xs text-text">
-          Yes — 10 AM or 3 PM. Which works?
-        </span>
-      </div>
+    <div className="max-w-[12rem] rounded-2xl rounded-bl-sm bg-accent px-3.5 py-2.5 text-left text-xs leading-snug text-bg">
+      Yes — I can book you Friday at 10 AM.
     </div>
   );
 }
 function VignetteReview() {
   return (
-    <div className="rounded-xl border border-border bg-surface-2 p-3">
-      <div className="text-xs tracking-widest text-accent">★★★★★</div>
-      <div className="mt-1 text-xs text-text">&ldquo;Fast and friendly — highly recommend.&rdquo;</div>
-      <div className="mt-2 rounded-lg bg-accent/10 px-3 py-1.5 text-xs text-text-muted">
-        <span className="font-medium text-text">Auto-reply:</span> Thank you, Maria! 🙏
-      </div>
+    <div className="text-center">
+      <div className="text-sm tracking-[0.18em] text-accent">★★★★★</div>
+      <div className="mt-1.5 text-xs text-text">&ldquo;Thank you, Maria!&rdquo;</div>
     </div>
   );
 }
@@ -1151,19 +1143,160 @@ const AI_CARDS: { title: string; desc: string; Vignette: () => React.ReactElemen
   },
 ];
 
+/* HubSpot-Breeze-style auto-advancing carousel: the active card sits raised
+ * and white in the CENTER, the others tinted + recessed to the sides. Auto-
+ * rotates on a timer, pauses on hover/focus, side arrows + dots for manual
+ * control. On mobile only the center card shows (sides fade out). Respects
+ * prefers-reduced-motion (no auto-advance; arrows/dots still work). */
+function AICarousel() {
+  const n = AI_CARDS.length;
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    if (paused) return;
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
+    const t = setInterval(() => setActive((a) => (a + 1) % n), 3800);
+    return () => clearInterval(t);
+  }, [paused, n]);
+
+  const go = (dir: number) => setActive((a) => (a + dir + n) % n);
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={() => setPaused(false)}
+    >
+      {/* Taller deck so the PORTRAIT cards dominate the section by size. */}
+      <div className="relative mx-auto flex h-[460px] max-w-4xl items-center justify-center md:h-[480px]">
+        {AI_CARDS.map((card, i) => {
+          const offset = (((i - active) % n) + n) % n; // 0=center,1=right,n-1=left
+          const slot = offset === 0 ? "center" : offset === 1 ? "right" : "left";
+          const isCenter = slot === "center";
+          const sideX = slot === "right" ? "64%" : "-64%";
+          // Drive the deck with plain CSS transforms + transitions (framer's
+          // `animate` object wasn't applying transforms reliably here). Mobile
+          // hides the side cards via a media-query class (max-md:opacity-0) —
+          // more reliable than a JS isMobile flag.
+          const transform = isCenter
+            ? "translateX(0) scale(1)"
+            : `translateX(${sideX}) scale(0.82)`;
+          return (
+            <div
+              key={card.title}
+              className={`absolute w-[280px] transition-[transform,opacity] duration-500 sm:w-[300px] ${
+                isCenter ? "opacity-100" : "opacity-[0.55] max-md:opacity-0"
+              }`}
+              style={{
+                zIndex: isCenter ? 20 : 10,
+                transform,
+                transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)",
+              }}
+              aria-hidden={!isCenter}
+            >
+              {/* Vertical PORTRAIT card (~3:4), phone-screen proportions. */}
+              <div
+                className={
+                  isCenter
+                    ? "flex h-[420px] flex-col rounded-2xl border border-border bg-surface p-5 shadow-[0_26px_70px_-24px_rgba(126,166,135,0.6)]"
+                    : "flex h-[420px] flex-col rounded-2xl border border-border bg-surface-2 p-5 shadow-sm"
+                }
+              >
+                {/* Minimal vignette: ONE floating mini-window centered on a
+                    tinted backdrop, generous padding. */}
+                <div className="flex flex-1 items-center justify-center rounded-xl border border-border/50 bg-gradient-to-br from-surface-2 to-[#f0ece0]">
+                  <div className="rounded-2xl border border-border bg-surface px-5 py-4 shadow-md">
+                    <card.Vignette />
+                  </div>
+                </div>
+                <h3
+                  className="mt-4 text-base font-semibold text-text"
+                  style={{ letterSpacing: "-0.01em" }}
+                >
+                  {card.title}
+                </h3>
+                <p className={`mt-1.5 text-sm leading-relaxed ${isCenter ? "text-text-muted" : "text-text-dim"}`}>
+                  {card.desc}
+                </p>
+                {/* Learn more → /start#custom-solutions (no dedicated AI page
+                    yet; lands on the custom-setup card — flagged in report). */}
+                <a
+                  href="/start#custom-solutions"
+                  className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-accent transition-colors hover:text-accent-hover"
+                  tabIndex={isCenter ? 0 : -1}
+                >
+                  Learn more →
+                </a>
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Side arrows */}
+        <button
+          type="button"
+          onClick={() => go(-1)}
+          aria-label="Previous AI agent"
+          className="absolute left-0 top-1/2 z-30 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-surface text-text shadow-md transition-colors hover:border-border-strong hover:bg-surface-2 md:left-2"
+        >
+          <IconArrowNarrowLeft className="h-5 w-5" />
+        </button>
+        <button
+          type="button"
+          onClick={() => go(1)}
+          aria-label="Next AI agent"
+          className="absolute right-0 top-1/2 z-30 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-surface text-text shadow-md transition-colors hover:border-border-strong hover:bg-surface-2 md:right-2"
+        >
+          <IconArrowNarrowRight className="h-5 w-5" />
+        </button>
+      </div>
+
+      {/* Dots */}
+      <div className="mt-6 flex justify-center gap-2">
+        {AI_CARDS.map((c, i) => (
+          <button
+            key={c.title}
+            type="button"
+            onClick={() => setActive(i)}
+            aria-label={`Show ${c.title}`}
+            aria-current={i === active}
+            className={`h-2 rounded-full transition-all ${
+              i === active ? "w-6 bg-accent" : "w-2 bg-border hover:bg-border-strong"
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function AISection() {
   return (
     <section
       id="ai"
       className="relative overflow-hidden py-20 md:py-28"
-      // Warm sage→cream gradient block (our palette, not HubSpot orange).
+      // HubSpot-Breeze-style bright-but-subtle COLORFUL warm wash, translated
+      // to our palette: soft peach (warm clay-light) + sage + a touch of gold
+      // over cream. Bright and popping, not cluttered (rev-3 addendum).
       style={{
         background:
-          "linear-gradient(155deg, rgba(126,166,135,0.14) 0%, rgba(250,246,236,0.85) 46%, var(--bg) 100%)",
+          "radial-gradient(58% 80% at 14% 8%, rgba(232,155,122,0.24), transparent 60%)," +
+          "radial-gradient(54% 74% at 88% 14%, rgba(126,166,135,0.24), transparent 62%)," +
+          "radial-gradient(52% 62% at 62% 96%, rgba(242,201,76,0.14), transparent 62%)," +
+          "linear-gradient(180deg, #FBF7EF 0%, var(--bg) 100%)",
       }}
     >
-      <div className="mx-auto max-w-6xl px-6 md:px-8">
-        <div className="grid gap-6 md:grid-cols-2 md:items-end">
+      {/* Compact heading block (Shamil: the CAROUSEL must dominate by size —
+          keep the type tight so the eye lands on the cards first). */}
+      <div className="relative mx-auto max-w-6xl px-6 md:px-8">
+        <div className="grid gap-x-8 gap-y-2 md:grid-cols-2 md:items-end">
           <motion.div
             data-celly-avoid
             initial={{ opacity: 0, y: 24 }}
@@ -1173,8 +1306,8 @@ function AISection() {
           >
             <SectionKicker>Your AI team</SectionKicker>
             <h2
-              className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
-              style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
+              className="mt-2 text-2xl font-bold tracking-tight md:text-3xl"
+              style={{ letterSpacing: "-0.02em", lineHeight: 1.15 }}
             >
               Built-in AI that works for you 24/7.
             </h2>
@@ -1185,7 +1318,7 @@ function AISection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.5, ease, delay: 0.1 }}
-            className="text-base leading-relaxed text-text-muted md:text-lg"
+            className="max-w-md text-sm leading-relaxed text-text-muted md:text-base"
           >
             Chat, calls, reviews, content, and workflows — a whole AI team,
             included and working together from day one. It answers, books,
@@ -1193,23 +1326,8 @@ function AISection() {
           </motion.p>
         </div>
 
-        <div data-celly-avoid className="mt-12 grid gap-6 md:grid-cols-3">
-          {AI_CARDS.map((card, i) => (
-            <motion.div
-              key={card.title}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.45, ease, delay: i * 0.08 }}
-              className="flex flex-col rounded-2xl border border-border bg-surface p-5 shadow-sm"
-            >
-              <card.Vignette />
-              <h3 className="mt-4 text-base font-semibold text-text" style={{ letterSpacing: "-0.01em" }}>
-                {card.title}
-              </h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-text-muted">{card.desc}</p>
-            </motion.div>
-          ))}
+        <div data-celly-avoid className="mt-8">
+          <AICarousel />
         </div>
 
         <p data-celly-avoid className="mt-8 text-center text-sm text-text-muted">
@@ -1225,25 +1343,59 @@ function AISection() {
   );
 }
 
-/* ---- Stack-comparison table ("replace your whole stack"). Categories +
- * plain-text tool chips + sanity-checked typical monthly ranges + Included,
- * with the research's honest total framing ($400–$700/mo typical, up to
- * ~$1,400 full stack — NOT the unverified $1,876). Placed after pricing. ---- */
-const STACK_ROWS: { cat: string; tools: string[]; price: string }[] = [
-  { cat: "CRM", tools: ["HubSpot", "Pipedrive"], price: "$20–50/mo" },
-  { cat: "Email marketing & automation", tools: ["ActiveCampaign", "Mailchimp"], price: "$30–80/mo" },
-  { cat: "Funnels & landing pages", tools: ["ClickFunnels", "Leadpages"], price: "$97–297/mo" },
-  { cat: "Appointment booking", tools: ["Calendly", "Acuity"], price: "$10–30/mo" },
-  { cat: "Reviews & reputation", tools: ["Podium", "Birdeye"], price: "$150–400/mo" },
-  { cat: "SMS & phone system", tools: ["Twilio", "SimpleTexting"], price: "$25–100/mo" },
-  { cat: "Website & hosting", tools: ["WordPress", "page builder"], price: "$20–50/mo" },
-  { cat: "Automation glue", tools: ["Zapier"], price: "$20–49/mo" },
+/* ---- Stack-comparison table ("replace your whole stack"). Real tool LOGOS
+ * (Simple Icons where available, text chip otherwise) + a single defensible
+ * per-category price + Included check. Expanded to the FULL honest set of
+ * categories the platform genuinely replaces (14 rows), each priced at a
+ * defensible current point — NOT premium picks — so the summed total lands
+ * where the math lands (~$1,191/mo) and answers "why not $1,876": a bigger
+ * honest total from counting ALL replaced categories, not inflated per-row
+ * numbers. Each column's TOTAL sits under its own column (struck total under
+ * the price column, $97 under Included). Placed after pricing. ---- */
+const STACK_ROWS: { cat: string; tools: string[]; price: number }[] = [
+  { cat: "CRM", tools: ["HubSpot", "Pipedrive"], price: 45 },
+  { cat: "Email marketing", tools: ["Mailchimp", "ActiveCampaign"], price: 65 },
+  { cat: "Funnels & landing pages", tools: ["ClickFunnels", "Leadpages"], price: 147 },
+  { cat: "Appointment booking", tools: ["Calendly", "Acuity"], price: 25 },
+  { cat: "Reviews & reputation", tools: ["Podium", "Birdeye"], price: 199 },
+  { cat: "SMS & phone system", tools: ["Twilio", "SimpleTexting"], price: 75 },
+  { cat: "Website & hosting", tools: ["WordPress"], price: 45 },
+  { cat: "Automations", tools: ["Zapier", "Make", "n8n"], price: 49 },
+  { cat: "Courses & memberships", tools: ["Kajabi", "Teachable"], price: 149 },
+  { cat: "Communities", tools: ["Circle", "Skool"], price: 89 },
+  { cat: "Call tracking", tools: ["CallRail"], price: 75 },
+  { cat: "Document signing", tools: ["DocuSign", "PandaDoc"], price: 50 },
+  { cat: "Branded mobile app", tools: ["Custom app"], price: 99 },
+  { cat: "Analytics & dashboards", tools: ["Google Analytics", "Databox"], price: 79 },
 ];
+const STACK_TOTAL = STACK_ROWS.reduce((s, r) => s + r.price, 0); // 1191
+const STACK_GRID = "md:grid-cols-[1.25fr_1.9fr_0.75fr_0.75fr]";
 
-function ToolChip({ name }: { name: string }) {
+/** A tool as a real logo pill (Simple Icons vendored) when we have the mark,
+ *  otherwise a clean text pill. Same pill shape either way. */
+function ToolMark({ name }: { name: string }) {
+  const logo = STACK_LOGOS[name];
   return (
-    <span className="inline-flex items-center rounded-md border border-border bg-surface-2 px-2 py-0.5 text-xs text-text-muted">
+    <span
+      className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-2 px-2 py-1 text-xs text-text-muted"
+      title={name}
+    >
+      {logo && (
+        <svg viewBox="0 0 24 24" role="img" aria-label={name} className="h-3.5 w-3.5" fill={logo.color}>
+          <title>{name}</title>
+          <path d={logo.path} />
+        </svg>
+      )}
       {name}
+    </span>
+  );
+}
+
+function IncludedCheck() {
+  // Approved filled-sage-circle check (Shamil: keep as-is).
+  return (
+    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent shadow-sm">
+      <Check className="h-3.5 w-3.5 text-bg" strokeWidth={3} />
     </span>
   );
 }
@@ -1265,65 +1417,96 @@ function StackComparisonSection() {
             className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
             style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
           >
-            One platform instead of eight subscriptions.
+            One platform instead of fourteen subscriptions.
           </h2>
           <p className="mt-4 text-base text-text-muted md:text-lg">
             Everything below is the same platform, under one login — and one bill.
           </p>
         </motion.div>
 
-        <div data-celly-avoid className="mt-10 overflow-hidden rounded-2xl border border-border bg-surface">
-          {/* Header row (desktop only) */}
-          <div className="hidden grid-cols-[1.4fr_2fr_0.9fr_auto] gap-4 bg-surface-2 px-6 py-3 font-mono text-[11px] uppercase tracking-[0.08em] text-text-dim md:grid">
+        <div
+          data-celly-avoid
+          className="mt-10 overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_18px_50px_-24px_rgba(42,38,32,0.35)]"
+        >
+          {/* Header BAND — sage-tinted. Right columns pulled left of the edge
+              for breathing room (content left-aligned in each). */}
+          <div className={`hidden ${STACK_GRID} gap-4 border-b border-border bg-[var(--accent-soft)] px-6 py-3.5 font-mono text-[11px] uppercase tracking-[0.08em] text-text md:grid md:px-8`}>
             <div>Category</div>
             <div>The tools you&apos;d buy</div>
-            <div>Typical / mo</div>
-            <div className="text-center">Included</div>
+            <div>Price on its own</div>
+            <div>Included</div>
           </div>
-          {STACK_ROWS.map((row) => (
+          {STACK_ROWS.map((row, i) => (
             <div
               key={row.cat}
-              className="grid grid-cols-1 gap-2 border-t border-border px-6 py-4 md:grid-cols-[1.4fr_2fr_0.9fr_auto] md:items-center md:gap-4"
+              className={`grid grid-cols-1 gap-2 px-6 py-3.5 ${STACK_GRID} md:items-center md:gap-4 md:px-8 ${
+                i % 2 === 1 ? "bg-surface-2/60" : "bg-surface"
+              } ${i > 0 ? "border-t border-border/50 md:border-t-0" : ""}`}
             >
-              <div className="font-medium text-text">{row.cat}</div>
+              <div className="font-semibold text-text">{row.cat}</div>
               <div className="flex flex-wrap gap-1.5">
                 {row.tools.map((t) => (
-                  <ToolChip key={t} name={t} />
+                  <ToolMark key={t} name={t} />
                 ))}
               </div>
-              <div className="text-sm text-text-muted">{row.price}</div>
-              <div className="flex items-center gap-1.5 md:justify-center">
-                <Check className="h-4 w-4 shrink-0 text-accent" strokeWidth={2.5} />
-                <span className="text-xs text-text-dim md:hidden">Included</span>
+              <div className="text-sm font-semibold text-text-muted">${row.price}/mo</div>
+              <div className="flex items-center gap-2">
+                <IncludedCheck />
+                <span className="text-xs font-medium text-text-muted md:hidden">Included</span>
               </div>
             </div>
           ))}
+
+          {/* TOTALS ROW — each column's total sits directly under its column:
+              the struck grand total under Price, "$97/mo all included" under
+              Included. Eye follows each column straight down. */}
+          <div className={`grid grid-cols-1 gap-2 border-t-2 border-border bg-[var(--accent-soft)] px-6 py-5 ${STACK_GRID} md:items-end md:gap-4 md:px-8`}>
+            <div className="text-sm font-semibold text-text">The whole stack</div>
+            <div className="hidden md:block" />
+            <div>
+              <div className="text-2xl font-bold tracking-tight md:text-3xl">
+                <span className="text-text-dim line-through decoration-[var(--clay)]/70 decoration-2">
+                  ${STACK_TOTAL.toLocaleString()}
+                </span>
+              </div>
+              <div className="text-[11px] text-text-dim">/mo, billed separately</div>
+            </div>
+            <div>
+              <div className="flex items-end gap-1">
+                <span className="text-3xl font-bold tracking-tight text-accent md:text-4xl" style={{ letterSpacing: "-0.02em" }}>
+                  $97
+                </span>
+                <span className="mb-1 text-sm font-medium text-accent/85">/mo</span>
+              </div>
+              <div className="text-[11px] font-medium text-text-muted">all included</div>
+            </div>
+          </div>
         </div>
 
-        {/* Contrast footer */}
-        <div data-celly-avoid className="mt-6 grid gap-4 md:grid-cols-2">
-          <div className="rounded-2xl border border-border bg-surface p-6">
-            <div className="text-sm text-text-muted">Typical total, running separately</div>
-            <div className="mt-1 text-3xl font-bold tracking-tight text-text">
-              <span className="text-text-dim line-through decoration-[var(--clay)]/60 decoration-2">$400–$700</span>
-              <span className="ml-1 text-base font-normal text-text-dim">/mo</span>
+        {/* Celebratory $97 / Try-free CTA (Shamil-approved treatment). */}
+        <div
+          data-celly-avoid
+          className="relative mt-6 flex flex-col items-start justify-between gap-5 overflow-hidden rounded-2xl p-6 text-bg shadow-[0_18px_44px_-18px_rgba(126,166,135,0.75)] sm:flex-row sm:items-center md:p-8"
+          style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-hover))" }}
+        >
+          <div>
+            <div className="flex items-end gap-2">
+              <span className="text-4xl font-bold tracking-tight md:text-5xl" style={{ letterSpacing: "-0.03em" }}>
+                $97
+              </span>
+              <span className="mb-1.5 text-base font-medium text-bg/85">/mo, everything included</span>
             </div>
-            <div className="mt-1 text-xs text-text-dim">up to ~$1,400/mo for a full stack</div>
-          </div>
-          <div className="flex flex-col justify-between rounded-2xl border-2 border-accent bg-[var(--accent-soft)] p-6">
-            <div>
-              <div className="text-sm text-text-muted">All of it, included</div>
-              <div className="mt-1 text-3xl font-bold tracking-tight text-accent">
-                $97<span className="text-base font-normal">/mo</span>
-              </div>
+            <div className="mt-1 text-sm text-bg/90">
+              That&apos;s about{" "}
+              <b>${(STACK_TOTAL - 97).toLocaleString()} a month</b> back in your pocket. First week free.
             </div>
-            <a
-              href="/start"
-              className="mt-4 inline-flex w-fit items-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
-            >
-              Try for free →
-            </a>
           </div>
+          <a
+            href="/start"
+            className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-bg px-6 py-3.5 text-sm font-semibold text-text shadow-sm transition-transform hover:scale-[1.02]"
+          >
+            Try for free →
+          </a>
         </div>
       </div>
     </section>
@@ -1331,29 +1514,14 @@ function StackComparisonSection() {
 }
 
 /* ---- Integrations marquee (last section — no footer). Right-to-left CSS
- * ticker of confirmed-native integration names as text chips, duplicated
+ * ticker of REAL brand LOGOS (inline-vendored Simple Icons paths, brand
+ * colors on cream) — logos only, no name labels (Shamil's call). Duplicated
  * track for a seamless loop, pause on hover, reduced-motion fallback = a
- * static centered wrap. Only research-confirmed native names (no TikTok/
- * Yext/Clio). ---- */
-const INTEGRATION_NAMES = [
-  "Gmail",
-  "Google Calendar",
-  "Outlook",
-  "Stripe",
-  "PayPal",
-  "QuickBooks",
-  "Shopify",
-  "Facebook",
-  "Instagram",
-  "Google Business Profile",
-  "Zapier",
-  "Make",
-  "Webhooks",
-];
-
+ * static centered wrap. Only research-confirmed native brands (no TikTok/
+ * Yext/Clio); Webhooks uses a neutral generic glyph. ---- */
 function IntegrationsMarquee() {
   return (
-    <section id="integrations" className="py-20 md:py-28">
+    <section id="integrations" className="pt-20 pb-10 md:pt-28 md:pb-14">
       <div className="mx-auto max-w-3xl px-6 text-center md:px-8">
         <SectionKicker>Integrations</SectionKicker>
         <h2
@@ -1374,25 +1542,45 @@ function IntegrationsMarquee() {
             "linear-gradient(to right, transparent, black 7%, black 93%, transparent)",
         }}
       >
-        <div className="v8mq-track flex w-max">
-          {[...INTEGRATION_NAMES, ...INTEGRATION_NAMES].map((name, i) => (
-            <span
+        <div className="v8mq-track flex w-max items-center">
+          {/* 4 copies + a -25% (one-copy) loop so ≥3 copies always cover the
+              viewport at any width (13 tiles ≈ 1040px < a wide viewport, so
+              a 2-copy / -50% loop showed an empty tail — Shamil's bug). */}
+          {[
+            ...INTEGRATION_LOGOS,
+            ...INTEGRATION_LOGOS,
+            ...INTEGRATION_LOGOS,
+            ...INTEGRATION_LOGOS,
+          ].map((logo, i) => (
+            <div
               key={i}
-              className="mr-3 inline-flex items-center whitespace-nowrap rounded-full border border-border bg-surface px-5 py-2.5 text-sm font-medium text-text-muted shadow-sm"
+              className="mr-4 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border bg-surface shadow-sm"
+              title={logo.name}
             >
-              {name}
-            </span>
+              <svg
+                viewBox="0 0 24 24"
+                role="img"
+                aria-label={logo.name}
+                className="h-8 w-8"
+                fill={logo.color}
+              >
+                <title>{logo.name}</title>
+                <path d={logo.path} />
+              </svg>
+            </div>
           ))}
         </div>
       </div>
 
       <style>{`
+        /* 4 copies in the track; translate exactly one copy (-25%) so the
+           reset is seamless and ≥3 copies always cover the viewport. */
         .v8mq-track { animation: v8mq-scroll 48s linear infinite; will-change: transform; }
         .v8mq:hover .v8mq-track { animation-play-state: paused; }
-        @keyframes v8mq-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes v8mq-scroll { from { transform: translateX(0); } to { transform: translateX(-25%); } }
         @media (prefers-reduced-motion: reduce) {
           .v8mq { overflow: visible; -webkit-mask-image: none; mask-image: none; }
-          .v8mq-track { animation: none; width: 100%; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+          .v8mq-track { animation: none; width: 100%; flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
         }
       `}</style>
     </section>
@@ -2394,8 +2582,10 @@ export default function HomeV8Client() {
 
       {/* No footer (Shamil's call, home-draft v5). */}
 
-      {/* Trailing space so scroll has room to finish its tween */}
-      <div className="h-[20vh]" />
+      {/* Trailing space so scroll has room to finish its tween. Halved
+          (rev-3 addendum: the gap under the integrations marquee read too
+          big). */}
+      <div className="h-[10vh]" />
     </SphereScrollStage>
 
     {/* AI character overlay — sits ABOVE the 3D cell-dragon canvas and
