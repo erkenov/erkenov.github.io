@@ -1,19 +1,21 @@
 "use client";
 
 /**
- * /start — the trial funnel page (2026-06-12 positioning: the site sells TWO
- * products — the white-label CRM at $97/mo and the free Erkenbot).
+ * /start — the trial funnel page (2026-07-20 redesign: three separate
+ * prepay-term plan cards instead of a radio selector, Erken moved onto her
+ * own card with a store-download CTA, plus two new asks — custom
+ * GoHighLevel/snapshot work and the rent-leads partnership — each with their
+ * own zero-friction capture path into /api/custom-request).
  *
- * ONE field, one button. Zero friction by design: email is all we ask;
- * everything else gets discussed after Shamil reaches out. The bot column has
- * no form at all — downloads stay friction-free, contact capture happens
- * in-product later.
+ * Zero friction by design (Shamil 2026-06-12, extended 2026-07-20): every
+ * card asks for the minimum needed to start a conversation — email, plus
+ * whatever's structurally required (a message, a phone number) — never more.
  *
  * Styled with the site's light-cream tokens (globals.css) — NOT the dark
  * palette (first version mismatched; Shamil flagged it 2026-06-12).
  */
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { CellDragonSprite } from "@/components/CellDragonSprite";
 import ErkenChatWidget, { openErkenChat } from "@/components/ErkenChatWidget";
 import ErkenVoiceWidget from "@/components/ErkenVoiceWidget";
@@ -29,7 +31,17 @@ const PLANS = [
   { id: "6-months", label: "6 months", price: "$87/mo", note: "$522 once — save 10%" },
   { id: "yearly", label: "Yearly", price: "$81/mo", note: "$970 once — 2 months free" },
 ] as const;
-type PlanId = (typeof PLANS)[number]["id"];
+
+// Same platform, every tier — the price difference is only the prepay term.
+const PLAN_FEATURES = [
+  "CRM + pipelines",
+  "Calendars + booking",
+  "Automations + follow-ups",
+  "AI voice receptionist",
+  "Reputation + review management",
+  "Erken assistant included",
+  "Free first week",
+];
 
 // drifting cell-particles around Celly — a lightweight CSS echo of the
 // homepage's 3D dust cloud (deterministic, index-seeded; no Three.js here)
@@ -48,10 +60,420 @@ const DUST = Array.from({ length: 22 }, (_, i) => {
   };
 });
 
-export default function StartPage() {
+function blobToBase64(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = String(reader.result || "");
+      const idx = result.indexOf(",");
+      resolve(idx >= 0 ? result.slice(idx + 1) : result);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+/** One plan — its own inline email capture, posts { email, plan } to /api/signup. */
+function PlanCard({ plan }: { plan: (typeof PLANS)[number] }) {
+  const [expanded, setExpanded] = useState(false);
   const [email, setEmail] = useState("");
-  const [plan, setPlan] = useState<PlanId>("monthly");
   const [state, setState] = useState<SendState>("idle");
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (state === "sending" || !email.trim()) return;
+    setState("sending");
+    try {
+      const r = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), plan: plan.id }),
+      });
+      setState(r.ok ? "sent" : "error");
+    } catch {
+      setState("error");
+    }
+  };
+
+  return (
+    <section className="flex flex-col rounded-2xl border border-border bg-surface p-8">
+      <h3 className="text-lg font-semibold">{plan.label}</h3>
+      <div className="mt-2">
+        <span className="text-2xl font-bold">{plan.price}</span>
+        <span className="ml-2 text-xs text-text-dim">{plan.note}</span>
+      </div>
+      <p className="mt-4 text-xs uppercase tracking-[0.05em] text-text-dim">
+        What&apos;s included
+      </p>
+      <ul className="mt-2 flex-1 space-y-1.5 text-sm text-text-muted">
+        {PLAN_FEATURES.map((f) => (
+          <li key={f} className="flex items-start gap-2">
+            <span className="mt-0.5 text-accent">✓</span>
+            <span>{f}</span>
+          </li>
+        ))}
+      </ul>
+
+      {state === "sent" ? (
+        <div className="mt-6 rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm leading-relaxed">
+          ✅ You&apos;re in. We&apos;re setting up your account and
+          you&apos;ll hear from us shortly — usually within a few hours.
+        </div>
+      ) : !expanded ? (
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="mt-6 w-full cursor-pointer rounded-xl bg-accent px-6 py-3 text-base font-semibold text-bg transition-all hover:bg-accent-hover"
+        >
+          Start my free week
+        </button>
+      ) : (
+        <form onSubmit={submit} className="mt-6">
+          <input
+            type="email"
+            required
+            autoFocus
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="your email"
+            className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-base text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
+          />
+          <button
+            type="submit"
+            disabled={state === "sending"}
+            className="mt-3 w-full cursor-pointer rounded-xl bg-accent px-6 py-3 text-base font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
+          >
+            {state === "sending"
+              ? "One second…"
+              : state === "error"
+                ? "Didn't go through — try again"
+                : "Confirm →"}
+          </button>
+        </form>
+      )}
+      <p className="mt-3 text-xs text-text-dim">
+        No card. No questionnaire. Just your email — we set everything up and
+        reach out.
+      </p>
+    </section>
+  );
+}
+
+type CustomRoute = null | "form" | "audio";
+type RecState = "idle" | "recording" | "transcribing" | "ready" | "sending" | "sent" | "error";
+
+/** Custom GoHighLevel / snapshot work — voice call, typed form, or a recorded audio message. */
+function CustomSolutionsCard() {
+  const [route, setRoute] = useState<CustomRoute>(null);
+
+  // typed-form sub-flow
+  const [message, setMessage] = useState("");
+  const [email, setEmail] = useState("");
+  const [formState, setFormState] = useState<SendState>("idle");
+
+  // audio sub-flow
+  const [recState, setRecState] = useState<RecState>("idle");
+  const [transcript, setTranscript] = useState("");
+  const [audioEmail, setAudioEmail] = useState("");
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<BlobPart[]>([]);
+
+  const submitForm = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (formState === "sending" || !email.trim() || !message.trim()) return;
+    setFormState("sending");
+    try {
+      const r = await fetch("/api/custom-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim(),
+          message: message.trim(),
+          kind: "custom-solution",
+          channel: "form",
+        }),
+      });
+      setFormState(r.ok ? "sent" : "error");
+    } catch {
+      setFormState("error");
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mr = new MediaRecorder(stream);
+      chunksRef.current = [];
+      mr.ondataavailable = (ev) => {
+        if (ev.data.size > 0) chunksRef.current.push(ev.data);
+      };
+      mr.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop());
+        const mime = mr.mimeType || "audio/webm";
+        const blob = new Blob(chunksRef.current, { type: mime });
+        setRecState("transcribing");
+        try {
+          const b64 = await blobToBase64(blob);
+          const r = await fetch("/api/transcribe", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ audio: b64, mime }),
+          });
+          const d = (await r.json().catch(() => ({ text: "" }))) as { text?: string };
+          if (r.ok && d.text) {
+            setTranscript(d.text);
+            setRecState("ready");
+          } else {
+            setRecState("error");
+          }
+        } catch {
+          setRecState("error");
+        }
+      };
+      mediaRecorderRef.current = mr;
+      mr.start();
+      setRecState("recording");
+    } catch {
+      setRecState("error");
+    }
+  };
+
+  const stopRecording = () => {
+    mediaRecorderRef.current?.stop();
+  };
+
+  const sendAudioRequest = async () => {
+    if (recState === "sending" || !audioEmail.trim() || !transcript.trim()) return;
+    setRecState("sending");
+    try {
+      const r = await fetch("/api/custom-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: audioEmail.trim(),
+          message: transcript.trim(),
+          kind: "custom-solution",
+          channel: "audio",
+        }),
+      });
+      setRecState(r.ok ? "sent" : "error");
+    } catch {
+      setRecState("error");
+    }
+  };
+
+  return (
+    <section className="flex flex-col rounded-2xl border border-border bg-surface p-8">
+      <h3 className="text-lg font-semibold">Custom solutions</h3>
+      <p className="mt-1 text-sm text-text-muted">
+        Want your snapshot configured for you, or custom GoHighLevel
+        configuration? Describe what you need — we&apos;ll assess it and send
+        you an offer.
+      </p>
+
+      <div className="mt-6 flex flex-col gap-2">
+        <button
+          type="button"
+          onClick={() => window.__startErkenVoiceCall?.()}
+          className="flex items-center gap-2.5 rounded-xl border border-border bg-surface-2 px-4 py-3 text-left text-sm font-medium text-text transition-colors hover:border-border-strong"
+        >
+          <span aria-hidden>🎙️</span> Talk to the voice AI
+        </button>
+        <button
+          type="button"
+          onClick={() => setRoute(route === "form" ? null : "form")}
+          className={`flex items-center gap-2.5 rounded-xl border px-4 py-3 text-left text-sm font-medium transition-colors ${
+            route === "form"
+              ? "border-accent bg-accent/10 text-text"
+              : "border-border bg-surface-2 text-text hover:border-border-strong"
+          }`}
+        >
+          <span aria-hidden>📝</span> Fill out a form
+        </button>
+        <button
+          type="button"
+          onClick={() => setRoute(route === "audio" ? null : "audio")}
+          className={`flex items-center gap-2.5 rounded-xl border px-4 py-3 text-left text-sm font-medium transition-colors ${
+            route === "audio"
+              ? "border-accent bg-accent/10 text-text"
+              : "border-border bg-surface-2 text-text hover:border-border-strong"
+          }`}
+        >
+          <span aria-hidden>🎤</span> Send an audio message
+        </button>
+      </div>
+
+      {route === "form" &&
+        (formState === "sent" ? (
+          <div className="mt-4 rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm leading-relaxed">
+            ✅ Got it — we&apos;ll review and send you an offer shortly.
+          </div>
+        ) : (
+          <form onSubmit={submitForm} className="mt-4 flex flex-col gap-2">
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              rows={3}
+              required
+              autoFocus
+              placeholder="What do you need?"
+              className="w-full resize-none rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
+            />
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your email"
+              className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
+            />
+            <button
+              type="submit"
+              disabled={formState === "sending"}
+              className="mt-1 w-full cursor-pointer rounded-xl bg-accent px-6 py-2.5 text-sm font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
+            >
+              {formState === "sending"
+                ? "Sending…"
+                : formState === "error"
+                  ? "Didn't go through — try again"
+                  : "Send request"}
+            </button>
+          </form>
+        ))}
+
+      {route === "audio" &&
+        (recState === "sent" ? (
+          <div className="mt-4 rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm leading-relaxed">
+            ✅ Got it — we&apos;ll review and send you an offer shortly.
+          </div>
+        ) : (
+          <div className="mt-4 flex flex-col gap-2">
+            {recState === "idle" || recState === "error" ? (
+              <button
+                type="button"
+                onClick={startRecording}
+                className="w-full rounded-xl border border-border bg-surface-2 px-4 py-2.5 text-sm font-medium text-text transition-colors hover:border-border-strong"
+              >
+                {recState === "error" ? "Couldn't send — try again" : "● Start recording"}
+              </button>
+            ) : recState === "recording" ? (
+              <button
+                type="button"
+                onClick={stopRecording}
+                className="w-full rounded-xl border border-accent bg-accent/10 px-4 py-2.5 text-sm font-medium text-text"
+              >
+                ■ Stop recording
+              </button>
+            ) : recState === "transcribing" ? (
+              <div className="px-1 text-sm text-text-muted">Transcribing…</div>
+            ) : (
+              <>
+                <div className="rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text-muted">
+                  &ldquo;{transcript}&rdquo;
+                </div>
+                <input
+                  type="email"
+                  required
+                  autoFocus
+                  value={audioEmail}
+                  onChange={(e) => setAudioEmail(e.target.value)}
+                  placeholder="your email"
+                  className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
+                />
+                <button
+                  type="button"
+                  onClick={sendAudioRequest}
+                  disabled={recState === "sending"}
+                  className="w-full cursor-pointer rounded-xl bg-accent px-6 py-2.5 text-sm font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
+                >
+                  {recState === "sending" ? "Sending…" : "Send request"}
+                </button>
+              </>
+            )}
+          </div>
+        ))}
+    </section>
+  );
+}
+
+/** Rent-leads partnership — light by design, details still being worked out. */
+function RentLeadsCard() {
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [company, setCompany] = useState("");
+  const [state, setState] = useState<SendState>("idle");
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (state === "sending" || !email.trim()) return;
+    setState("sending");
+    try {
+      const r = await fetch("/api/custom-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim(),
+          phone: phone.trim(),
+          company: company.trim(),
+          kind: "rent-leads",
+        }),
+      });
+      setState(r.ok ? "sent" : "error");
+    } catch {
+      setState("error");
+    }
+  };
+
+  return (
+    <section className="flex flex-col rounded-2xl border border-border bg-surface p-8">
+      <h3 className="text-lg font-semibold">Rent leads</h3>
+      <p className="mt-1 text-sm text-text-muted">
+        We build and market our own lead-generating sites in your industry.
+        Partner with us and we hand you live leads — delivered by phone — for
+        a share of the revenue.
+      </p>
+      {state === "sent" ? (
+        <div className="mt-6 rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm leading-relaxed">
+          ✅ Got it — we&apos;ll be in touch to talk details.
+        </div>
+      ) : (
+        <form onSubmit={submit} className="mt-6 flex flex-1 flex-col justify-end gap-2">
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="your email"
+            className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
+          />
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="phone number"
+            className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
+          />
+          <input
+            type="text"
+            value={company}
+            onChange={(e) => setCompany(e.target.value)}
+            placeholder="company / industry"
+            className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
+          />
+          <button
+            type="submit"
+            disabled={state === "sending"}
+            className="mt-1 w-full cursor-pointer rounded-xl bg-accent px-6 py-2.5 text-sm font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
+          >
+            {state === "sending" ? "Sending…" : state === "error" ? "Didn't go through — try again" : "Apply"}
+          </button>
+        </form>
+      )}
+    </section>
+  );
+}
+
+export default function StartPage() {
   const [botMenu, setBotMenu] = useState(false);
   const [menuPanel, setMenuPanel] = useState<"feedback" | "roadmap" | "whatsnew" | null>(null);
   const [fbText, setFbText] = useState("");
@@ -84,25 +506,9 @@ export default function StartPage() {
     }
   };
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (state === "sending" || !email.trim()) return;
-    setState("sending");
-    try {
-      const r = await fetch("/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), plan }),
-      });
-      setState(r.ok ? "sent" : "error");
-    } catch {
-      setState("error");
-    }
-  };
-
   return (
     <main className="min-h-screen bg-bg px-6 py-20 text-text md:py-28">
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-6xl">
         <a
           href="/"
           className="mb-8 inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
@@ -120,109 +526,53 @@ export default function StartPage() {
           the assistant that teaches you the whole thing as you use it.
         </p>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2">
-          {/* CRM trial — the one-field form */}
-          <section className="rounded-2xl border border-border bg-surface p-8">
-            <h2 className="text-xl font-semibold">The platform</h2>
-            <p className="mt-1 text-sm text-text-muted">
-              CRM, pipelines, calendars, automations —{" "}
-              <span className="text-text">$97/month after a free week</span>.
-              Prepay and save.
-            </p>
-            {state === "sent" ? (
-              <div className="mt-6 rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm leading-relaxed">
-                ✅ You&apos;re in. We&apos;re setting up your account and
-                you&apos;ll hear from us shortly — usually within a few hours.
-              </div>
-            ) : (
-              <form onSubmit={submit} className="mt-6">
-                <div className="flex flex-col gap-2" role="radiogroup" aria-label="Plan">
-                  {PLANS.map((p) => {
-                    const active = plan === p.id;
-                    return (
-                      <button
-                        key={p.id}
-                        type="button"
-                        role="radio"
-                        aria-checked={active}
-                        onClick={() => setPlan(p.id)}
-                        className={`flex w-full cursor-pointer items-baseline justify-between rounded-xl border px-4 py-3 text-left transition-colors ${
-                          active
-                            ? "border-accent bg-accent/10"
-                            : "border-border bg-surface-2 hover:border-border-strong"
-                        }`}
-                      >
-                        <span className="text-sm font-medium">{p.label}</span>
-                        <span className="text-right">
-                          <span className="text-sm font-semibold">{p.price}</span>
-                          <span className="ml-2 text-xs text-text-dim">{p.note}</span>
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your email"
-                  className="mt-3 w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-base text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
-                />
-                <button
-                  type="submit"
-                  disabled={state === "sending"}
-                  className="mt-3 w-full cursor-pointer rounded-xl bg-accent px-6 py-3 text-base font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
-                >
-                  {state === "sending"
-                    ? "One second…"
-                    : state === "error"
-                      ? "Didn't go through — try again"
-                      : "Start my free week"}
-                </button>
-                <p className="mt-3 text-xs text-text-dim">
-                  No card. No questionnaire. Just your email — we set everything
-                  up and reach out.
-                </p>
-              </form>
-            )}
-          </section>
+        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {PLANS.map((p) => (
+            <PlanCard key={p.id} plan={p} />
+          ))}
 
-          {/* Erkenbot — free, zero friction, no form */}
-          <section className="rounded-2xl border border-border bg-surface p-8">
-            <h2 className="text-xl font-semibold">Erken, the assistant</h2>
-            <p className="mt-1 text-sm text-text-muted">
-              Talks, teaches, walks you through any task step by step.{" "}
-              <span className="text-text">Free.</span>
-            </p>
-            <div className="mt-6 flex flex-col gap-3 text-sm leading-relaxed text-text-muted">
-              <div>💬 Try it right now — it&apos;s the creature on our homepage.</div>
-              <div>
-                🧩{" "}
-                <a
-                  href="https://chromewebstore.google.com/detail/erken/mggcbjggcbdpmbglbodkadgmpapcmelc"
-                  target="_blank"
-                  rel="noopener"
-                  className="font-medium text-accent underline-offset-2 hover:underline"
-                >
-                  Browser extension — install from the Chrome Web Store
-                </a>
+          {/* Erkenbot — free, zero friction, lives on her own card now */}
+          <section className="flex flex-col rounded-2xl border border-border bg-surface p-8">
+            <div className="flex items-center gap-4">
+              <div
+                onClick={() => (botMenu ? closeBotMenu() : setBotMenu(true))}
+                className="shrink-0 cursor-pointer"
+                title="Chat with Erken"
+              >
+                <CellDragonSprite scale={0.42} />
               </div>
+              <div>
+                <h3 className="text-lg font-semibold">Erken, the assistant</h3>
+                <p className="mt-1 text-sm text-text-muted">
+                  <span className="text-text">Free.</span>
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 flex flex-1 flex-col gap-2 text-sm leading-relaxed text-text-muted">
+              <div>
+                Talks, teaches, walks you through any task step by step.
+              </div>
+              <div>💬 Try it right now — it&apos;s the creature on our homepage.</div>
               <div>🖥️ Desktop version on the way — it does tasks on your computer for you.</div>
             </div>
-            <button
-              onClick={() => setBotMenu(true)}
-              className="mt-6 inline-block cursor-pointer rounded-xl bg-accent px-6 py-3 text-base font-medium text-bg transition-colors hover:bg-accent-hover"
+            <a
+              href="https://chromewebstore.google.com/detail/erken/mggcbjggcbdpmbglbodkadgmpapcmelc"
+              target="_blank"
+              rel="noopener"
+              className="mt-6 inline-block w-full cursor-pointer rounded-xl bg-accent px-6 py-3 text-center text-base font-medium text-bg transition-colors hover:bg-accent-hover"
             >
-              Meet Erken →
-            </button>
+              Download for free
+            </a>
           </section>
+
+          <CustomSolutionsCard />
+          <RentLeadsCard />
         </div>
       </div>
 
       {/* Erken lives here too — same look (sprite + drifting cell particles),
           same chat + same Retell agent as the homepage. STATIC by design:
-          she sits in the free space right of the bot card (Shamil 2026-06-12),
+          she sits in the free space right of the cards (Shamil 2026-06-12),
           no roaming on this page. */}
       <ErkenChatWidget />
       <ErkenVoiceWidget />
