@@ -66,6 +66,7 @@ function blobToBase64(blob: Blob): Promise<string> {
  */
 function PlanCard({ plan }: { plan: (typeof PLANS)[number] }) {
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [state, setState] = useState<SendState>("idle");
 
   const submit = async (e: React.FormEvent) => {
@@ -76,7 +77,11 @@ function PlanCard({ plan }: { plan: (typeof PLANS)[number] }) {
       const r = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), plan: plan.id }),
+        body: JSON.stringify({
+          email: email.trim(),
+          plan: plan.id,
+          ...(phone.trim() ? { phone: phone.trim() } : {}),
+        }),
       });
       setState(r.ok ? "sent" : "error");
     } catch {
@@ -103,14 +108,14 @@ function PlanCard({ plan }: { plan: (typeof PLANS)[number] }) {
         ))}
       </ul>
 
-      <div className="mt-6 min-h-[7rem]">
+      <div className="mt-6 min-h-[10rem]">
         {state === "sent" ? (
           <div className="rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm leading-relaxed">
             ✅ You&apos;re in. We&apos;re setting up your account and
             you&apos;ll hear from us shortly — usually within a few hours.
           </div>
         ) : (
-          <form onSubmit={submit}>
+          <form onSubmit={submit} className="flex flex-col gap-2">
             <input
               type="email"
               required
@@ -119,10 +124,17 @@ function PlanCard({ plan }: { plan: (typeof PLANS)[number] }) {
               placeholder="your email"
               className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-base text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
             />
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="phone (optional)"
+              className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-base text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
+            />
             <button
               type="submit"
               disabled={state === "sending"}
-              className="mt-3 w-full cursor-pointer rounded-xl bg-accent px-6 py-3 text-base font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
+              className="mt-1 w-full cursor-pointer rounded-xl bg-accent px-6 py-3 text-base font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
             >
               {state === "sending"
                 ? "One second…"
@@ -616,7 +628,7 @@ export default function StartPage() {
                 <h3 className="text-lg font-semibold">Erken, the assistant</h3>
               </div>
             </div>
-            <div className="mt-16 flex flex-1 flex-col justify-end gap-2 text-sm leading-relaxed text-text-muted">
+            <div className="mt-12 flex flex-1 flex-col justify-end gap-2 text-sm leading-relaxed text-text-muted">
               <div>
                 🗣️ <b>Ask it anything</b> — by voice or chat, about the
                 platform or your business
