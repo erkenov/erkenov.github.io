@@ -196,6 +196,7 @@ function ContactMethods({
   // /api/transcribe endpoint, and inserts the result into the textarea so
   // it stays fully editable before sending.
   const [message, setMessage] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [formState, setFormState] = useState<SendState>("idle");
@@ -237,6 +238,7 @@ function ContactMethods({
           message: message.trim(),
           kind,
           channel: audioContributed ? "audio" : "form",
+          ...(name.trim() ? { name: name.trim() } : {}),
           ...(phone.trim() ? { phone: phone.trim() } : {}),
         }),
       });
@@ -321,7 +323,7 @@ function ContactMethods({
           onClick={() => window.__startErkenVoiceCall?.()}
           className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-border bg-surface-2 px-6 py-3 text-left text-base font-medium text-text transition-colors hover:border-border-strong"
         >
-          <span aria-hidden>🎙️</span> Talk to the voice AI
+          <span aria-hidden>🎙️</span> Talk to our receptionist
         </button>
       </div>
 
@@ -394,6 +396,13 @@ function ContactMethods({
                   )}
                 </button>
               </div>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="name (optional)"
+                className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
+              />
               <input
                 type="email"
                 required

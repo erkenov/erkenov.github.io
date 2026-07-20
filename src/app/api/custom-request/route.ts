@@ -12,7 +12,14 @@ import { clientIp, rateLimit } from "@/lib/api-guard";
  * message so a request never sits unseen.
  *
  * Body: { email, kind: "custom-solution" | "rent-leads", message?, channel?,
- *         phone?, company? }
+ *         phone?, company?, name? }
+ *
+ * `name` (Shamil 2026-07-20, Batch 12): a single free-text field on the
+ * form, no separate first/last inputs. GHL's contact upsert takes
+ * firstName/lastName (or a combined name) — we split on the first space:
+ * everything before it is firstName, everything after is lastName (a
+ * single-word name just becomes firstName with no lastName). Good enough
+ * for "Jane Smith" / "Jane" without adding a second input field.
  * Env (Vercel): GHL_SIGNUP_API_KEY/GHL_API_KEY, GHL_SIGNUP_LOCATION_ID/
  * GHL_LOCATION_ID, TELEGRAM_BOT_TOKEN, TELEGRAM_OWNER_CHAT (all already set
  * for /api/signup).
@@ -32,6 +39,7 @@ export async function POST(req: Request) {
     channel?: string;
     phone?: string;
     company?: string;
+    name?: string;
   };
   try {
     body = await req.json();
@@ -52,6 +60,10 @@ export async function POST(req: Request) {
   const channel = (body.channel || "").trim().slice(0, 40);
   const phone = (body.phone || "").trim().slice(0, 40);
   const company = (body.company || "").trim().slice(0, 200);
+  const name = (body.name || "").trim().slice(0, 200);
+  const nameParts = name.split(/\s+/).filter(Boolean);
+  const firstName = nameParts[0] || "";
+  const lastName = nameParts.slice(1).join(" ");
 
   // Same signup-scoped creds as /api/signup — trial + request contacts both
   // land in the Erken Systems sub-account, not the generic GHL_* dashboard
@@ -73,6 +85,8 @@ export async function POST(req: Request) {
   };
   if (phone) upsertBody.phone = phone;
   if (company) upsertBody.companyName = company;
+  if (firstName) upsertBody.firstName = firstName;
+  if (lastName) upsertBody.lastName = lastName;
 
   const r = await fetch(`${GHL_BASE}/contacts/upsert`, {
     method: "POST",
@@ -97,6 +111,7 @@ export async function POST(req: Request) {
     const contactId = (c?.id as string) || "";
     const noteBits = [
       `Kind: ${kind}`,
+      name ? `Name: ${name}` : "",
       channel ? `Channel: ${channel}` : "",
       phone ? `Phone: ${phone}` : "",
       company ? `Company/industry: ${company}` : "",
@@ -124,7 +139,12 @@ export async function POST(req: Request) {
   if (token && chat) {
     try {
       const title = kind === "rent-leads" ? "🏘️ RENT-LEADS APPLICANT" : "🛠️ CUSTOM SOLUTION REQUEST";
+      // Name prepended ahead of the title (Shamil 2026-07-20, Batch 12) —
+      // Telegram's push-notification preview shows only the first line, so
+      // leading with the name (when given) makes the who-is-this legible
+      // without opening the app.
       const lines = [
+        name || "",
         title,
         "",
         email,
