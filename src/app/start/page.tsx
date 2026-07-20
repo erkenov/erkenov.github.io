@@ -56,9 +56,15 @@ function blobToBase64(blob: Blob): Promise<string> {
   });
 }
 
-/** One plan — its own inline email capture, posts { email, plan } to /api/signup. */
+/**
+ * One plan — its own inline email capture, posts { email, plan } to
+ * /api/signup. The email input + submit button are ALWAYS rendered
+ * (Shamil 2026-07-20: the old expand-on-click two-step made the button
+ * jump down and the CSS-grid row reflow every neighboring card — felt
+ * unfinished). The `min-h` wrapper reserves the form's footprint so
+ * swapping to the "sent" confirmation doesn't reflow the row either.
+ */
 function PlanCard({ plan }: { plan: (typeof PLANS)[number] }) {
-  const [expanded, setExpanded] = useState(false);
   const [email, setEmail] = useState("");
   const [state, setState] = useState<SendState>("idle");
 
@@ -97,43 +103,36 @@ function PlanCard({ plan }: { plan: (typeof PLANS)[number] }) {
         ))}
       </ul>
 
-      {state === "sent" ? (
-        <div className="mt-6 rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm leading-relaxed">
-          ✅ You&apos;re in. We&apos;re setting up your account and
-          you&apos;ll hear from us shortly — usually within a few hours.
-        </div>
-      ) : !expanded ? (
-        <button
-          type="button"
-          onClick={() => setExpanded(true)}
-          className="mt-6 w-full cursor-pointer rounded-xl bg-accent px-6 py-3 text-base font-semibold text-bg transition-all hover:bg-accent-hover"
-        >
-          Start my free week
-        </button>
-      ) : (
-        <form onSubmit={submit} className="mt-6">
-          <input
-            type="email"
-            required
-            autoFocus
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="your email"
-            className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-base text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
-          />
-          <button
-            type="submit"
-            disabled={state === "sending"}
-            className="mt-3 w-full cursor-pointer rounded-xl bg-accent px-6 py-3 text-base font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
-          >
-            {state === "sending"
-              ? "One second…"
-              : state === "error"
-                ? "Didn't go through — try again"
-                : "Confirm →"}
-          </button>
-        </form>
-      )}
+      <div className="mt-6 min-h-[7rem]">
+        {state === "sent" ? (
+          <div className="rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm leading-relaxed">
+            ✅ You&apos;re in. We&apos;re setting up your account and
+            you&apos;ll hear from us shortly — usually within a few hours.
+          </div>
+        ) : (
+          <form onSubmit={submit}>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your email"
+              className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-base text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
+            />
+            <button
+              type="submit"
+              disabled={state === "sending"}
+              className="mt-3 w-full cursor-pointer rounded-xl bg-accent px-6 py-3 text-base font-semibold text-bg transition-all hover:bg-accent-hover disabled:opacity-50"
+            >
+              {state === "sending"
+                ? "One second…"
+                : state === "error"
+                  ? "Didn't go through — try again"
+                  : "Start my free week"}
+            </button>
+          </form>
+        )}
+      </div>
       <p className="mt-3 text-xs text-text-dim">
         No card. No questionnaire. Just your email — we set everything up and
         reach out.
