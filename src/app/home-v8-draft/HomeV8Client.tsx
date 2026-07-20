@@ -17,9 +17,10 @@
  *     Scene2Channels / Scene3LeadCaptureCarousel / Scene4LeadMgmtCarousel /
  *     MacbookFrame3D) are REPLACED by a HubSpot-style sticky-column
  *     pipeline section (Shamil-approved mid-build 2026-07-20): a pinned
- *     left story column + a scrolling 2-col grid of capability cards, each
- *     with a flat-SVG illo (the four home-draft illos reused small + four
- *     new ones in the same style).
+ *     left story column + a right-side PHASE ACCORDION modeled on the
+ *     customer-growth pipeline (Capture / Nurture / Close / fans /
+ *     win-back). Selecting a phase reveals its checklist with a smooth
+ *     height animation. Flat-SVG phase icons in the home-draft style.
  *   - Industries moved UP to 2nd (right after the hero).
  *   - Hero keeps the live founder video + gains the price tease and a
  *     "See your industry" secondary button.
@@ -36,7 +37,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Check } from "lucide-react";
 import { SphereScrollStage, type CellPositionInfo } from "@/components/SphereScrollStage";
 import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
@@ -478,16 +479,14 @@ function IndustriesSection() {
 }
 
 /* ---- Pipeline section (HubSpot-style sticky-column, v8 mid-build change,
- * Shamil-approved 2026-07-20 after reviewing hubspot.com's "Growing a
- * business is hard" section). LEFT column pins (CSS sticky) while the RIGHT
- * column — a 2-col grid of capability cards — scrolls past. Replaces the
- * Variant-A stepper.
+ * Shamil-approved 2026-07-20). LEFT column pins (CSS sticky) with the story;
+ * the RIGHT column is a phase accordion (Capture / Nurture / Close / fans /
+ * win-back) — selecting a phase reveals its checklist. Replaces both the
+ * Variant-A stepper and the capability-card grid.
  *
- * Flat-SVG illustrations: the four from home-draft are reused (rendered
- * small for the cards) and four more are drawn in the same style (soft
- * rounded shapes, sage/clay/cream + neutral). Palette hardcoded (not
- * CSS var()) so the SVGs render correctly inside inline presentation
- * attributes. */
+ * Flat-SVG illustrations (soft rounded shapes, sage/clay/cream + neutral)
+ * serve as the phase icons. Palette hardcoded (not CSS var()) so the SVGs
+ * render correctly inside inline presentation attributes. */
 const ILLO_SAGE = "#7ea687";
 const ILLO_CLAY = "#a8503f";
 const ILLO_CREAM = "#F5F1E8";
@@ -524,22 +523,7 @@ function IllustrationLeadGen() {
   );
 }
 
-/** Step 2 — lead capture: a phone answering into an active chat bubble. */
-function IllustrationLeadCapture() {
-  return (
-    <IllustrationBackdrop>
-      <rect x="30" y="26" width="30" height="54" rx="10" fill={ILLO_SAGE} />
-      <rect x="36" y="34" width="18" height="32" rx="4" fill={ILLO_CREAM} />
-      <rect x="60" y="48" width="32" height="24" rx="9" fill={ILLO_CLAY} />
-      <path d="M64 70 L58 78 L70 72 Z" fill={ILLO_CLAY} />
-      <circle cx="69" cy="60" r="2.4" fill={ILLO_CREAM} />
-      <circle cx="77" cy="60" r="2.4" fill={ILLO_CREAM} />
-      <circle cx="85" cy="60" r="2.4" fill={ILLO_CREAM} />
-    </IllustrationBackdrop>
-  );
-}
-
-/** Step 3 — lead management: a tiny pipeline board with staged cards. */
+/** Lead management / pipeline: a tiny pipeline board with staged cards. */
 function IllustrationLeadMgmt() {
   return (
     <IllustrationBackdrop>
@@ -556,40 +540,7 @@ function IllustrationLeadMgmt() {
   );
 }
 
-/** Step 4 — the control panel: a small dashboard with a bar chart + a
- *  live-status dot. */
-function IllustrationControlPanel() {
-  return (
-    <IllustrationBackdrop>
-      <rect x="24" y="26" width="72" height="56" rx="8" fill={ILLO_NEUTRAL} opacity="0.45" />
-      <circle cx="84" cy="36" r="4" fill={ILLO_SAGE} />
-      <rect x="34" y="56" width="9" height="18" rx="2.5" fill={ILLO_SAGE} />
-      <rect x="47" y="48" width="9" height="26" rx="2.5" fill={ILLO_CLAY} />
-      <rect x="60" y="40" width="9" height="34" rx="2.5" fill={ILLO_SAGE} />
-      <rect x="73" y="52" width="9" height="22" rx="2.5" fill={ILLO_CLAY} />
-    </IllustrationBackdrop>
-  );
-}
-
-/** Booking calendar — a calendar with a highlighted day. */
-function IllustrationCalendar() {
-  return (
-    <IllustrationBackdrop>
-      <rect x="26" y="32" width="68" height="58" rx="8" fill={ILLO_NEUTRAL} opacity="0.5" />
-      <rect x="26" y="32" width="68" height="16" rx="8" fill={ILLO_CLAY} />
-      <rect x="40" y="26" width="6" height="14" rx="3" fill={ILLO_SAGE} />
-      <rect x="74" y="26" width="6" height="14" rx="3" fill={ILLO_SAGE} />
-      <rect x="34" y="56" width="12" height="10" rx="2.5" fill={ILLO_SAGE} opacity="0.55" />
-      <rect x="54" y="56" width="12" height="10" rx="2.5" fill={ILLO_SAGE} />
-      <rect x="74" y="56" width="12" height="10" rx="2.5" fill={ILLO_SAGE} opacity="0.55" />
-      <rect x="34" y="72" width="12" height="10" rx="2.5" fill={ILLO_SAGE} opacity="0.55" />
-      <rect x="54" y="72" width="12" height="10" rx="2.5" fill={ILLO_SAGE} opacity="0.55" />
-      <rect x="74" y="72" width="12" height="10" rx="2.5" fill={ILLO_SAGE} opacity="0.55" />
-    </IllustrationBackdrop>
-  );
-}
-
-/** Automations + follow-ups — three connected nodes (a small flow graph). */
+/** Automations / re-engage — three connected nodes (a small flow graph). */
 function IllustrationAutomations() {
   return (
     <IllustrationBackdrop>
@@ -615,7 +566,7 @@ function IllustrationReviews() {
   );
 }
 
-/** Erken, the assistant — two chat bubbles (a conversation). */
+/** Conversation / nurture — two chat bubbles going back and forth. */
 function IllustrationAssistant() {
   return (
     <IllustrationBackdrop>
@@ -630,91 +581,165 @@ function IllustrationAssistant() {
   );
 }
 
-// The platform's actual contents as capability cards (not the 4 steps
-// stretched). Reuses four home-draft illos + four new ones in the same
-// style. ~44px illustration per card + two checkmark bullets.
-const CAPABILITY_CARDS: {
-  title: string;
+// The customer-growth pipeline as phases (the model GoHighLevel's own
+// homepage uses — Capture / Nurture / Close / Evangelize / Reactivate). We
+// run the same platform, so their per-phase feature lists are our honest
+// source. Adapted here to plain-operator English, zero platform-vendor
+// mentions, and cross-checked against our What's-included promise: every
+// line below maps to CRM+pipelines / calendars+booking / automations+
+// follow-ups / AI voice receptionist / reputation+reviews / websites+
+// funnels. DELIBERATELY DROPPED (they list them, we don't promise them
+// here): webinar funnels, ad manager, biz-card scanner, QR codes,
+// prospecting tool, social planner; ringless voicemail, mobile app; the
+// entire payments/close stack — invoicing, estimates & proposals, payment
+// integrations, upsell/downsell funnels, memberships & courses,
+// text-2-pay / tap-2-pay, gift cards, loyalty programs; affiliate/referral
+// tracking; content AI, newsletter automation. See the worker report.
+const PHASES: {
+  name: string;
+  tagline: string;
   Illustration: () => React.ReactElement;
-  bullets: [string, string];
+  items: string[];
 }[] = [
   {
-    title: "AI voice receptionist",
-    Illustration: IllustrationLeadCapture,
-    bullets: ["Answers in two rings", "Books the appointment for you"],
-  },
-  {
-    title: "CRM + pipelines",
-    Illustration: IllustrationLeadMgmt,
-    bullets: ["Every lead in one place", "Scored, routed, followed up"],
-  },
-  {
-    title: "Booking calendar",
-    Illustration: IllustrationCalendar,
-    bullets: ["Self-serve scheduling", "Syncs with your calendar"],
-  },
-  {
-    title: "Automations + follow-ups",
-    Illustration: IllustrationAutomations,
-    bullets: ["No manual touchpoints", "Runs while you work"],
-  },
-  {
-    title: "Reputation + reviews",
-    Illustration: IllustrationReviews,
-    bullets: ["Auto-requests reviews", "Grows your Google rating"],
-  },
-  {
-    title: "Erken, the assistant",
-    Illustration: IllustrationAssistant,
-    bullets: ["Shows you the exact button", "Walks you through, out loud"],
-  },
-  {
-    title: "Control dashboard",
-    Illustration: IllustrationControlPanel,
-    bullets: ["Your whole operation, one screen", "See where every customer is"],
-  },
-  {
-    title: "Websites + funnels",
+    name: "Capture",
+    tagline: "Get more leads in the door",
     Illustration: IllustrationLeadGen,
-    bullets: ["Landing pages that capture", "Forms that qualify"],
+    items: [
+      "Websites, funnels & landing pages that pull people in",
+      "Forms, surveys & quizzes that qualify them",
+      "An AI voice receptionist that answers every call",
+      "Web chat that books the appointment on the spot",
+      "Missed-call text-back before they dial a competitor",
+    ],
+  },
+  {
+    name: "Nurture",
+    tagline: "Turn interest into trust",
+    Illustration: IllustrationAssistant,
+    items: [
+      "Every conversation — texts, DMs, chat — in one inbox",
+      "Pipelines that track exactly where each lead stands",
+      "Automated follow-ups that never forget to reach out",
+      "Calendars and booking built right in",
+      "Appointment reminders sent for you",
+    ],
+  },
+  {
+    name: "Close",
+    tagline: "Turn conversations into customers",
+    Illustration: IllustrationLeadMgmt,
+    items: [
+      "Lead scoring so you work the hottest ones first",
+      "Follow-up sequences that run until they book",
+      "Booking calendars that lock the time in",
+      "Reminders that cut no-shows",
+    ],
+  },
+  {
+    name: "Turn customers into fans",
+    tagline: "Reviews that bring the next one in",
+    Illustration: IllustrationReviews,
+    items: [
+      "Review requests sent automatically after every job",
+      "A growing Google rating — the first thing locals check",
+      "Replies to reviews handled for you",
+      "Review widgets that show the proof on your site",
+    ],
+  },
+  {
+    name: "Win back old customers",
+    tagline: "Get back on their radar",
+    Illustration: IllustrationAutomations,
+    items: [
+      "Email and text broadcasts to your whole list",
+      "Smart lists that pick exactly who to reach",
+      "Automated birthday and seasonal campaigns",
+      "Reactivation that revives cold leads on a schedule",
+    ],
   },
 ];
 
-function CapabilityCard({
-  card,
-  index,
-}: {
-  card: (typeof CAPABILITY_CARDS)[number];
-  index: number;
-}) {
+/** Phase accordion — one panel open at a time. Selecting a phase reveals
+ *  its checklist with a smooth framer-motion height animation (no abrupt
+ *  layout jump — the panel animates open/closed, and the section reflows
+ *  continuously over the tween rather than snapping). Mobile: the phases
+ *  stack full-width and tap to expand, same component. */
+function PipelinePhases() {
+  const [openIndex, setOpenIndex] = useState(0);
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.45, ease, delay: (index % 2) * 0.06 }}
-      className="flex flex-col rounded-2xl border border-border bg-surface p-5 transition-colors duration-200 hover:border-border-strong"
-    >
-      <div className="flex items-center gap-3">
-        <card.Illustration />
-        <h3 className="text-sm font-semibold leading-tight text-text" style={{ letterSpacing: "-0.01em" }}>
-          {card.title}
-        </h3>
-      </div>
-      <div className="mt-3 space-y-1.5 border-t border-dashed border-border pt-3">
-        {card.bullets.map((b) => (
-          <div key={b} className="flex items-start gap-2 text-xs leading-relaxed text-text-muted">
-            <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" strokeWidth={2.5} />
-            <span>{b}</span>
+    <div data-celly-avoid className="flex flex-col gap-3">
+      {PHASES.map((phase, i) => {
+        const isOpen = openIndex === i;
+        const panelId = `phase-panel-${i}`;
+        return (
+          <div
+            key={phase.name}
+            className={`overflow-hidden rounded-2xl border bg-surface transition-colors duration-200 ${
+              isOpen ? "border-accent" : "border-border hover:border-border-strong"
+            }`}
+          >
+            <button
+              type="button"
+              onClick={() => setOpenIndex(isOpen ? -1 : i)}
+              aria-expanded={isOpen}
+              aria-controls={panelId}
+              className="flex w-full cursor-pointer items-center gap-4 p-5 text-left"
+            >
+              <phase.Illustration />
+              <span className="flex-1">
+                <span
+                  className="block text-base font-semibold text-text"
+                  style={{ letterSpacing: "-0.01em" }}
+                >
+                  {phase.name}
+                </span>
+                <span className="mt-0.5 block text-xs text-text-muted md:text-sm">
+                  {phase.tagline}
+                </span>
+              </span>
+              {/* Chevron rotates when open. */}
+              <svg
+                viewBox="0 0 20 20"
+                className="h-5 w-5 shrink-0 text-text-dim transition-transform duration-300"
+                style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                fill="none"
+                aria-hidden
+              >
+                <path d="M6 8 L10 12 L14 8" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <AnimatePresence initial={false}>
+              {isOpen && (
+                <motion.div
+                  key="panel"
+                  id={panelId}
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.28, ease }}
+                  className="overflow-hidden"
+                >
+                  <ul className="space-y-2.5 border-t border-dashed border-border px-5 pb-5 pt-4">
+                    {phase.items.map((it) => (
+                      <li key={it} className="flex items-start gap-2.5 text-sm leading-relaxed text-text-muted">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" strokeWidth={2.5} />
+                        <span>{it}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-        ))}
-      </div>
-    </motion.div>
+        );
+      })}
+    </div>
   );
 }
 
-/** HubSpot-style two-column pipeline section: sticky story on the left,
- *  scrolling capability-card grid on the right. */
+/** HubSpot-style two-column pipeline section: sticky story on the left, the
+ *  phase accordion on the right. */
 function PipelineSection() {
   return (
     <section id="pipeline" className="border-t border-border/40 py-20 md:py-28">
@@ -739,13 +764,13 @@ function PipelineSection() {
                 One pipeline runs it all.
               </h2>
               <p className="mt-4 text-base leading-relaxed text-text-muted md:text-lg">
-                Leads come in, get captured, get tracked, get reported on —
-                automatically. The whole platform runs underneath every
-                business on Erken, so you never stitch tools together. You just
-                watch it work.
+                Every customer moves through the same five stages — from first
+                click to a repeat visit. The whole platform runs each one
+                underneath your business, so you never stitch tools together.
+                You just watch it work.
               </p>
               <p className="mt-3 text-base leading-relaxed text-text-muted md:text-lg">
-                Here&apos;s everything running under one login.
+                Open a stage to see what runs inside it.
               </p>
               <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
                 <a
@@ -764,11 +789,10 @@ function PipelineSection() {
             </motion.div>
           </div>
 
-          {/* RIGHT — 2-col capability card grid (single column on mobile). */}
-          <div data-celly-avoid className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {CAPABILITY_CARDS.map((card, i) => (
-              <CapabilityCard key={card.title} card={card} index={i} />
-            ))}
+          {/* RIGHT — phase accordion (full width; stacks + taps to expand
+              on mobile). */}
+          <div className="w-full">
+            <PipelinePhases />
           </div>
         </div>
       </div>
@@ -1987,8 +2011,9 @@ export default function HomeV8Client() {
       <IndustriesSection />
 
       {/* 3. Pipeline — HubSpot-style sticky-column section: pinned left
-          story + scrolling 2-col capability-card grid. Replaces the four
-          full-screen step scenes (Scene2/3/4 + MacbookFrame3D). */}
+          story + right-side phase accordion (Capture/Nurture/Close/fans/
+          win-back, reveal-on-select). Replaces the four full-screen step
+          scenes (Scene2/3/4 + MacbookFrame3D). */}
       <PipelineSection />
 
       {/* 4. Meet Erken — live centered section, five sell bullets + three
