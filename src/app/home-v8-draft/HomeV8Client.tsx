@@ -27,7 +27,11 @@
  *   - Meet Erken → five sell bullets + three CTAs in one row.
  *   - Added: full /start-style pricing cards, Custom solutions, Get leads
  *     door. Added a sticky DraftHeader (logo / Industries / How it works /
- *     Pricing / persistent Try-for-free), z-50 above everything.
+ *     Pricing / persistent Try-for-free), z-50. (2026-07-21: dust canvas/
+ *     Celly/bubble now sit ABOVE the header — see the stacking comment
+ *     right above <DraftHeader /> below — so the header no longer clips
+ *     them; it's still fully clickable since those layers are
+ *     pointer-events-none except the bubble, which stays topmost.)
  *   - No footer.
  *   - sectionCount lowered to the new section count; sectionYOverrides
  *     dropped and SCENE_OFFSETS collapsed to a generic default (the old
@@ -2558,9 +2562,19 @@ export default function HomeV8Client() {
 
   return (
     <>
-    {/* Sticky header — z-50 above the fixed cell-dragon canvas (z-45) and
-        the roaming Celly (z-40). Lives OUTSIDE the stage so it sticks to
-        the viewport top across the whole document. */}
+    {/* Sticky header — z-50. Lives OUTSIDE the stage so it sticks to the
+        viewport top across the whole document.
+        Stacking (Shamil 2026-07-21 bug fix — see dustZIndex prop doc in
+        SphereScrollStage.tsx): the dust canvas and roaming Celly used to
+        sit BELOW the header (z-45 / z-40 vs. header's z-50), so the
+        header's solid backdrop-blur bar visibly clipped them whenever
+        they drifted up near the top of the viewport instead of floating
+        past it naturally. Both layers are pointer-events-none, so raising
+        them above the header doesn't cost header clickability — only the
+        header's OWN interactive bubble (a real, clickable hit target)
+        still needs to render on top of the dust to stay legible/clickable.
+        Revised order: header 50 < Celly 51 < dust 52 < bubble 53 <
+        choice-menu 55/56. */}
     <DraftHeader />
     <SphereScrollStage
       // v8: 7 top-level sections (hero, industries, pipeline, meet-erken,
@@ -2570,6 +2584,7 @@ export default function HomeV8Client() {
       // Celly's resting spot regardless of the peak count.
       sectionCount={7}
       showDust
+      dustZIndex={52}
       freezeRef={chatFreezeRef}
       onCellPositionChange={handleCellMove}
       onCellRefsReady={(refs) => {
@@ -2671,16 +2686,21 @@ export default function HomeV8Client() {
       <div className="h-[10vh]" />
     </SphereScrollStage>
 
-    {/* AI character overlay — sits ABOVE the 3D cell-dragon canvas and
-        TRACKS the cell-dragon's screen position as the user scrolls.
-        SphereScrollStage fires onCellPositionChange every onUpdate; we
-        translate world→screen and write directly to this container's
-        CSS (no React re-renders at 60fps). The CellDragonSprite renders
-        without its own scale — parent scales/positions it instead. */}
+    {/* AI character overlay — TRACKS the cell-dragon's screen position as
+        the user scrolls. SphereScrollStage fires onCellPositionChange
+        every onUpdate; we translate world→screen and write directly to
+        this container's CSS (no React re-renders at 60fps). The
+        CellDragonSprite renders without its own scale — parent
+        scales/positions it instead.
+        z-51 — above the header (50), below the dust canvas (52, passed as
+        dustZIndex) so the dust still visually surrounds her body per
+        SphereScrollStage's stacking comment. pointer-events-none, so
+        being above the header costs nothing header-click-wise (see the
+        stacking note above DraftHeader/SphereScrollStage). */}
     <div
       ref={spriteContainerRef}
       aria-hidden={false}
-      className="celly-container fixed z-40 pointer-events-none"
+      className="celly-container fixed z-[51] pointer-events-none"
       style={{
         // Initial position before first onUpdate fires — section 0 left.
         left: "30vw",
@@ -2995,7 +3015,12 @@ export default function HomeV8Client() {
         via SVG gooey filter. Many overlapping white circles inside a
         filtered container melt into ONE continuous blob silhouette.
         Text sits in a SEPARATE sibling on top (NOT inside the filtered
-        container, otherwise text would be blurred too). */}
+        container, otherwise text would be blurred too).
+        z-53 — a REAL interactive hit target (role="button", pointerEvents
+        auto below), so unlike the header it must render ABOVE the dust
+        canvas (52) to stay clickable/legible, not just rely on
+        pointer-events-none passthrough. Bumped from the old z-50 alongside
+        the 2026-07-21 header stacking fix (see comment above DraftHeader). */}
     <div
       ref={bubbleContainerRef}
       role="button"
@@ -3009,7 +3034,7 @@ export default function HomeV8Client() {
           openChoiceMenu();
         }
       }}
-      className="fixed z-50 cursor-pointer"
+      className="fixed z-[53] cursor-pointer"
       style={{
         width: "22rem",
         right: "100vw",

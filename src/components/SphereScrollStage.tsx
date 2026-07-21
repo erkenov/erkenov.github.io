@@ -569,6 +569,7 @@ export function SphereScrollStage({
   hideTrail = false,
   showDust = false,
   freezeRef,
+  dustZIndex = 45,
 }: StageProps & {
   sectionCount?: number;
   hideInnerCellCore?: boolean;
@@ -587,6 +588,20 @@ export function SphereScrollStage({
    *  so the host can pin it elsewhere (e.g. docking Celly beside the open
    *  chat). Prevents a "ghost" scroll-driven dragon at her old spot. */
   freezeRef?: React.MutableRefObject<boolean>;
+  /** z-index of the fixed dust/cell-dragon canvas. Default 45 — the
+   *  original tier, kept as-is for every caller that doesn't pass this.
+   *  home-v8-draft/HomeV8Client.tsx (the live erken.systems homepage)
+   *  overrides it to sit ABOVE its sticky header (Shamil 2026-07-21 bug
+   *  report: the header was clipping the dust cloud/Celly whenever they
+   *  drifted up near the top of the viewport — the header's semi-opaque
+   *  backdrop-blur bar simply painted over them since it was the higher
+   *  z-index layer). The canvas stays `pointer-events-none` regardless of
+   *  this value, so raising it never affects header click-through — the
+   *  header's links/buttons remain fully clickable no matter which layer
+   *  is visually on top. See the stacking-order comment on the fixed
+   *  canvas div below for the full chain (Celly < dust < header's own
+   *  interactive bubble) on pages that opt into a higher value. */
+  dustZIndex?: number;
 }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const pulseRef = useRef(0);
@@ -875,12 +890,20 @@ export function SphereScrollStage({
 
   return (
     <div ref={stageRef} className="relative">
-      {/* Fixed canvas — z-45 puts cell-dragon IN FRONT of Celly (z-40)
-          so the dust visually SURROUNDS her body. Particles are mostly
-          translucent so Celly's face still reads through the shimmer.
-          Bubble at z-50 stays above the dust. (Shamil 2026-05-24 round 19.)
-          pointer-events-none keeps clicks passing through. */}
-      <div className="pointer-events-none fixed inset-0 z-[45]">
+      {/* Fixed canvas — default z-45 puts cell-dragon IN FRONT of Celly
+          (z-40) so the dust visually SURROUNDS her body. Particles are
+          mostly translucent so Celly's face still reads through the
+          shimmer. Bubble at z-50 stays above the dust by default. (Shamil
+          2026-05-24 round 19.) pointer-events-none keeps clicks passing
+          through — true at ANY z-index, including the higher override
+          home-v8-draft/HomeV8Client.tsx passes (see the dustZIndex prop
+          doc above): raising this above the page's header never blocks
+          header clicks, it only lets the dust render over the header's
+          bar instead of being clipped by it. Inline style (not a Tailwind
+          z-[N] class) because the value is a runtime prop — Tailwind's
+          JIT can't generate a class for a value that isn't a literal
+          string in source. */}
+      <div className="pointer-events-none fixed inset-0" style={{ zIndex: dustZIndex }}>
         {mounted && (
           <Canvas
             camera={{ position: [0, 0, isMobile ? 2.2 : 2.9], fov: 50 }}
