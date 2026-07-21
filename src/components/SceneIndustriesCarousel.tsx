@@ -115,7 +115,7 @@ type IndustryCard = {
 };
 
 /** The one live demo that exists today — linked from no-demo cards too. */
-const ROOFING_DEMO_URL = "https://stormroofingheroes.erken.systems";
+const ROOFING_DEMO_URL = "https://roofing.erken.systems";
 
 const ph = (label: string, bg: string, fg = "F5F1E8") =>
   `https://placehold.co/640x800/${bg}/${fg}?text=${encodeURIComponent(label)}&font=inter`;
