@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { clientIp, rateLimit } from "@/lib/api-guard";
+import { createCustomRequestOpportunity } from "@/lib/ghl-opportunity";
 
 /**
  * POST /api/custom-request — the /start page's "beyond the platform" asks:
@@ -8,8 +9,11 @@ import { clientIp, rateLimit } from "@/lib/api-guard";
  *
  * Modeled directly on /api/signup: upserts a GHL contact (signup-scoped
  * creds, same env fallback), best-effort drops the request text onto the
- * contact as a note, and best-effort pings Shamil's Telegram with the full
- * message so a request never sits unseen.
+ * contact as a note, best-effort drops kind="custom-solution" requests into
+ * the custom-request pipeline as an opportunity (Shamil 2026-07-21 — mirrors
+ * the Trials-pipeline step in /api/signup; rent-leads applicants don't get
+ * one), and best-effort pings Shamil's Telegram with the full message so a
+ * request never sits unseen.
  *
  * Body: { email, kind: "custom-solution" | "rent-leads", message?, channel?,
  *         phone?, company?, name? }
@@ -102,13 +106,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "hub" }, { status: 502 });
   }
 
-  // 1b · drop the request text onto the contact as a note (best-effort —
-  // never fail the request over a note hiccup, same pattern as the
-  // opportunity step in /api/signup).
+  // 1b · pull the contact id out of the upsert response once — the note and
+  // opportunity steps below both need it, and a fetch Response body can only
+  // be read once.
+  let contactId = "";
   try {
     const d = (await r.json().catch(() => ({}))) as Record<string, unknown>;
     const c = (d.contact as Record<string, unknown>) || d;
-    const contactId = (c?.id as string) || "";
+    contactId = (c?.id as string) || "";
+  } catch (e) {
+    console.error("custom-request: contact id parse failed", e);
+  }
+
+  // 1c · drop the request text onto the contact as a note (best-effort —
+  // never fail the request over a note hiccup, same pattern as the
+  // opportunity step in /api/signup).
+  try {
     const noteBits = [
       `Kind: ${kind}`,
       name ? `Name: ${name}` : "",
@@ -131,6 +144,23 @@ export async function POST(req: Request) {
     }
   } catch (e) {
     console.error("custom-request: note step failed", e);
+  }
+
+  // 1d · drop custom-solution requests into the pipeline (best-effort — never
+  // fail the request over a pipeline hiccup). rent-leads applicants skip this.
+  if (kind === "custom-solution") {
+    try {
+      if (contactId) {
+        await createCustomRequestOpportunity({
+          key,
+          locationId,
+          contactId,
+          name: `Custom: ${name || email}`,
+        });
+      }
+    } catch (e) {
+      console.error("custom-request: opportunity step failed", e);
+    }
   }
 
   // 2 · ping Shamil (best-effort — a Telegram hiccup must not fail the request)

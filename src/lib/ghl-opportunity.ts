@@ -97,3 +97,62 @@ export async function createTrialOpportunity(opts: {
     console.error("ghl-opportunity: create threw", e);
   }
 }
+
+/**
+ * Create an opportunity for a contact in the custom-solution request pipeline's
+ * first stage (Shamil 2026-07-21) — same shape as createTrialOpportunity above,
+ * for /api/custom-request's kind="custom-solution" requests only (rent-leads
+ * applicants don't get an opportunity).
+ *
+ * Unlike the Trials pipeline, this one is addressed by ID, not resolved by
+ * name: pipeline sMu9K2rRvmhX82wHAi7D ("Discovery Calls", soon renamed
+ * "Custom Solutions") / first stage efd906cc-939f-4653-bfdc-91dec51ba826
+ * ("New (uncalled)", soon renamed "Request") in location BSNXXkE5JiDxqdFxf1YV
+ * — Shamil gave us the IDs directly since the pipeline already exists in the
+ * GHL UI. Env-overridable like the rest of this file's creds pattern.
+ *
+ * Best-effort: any failure is logged and swallowed so a pipeline hiccup never
+ * breaks the custom-request path.
+ */
+const CUSTOM_REQUEST_PIPELINE_ID = (process.env.GHL_CUSTOM_REQUEST_PIPELINE_ID || "sMu9K2rRvmhX82wHAi7D").trim();
+const CUSTOM_REQUEST_STAGE_ID = (process.env.GHL_CUSTOM_REQUEST_STAGE_ID || "efd906cc-939f-4653-bfdc-91dec51ba826").trim();
+
+export async function createCustomRequestOpportunity(opts: {
+  key: string;
+  locationId: string;
+  contactId: string;
+  name: string;
+  monetaryValue?: number;
+}): Promise<void> {
+  const { key, locationId, contactId, name, monetaryValue } = opts;
+  if (!key || !locationId || !contactId) return;
+
+  try {
+    const body: Record<string, unknown> = {
+      pipelineId: CUSTOM_REQUEST_PIPELINE_ID,
+      pipelineStageId: CUSTOM_REQUEST_STAGE_ID,
+      locationId,
+      contactId,
+      name: name.slice(0, 200),
+      status: "open",
+    };
+    if (typeof monetaryValue === "number") body.monetaryValue = monetaryValue;
+
+    const r = await fetch(`${GHL_BASE}/opportunities/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${key}`,
+        Version: "2021-07-28",
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    if (!r.ok) {
+      const txt = await r.text().catch(() => "");
+      console.error("ghl-opportunity: custom-request create failed", r.status, txt.slice(0, 300));
+    }
+  } catch (e) {
+    console.error("ghl-opportunity: custom-request create threw", e);
+  }
+}
