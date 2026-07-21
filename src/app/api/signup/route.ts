@@ -3,18 +3,22 @@ import { clientIp, rateLimit } from "@/lib/api-guard";
 import { createTrialOpportunity } from "@/lib/ghl-opportunity";
 
 /**
- * POST /api/signup — the /start trial form (email required; phone optional
- * as of Shamil 2026-07-20).
+ * POST /api/signup — the /start trial form (email required; phone and name
+ * both optional, name added Shamil 2026-07-21).
  *
  * Zero-friction by design (Shamil 2026-06-12): email is the minimum needed to
  * create the contact in GoHighLevel (the client-data hub) and reach out to set
  * up their CRM access. Business name / payment details get asked during that
- * conversation — after they've already said yes. Phone is a low-friction
- * optional extra for a faster callback, not a requirement.
+ * conversation — after they've already said yes. Phone and name are
+ * low-friction optional extras, not requirements.
+ *
+ * `name` (Shamil 2026-07-21): a single free-text field, same split pattern
+ * as /api/custom-request — first space divides firstName from lastName, a
+ * single-word name becomes firstName only. Missing name changes nothing.
  *
  * Does two things:
  *   1. Upserts the contact into GHL (tags: trial-signup, crm-trial), phone
- *      included when given.
+ *      and name included when given.
  *   2. Pings Shamil's Telegram so a signup never sits unnoticed.
  *
  * Env (Vercel): GHL_API_KEY, GHL_LOCATION_ID, TELEGRAM_BOT_TOKEN,
@@ -28,7 +32,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "limit" }, { status: 429 });
   }
 
-  let body: { email?: string; plan?: string; phone?: string };
+  let body: { email?: string; plan?: string; phone?: string; name?: string };
   try { body = await req.json(); } catch {
     return NextResponse.json({ ok: false, error: "bad request" }, { status: 400 });
   }
@@ -39,6 +43,12 @@ export async function POST(req: Request) {
   // Optional callback number (Shamil 2026-07-20) — loose validation only,
   // same pattern as /api/custom-request: trim + cap length, no format check.
   const phone = (body.phone || "").trim().slice(0, 40);
+  // Optional name (Shamil 2026-07-21) — same split pattern as
+  // /api/custom-request: first space divides firstName from lastName.
+  const name = (body.name || "").trim().slice(0, 200);
+  const nameParts = name.split(/\s+/).filter(Boolean);
+  const firstName = nameParts[0] || "";
+  const lastName = nameParts.slice(1).join(" ");
   // Prepay tier from the /start selector (2026-07-08). Whitelisted; anything
   // else (including old clients sending no plan) falls back to monthly.
   const PLAN_IDS = ["monthly", "6-months", "yearly"] as const;
@@ -64,6 +74,8 @@ export async function POST(req: Request) {
     source: "erken.systems /start",
   };
   if (phone) upsertBody.phone = phone;
+  if (firstName) upsertBody.firstName = firstName;
+  if (lastName) upsertBody.lastName = lastName;
 
   const r = await fetch(`${GHL_BASE}/contacts/upsert`, {
     method: "POST",

@@ -57,16 +57,19 @@ function blobToBase64(blob: Blob): Promise<string> {
 }
 
 /**
- * One plan — its own inline email capture, posts { email, plan } to
- * /api/signup. The email input + submit button are ALWAYS rendered
- * (Shamil 2026-07-20: the old expand-on-click two-step made the button
- * jump down and the CSS-grid row reflow every neighboring card — felt
- * unfinished). The `min-h` wrapper reserves the form's footprint so
+ * One plan — its own inline email capture, posts { email, plan, phone?,
+ * name? } to /api/signup. The email input + submit button are ALWAYS
+ * rendered (Shamil 2026-07-20: the old expand-on-click two-step made the
+ * button jump down and the CSS-grid row reflow every neighboring card —
+ * felt unfinished). The `min-h` wrapper reserves the form's footprint so
  * swapping to the "sent" confirmation doesn't reflow the row either.
+ * Field order (Shamil 2026-07-21): email, phone (optional), name (optional)
+ * last — both optional extras, but name is intentionally the final field.
  */
 function PlanCard({ plan }: { plan: (typeof PLANS)[number] }) {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [name, setName] = useState("");
   const [state, setState] = useState<SendState>("idle");
 
   const submit = async (e: React.FormEvent) => {
@@ -81,6 +84,7 @@ function PlanCard({ plan }: { plan: (typeof PLANS)[number] }) {
           email: email.trim(),
           plan: plan.id,
           ...(phone.trim() ? { phone: phone.trim() } : {}),
+          ...(name.trim() ? { name: name.trim() } : {}),
         }),
       });
       setState(r.ok ? "sent" : "error");
@@ -129,6 +133,13 @@ function PlanCard({ plan }: { plan: (typeof PLANS)[number] }) {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="phone (optional)"
+              className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-base text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
+            />
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="name (optional)"
               className="w-full rounded-xl border border-border bg-surface-2 px-4 py-3 text-base text-text placeholder-text-dim outline-none transition-colors focus:border-accent"
             />
             <button
