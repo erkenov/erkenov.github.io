@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { clientIp, rateLimit } from "@/lib/api-guard";
 import { createTrialOpportunity } from "@/lib/ghl-opportunity";
+import { addContactTags } from "@/lib/ghl-tags";
 
 /**
  * POST /api/signup — the /start trial form (email required; phone and name
@@ -17,8 +18,10 @@ import { createTrialOpportunity } from "@/lib/ghl-opportunity";
  * single-word name becomes firstName only. Missing name changes nothing.
  *
  * Does two things:
- *   1. Upserts the contact into GHL (tags: trial-signup, crm-trial), phone
- *      and name included when given.
+ *   1. Upserts the contact into GHL (phone and name included when given),
+ *      then additively tags it (trial-signup, crm-trial, plan-<plan>) via
+ *      /contacts/{id}/tags — never via upsert's `tags` field, which REPLACES
+ *      the array instead of merging it (Shamil 2026-07-21, see ghl-tags.ts).
  *   2. Pings Shamil's Telegram so a signup never sits unnoticed.
  *
  * Env (Vercel): GHL_API_KEY, GHL_LOCATION_ID, TELEGRAM_BOT_TOKEN,
@@ -66,11 +69,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "not configured" }, { status: 500 });
   }
 
-  // 1 · contact into the hub
+  // 1 · contact into the hub. NOTE: no `tags` here (Shamil 2026-07-21) —
+  // /contacts/upsert REPLACES the contact's tags array instead of merging
+  // it, so a later upsert here would silently wipe tags earlier funnels
+  // already set (e.g. custom-solution-request). Tags are added separately
+  // below via the additive /contacts/{id}/tags endpoint (see ghl-tags.ts).
   const upsertBody: Record<string, unknown> = {
     locationId,
     email,
-    tags: ["trial-signup", "crm-trial", `plan-${plan}`],
     source: "erken.systems /start",
   };
   if (phone) upsertBody.phone = phone;
@@ -91,11 +97,35 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "hub" }, { status: 502 });
   }
 
-  // 1b · drop the lead into the Trials pipeline (best-effort — never fail the signup)
+  // 1a · pull the contact id out of the upsert response once — the tag and
+  // opportunity steps below both need it, and a fetch Response body can only
+  // be read once.
+  let contactId = "";
   try {
     const d = (await r.json().catch(() => ({}))) as Record<string, unknown>;
     const c = (d.contact as Record<string, unknown>) || d;
-    const contactId = (c?.id as string) || "";
+    contactId = (c?.id as string) || "";
+  } catch (e) {
+    console.error("signup: contact id parse failed", e);
+  }
+
+  // 1b · add this signup's tags additively (best-effort — never fail the
+  // signup over a tagging hiccup).
+  try {
+    if (contactId) {
+      await addContactTags({
+        key,
+        locationId,
+        contactId,
+        tags: ["trial-signup", "crm-trial", `plan-${plan}`],
+      });
+    }
+  } catch (e) {
+    console.error("signup: tag step failed", e);
+  }
+
+  // 1c · drop the lead into the Trials pipeline (best-effort — never fail the signup)
+  try {
     if (contactId) {
       await createTrialOpportunity({ key, locationId, contactId, name: `Trial: ${email}` });
     }

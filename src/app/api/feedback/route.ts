@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { clientIp, rateLimit } from "@/lib/api-guard";
 import { createContactTask } from "@/lib/ghl-task";
+import { addContactTags } from "@/lib/ghl-tags";
 
 /**
  * POST /api/feedback — bug reports / suggestions / human-help requests from
@@ -20,11 +21,15 @@ import { createContactTask } from "@/lib/ghl-task";
  *      API without a contact, so a catch-all contact is how everything stays
  *      queryable in one place. If the extension ever starts sending its
  *      own `email`/`name`, that person's own contact is upserted instead.
- *   2. attach the message as a note. Tag: extension-bug / feedback /
- *      help-request per kind (kind "error" — the site's own auto-telemetry
- *      on a dead voice call, see ErkenVoiceWidget.tsx — and any other kind
- *      fall back to "feedback").
- *   3. kind "help" ONLY: also create a same-day GHL task assigned to the
+ *   2. tag it: extension-bug / feedback / help-request per kind (kind
+ *      "error" — the site's own auto-telemetry on a dead voice call, see
+ *      ErkenVoiceWidget.tsx — and any other kind fall back to "feedback").
+ *      Added via the additive /contacts/{id}/tags endpoint, never via
+ *      upsert's `tags` field — upsert REPLACES the array instead of merging
+ *      it, which would wipe whatever tags the contact already had (Shamil
+ *      2026-07-21, see ghl-tags.ts).
+ *   3. attach the message as a note.
+ *   4. kind "help" ONLY: also create a same-day GHL task assigned to the
  *      account owner (src/lib/ghl-task.ts) so a human-help ask isn't just a
  *      Telegram ping. bug/idea get no task — a weekly digest workflow is
  *      planned inside GHL itself, not in this codebase.
@@ -91,10 +96,16 @@ async function persistToGhl(opts: {
 
   let contactId = "";
   try {
+    // NOTE: no `tags` here (Shamil 2026-07-21) — /contacts/upsert REPLACES
+    // the contact's tags array instead of merging it, so this upsert would
+    // silently wipe tags an earlier funnel already set (e.g. the catch-all
+    // inbox contact accumulates bug/idea/help tags over time; a real
+    // person's contact could carry trial-signup or custom-solution-request).
+    // Tags are added separately below via the additive
+    // /contacts/{id}/tags endpoint (see ghl-tags.ts).
     const upsertBody: Record<string, unknown> = {
       locationId,
       email: useEmail,
-      tags: [tag],
       source: "Erken extension feedback",
     };
     if (firstName) upsertBody.firstName = firstName;
@@ -122,6 +133,13 @@ async function persistToGhl(opts: {
     return;
   }
   if (!contactId) return;
+
+  // tag (best-effort — never fail the request over a tagging hiccup)
+  try {
+    await addContactTags({ key, locationId, contactId, tags: [tag] });
+  } catch (e) {
+    console.error("feedback: GHL tag failed", e);
+  }
 
   // note (best-effort — a note hiccup shouldn't block the task step below)
   try {

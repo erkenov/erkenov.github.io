@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { clientIp, rateLimit } from "@/lib/api-guard";
 import { createCustomRequestOpportunity } from "@/lib/ghl-opportunity";
+import { addContactTags } from "@/lib/ghl-tags";
 
 /**
  * POST /api/custom-request — the /start page's "beyond the platform" asks:
@@ -8,9 +9,12 @@ import { createCustomRequestOpportunity } from "@/lib/ghl-opportunity";
  * message) and the rent-leads partnership apply form.
  *
  * Modeled directly on /api/signup: upserts a GHL contact (signup-scoped
- * creds, same env fallback), best-effort drops the request text onto the
- * contact as a note, best-effort drops kind="custom-solution" requests into
- * the custom-request pipeline as an opportunity (Shamil 2026-07-21 — mirrors
+ * creds, same env fallback; NOT via upsert's `tags` field, which REPLACES
+ * the contact's tag array instead of merging it — tags are added
+ * afterward, additively, via /contacts/{id}/tags, see ghl-tags.ts, Shamil
+ * 2026-07-21), best-effort drops the request text onto the contact as a
+ * note, best-effort drops kind="custom-solution" requests into the
+ * custom-request pipeline as an opportunity (Shamil 2026-07-21 — mirrors
  * the Trials-pipeline step in /api/signup; rent-leads applicants don't get
  * one), and best-effort pings Shamil's Telegram with the full message so a
  * request never sits unseen.
@@ -80,11 +84,14 @@ export async function POST(req: Request) {
 
   const tags = kind === "rent-leads" ? ["rent-leads-applicant"] : ["custom-solution-request"];
 
-  // 1 · contact into the hub
+  // 1 · contact into the hub. NOTE: no `tags` here (Shamil 2026-07-21) —
+  // /contacts/upsert REPLACES the contact's tags array instead of merging
+  // it, so a later upsert for the same contact (e.g. via /api/feedback or
+  // /api/signup) would silently wipe this tag. Tags are added separately
+  // below via the additive /contacts/{id}/tags endpoint (see ghl-tags.ts).
   const upsertBody: Record<string, unknown> = {
     locationId,
     email,
-    tags,
     source: "erken.systems /start",
   };
   if (phone) upsertBody.phone = phone;
@@ -118,7 +125,17 @@ export async function POST(req: Request) {
     console.error("custom-request: contact id parse failed", e);
   }
 
-  // 1c · drop the request text onto the contact as a note (best-effort —
+  // 1c · add this request's tag additively (best-effort — never fail the
+  // request over a tagging hiccup).
+  try {
+    if (contactId) {
+      await addContactTags({ key, locationId, contactId, tags });
+    }
+  } catch (e) {
+    console.error("custom-request: tag step failed", e);
+  }
+
+  // 1d · drop the request text onto the contact as a note (best-effort —
   // never fail the request over a note hiccup, same pattern as the
   // opportunity step in /api/signup).
   try {
@@ -146,7 +163,7 @@ export async function POST(req: Request) {
     console.error("custom-request: note step failed", e);
   }
 
-  // 1d · drop custom-solution requests into the pipeline (best-effort — never
+  // 1e · drop custom-solution requests into the pipeline (best-effort — never
   // fail the request over a pipeline hiccup). rent-leads applicants skip this.
   if (kind === "custom-solution") {
     try {
