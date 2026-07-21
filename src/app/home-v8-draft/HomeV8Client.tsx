@@ -427,13 +427,22 @@ function DraftHeader() {
           <a href="#pricing" className="text-sm text-text-muted transition-colors hover:text-text">
             Pricing
           </a>
-          <a
-            href="tel:+19016331400"
+          {/* Desktop: clicking the number starts the in-browser voice call
+              with Erken (same call the hero "Show the demo" / voice widget
+              triggers) instead of popping the OS "choose an app" dialog for
+              a raw tel: link (Shamil 2026-07-21 — dead-end friction on
+              desktop). Reuses the global window.__startErkenVoiceCall()
+              ErkenVoiceWidget installs — no duplicated call logic. Mobile
+              keeps the real tel: link just below (native dialer is
+              correct there). */}
+          <button
+            type="button"
+            onClick={() => window.__startErkenVoiceCall?.()}
             className="flex items-center gap-1.5 font-mono text-sm text-text-muted transition-colors hover:text-text"
           >
             <Phone className="h-3.5 w-3.5" />
             (901) 633-1400
-          </a>
+          </button>
         </nav>
         <div className="flex items-center gap-3">
           <a
