@@ -156,3 +156,68 @@ export async function createCustomRequestOpportunity(opts: {
     console.error("ghl-opportunity: custom-request create threw", e);
   }
 }
+
+/**
+ * Create an opportunity for the Storm Roofing demo voice agent ("Riley")
+ * (Shamil 2026-07-21) — ports the 3-way pipeline-stage branch from n8n
+ * workflow "Retell Post-Call -> GHL (Storm Roofing Demo)" (id
+ * RZnMEFgsbjRDNBeu) exactly: appointmentBooked wins over callerIntent,
+ * else falls to the default "new inquiry" stage. Pipeline/stage IDs are
+ * hardcoded exactly as in the n8n "Create Opportunity" node (no name-lookup
+ * — pipeline already exists in the SRH demo sub-account's GHL UI).
+ *
+ * Best-effort: any failure is logged and swallowed, matching every other
+ * opportunity helper in this file.
+ */
+const STORM_PIPELINE_ID = (process.env.GHL_STORM_DEMO_PIPELINE_ID || "0onFN5AtCDGFSSOoroZe").trim();
+const STORM_STAGE_APPOINTMENT_BOOKED =
+  (process.env.GHL_STORM_DEMO_STAGE_BOOKED || "6d34daa2-c0b3-45ca-adb2-1f1ea239fa3e").trim();
+const STORM_STAGE_READY_TO_PROCEED =
+  (process.env.GHL_STORM_DEMO_STAGE_READY || "72dd3800-f402-4aa5-8ca9-e5b98f126645").trim();
+const STORM_STAGE_NEW_INQUIRY =
+  (process.env.GHL_STORM_DEMO_STAGE_NEW || "1c16a4b8-529d-4e64-af09-b7a1f3e9292c").trim();
+
+export async function createStormRoofingOpportunity(opts: {
+  key: string;
+  locationId: string;
+  contactId: string;
+  name: string;
+  appointmentBooked: boolean;
+  callerIntent: string;
+}): Promise<void> {
+  const { key, locationId, contactId, name, appointmentBooked, callerIntent } = opts;
+  if (!key || !locationId || !contactId) return;
+
+  const pipelineStageId = appointmentBooked
+    ? STORM_STAGE_APPOINTMENT_BOOKED
+    : callerIntent === "ready_to_proceed"
+      ? STORM_STAGE_READY_TO_PROCEED
+      : STORM_STAGE_NEW_INQUIRY;
+
+  try {
+    const r = await fetch(`${GHL_BASE}/opportunities/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${key}`,
+        Version: "2021-07-28",
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        pipelineId: STORM_PIPELINE_ID,
+        pipelineStageId,
+        locationId,
+        contactId,
+        name: name.slice(0, 200),
+        status: "open",
+        monetaryValue: 0,
+      }),
+    });
+    if (!r.ok) {
+      const txt = await r.text().catch(() => "");
+      console.error("ghl-opportunity: storm-roofing create failed", r.status, txt.slice(0, 300));
+    }
+  } catch (e) {
+    console.error("ghl-opportunity: storm-roofing create threw", e);
+  }
+}

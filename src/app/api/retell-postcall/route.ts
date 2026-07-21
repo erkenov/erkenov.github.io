@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { createHmac, timingSafeEqual } from "node:crypto";
 import { createCustomRequestOpportunity } from "@/lib/ghl-opportunity";
+import { verifyRetellSignature, digitsAndPlus } from "@/lib/retell-webhook";
 
 /**
  * POST /api/retell-postcall — Retell's post-call webhook for the Discovery
@@ -35,7 +35,6 @@ import { createCustomRequestOpportunity } from "@/lib/ghl-opportunity";
  */
 
 const GHL_BASE = "https://services.leadconnectorhq.com";
-const SIGNATURE_MAX_AGE_MS = 5 * 60_000;
 
 // name -> GHL custom-field id, exactly as in the n8n "GHL Upsert Contact" node.
 const CUSTOM_FIELD_IDS: Record<string, string> = {
@@ -110,53 +109,11 @@ function normalizeSpokenEmail(raw: string | undefined): string {
   return /^[\w.+-]+@[\w-]+\.[\w-]+$/.test(e) ? e : "";
 }
 
-const digitsAndPlus = (s: string | undefined) => (s || "").replace(/[^\d+]/g, "");
-
-/**
- * Verify Retell's HMAC-SHA256 webhook signature.
- * Returns true if verified, or if verification could not be performed
- * because RETELL_API_KEY is unset (logged, not fatal — matches this repo's
- * fail-open-but-log convention for missing config on best-effort steps).
- * Returns false only when a key IS configured and the signature is present
- * but invalid/expired/malformed — that's the actual "someone is spoofing
- * Retell" case.
- */
-function verifyRetellSignature(rawBody: string, header: string | null): boolean {
-  const apiKey = (process.env.RETELL_API_KEY || "").trim();
-  if (!apiKey) {
-    console.error("retell-postcall: RETELL_API_KEY not set — skipping signature verification");
-    return true;
-  }
-  if (!header) {
-    console.error("retell-postcall: missing x-retell-signature header");
-    return false;
-  }
-  const match = header.match(/v=(\d+),d=([0-9a-fA-F]+)/);
-  if (!match) {
-    console.error("retell-postcall: malformed x-retell-signature header");
-    return false;
-  }
-  const [, timestampStr, digestHex] = match;
-  const timestamp = Number(timestampStr);
-  if (!Number.isFinite(timestamp) || Math.abs(Date.now() - timestamp) > SIGNATURE_MAX_AGE_MS) {
-    console.error("retell-postcall: signature timestamp outside allowed window");
-    return false;
-  }
-  const expected = createHmac("sha256", apiKey).update(rawBody + timestampStr).digest("hex");
-  const expectedBuf = Buffer.from(expected, "hex");
-  const gotBuf = Buffer.from(digestHex, "hex");
-  if (expectedBuf.length !== gotBuf.length) return false;
-  try {
-    return timingSafeEqual(expectedBuf, gotBuf);
-  } catch {
-    return false;
-  }
-}
-
 export async function POST(req: Request) {
   const rawBody = await req.text();
 
-  if (!verifyRetellSignature(rawBody, req.headers.get("x-retell-signature"))) {
+  const apiKey = (process.env.RETELL_API_KEY || "").trim();
+  if (!verifyRetellSignature(rawBody, req.headers.get("x-retell-signature"), apiKey, "retell-postcall")) {
     return NextResponse.json({ status: "invalid signature" }, { status: 401 });
   }
 
