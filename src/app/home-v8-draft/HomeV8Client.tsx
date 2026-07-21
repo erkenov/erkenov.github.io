@@ -38,7 +38,7 @@
 
 import { useCallback, useEffect, useRef, useState, Fragment } from "react";
 import { motion } from "framer-motion";
-import { Check } from "lucide-react";
+import { Check, Phone } from "lucide-react";
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { INTEGRATION_LOGOS } from "./integration-logos";
 import { STACK_LOGOS } from "./stack-logos";
@@ -427,13 +427,29 @@ function DraftHeader() {
           <a href="#pricing" className="text-sm text-text-muted transition-colors hover:text-text">
             Pricing
           </a>
+          <a
+            href="tel:+19016331400"
+            className="flex items-center gap-1.5 font-mono text-sm text-text-muted transition-colors hover:text-text"
+          >
+            <Phone className="h-3.5 w-3.5" />
+            (901) 633-1400
+          </a>
         </nav>
-        <a
-          href="/start"
-          className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
-        >
-          Try for free
-        </a>
+        <div className="flex items-center gap-3">
+          <a
+            href="tel:+19016331400"
+            aria-label="Call (901) 633-1400"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text-muted transition-colors hover:border-border-strong hover:text-text md:hidden"
+          >
+            <Phone className="h-4 w-4" />
+          </a>
+          <a
+            href="/start"
+            className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
+          >
+            Try for free
+          </a>
+        </div>
       </div>
     </header>
   );
