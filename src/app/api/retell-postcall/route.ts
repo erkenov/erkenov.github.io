@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createCustomRequestOpportunity } from "@/lib/ghl-opportunity";
+import { addContactTags } from "@/lib/ghl-tags";
 import { verifyRetellSignature, digitsAndPlus } from "@/lib/retell-webhook";
 
 /**
@@ -21,6 +22,23 @@ import { verifyRetellSignature, digitsAndPlus } from "@/lib/retell-webhook";
  * verification is skipped (logged) rather than hard-failing — matches this
  * repo's "never let a webhook silently die on missing config" convention
  * (see capture-lead, storm-lead).
+ *
+ * SECOND addition (Shamil 2026-07-21): the agent's post-call analysis got a
+ * new boolean field, `wants_custom_offer`. When true, on top of the contact
+ * upsert + the "Discovery call" opportunity below, this also (best-effort):
+ *   1. creates a SECOND opportunity in the same Custom Solutions pipeline
+ *      via createCustomRequestOpportunity (src/lib/ghl-opportunity.ts —
+ *      pipeline sMu9K2rRvmhX82wHAi7D, first stage "efd906cc..." / "Request"),
+ *      named "Custom (call): {name or phone or call id}" so it's
+ *      distinguishable from the generic per-call opportunity.
+ *   2. adds the `custom-solution-request` tag via the additive
+ *      addContactTags helper (src/lib/ghl-tags.ts — never via upsert's
+ *      `tags`, which replaces rather than merges). This is the exact tag
+ *      name the published GHL SLA workflow (auto-ack email/SMS + 24h
+ *      assessment task) triggers on for the /api/custom-request form path —
+ *      confirmed against vault/04-tools/erken-subaccount-copy-assets.md
+ *      §5.2, which explicitly flagged "no opportunity auto-creation exists
+ *      yet for this tag" from a phone call as the gap this closes.
  *
  * n8n's Filter node silently drops non-"call_analyzed" events (no response
  * node reached => Retell would see a timeout). We instead respond fast with
@@ -78,6 +96,7 @@ type CustomAnalysisData = Record<string, unknown> & {
   caller_emotional_tone?: string;
   emotional_tone?: string;
   caller_reaction_to_pitch?: string;
+  wants_custom_offer?: boolean;
 };
 
 type RetellCall = {
@@ -219,6 +238,30 @@ export async function POST(req: Request) {
       });
     } catch (e) {
       console.error("retell-postcall: opportunity step failed", e);
+    }
+  }
+
+  // wants_custom_offer (best-effort — never fail the webhook over a
+  // pipeline/tag hiccup): a second, distinctly-named opportunity in the
+  // Custom Solutions pipeline, plus the SLA-triggering tag — see the
+  // doc comment above for why this is a separate opportunity/tag from
+  // the unconditional "Discovery call" one above.
+  if (contactId && cad.wants_custom_offer) {
+    const who = cad.caller_name || phone || call.call_id || "unknown call";
+    try {
+      await createCustomRequestOpportunity({
+        key,
+        locationId,
+        contactId,
+        name: `Custom (call): ${who}`,
+      });
+    } catch (e) {
+      console.error("retell-postcall: custom-offer opportunity failed", e);
+    }
+    try {
+      await addContactTags({ key, locationId, contactId, tags: ["custom-solution-request"] });
+    } catch (e) {
+      console.error("retell-postcall: custom-offer tag failed", e);
     }
   }
 
