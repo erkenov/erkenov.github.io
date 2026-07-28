@@ -24,7 +24,7 @@
  *   - Industries moved UP to 2nd (right after the hero).
  *   - Hero keeps the live founder video + gains the price tease and a
  *     "See your industry" secondary button.
- *   - Meet Erken → five sell bullets + three CTAs in one row.
+ *   - Meet Erken → five sell bullets + two CTAs in one row.
  *   - Added: full /start-style pricing cards, Custom solutions, Get leads
  *     door. Added a sticky DraftHeader (logo / Industries / How it works /
  *     Pricing / persistent Try-for-free), z-50. (2026-07-21: dust canvas/
@@ -869,8 +869,9 @@ function PipelineSection() {
 }
 
 /* ---- Meet Erken — live centered section, updated to 5 sell bullets +
- * three CTAs in one row (Download for free / Try it on this page / Try for
- * free). ---- */
+ * two CTAs in one row (Download for free / Try it on this page). The old
+ * third "Try for free" → /start was removed 2026-07-28 as redundant with
+ * the pricing cards right below. ---- */
 const ERKEN_BULLETS = [
   { emoji: "🗣️", bold: "Ask it anything", rest: " — by voice or chat, about the platform or your business" },
   { emoji: "👉", bold: "Shows you the exact button", rest: " — walks you through any task on screen, out loud, step by step" },
@@ -942,9 +943,8 @@ function MeetErkenSection({
             </div>
           ))}
         </div>
-        {/* Three CTAs in one row (Download stays the one accent-filled
-            primary; the other two are bordered secondaries so the row
-            doesn't become three competing accent buttons). Wraps on mobile. */}
+        {/* Two CTAs in one row (Download stays the one accent-filled
+            primary; the other is a bordered secondary). Wraps on mobile. */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3 md:justify-start">
           <a
             href={CHROME_EXTENSION_URL}
@@ -961,12 +961,6 @@ function MeetErkenSection({
           >
             Try it on this page
           </button>
-          <a
-            href="/start"
-            className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3.5 text-base font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
-          >
-            Try for free →
-          </a>
         </div>
         </div>
       </div>
@@ -2658,7 +2652,7 @@ export default function HomeV8Client() {
       {/* 4. AI section (ROUND 3) — "Built-in AI that works for you 24/7". */}
       <AISection />
 
-      {/* 5. Meet Erken — live centered section, five sell bullets + three
+      {/* 5. Meet Erken — live centered section, five sell bullets + two
           CTAs in one row. */}
       <MeetErkenSection onSpriteClick={openChoiceMenu} />
 
