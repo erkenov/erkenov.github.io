@@ -15,7 +15,10 @@
 
 import { useEffect, useState } from "react";
 
-const WIDGET_ID = "6a22cb7ced0ee22f92dd2085";
+// 2026-07-28: swapped from the OLD Erken Systems sub-account's widget
+// (6a22cb7ced0ee22f92dd2085) to the "Erken Systems Website" widget in the
+// consolidated Erken Systems sub-account (gHa4z3lLoqXA0Nvx802J).
+const WIDGET_ID = "6a689c94702ca026d5646a27";
 
 /**
  * useErkenChatOpen — true while the GHL chat panel is open.
