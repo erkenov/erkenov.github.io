@@ -114,8 +114,12 @@ type IndustryCard = {
   demoSub?: string;
 };
 
-/** The one live demo that exists today — linked from no-demo cards too. */
-const ROOFING_DEMO_URL = "https://roofing.erken.systems";
+/** The one live demo that exists today — linked from no-demo cards too.
+ *  2026-07-28: the demo sub-account was converted roofing → flight school
+ *  (Sonoran Skyline Flight Academy), so the card and URL moved with it.
+ *  fly.erken.systems serves the same funnel; roofing.erken.systems stays
+ *  attached so previously shared links keep working. */
+const FLIGHT_DEMO_URL = "https://fly.erken.systems";
 
 const ph = (label: string, bg: string, fg = "F5F1E8") =>
   `https://placehold.co/640x800/${bg}/${fg}?text=${encodeURIComponent(label)}&font=inter`;
@@ -133,17 +137,19 @@ const IMG = {
 } as const;
 
 const INDUSTRIES: IndustryCard[] = [
-  // 0. Roofing contractors — FIRST card (the flagship: only industry with a
-  // LIVE demo subdomain + the new video-first popup treatment, 2026-07-14).
+  // 0. Flight schools — FIRST card (the flagship: only industry with a
+  // LIVE demo subdomain + the video-first popup treatment; converted from
+  // the roofing card 2026-07-28 when the demo sub-account became a flight
+  // school).
   {
-    category: "Trades · roofing",
-    title: "Roofing contractors",
-    src: ph("Roofing", "B8786A"),
-    visual: <CardStyle2Photo src="/industries/card-roofing-photo.jpg" />,
-    demoUrl: ROOFING_DEMO_URL,
-    demoHeadline: "A real roofing setup, running live right now",
+    category: "Aviation · flight training",
+    title: "Flight schools",
+    src: ph("Flight school", "5E7E9B"),
+    visual: <CardStyle2Photo src="/industries/card-flightschool-photo.jpg" />,
+    demoUrl: FLIGHT_DEMO_URL,
+    demoHeadline: "A real flight-school setup, running live right now",
     demoSub:
-      "This isn't a mockup. It's a complete roofing company system — website, online booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a test inspection and watch what your customers would experience.",
+      "This isn't a mockup. It's a complete flight school system — website, online booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a test discovery flight and watch what your students would experience.",
     content: (
       <>
         <IndustryBodySteps
@@ -151,33 +157,33 @@ const INDUSTRIES: IndustryCard[] = [
             {
               title: "Capture — every call, chat, and form gets answered",
               description:
-                "Your AI receptionist picks up on the first ring, day or night. Web chat, contact forms, and an online booking calendar catch everyone else. A homeowner asking about their roof gets qualified — roof age, damage type, insurance status — and booked into an open inspection slot on the spot. Nothing missed, no lead lost.",
+                "Your AI receptionist picks up on the first ring, day or night. Web chat, contact forms, and an online booking calendar catch everyone else. Someone asking about lessons gets qualified — goal, prior hours, medical status, availability — and booked into an open discovery-flight slot on the spot. Nothing missed, no student lost.",
               image: IMG.step1,
-              imageAlt: "AI receptionist booking a roof inspection",
+              imageAlt: "AI receptionist booking a discovery flight",
             },
             {
               title: "Organized — every inquiry lands in one place automatically",
               description:
-                "Name, address, roof details, insurance carrier, what they need — all dropped into one organized job list the moment they reach out. Nothing to type up, nothing on a sticky note. Your crew sees the full picture before they leave the yard.",
+                "Name, training goal, prior experience, preferred schedule — all dropped into one organized student list the moment they reach out. Nothing to type up, nothing on a sticky note. Your instructors see the full picture before the first lesson.",
               image: IMG.step2,
-              imageAlt: "Roof inspection details saved automatically",
+              imageAlt: "Student details saved automatically",
             },
             {
               title: "Automatic — follow-ups, updates, and reminders run themselves",
               description:
-                "Booking confirmation, estimate delivery, appointment reminders, install-date updates, and a post-job review request — all sent automatically in your company's voice. The customer stays in the loop at every step without you lifting a finger.",
+                "Booking confirmation, discovery-flight reminder, enrollment steps, lesson reminders, and a post-flight review request — all sent automatically in your school's voice. The student stays in the loop at every step without your front desk lifting a finger.",
               image: IMG.step4,
-              imageAlt: "Automated roofing customer messages",
+              imageAlt: "Automated student messages",
             },
             {
-              title: "Visible — every job trackable from first call to final install",
+              title: "Visible — every student trackable from first call to checkride",
               description:
-                "Inquiry → inspection booked → estimate sent → scheduled → completed. One clear board shows exactly what's moving, what's stuck, and what closed — so you always know where every job stands and where to push.",
+                "Inquiry → discovery flight booked → enrolled → training → checkride. One clear board shows exactly who's moving, who's stalled, and who finished — so you always know where every student stands and where to push.",
               image: IMG.step3,
-              imageAlt: "Roofing job pipeline view",
+              imageAlt: "Student pipeline view",
             },
           ]}
-          outcome="The same system runs behind every job — leads get answered, details get captured, follow-ups run themselves, and you see the whole operation at a glance."
+          outcome="The same system runs behind every student — inquiries get answered, details get captured, follow-ups run themselves, and you see the whole school at a glance."
         />
       </>
     ),
@@ -925,7 +931,7 @@ const INDUSTRIES: IndustryCard[] = [
  * Horizontal 16:9 demo video on top (placeholder = the main-page intro clip
  * for now; per-industry streamer-style demo videos swap in later), pitch +
  * "try the live demo" CTA below it, the step-by-step breakdown stays under
- * that. Rolled out on the roofing card first; other industries follow once
+ * that. Rolled out on the flight-school card first; other industries follow once
  * the treatment is approved and each has a live demo subdomain.
  */
 function IndustryDemoShowcase({
@@ -985,12 +991,12 @@ function IndustryDemoShowcase({
           <p className="mt-4 text-[15px] text-text-dim">
             A live demo for this industry is on the way. Meanwhile,{" "}
             <a
-              href={ROOFING_DEMO_URL}
+              href={FLIGHT_DEMO_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="text-accent hover:text-accent-hover underline underline-offset-4"
             >
-              click through the live roofing demo
+              click through the live flight-school demo
             </a>{" "}
             to see the platform running for a real business.
           </p>
@@ -1236,7 +1242,7 @@ export function SceneIndustriesCarousel({
 } = {}) {
   // Every popup opens with the video showcase (2026-07-14: "every piece of
   // info on the site has a video twin"). Cards with a live demo get the
-  // primary CTA; the rest point at the roofing demo until theirs exists.
+  // primary CTA; the rest point at the flight-school demo until theirs exists.
   const items = INDUSTRIES.map((c, i) => {
     const card: IndustryCard = {
       ...c,

@@ -39,7 +39,7 @@ const PLAN_FEATURES = [
   "Automations + follow-ups",
   "AI voice receptionist",
   "Reputation + review management",
-  "Erken assistant included",
+  "Erken assistant included (beta)",
   "Free first week",
 ];
 

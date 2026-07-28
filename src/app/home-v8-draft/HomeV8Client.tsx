@@ -927,7 +927,14 @@ function MeetErkenSection({
           <CellDragonSprite scale={0.5} pointDirection="right" />
         </div>
         <div className="flex-1">
-        <SectionKicker>Meet Erken</SectionKicker>
+        {/* Beta pill (Shamil 2026-07-28): set expectations — the assistant
+            is early; nobody should expect perfection yet. */}
+        <div className="flex items-center gap-2.5">
+          <SectionKicker>Meet Erken</SectionKicker>
+          <span className="rounded-full border border-border px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-text-muted">
+            Beta
+          </span>
+        </div>
         <h2
           className="mt-3 text-3xl md:text-5xl font-bold tracking-tight"
           style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
@@ -976,7 +983,7 @@ const PLAN_FEATURES = [
   "Automations + follow-ups",
   "AI voice receptionist",
   "Reputation + review management",
-  "Erken assistant included",
+  "Erken assistant included (beta)",
   "Free first week",
 ];
 
