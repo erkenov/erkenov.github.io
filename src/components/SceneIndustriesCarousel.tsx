@@ -188,7 +188,54 @@ const INDUSTRIES: IndustryCard[] = [
       </>
     ),
   },
-  // 1. Dental practices — visual STYLE 2 (full-bleed real photo, like vet)
+  // 1. Roofing contractors — back as a no-live-demo card (2026-07-28: its
+  // sub-account was converted to the flight-school demo, so no demoUrl here
+  // anymore; the showcase falls back to the flight-school demo like every
+  // other no-demo card). Content restored verbatim from before the conversion.
+  {
+    category: "Trades · roofing",
+    title: "Roofing contractors",
+    src: ph("Roofing", "B8786A"),
+    visual: <CardStyle2Photo src="/industries/card-roofing-photo.jpg" />,
+    content: (
+      <>
+        <IndustryBodySteps
+          steps={[
+            {
+              title: "Capture — every call, chat, and form gets answered",
+              description:
+                "Your AI receptionist picks up on the first ring, day or night. Web chat, contact forms, and an online booking calendar catch everyone else. A homeowner asking about their roof gets qualified — roof age, damage type, insurance status — and booked into an open inspection slot on the spot. Nothing missed, no lead lost.",
+              image: IMG.step1,
+              imageAlt: "AI receptionist booking a roof inspection",
+            },
+            {
+              title: "Organized — every inquiry lands in one place automatically",
+              description:
+                "Name, address, roof details, insurance carrier, what they need — all dropped into one organized job list the moment they reach out. Nothing to type up, nothing on a sticky note. Your crew sees the full picture before they leave the yard.",
+              image: IMG.step2,
+              imageAlt: "Roof inspection details saved automatically",
+            },
+            {
+              title: "Automatic — follow-ups, updates, and reminders run themselves",
+              description:
+                "Booking confirmation, estimate delivery, appointment reminders, install-date updates, and a post-job review request — all sent automatically in your company's voice. The customer stays in the loop at every step without you lifting a finger.",
+              image: IMG.step4,
+              imageAlt: "Automated roofing customer messages",
+            },
+            {
+              title: "Visible — every job trackable from first call to final install",
+              description:
+                "Inquiry → inspection booked → estimate sent → scheduled → completed. One clear board shows exactly what's moving, what's stuck, and what closed — so you always know where every job stands and where to push.",
+              image: IMG.step3,
+              imageAlt: "Roofing job pipeline view",
+            },
+          ]}
+          outcome="The same system runs behind every job — leads get answered, details get captured, follow-ups run themselves, and you see the whole operation at a glance."
+        />
+      </>
+    ),
+  },
+  // 2. Dental practices — visual STYLE 2 (full-bleed real photo, like vet)
   {
     category: "Healthcare · HIPAA",
     title: "Dental practices",
@@ -965,8 +1012,10 @@ function IndustryDemoShowcase({
         <p className="mt-3 text-[15px] md:text-base text-text-muted leading-relaxed">
           {sub}
         </p>
-        {/* Try for free is the primary next step (→ /start); the live-demo
-            link sits beside it as the industry-specific proof. */}
+        {/* Try for free is the primary next step (→ /start). Every card also
+            gets the "Try the live demo" secondary CTA: cards with their own
+            demoUrl link there, every other card falls back to the one live
+            flight-school demo until its own demo subdomain exists. */}
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <a
             href="/start"
@@ -975,32 +1024,16 @@ function IndustryDemoShowcase({
             Try for free
             <span aria-hidden>→</span>
           </a>
-          {demoUrl && (
-            <a
-              href={demoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 font-medium text-text transition-colors hover:border-border-strong hover:bg-surface"
-            >
-              Try the live demo
-              <IconArrowUpRight size={18} stroke={2} />
-            </a>
-          )}
+          <a
+            href={demoUrl ?? FLIGHT_DEMO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 font-medium text-text transition-colors hover:border-border-strong hover:bg-surface"
+          >
+            Try the live demo
+            <IconArrowUpRight size={18} stroke={2} />
+          </a>
         </div>
-        {!demoUrl && (
-          <p className="mt-4 text-[15px] text-text-dim">
-            A live demo for this industry is on the way. Meanwhile,{" "}
-            <a
-              href={FLIGHT_DEMO_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-accent hover:text-accent-hover underline underline-offset-4"
-            >
-              click through the live flight-school demo
-            </a>{" "}
-            to see the platform running for a real business.
-          </p>
-        )}
       </div>
     </div>
   );
@@ -1241,8 +1274,9 @@ export function SceneIndustriesCarousel({
   arrowsTrailing?: React.ReactNode;
 } = {}) {
   // Every popup opens with the video showcase (2026-07-14: "every piece of
-  // info on the site has a video twin"). Cards with a live demo get the
-  // primary CTA; the rest point at the flight-school demo until theirs exists.
+  // info on the site has a video twin"). Every card's "Try the live demo"
+  // button links to its own demoUrl when set; every other card links to the
+  // one live flight-school demo until per-industry demos exist.
   const items = INDUSTRIES.map((c, i) => {
     const card: IndustryCard = {
       ...c,
