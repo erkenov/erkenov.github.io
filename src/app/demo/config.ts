@@ -13,6 +13,7 @@
 
 export type DemoSectionId =
   | "hero"
+  | "mission"
   | "stats"
   | "services"
   | "about"
@@ -53,6 +54,12 @@ export interface DemoTheme {
   accentHover: string;
   /** Translucent accent wash for chips/kickers. */
   accentSoft: string;
+  /**
+   * Text color on solid-accent fills (buttons). Dark palettes often use a
+   * light accent (brass, gold) that needs dark button text; light palettes
+   * usually want white here.
+   */
+  accentText: string;
   /** Dark band (footer / CTA) background + its text colors. */
   dark: string;
   darkText: string;
@@ -70,6 +77,8 @@ export interface DemoConfig {
     location: string;
     phoneDisplay: string;
     hours: string;
+    /** Small mark next to the nav wordmark. */
+    icon: DemoIconName;
   };
   meta: { title: string; description: string };
   theme: DemoTheme;
@@ -87,16 +96,34 @@ export interface DemoConfig {
     secondaryCta: string; // starts the AI voice call
     badge?: string; // small proof chip on the hero image
   };
+  /** Centered mission statement + optional value words (ffiaz-style rhythm). */
+  mission?: {
+    kicker: string;
+    /** One clear sentence. `statementAccent` substring gets the accent color. */
+    statement: string;
+    statementAccent?: string;
+    sub?: string;
+    /** Short value words rendered as a divided row. */
+    values?: string[];
+  };
   stats?: { value: string; label: string }[];
   services?: {
     kicker: string;
     headline: string;
     sub: string;
+    /** Heading over the compact cards for items without an image. */
+    moreLabel?: string;
     items: {
       icon: DemoIconName;
       title: string;
       body: string;
       price?: string;
+      /**
+       * Items with an image render as full alternating photo/text modules;
+       * items without one collect into a compact card row below.
+       */
+      image?: string;
+      imageAlt?: string;
     }[];
   };
   about?: {
@@ -172,30 +199,35 @@ const flightSchools: DemoConfig = {
     location: "Deer Valley Airport (KDVT) · Phoenix, AZ",
     phoneDisplay: "(325) 241-2460",
     hours: "Mon–Sat 8am–5pm · Sun closed",
+    icon: "plane",
   },
   meta: {
     title: "Fly Erken Flight Academy — Learn to Fly in Phoenix | Demo by Erken Systems",
     description:
       "Discovery flights, private pilot training, and aircraft rental out of Deer Valley Airport in Phoenix, AZ. Demo website by Erken Systems.",
   },
+  // Dark navy + brass — premium aviation, the demo brand's own palette
+  // (deliberately NOT the erken.systems cream/sage look).
   theme: {
-    bg: "#F6F8FB",
-    surface: "#FFFFFF",
-    surface2: "#EDF2F8",
-    border: "#D7DFE9",
-    borderStrong: "#B9C6D6",
-    text: "#16212E",
-    textMuted: "#51606F",
-    textDim: "#8494A5",
-    accent: "#1D5FA8",
-    accentHover: "#2971C2",
-    accentSoft: "rgba(29, 95, 168, 0.10)",
-    dark: "#101B28",
-    darkText: "#F2F6FA",
-    darkMuted: "#93A5B8",
+    bg: "#0A1119",
+    surface: "#101927",
+    surface2: "#0D1520",
+    border: "#1D2A3B",
+    borderStrong: "#2C3F58",
+    text: "#EEF3F9",
+    textMuted: "#9DAEC2",
+    textDim: "#64768B",
+    accent: "#D9A94E",
+    accentHover: "#E5BA66",
+    accentSoft: "rgba(217, 169, 78, 0.12)",
+    accentText: "#0B0F15",
+    dark: "#070C13",
+    darkText: "#F2F6FB",
+    darkMuted: "#8DA0B5",
   },
   sections: [
     "hero",
+    "mission",
     "stats",
     "services",
     "about",
@@ -209,13 +241,21 @@ const flightSchools: DemoConfig = {
     kicker: "Deer Valley Airport · Phoenix, AZ",
     headline: "Your first takeoff is closer than you think.",
     headlineAccent: "first takeoff",
-    sub: "Discovery flights, private pilot training, and aircraft rental — taught by career instructors who still love the traffic pattern. 300+ clear-sky flying days a year means lessons actually happen. Most students solo in under three months.",
-    image: "/demo/flight-schools/hero-hangar.jpg",
+    sub: "Discovery flights, private pilot training, and aircraft rental — taught by career instructors who still love the traffic pattern. Most students solo in under three months.",
+    image: "/demo/flight-schools/sunset-pilots.jpg",
     imageAlt:
-      "Flight instructor and student talking beside a Piper trainer in the Fly Erken hangar",
+      "Two pilots watching the sunset from under the wing of a trainer at Deer Valley Airport",
     primaryCta: "Book a discovery flight",
     secondaryCta: "Ask our AI front desk",
     badge: "FAA Part 61 · Est. 2011",
+  },
+  mission: {
+    kicker: "Why we fly",
+    statement:
+      "Train pilots the way the airlines wish every school did — full-time instructors, a written syllabus, and an airplane that's ready when you are.",
+    statementAccent: "an airplane that's ready when you are",
+    sub: "300+ clear-sky flying days a year over Phoenix. We don't waste a single one.",
+    values: ["Safety", "Structure", "Consistency", "Straight answers"],
   },
   stats: [
     { value: "320+", label: "Pilot certificates earned" },
@@ -227,30 +267,41 @@ const flightSchools: DemoConfig = {
     kicker: "Programs",
     headline: "From first flight to the left seat",
     sub: "Every program runs on a written syllabus, a real schedule, and instructors who stay with you from intro flight to checkride.",
+    moreLabel: "Also at the academy",
     items: [
       {
         icon: "compass",
         title: "Discovery Flight",
         body: "A 45-minute intro lesson where you take the controls with an instructor beside you. Bring a passenger, take photos, and log the time — it counts toward your license.",
         price: "$199",
+        image: "/demo/flight-schools/cockpit-lesson.jpg",
+        imageAlt:
+          "Student and instructor side by side in the cockpit during a discovery flight",
       },
       {
         icon: "graduation",
         title: "Private Pilot (PPL)",
         body: "The full course from zero hours to certificated pilot: flight lessons, ground school, and checkride prep on one schedule that fits around your job.",
         price: "from $11,900",
+        image: "/demo/flight-schools/preflight-hangar.jpg",
+        imageAlt:
+          "Instructor briefing a student pilot beside the trainer in the Fly Erken hangar",
       },
       {
         icon: "gauge",
         title: "Instrument Rating",
         body: "Fly in the clouds, on real trips, on real schedules. Scenario-based IFR training in glass-cockpit 172s with instructors who fly IFR weekly.",
         price: "from $9,800",
+        image: "/demo/flight-schools/cockpit-checkout.jpg",
+        imageAlt: "Pilot running the panel during an instrument checkout",
       },
       {
         icon: "key",
         title: "Aircraft Rental",
         body: "Certificated pilots rent our 172s and Cherokees wet, with online scheduling and same-day checkouts for current members.",
         price: "$165/hr wet",
+        image: "/demo/flight-schools/fleet-cessna.jpg",
+        imageAlt: "Rental Cessna 172 waiting on the Deer Valley ramp",
       },
       {
         icon: "radio",
@@ -279,8 +330,9 @@ const flightSchools: DemoConfig = {
       "Online scheduling with real availability, not phone tag",
       "Fixed-price checkride prep — no surprise hours",
     ],
-    image: "/demo/flight-schools/fleet-cessna.jpg",
-    imageAlt: "Fly Erken Cessna 172 trainer on the Deer Valley ramp",
+    image: "/demo/flight-schools/hero-hangar.jpg",
+    imageAlt:
+      "Flight instructor and student talking beside a Piper trainer in the Fly Erken hangar",
   },
   steps: {
     kicker: "How it starts",
@@ -364,7 +416,6 @@ const flightSchools: DemoConfig = {
     headline: "The ramp is a short drive away.",
     sub: "One discovery flight tells you more than a year of reading about it.",
     buttonLabel: "Book your discovery flight",
-    image: "/demo/flight-schools/sunset-pilots.jpg",
   },
   voice: {
     enabled: true,

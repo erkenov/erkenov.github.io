@@ -16,6 +16,7 @@ import {
   AboutSection,
   DemoNav,
   HeroSection,
+  MissionSection,
   ServicesSection,
   StatsSection,
   StepsSection,
@@ -46,6 +47,7 @@ const SECTION_COMPONENTS: Record<
   React.ComponentType<{ config: DemoConfig }>
 > = {
   hero: HeroSection,
+  mission: MissionSection,
   stats: StatsSection,
   services: ServicesSection,
   about: AboutSection,
@@ -87,6 +89,7 @@ export default function DemoPageClient({ config }: { config: DemoConfig }) {
           "--d-accent": t.accent,
           "--d-accent-hover": t.accentHover,
           "--d-accent-soft": t.accentSoft,
+          "--d-accent-text": t.accentText,
           "--d-dark": t.dark,
           "--d-dark-text": t.darkText,
           "--d-dark-muted": t.darkMuted,

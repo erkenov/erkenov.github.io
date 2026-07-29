@@ -125,6 +125,8 @@ export default function CallbackModal({ config }: { config: DemoConfig }) {
             border: "none",
             borderRadius: "8px",
             marginTop: "16px",
+            // The GHL form renders on white; keep it readable on dark themes.
+            background: "#FFFFFF",
           }}
           id={`inline-${CALLBACK_FORM_ID}`}
           data-layout="{'id':'INLINE'}"

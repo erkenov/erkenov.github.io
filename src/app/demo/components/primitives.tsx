@@ -2,9 +2,9 @@
 
 /**
  * Shared building blocks for /demo/[industry] pages: scroll-reveal
- * wrapper, three-tier section heading, and the config-driven icon map.
- * Motion follows the site design system: fade-up, ease [0.16,1,0.3,1],
- * once-only viewport reveals.
+ * wrapper, three-tier section heading, buttons, and the config-driven
+ * icon map. Motion follows the site design system: fade-up, ease
+ * [0.16,1,0.3,1], once-only viewport reveals.
  *
  * All colors come from the demo theme CSS custom properties
  * (--d-accent, --d-surface, …) set on the page wrapper in
@@ -52,14 +52,31 @@ export function Reveal({
   );
 }
 
-/** Uppercase mono kicker in the demo accent color. */
-export function Kicker({ children }: { children: React.ReactNode }) {
+/** Uppercase mono kicker — accent rule + tracked label. */
+export function Kicker({
+  children,
+  light = false,
+}: {
+  children: React.ReactNode;
+  /** Set true on photo overlays / dark bands for full-contrast text. */
+  light?: boolean;
+}) {
   return (
-    <div
-      className="font-mono text-xs font-medium uppercase"
-      style={{ letterSpacing: "0.12em", color: "var(--d-accent)" }}
-    >
-      {children}
+    <div className="flex items-center gap-3">
+      <span
+        aria-hidden
+        className="h-px w-8"
+        style={{ background: "var(--d-accent)" }}
+      />
+      <span
+        className="font-mono text-xs font-medium uppercase"
+        style={{
+          letterSpacing: "0.18em",
+          color: light ? "var(--d-dark-text)" : "var(--d-text-muted)",
+        }}
+      >
+        {children}
+      </span>
     </div>
   );
 }
@@ -77,10 +94,10 @@ export function SectionHeading({
   center?: boolean;
 }) {
   return (
-    <Reveal className={center ? "text-center" : ""}>
+    <Reveal className={center ? "flex flex-col items-center text-center" : ""}>
       <Kicker>{kicker}</Kicker>
       <h2
-        className="mt-3 text-3xl md:text-[2.5rem] font-bold"
+        className="mt-4 text-3xl font-bold md:text-[2.5rem]"
         style={{ letterSpacing: "-0.03em", lineHeight: 1.15, color: "var(--d-text)" }}
       >
         {headline}
@@ -136,7 +153,7 @@ export function DemoIcon({
   return <C className={className} />;
 }
 
-/** Primary button — solid accent. */
+/** Primary button — solid accent, theme-driven text color. */
 export function PrimaryButton({
   children,
   onClick,
@@ -147,8 +164,8 @@ export function PrimaryButton({
   href?: string;
 }) {
   const cls =
-    "inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-medium text-white transition-all duration-200 hover:scale-[1.02]";
-  const style = { background: "var(--d-accent)" };
+    "inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-medium transition-all duration-200 hover:scale-[1.02]";
+  const style = { background: "var(--d-accent)", color: "var(--d-accent-text)" };
   if (href) {
     return (
       <a href={href} onClick={onClick} className={cls} style={style}>
@@ -171,7 +188,7 @@ export function SecondaryButton({
 }: {
   children: React.ReactNode;
   onClick?: () => void;
-  /** Set true when the button sits on the dark band. */
+  /** Set true when the button sits on the dark band / photo overlay. */
   light?: boolean;
 }) {
   return (
@@ -179,7 +196,7 @@ export function SecondaryButton({
       onClick={onClick}
       className="inline-flex items-center justify-center gap-2 rounded-lg border px-6 py-3 text-sm font-medium transition-colors duration-200"
       style={{
-        borderColor: light ? "rgba(255,255,255,0.25)" : "var(--d-border)",
+        borderColor: light ? "rgba(255,255,255,0.3)" : "var(--d-border-strong)",
         color: light ? "var(--d-dark-text)" : "var(--d-text)",
         background: "transparent",
       }}

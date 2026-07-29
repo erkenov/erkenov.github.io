@@ -2,8 +2,8 @@
 
 /**
  * /demo/[industry] template sections, part 2: Testimonials, FAQ,
- * Booking (live GHL form → AI callback), CTA band, Footer, and the
- * floating "Demo site by Erken Systems" badge.
+ * Booking (live GHL calendar / form), CTA statement band, Footer, and
+ * the floating "Demo site by Erken Systems" badge.
  */
 
 import Image from "next/image";
@@ -31,7 +31,7 @@ export function TestimonialsSection({ config }: { config: DemoConfig }) {
           {t.items.map((item, i) => (
             <Reveal key={item.name} delay={i * 0.08}>
               <figure
-                className="flex h-full flex-col rounded-2xl border p-8"
+                className="flex h-full flex-col rounded-xl border p-8"
                 style={{
                   background: "var(--d-surface)",
                   borderColor: "var(--d-border)",
@@ -41,7 +41,7 @@ export function TestimonialsSection({ config }: { config: DemoConfig }) {
                   {Array.from({ length: 5 }).map((_, s) => (
                     <Star
                       key={s}
-                      className="h-4 w-4"
+                      className="h-3.5 w-3.5"
                       style={{ color: "var(--d-accent)", fill: "var(--d-accent)" }}
                     />
                   ))}
@@ -52,11 +52,14 @@ export function TestimonialsSection({ config }: { config: DemoConfig }) {
                 >
                   “{item.quote}”
                 </blockquote>
-                <figcaption className="mt-6 flex items-center gap-3">
+                <figcaption
+                  className="mt-6 flex items-center gap-3 border-t pt-5"
+                  style={{ borderColor: "var(--d-border)" }}
+                >
                   {item.image ? (
                     <span
                       className="relative h-10 w-10 overflow-hidden rounded-full border"
-                      style={{ borderColor: "var(--d-border)" }}
+                      style={{ borderColor: "var(--d-border-strong)" }}
                     >
                       <Image
                         src={item.image}
@@ -106,7 +109,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
     <div
-      className="rounded-2xl border"
+      className="rounded-xl border"
       style={{ background: "var(--d-surface)", borderColor: "var(--d-border)" }}
     >
       <button
@@ -160,7 +163,8 @@ export function FaqSection({ config }: { config: DemoConfig }) {
 /* ------------------------------------------------------------------ */
 /* Booking — real GHL calendar (falls back to the lead form, then a    */
 /* static placeholder). The GHL embed script auto-resizes both widget  */
-/* types once loaded.                                                  */
+/* types once loaded. The embed itself renders on white, so it sits    */
+/* inside an explicit white well regardless of the page theme.         */
 /* ------------------------------------------------------------------ */
 
 const EMBED_SCRIPT_SRC = "https://link.msgsndr.com/js/form_embed.js";
@@ -189,7 +193,7 @@ export function BookingSection({ config }: { config: DemoConfig }) {
       <div className="mx-auto max-w-6xl px-6 py-20 md:px-8 md:py-32">
         <SectionHeading kicker={b.kicker} headline={b.headline} sub={b.sub} center />
         <div
-          className="mx-auto mt-12 max-w-xl rounded-2xl border p-4 md:p-6"
+          className="mx-auto mt-12 max-w-xl rounded-xl border p-4 md:p-6"
           style={{ background: "var(--d-surface)", borderColor: "var(--d-border)" }}
         >
           {calendarId ? (
@@ -201,10 +205,11 @@ export function BookingSection({ config }: { config: DemoConfig }) {
                 minHeight: "560px",
                 border: "none",
                 borderRadius: "8px",
+                background: "#FFFFFF",
               }}
               id={`booking-${calendarId}`}
               scrolling="no"
-              title="Book a discovery flight"
+              title="Book an appointment"
             />
           ) : formId ? (
             <iframe
@@ -214,6 +219,7 @@ export function BookingSection({ config }: { config: DemoConfig }) {
                 height: "560px",
                 border: "none",
                 borderRadius: "8px",
+                background: "#FFFFFF",
               }}
               id={`inline-${formId}`}
               data-layout="{'id':'INLINE'}"
@@ -259,14 +265,17 @@ export function BookingSection({ config }: { config: DemoConfig }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* CTA band (dark)                                                     */
+/* CTA — centered statement band, one strong action                    */
 /* ------------------------------------------------------------------ */
 
 export function CtaSection({ config }: { config: DemoConfig }) {
   const c = config.cta;
   if (!c) return null;
   return (
-    <section className="relative overflow-hidden" style={{ background: "var(--d-dark)" }}>
+    <section
+      className="relative overflow-hidden border-t"
+      style={{ background: "var(--d-dark)", borderColor: "var(--d-border)" }}
+    >
       {c.image ? (
         <>
           <Image
@@ -274,22 +283,22 @@ export function CtaSection({ config }: { config: DemoConfig }) {
             alt=""
             fill
             sizes="100vw"
-            className="object-cover opacity-30"
+            className="object-cover opacity-25"
             aria-hidden
           />
           <div
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(to right, var(--d-dark) 20%, transparent 80%)",
+                "linear-gradient(to bottom, var(--d-dark) 0%, transparent 50%, var(--d-dark) 100%)",
             }}
           />
         </>
       ) : null}
-      <div className="relative mx-auto max-w-6xl px-6 py-20 md:px-8 md:py-24">
-        <Reveal>
+      <div className="relative mx-auto flex max-w-3xl flex-col items-center px-6 py-24 text-center md:px-8 md:py-32">
+        <Reveal className="flex flex-col items-center">
           <h2
-            className="max-w-xl text-3xl font-bold md:text-[2.5rem]"
+            className="text-3xl font-bold md:text-[2.5rem]"
             style={{
               color: "var(--d-dark-text)",
               letterSpacing: "-0.03em",
@@ -304,15 +313,15 @@ export function CtaSection({ config }: { config: DemoConfig }) {
           >
             {c.sub}
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <button
               onClick={() =>
                 document
                   .getElementById("demo-booking")
                   ?.scrollIntoView({ behavior: "smooth" })
               }
-              className="rounded-lg px-6 py-3 text-sm font-medium text-white transition-all duration-200 hover:scale-[1.02]"
-              style={{ background: "var(--d-accent)" }}
+              className="rounded-lg px-6 py-3 text-sm font-medium transition-all duration-200 hover:scale-[1.02]"
+              style={{ background: "var(--d-accent)", color: "var(--d-accent-text)" }}
             >
               {c.buttonLabel}
             </button>
@@ -325,7 +334,7 @@ export function CtaSection({ config }: { config: DemoConfig }) {
                   color: "var(--d-dark-text)",
                 }}
               >
-                <Mic className="h-4 w-4" />
+                <Mic className="h-4 w-4" style={{ color: "var(--d-accent)" }} />
                 {config.voice.buttonLabel}
               </button>
             ) : null}
@@ -349,8 +358,8 @@ export function DemoFooter({ config }: { config: DemoConfig }) {
       >
         <div className="max-w-sm">
           <div
-            className="text-base font-semibold"
-            style={{ color: "var(--d-dark-text)", letterSpacing: "-0.02em" }}
+            className="text-sm font-semibold uppercase"
+            style={{ color: "var(--d-dark-text)", letterSpacing: "0.14em" }}
           >
             {config.business.name}
           </div>
@@ -361,7 +370,10 @@ export function DemoFooter({ config }: { config: DemoConfig }) {
             {config.footer.blurb}
           </p>
         </div>
-        <div className="flex flex-col gap-3 text-sm" style={{ color: "var(--d-dark-muted)" }}>
+        <div
+          className="flex flex-col gap-3 text-sm"
+          style={{ color: "var(--d-dark-muted)" }}
+        >
           <span className="flex items-center gap-2">
             <MapPin className="h-4 w-4" />
             {config.business.location}
