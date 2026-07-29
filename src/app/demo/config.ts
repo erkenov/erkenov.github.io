@@ -127,7 +127,17 @@ export interface DemoConfig {
     kicker: string;
     headline: string;
     sub: string;
-    /** GHL inline form id; the form fires the live AI callback workflow. */
+    /**
+     * GHL calendar id — renders the real booking widget
+     * (https://api.leadconnectorhq.com/widget/booking/<id>). Preferred over
+     * `formId` when both are set.
+     */
+    calendarId?: string;
+    /**
+     * GHL inline form id (legacy path) — the form fires the live AI callback
+     * workflow. Kept as a fallback embed when no calendarId is configured;
+     * the "Call me back" modal (nav + hero) covers the callback flow now.
+     */
     formId?: string;
     note?: string;
   };
@@ -149,24 +159,24 @@ export interface DemoConfig {
 }
 
 /* ------------------------------------------------------------------ */
-/* Flight schools — Skyline Flight Academy (fictional)                 */
+/* Flight schools — Fly Erken Flight Academy (fictional)               */
 /* ------------------------------------------------------------------ */
 
 const flightSchools: DemoConfig = {
   slug: "flight-schools",
   industryLabel: "flight school",
   business: {
-    name: "Skyline Flight Academy",
-    short: "Skyline",
-    tagline: "Learn to fly at Cedar Valley Regional",
-    location: "Cedar Valley Regional Airport · Hangar 4",
-    phoneDisplay: "(555) 214-0480",
-    hours: "Mon–Sat 8am–7pm · Sun by appointment",
+    name: "Fly Erken Flight Academy",
+    short: "Fly Erken",
+    tagline: "Learn to fly in Phoenix",
+    location: "Deer Valley Airport (KDVT) · Phoenix, AZ",
+    phoneDisplay: "(325) 241-2460",
+    hours: "Mon–Sat 8am–5pm · Sun closed",
   },
   meta: {
-    title: "Skyline Flight Academy — Learn to Fly | Demo by Erken Systems",
+    title: "Fly Erken Flight Academy — Learn to Fly in Phoenix | Demo by Erken Systems",
     description:
-      "Discovery flights, private pilot training, and aircraft rental at Cedar Valley Regional Airport. Demo website by Erken Systems.",
+      "Discovery flights, private pilot training, and aircraft rental out of Deer Valley Airport in Phoenix, AZ. Demo website by Erken Systems.",
   },
   theme: {
     bg: "#F6F8FB",
@@ -196,13 +206,13 @@ const flightSchools: DemoConfig = {
     "cta",
   ],
   hero: {
-    kicker: "Cedar Valley Regional Airport",
+    kicker: "Deer Valley Airport · Phoenix, AZ",
     headline: "Your first takeoff is closer than you think.",
     headlineAccent: "first takeoff",
-    sub: "Discovery flights, private pilot training, and aircraft rental — taught by career instructors who still love the traffic pattern. Most students solo in under three months.",
+    sub: "Discovery flights, private pilot training, and aircraft rental — taught by career instructors who still love the traffic pattern. 300+ clear-sky flying days a year means lessons actually happen. Most students solo in under three months.",
     image: "/demo/flight-schools/hero-hangar.jpg",
     imageAlt:
-      "Flight instructor and student talking beside a Piper trainer in the Skyline hangar",
+      "Flight instructor and student talking beside a Piper trainer in the Fly Erken hangar",
     primaryCta: "Book a discovery flight",
     secondaryCta: "Ask our AI front desk",
     badge: "FAA Part 61 · Est. 2011",
@@ -211,7 +221,7 @@ const flightSchools: DemoConfig = {
     { value: "320+", label: "Pilot certificates earned" },
     { value: "9", label: "Aircraft in the training fleet" },
     { value: "96%", label: "First-attempt checkride pass rate" },
-    { value: "14 yrs", label: "Teaching at Cedar Valley" },
+    { value: "300+", label: "Clear-sky flying days a year in Phoenix" },
   ],
   services: {
     kicker: "Programs",
@@ -260,7 +270,7 @@ const flightSchools: DemoConfig = {
     kicker: "The academy",
     headline: "A school built by instructors, not a rental counter",
     paragraphs: [
-      "Skyline started in 2011 with one Cessna 150 and a promise: no student waits two weeks to fly. Today we run nine aircraft and a full-time instructor team — and the promise still holds.",
+      "Fly Erken started in 2011 with one Cessna 150 and a promise: no student waits two weeks to fly. Today we run nine aircraft and a full-time instructor team out of Deer Valley — and the promise still holds.",
       "Your instructor stays with you from your first lesson to your checkride. Your schedule lives online, your progress is tracked against a written syllabus, and our front desk answers every call — even the 9pm ones about tomorrow's weather.",
     ],
     bullets: [
@@ -270,7 +280,7 @@ const flightSchools: DemoConfig = {
       "Fixed-price checkride prep — no surprise hours",
     ],
     image: "/demo/flight-schools/fleet-cessna.jpg",
-    imageAlt: "Skyline Cessna 172 trainer on the Cedar Valley ramp",
+    imageAlt: "Fly Erken Cessna 172 trainer on the Deer Valley ramp",
   },
   steps: {
     kicker: "How it starts",
@@ -322,7 +332,7 @@ const flightSchools: DemoConfig = {
     items: [
       {
         q: "How much does a private pilot license cost?",
-        a: "Most Skyline students finish between $12,000 and $15,000 including aircraft, instructor, ground school, and exam fees. We publish a written cost breakdown after your discovery flight — and we track your spend against it every lesson, so there are no surprises at hour forty.",
+        a: "Most Fly Erken students finish between $12,000 and $15,000 including aircraft, instructor, ground school, and exam fees. We publish a written cost breakdown after your discovery flight — and we track your spend against it every lesson, so there are no surprises at hour forty.",
       },
       {
         q: "How long does it take?",
@@ -344,10 +354,11 @@ const flightSchools: DemoConfig = {
   },
   booking: {
     kicker: "Book a flight",
-    headline: "Request a discovery flight — we call you back in a minute",
-    sub: "Leave your number and our AI front desk calls you back, checks the schedule with you, and books your flight — live, not a form that goes to a mailbox.",
+    headline: "Book your discovery flight — pick a real time on our calendar",
+    sub: "Grab an open slot below and you're on the schedule instantly — no back-and-forth. Prefer a call instead? Use the callback button up top.",
+    calendarId: "SS2V1nuWEIbOlNrzyxpt",
     formId: "e3uSHlYnl0MrQe29KItJ",
-    note: "Live callback works for US phone numbers. Prefer to talk now? Use the voice assistant — it books the same calendar.",
+    note: "Confirmed instantly — you'll get a text and email with the details. Prefer to talk now? Use the voice assistant — it books the same calendar.",
   },
   cta: {
     headline: "The ramp is a short drive away.",
@@ -360,15 +371,15 @@ const flightSchools: DemoConfig = {
     buttonLabel: "Ask our AI front desk",
     dynamicVariables: {
       demo_industry: "flight school",
-      demo_business: "Skyline Flight Academy",
+      demo_business: "Fly Erken Flight Academy",
       demo_context:
-        "Caller is on the Skyline Flight Academy demo site (a fictional flight school demo by Erken Systems). Play the school's AI front desk: answer questions about discovery flights ($199), private pilot training, instrument rating, and aircraft rental, and offer to book a discovery flight.",
+        "Caller is on the Fly Erken Flight Academy demo site (a fictional flight school demo by Erken Systems, positioned in Phoenix, AZ). Play the school's AI front desk: answer questions about discovery flights ($199), private pilot training, instrument rating, and aircraft rental, and offer to book a discovery flight.",
     },
   },
   chat: { enabled: true },
   footer: {
     blurb:
-      "Flight training, aircraft rental, and discovery flights at Cedar Valley Regional Airport since 2011.",
+      "Flight training, aircraft rental, and discovery flights out of Deer Valley Airport in Phoenix, AZ since 2011.",
   },
 };
 

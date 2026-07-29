@@ -158,23 +158,27 @@ export function FaqSection({ config }: { config: DemoConfig }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* Booking — GHL inline form → live AI callback workflow               */
+/* Booking — real GHL calendar (falls back to the lead form, then a    */
+/* static placeholder). The GHL embed script auto-resizes both widget  */
+/* types once loaded.                                                  */
 /* ------------------------------------------------------------------ */
 
 const EMBED_SCRIPT_SRC = "https://link.msgsndr.com/js/form_embed.js";
 
 export function BookingSection({ config }: { config: DemoConfig }) {
   const b = config.booking;
+  const calendarId = b.calendarId;
   const formId = b.formId;
+  const hasEmbed = Boolean(calendarId || formId);
 
   useEffect(() => {
-    if (!formId) return;
+    if (!hasEmbed) return;
     if (document.querySelector(`script[src="${EMBED_SCRIPT_SRC}"]`)) return;
     const s = document.createElement("script");
     s.src = EMBED_SCRIPT_SRC;
     s.async = true;
     document.body.appendChild(s);
-  }, [formId]);
+  }, [hasEmbed]);
 
   return (
     <section
@@ -188,7 +192,21 @@ export function BookingSection({ config }: { config: DemoConfig }) {
           className="mx-auto mt-12 max-w-xl rounded-2xl border p-4 md:p-6"
           style={{ background: "var(--d-surface)", borderColor: "var(--d-border)" }}
         >
-          {formId ? (
+          {calendarId ? (
+            <iframe
+              src={`https://api.leadconnectorhq.com/widget/booking/${calendarId}`}
+              style={{
+                width: "100%",
+                height: "760px",
+                minHeight: "560px",
+                border: "none",
+                borderRadius: "8px",
+              }}
+              id={`booking-${calendarId}`}
+              scrolling="no"
+              title="Book a discovery flight"
+            />
+          ) : formId ? (
             <iframe
               src={`https://api.leadconnectorhq.com/widget/form/${formId}`}
               style={{

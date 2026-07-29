@@ -7,8 +7,9 @@
  */
 
 import Image from "next/image";
-import { Mic, Phone, MapPin, Clock } from "lucide-react";
+import { Mic, Phone, PhoneIncoming, MapPin, Clock } from "lucide-react";
 import type { DemoConfig } from "../config";
+import { openCallbackModal } from "./CallbackModal";
 import {
   DemoIcon,
   Kicker,
@@ -70,6 +71,14 @@ export function DemoNav({ config }: { config: DemoConfig }) {
             <Phone className="h-4 w-4" />
             {config.business.phoneDisplay}
           </span>
+          <button
+            onClick={openCallbackModal}
+            className="hidden items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors lg:inline-flex"
+            style={{ borderColor: "var(--d-border)", color: "var(--d-text)" }}
+          >
+            <PhoneIncoming className="h-4 w-4" style={{ color: "var(--d-accent)" }} />
+            Call me back
+          </button>
           {config.voice.enabled ? (
             <button
               onClick={startDemoCall}
@@ -148,6 +157,14 @@ export function HeroSection({ config }: { config: DemoConfig }) {
                 {h.secondaryCta}
               </SecondaryButton>
             ) : null}
+            <button
+              onClick={openCallbackModal}
+              className="inline-flex items-center gap-1.5 px-2 text-sm font-medium transition-colors"
+              style={{ color: "var(--d-text-dim)" }}
+            >
+              <PhoneIncoming className="h-4 w-4" />
+              Or have us call you
+            </button>
           </Reveal>
           <Reveal delay={0.32} className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
             <span
