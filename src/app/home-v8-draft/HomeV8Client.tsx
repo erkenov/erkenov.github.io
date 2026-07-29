@@ -9,8 +9,7 @@
  *   - SphereScrollStage (Three.js fixed cell-dragon canvas + dust)
  *   - The roaming Celly overlay: findEmptySpot auto-positioner,
  *     scroll-driven dragon-draw, on-stop fly-to-empty-spot, click-to-chat
- *     menu (Text/Voice/Feedback/Roadmap/What's new), chat-dock pin, the
- *     gooey cloud speech bubble.
+ *     menu (Text/Voice), chat-dock pin, the gooey cloud speech bubble.
  *
  * What changed from preview-v7:
  *   - The four full-screen pipeline step scenes (SECTIONS[1..4] with
@@ -24,7 +23,8 @@
  *   - Industries moved UP to 2nd (right after the hero).
  *   - Hero keeps the live founder video + gains the price tease and a
  *     "See your industry" secondary button.
- *   - Meet Erken → five sell bullets + two CTAs in one row.
+ *   - Meet Erken section removed 2026-07-30 (Erkenbot retired as a
+ *     downloadable product; it stays only as this site's assistant).
  *   - Added: full /start-style pricing cards, Custom solutions, Get leads
  *     door. Added a sticky DraftHeader (logo / Industries / How it works /
  *     Pricing / persistent Try-for-free), z-50. (2026-07-21: dust canvas/
@@ -57,9 +57,6 @@ import ErkenChatWidget, {
 import ErkenVoiceWidget from "@/components/ErkenVoiceWidget";
 
 const ease = [0.16, 1, 0.3, 1] as const;
-
-const CHROME_EXTENSION_URL =
-  "https://chromewebstore.google.com/detail/erken/mggcbjggcbdpmbglbodkadgmpapcmelc";
 
 // v8 restructure: only the HERO stays as an L/R Section. The four
 // full-screen pipeline step scenes that used to follow it are replaced by
@@ -868,113 +865,6 @@ function PipelineSection() {
   );
 }
 
-/* ---- Meet Erken — live centered section, updated to 5 sell bullets +
- * two CTAs in one row (Download for free / Try it on this page). The old
- * third "Try for free" → /start was removed 2026-07-28 as redundant with
- * the pricing cards right below. ---- */
-const ERKEN_BULLETS = [
-  { emoji: "🗣️", bold: "Ask it anything", rest: " — by voice or chat, about the platform or your business" },
-  { emoji: "👉", bold: "Shows you the exact button", rest: " — walks you through any task on screen, out loud, step by step" },
-  { emoji: "🧠", bold: "Remembers you", rest: " — your business, your setup, where you left off" },
-  { emoji: "⚡", bold: "Actions on the way", rest: " — soon it won't just guide, it'll do the task for you" },
-  { emoji: "🧩", bold: "Already in your browser", rest: " — free extension, installs in one click" },
-];
-
-function MeetErkenSection({
-  onSpriteClick,
-}: {
-  onSpriteClick: (anchorEl: HTMLElement | null) => void;
-}) {
-  return (
-    <section id="meet-erken" className="relative px-6 md:px-12 pt-24 md:pt-36 pb-16 md:pb-24">
-      {/* Sprite to the LEFT of the text (rev-3 live corrections). flex row on
-          md+; md:items-center vertically centers the sprite against the WHOLE
-          text block (header → buttons row inclusive), so her vertical center
-          sits at the middle of that block. Stacks (sprite on top, centered)
-          on mobile. */}
-      <div
-        data-celly-avoid
-        className="relative z-30 mx-auto flex max-w-3xl flex-col items-center gap-6 text-center md:flex-row md:items-center md:gap-14 md:text-left"
-      >
-        {/* A static, section-embedded Erken (rev-3 addendum — the section had
-            text + buttons but no Erken herself). Same pattern /start uses:
-            a modest second CellDragonSprite whose click opens the FULL bot
-            menu (Text / Voice / Feedback / Roadmap / What's new / extension)
-            anchored beside it — reuses the roaming Celly's openChoiceMenu via
-            the onSpriteClick prop (rev-3 live correction: was opening the raw
-            chat). Independent of the page-level roaming Celly (which auto-
-            hides/repositions), so no conflict. The sprite's own hover float +
-            eye-follow come from CellDragonSprite and stay. */}
-        <div
-          role="button"
-          tabIndex={0}
-          title="Chat with Erken"
-          aria-label="Chat with Erken"
-          onClick={(e) => onSpriteClick(e.currentTarget)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") onSpriteClick(e.currentTarget);
-          }}
-          // Two mechanisms (rev-3 diagnosis): md:-ml-[75px] hangs her box to
-          // the LEFT of the centered max-w-3xl block (absolute leftward
-          // position). The REAL daylight between her and the text comes from
-          // the row's md:gap-14 (56px) — a negative margin alone just shifts
-          // the whole row and leaves the sprite↔text gap unchanged, which is
-          // why the earlier -ml looked like "no move." With gap-14 the sprite
-          // visual center sits ~108px left of the text block's left edge.
-          // Vertical alignment is handled by the row's md:items-center.
-          className="shrink-0 cursor-pointer md:-ml-[75px]"
-        >
-          <CellDragonSprite scale={0.5} pointDirection="right" />
-        </div>
-        <div className="flex-1">
-        {/* Beta pill (Shamil 2026-07-28): set expectations — the assistant
-            is early; nobody should expect perfection yet. */}
-        <div className="flex items-center gap-2.5">
-          <SectionKicker>Meet Erken</SectionKicker>
-          <span className="rounded-full border border-border px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-text-muted">
-            Beta
-          </span>
-        </div>
-        <h2
-          className="mt-3 text-3xl md:text-5xl font-bold tracking-tight"
-          style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
-        >
-          The assistant who teaches you the whole platform.
-        </h2>
-        <div className="mt-6 flex flex-col gap-2.5 text-left text-sm leading-relaxed text-text-muted md:text-base">
-          {ERKEN_BULLETS.map((b) => (
-            <div key={b.bold}>
-              <span aria-hidden>{b.emoji}</span>{" "}
-              <b className="text-text">{b.bold}</b>
-              {b.rest}
-            </div>
-          ))}
-        </div>
-        {/* Two CTAs in one row (Download stays the one accent-filled
-            primary; the other is a bordered secondary). Wraps on mobile. */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3 md:justify-start">
-          <a
-            href={CHROME_EXTENSION_URL}
-            target="_blank"
-            rel="noopener"
-            className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
-          >
-            Download for free
-          </a>
-          <button
-            type="button"
-            onClick={() => openErkenChat()}
-            className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-border px-6 py-3.5 text-base font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
-          >
-            Try it on this page
-          </button>
-        </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 /* ---- Pricing — full /start-style plan cards (no email form; each CTA
  * routes to /start). Mirrors /start's PLAN_FEATURES exactly. ---- */
 const PLAN_FEATURES = [
@@ -1690,48 +1580,19 @@ export default function HomeV8Client() {
   const [bubbleVisible, setBubbleVisible] = useState(false);
   // Text/Voice choice menu shown when Celly is clicked, anchored to her
   // current screen position. Text → opens the chat; Voice → starts the call.
+  // (2026-07-30: Feedback/Roadmap/What's-new sub-panels and the browser-
+  // extension link were removed — Erkenbot is retired as a downloadable
+  // product and stays only as this site's assistant, so the menu is back
+  // to its original two items.)
   const [choiceMenu, setChoiceMenu] = useState<{ x: number; y: number } | null>(
     null,
   );
-  // Sub-panel inside the choice menu (mirrors the extension menu — Shamil
-  // 2026-06-12): Feedback (any feedback → /api/feedback → his Telegram) and
-  // Roadmap (where Erken is going). null = the plain Text/Voice menu.
-  const [menuPanel, setMenuPanel] = useState<"feedback" | "roadmap" | "whatsnew" | null>(null);
-  const [fbText, setFbText] = useState("");
-  const [fbState, setFbState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const closeChoiceMenu = () => {
     setChoiceMenu(null);
-    setMenuPanel(null);
-    setFbText("");
-    setFbState("idle");
   };
-  const sendSiteFeedback = async () => {
-    const message = fbText.trim();
-    if (!message || fbState === "sending") return;
-    setFbState("sending");
-    try {
-      const r = await fetch("/api/feedback", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          kind: "idea",
-          message,
-          url: window.location.href,
-          title: document.title,
-        }),
-      });
-      setFbState(r.ok ? "sent" : "error");
-    } catch {
-      setFbState("error");
-    }
-  };
-  // Opens the Text/Voice/Feedback/Roadmap/What's-new/extension menu. Anchors
-  // to the roaming Celly by default; pass an element (e.g. the section-
-  // embedded Meet-Erken sprite) to anchor the same menu beside it instead —
-  // same pattern /start's Erken card uses (rev-3 live correction: the section
-  // sprite must open this FULL menu, not the raw chat widget).
+  // Opens the Text/Voice menu. Anchors to the roaming Celly by default; pass
+  // an element to anchor the same menu beside it instead.
   const openChoiceMenu = (anchorEl?: HTMLElement | null) => {
-    setMenuPanel(null);
     const el = anchorEl ?? spriteContainerRef.current;
     if (el) {
       const r = el.getBoundingClientRect();
@@ -2578,12 +2439,13 @@ export default function HomeV8Client() {
         choice-menu 55/56. */}
     <DraftHeader />
     <SphereScrollStage
-      // v8: 7 top-level sections (hero, industries, pipeline, meet-erken,
-      // pricing, custom-solutions, get-leads). sectionCount is mostly
-      // cosmetic now — during scroll the cell is invisible (dragon trail
-      // only) and on scroll-stop the findEmptySpot auto-positioner owns
-      // Celly's resting spot regardless of the peak count.
-      sectionCount={7}
+      // v8: 6 top-level sections (hero, industries, pipeline, pricing,
+      // custom-solutions, get-leads) — Meet Erken removed 2026-07-30
+      // (Erkenbot retired as a downloadable product). sectionCount is
+      // mostly cosmetic now — during scroll the cell is invisible (dragon
+      // trail only) and on scroll-stop the findEmptySpot auto-positioner
+      // owns Celly's resting spot regardless of the peak count.
+      sectionCount={6}
       showDust
       dustZIndex={52}
       freezeRef={chatFreezeRef}
@@ -2658,10 +2520,6 @@ export default function HomeV8Client() {
 
       {/* 4. AI section (ROUND 3) — "Built-in AI that works for you 24/7". */}
       <AISection />
-
-      {/* 5. Meet Erken — live centered section, five sell bullets + two
-          CTAs in one row. */}
-      <MeetErkenSection onSpriteClick={openChoiceMenu} />
 
       {/* 6. Pricing — full /start-style plan cards (CTAs → /start). */}
       <PricingSection />
@@ -2751,219 +2609,43 @@ export default function HomeV8Client() {
             top: choiceMenu.y,
             // Open ABOVE Celly normally; when she's near the top of the page the
             // menu would be clipped behind the browser bar, so flip it to open
-            // BELOW her instead. (~260px ≈ tallest panel height + margin.)
-            transform: choiceMenu.y < 260
+            // BELOW her instead. (~140px ≈ this 2-item menu's height + margin,
+            // shrunk 2026-07-30 when Feedback/Roadmap/What's-new/extension
+            // sub-panels were removed.)
+            transform: choiceMenu.y < 140
               ? "translate(-50%, 12%)"
               : "translate(-50%, -115%)",
           }}
         >
-          {menuPanel === null && (
-            <>
-              <div className="px-3 pb-1 pt-1 text-xs text-white/55">
-                Talk to Erken
-              </div>
-              <button
-                role="menuitem"
-                onClick={() => {
-                  closeChoiceMenu();
-                  openErkenChat();
-                }}
-                className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-              >
-                <span aria-hidden className="text-base">
-                  💬
-                </span>{" "}
-                Text chat
-              </button>
-              <button
-                role="menuitem"
-                onClick={() => {
-                  closeChoiceMenu();
-                  window.__startErkenVoiceCall?.();
-                }}
-                className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-              >
-                <span aria-hidden className="text-base">
-                  🎙️
-                </span>{" "}
-                Voice chat
-              </button>
-              <div className="mx-2 h-px bg-white/10" aria-hidden />
-              <button
-                role="menuitem"
-                onClick={() => setMenuPanel("feedback")}
-                className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-              >
-                <span aria-hidden className="text-base">
-                  📝
-                </span>{" "}
-                Feedback
-              </button>
-              <button
-                role="menuitem"
-                onClick={() => setMenuPanel("roadmap")}
-                className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-              >
-                <span aria-hidden className="text-base">
-                  🗺️
-                </span>{" "}
-                Roadmap
-              </button>
-              <button
-                role="menuitem"
-                onClick={() => setMenuPanel("whatsnew")}
-                className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-              >
-                <span aria-hidden className="text-base">
-                  ✨
-                </span>{" "}
-                What&apos;s new
-              </button>
-              {/* LIVE on the Chrome Web Store since 2026-06-12 🎉 */}
-              <a
-                role="menuitem"
-                href="https://chromewebstore.google.com/detail/erken/mggcbjggcbdpmbglbodkadgmpapcmelc"
-                target="_blank"
-                rel="noopener"
-                className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-              >
-                <span aria-hidden className="text-base">
-                  🧩
-                </span>{" "}
-                Add the browser extension
-              </a>
-            </>
-          )}
-          {menuPanel === "roadmap" && (
-            <div className="w-[280px] px-3 py-2 text-sm text-white">
-              <button
-                onClick={() => setMenuPanel(null)}
-                className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm font-medium text-white/90 transition-colors hover:bg-white/15"
-              >
-                <span aria-hidden>←</span> Back to main menu
-              </button>
-              <div className="pb-1.5 text-xs text-white/55">
-                Where Erken is going
-              </div>
-              <div className="flex flex-col gap-1.5 leading-snug">
-                <div>
-                  🧠 <b>Memory is here</b> — Erken remembers you, your
-                  business, and where you left off. It keeps getting smarter
-                  over time.
-                </div>
-                <div>
-                  ⚡ <b>Actions are coming</b> — Erken won&apos;t just show
-                  you the button, it will do the task for you, right in your
-                  account.
-                </div>
-                <div>
-                  🌐 <b>Works on the Erken platform today</b> — expanding to
-                  Zapier, QuickBooks, and the popular apps you already
-                  connect
-                </div>
-                <div>
-                  🧰 <b>Universal helpers on the way</b> — summarize any page,
-                  size up a competitor, quick market research
-                </div>
-                <div>
-                  💬 <b>Real conversation</b> — talk back-and-forth by voice,
-                  not one question at a time
-                </div>
-                <div>
-                  🖥️ <b>A desktop companion</b> — Erken on your screen,
-                  working across every app you use, not just this one
-                </div>
-              </div>
-              <div className="mt-2 border-t border-white/10 pt-2 text-xs text-white/55">
-                Your vote decides what Erken learns next — tell us via{" "}
-                <button
-                  onClick={() => setMenuPanel("feedback")}
-                  className="underline decoration-white/40 underline-offset-2 transition-colors hover:text-white/90"
-                >
-                  📝 Feedback
-                </button>
-                .
-              </div>
-            </div>
-          )}
-          {menuPanel === "whatsnew" && (
-            <div className="w-[280px] px-3 py-2 text-sm text-white">
-              <button
-                onClick={() => setMenuPanel(null)}
-                className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm font-medium text-white/90 transition-colors hover:bg-white/15"
-              >
-                <span aria-hidden>←</span> Back to main menu
-              </button>
-              <div className="pb-1.5 text-xs text-white/55">
-                What&apos;s new in Erken
-              </div>
-              <div className="flex flex-col gap-1.5 leading-snug">
-                <div>
-                  🧭 <b>Meet the Platform</b> — a guided tour of everything the
-                  platform can do
-                </div>
-                <div>
-                  📂 Erken now <b>opens the menu for you</b> so it can point
-                  things out
-                </div>
-                <div>
-                  🚩 <b>&ldquo;Wrong instruction&rdquo; button</b> — flag Erken
-                  if it points at the wrong spot
-                </div>
-                <div>🔊 Smoother step-by-step voice walkthroughs</div>
-              </div>
-              <div className="mt-2 border-t border-white/10 pt-2 text-xs text-white/55">
-                Got an idea or found a bug? Tell us via{" "}
-                <button
-                  onClick={() => setMenuPanel("feedback")}
-                  className="underline decoration-white/40 underline-offset-2 transition-colors hover:text-white/90"
-                >
-                  📝 Feedback
-                </button>
-                .
-              </div>
-            </div>
-          )}
-          {menuPanel === "feedback" && (
-            <div className="w-[280px] px-3 py-2">
-              <button
-                onClick={() => setMenuPanel(null)}
-                className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm font-medium text-white/90 transition-colors hover:bg-white/15"
-              >
-                <span aria-hidden>←</span> Back to main menu
-              </button>
-              <div className="pb-1.5 text-xs text-white/55">
-                Your feedback — bugs, ideas, anything
-              </div>
-              {fbState === "sent" ? (
-                <div className="py-2 text-sm text-white">
-                  ✅ Got it — passed along. Thank you!
-                </div>
-              ) : (
-                <>
-                  <textarea
-                    value={fbText}
-                    onChange={(e) => setFbText(e.target.value)}
-                    rows={3}
-                    autoFocus
-                    className="w-full resize-none rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/40 outline-none focus:border-white/30"
-                    placeholder="Tell us…"
-                  />
-                  <button
-                    onClick={sendSiteFeedback}
-                    disabled={fbState === "sending" || !fbText.trim()}
-                    className="mt-1.5 w-full rounded-xl bg-white/15 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-white/25 disabled:opacity-40"
-                  >
-                    {fbState === "sending"
-                      ? "Sending…"
-                      : fbState === "error"
-                        ? "Couldn't send — try again"
-                        : "Send"}
-                  </button>
-                </>
-              )}
-            </div>
-          )}
+          <div className="px-3 pb-1 pt-1 text-xs text-white/55">
+            Talk to Erken
+          </div>
+          <button
+            role="menuitem"
+            onClick={() => {
+              closeChoiceMenu();
+              openErkenChat();
+            }}
+            className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
+          >
+            <span aria-hidden className="text-base">
+              💬
+            </span>{" "}
+            Text chat
+          </button>
+          <button
+            role="menuitem"
+            onClick={() => {
+              closeChoiceMenu();
+              window.__startErkenVoiceCall?.();
+            }}
+            className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
+          >
+            <span aria-hidden className="text-base">
+              🎙️
+            </span>{" "}
+            Voice chat
+          </button>
         </div>
       </>
     )}

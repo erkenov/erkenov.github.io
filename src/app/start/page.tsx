@@ -2,10 +2,9 @@
 
 /**
  * /start — the trial funnel page (2026-07-20 redesign: three separate
- * prepay-term plan cards instead of a radio selector, Erken moved onto her
- * own card with a store-download CTA, plus two new asks — custom
- * GoHighLevel/snapshot work and the rent-leads partnership — each with their
- * own zero-friction capture path into /api/custom-request).
+ * prepay-term plan cards instead of a radio selector, plus two new asks —
+ * custom GoHighLevel/snapshot work and the rent-leads partnership — each
+ * with their own zero-friction capture path into /api/custom-request).
  *
  * Zero friction by design (Shamil 2026-06-12, extended 2026-07-20): every
  * card asks for the minimum needed to start a conversation — email, plus
@@ -13,11 +12,16 @@
  *
  * Styled with the site's light-cream tokens (globals.css) — NOT the dark
  * palette (first version mismatched; Shamil flagged it 2026-06-12).
+ *
+ * 2026-07-30: the Erken store-download card + its bot-menu popover
+ * (Text/Voice/Feedback/Roadmap/What's-new/extension) were removed — Erkenbot
+ * is retired as a downloadable product and stays only as this site's
+ * assistant. Voice access to Erken remains via the "Talk to our
+ * receptionist" button already built into ContactMethods below.
  */
 
 import { useEffect, useRef, useState } from "react";
-import { CellDragonSprite } from "@/components/CellDragonSprite";
-import ErkenChatWidget, { openErkenChat } from "@/components/ErkenChatWidget";
+import ErkenChatWidget from "@/components/ErkenChatWidget";
 import ErkenVoiceWidget from "@/components/ErkenVoiceWidget";
 
 type SendState = "idle" | "sending" | "sent" | "error";
@@ -585,89 +589,6 @@ function GetLeadsCard() {
 }
 
 export default function StartPage() {
-  const [botMenu, setBotMenu] = useState(false);
-  const [menuPanel, setMenuPanel] = useState<"feedback" | "roadmap" | "whatsnew" | null>(null);
-  const [fbText, setFbText] = useState("");
-  const [fbState, setFbState] = useState<SendState>("idle");
-
-  // Bot-menu is a popover anchored to the card sprite (Shamil 2026-07-20:
-  // it used to float at a fixed page position that matched the old
-  // page-level roaming sprite, which no longer exists now that Erken
-  // lives only on her card). Position is computed from the sprite's own
-  // on-screen rect each time it's opened, viewport-clamped so it never
-  // runs off-screen on narrow/mobile widths.
-  const spriteRef = useRef<HTMLDivElement>(null);
-  const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null);
-  const MENU_WIDTH = 280;
-  const MENU_MARGIN = 16;
-  // Tallest panel measured live is the main menu (label + 6 rows) at
-  // ~335px — pad generously since sub-panels (roadmap/what's new) wrap
-  // more text and can run taller.
-  const MENU_EST_HEIGHT = 380;
-
-  const positionBotMenu = () => {
-    const el = spriteRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    let left = Math.min(rect.left, window.innerWidth - MENU_WIDTH - MENU_MARGIN);
-    left = Math.max(MENU_MARGIN, left);
-
-    // Open on whichever side of the sprite actually has more room — a
-    // fixed "flip if it doesn't fit below" rule can pick the cramped side
-    // when the sprite sits near the top of a short viewport.
-    const spaceBelow = window.innerHeight - rect.bottom - MENU_MARGIN;
-    const spaceAbove = rect.top - MENU_MARGIN;
-    const openBelow = spaceBelow >= MENU_EST_HEIGHT || spaceBelow >= spaceAbove;
-    let top = openBelow ? rect.bottom + 12 : rect.top - MENU_EST_HEIGHT - 12;
-    // Final safety clamp so it's always fully on-screen even if neither
-    // side has the full estimated height (very short viewport).
-    top = Math.min(top, window.innerHeight - MENU_EST_HEIGHT - MENU_MARGIN);
-    top = Math.max(MENU_MARGIN, top);
-    setMenuPos({ top, left });
-  };
-
-  const openBotMenu = () => {
-    positionBotMenu();
-    setBotMenu(true);
-  };
-
-  // Keep the popover glued to the sprite if the viewport resizes while open
-  // (e.g. rotating a phone).
-  useEffect(() => {
-    if (!botMenu) return;
-    const onResize = () => positionBotMenu();
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [botMenu]);
-
-  const closeBotMenu = () => {
-    setBotMenu(false);
-    setMenuPanel(null);
-    setFbText("");
-    setFbState("idle");
-  };
-  const sendFeedback = async () => {
-    const message = fbText.trim();
-    if (!message || fbState === "sending") return;
-    setFbState("sending");
-    try {
-      const r = await fetch("/api/feedback", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          kind: "idea",
-          message,
-          url: window.location.href,
-          title: document.title,
-        }),
-      });
-      setFbState(r.ok ? "sent" : "error");
-    } catch {
-      setFbState("error");
-    }
-  };
-
   return (
     <main className="min-h-screen bg-bg px-6 py-20 text-text md:py-28">
       <div className="mx-auto max-w-6xl">
@@ -692,264 +613,32 @@ export default function StartPage() {
             flex-wrap experiment — Shamil viewed it on his wide screen and
             called it squeezed (email input didn't fit). Back to the
             stable grid rhythm: 3 per row at desktop, 2-up at md, stacked
-            on mobile. Row 2 order is deliberately Custom solutions, then
-            Erken, then Get leads (coming soon) — Shamil's logic: plans →
-            "need more? custom solution" → Erken as its own product →
-            future offering last. */}
+            on mobile.
+            2026-07-30: the Erken store-download card was removed from row 2
+            (Erkenbot retired as a downloadable product), leaving Custom
+            solutions + Get leads (coming soon) as an even pair. Split into
+            its own 2-up grid below, width-matched and centered under the
+            3-up plans grid, so five cards read as a deliberate 3-then-2
+            layout instead of a 3-column grid with a gap where the sixth
+            card used to be. */}
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {PLANS.map((p) => (
             <PlanCard key={p.id} plan={p} />
           ))}
+        </div>
 
+        <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:mx-auto lg:max-w-[760px]">
           <CustomSolutionsCard />
-
-          {/* Erkenbot — free, zero friction, lives on her own card now */}
-          <section className="flex flex-col rounded-2xl border border-border bg-surface p-8">
-            <div className="flex items-start gap-8">
-              <div
-                ref={spriteRef}
-                onClick={() => (botMenu ? closeBotMenu() : openBotMenu())}
-                // mt-3: nudge the sprite DOWN (vertical only) so it sits
-                // centered between the header and the lower text block
-                // (Shamil 2026-07-20: was misaligned upward). No horizontal
-                // change; text clearance preserved by the row's gap-8.
-                className="mt-3 shrink-0 cursor-pointer"
-                title="Chat with Erken"
-              >
-                <CellDragonSprite scale={0.42} />
-              </div>
-              <div className="pt-1">
-                <h3 className="text-lg font-semibold">Erken, the assistant</h3>
-              </div>
-            </div>
-            <div className="mt-12 flex flex-1 flex-col justify-end gap-2 text-sm leading-relaxed text-text-muted">
-              <div>
-                🗣️ <b>Ask it anything</b> — by voice or chat, about the
-                platform or your business
-              </div>
-              <div>
-                👉 <b>Shows you the exact button</b> — walks you through any
-                task on screen, out loud, step by step
-              </div>
-              <div>
-                🧠 <b>Remembers you</b> — your business, your setup, where
-                you left off
-              </div>
-              <div>
-                ⚡ <b>Actions on the way</b> — soon it won&apos;t just guide,
-                it&apos;ll do the task for you
-              </div>
-              <div>
-                🧩 <b>Already in your browser</b> — free extension,
-                installs in one click. Desktop version on the way.
-              </div>
-            </div>
-            <a
-              href="https://chromewebstore.google.com/detail/erken/mggcbjggcbdpmbglbodkadgmpapcmelc"
-              target="_blank"
-              rel="noopener"
-              className="mt-6 inline-block w-full cursor-pointer rounded-xl bg-accent px-6 py-3 text-center text-base font-medium text-bg transition-colors hover:bg-accent-hover"
-            >
-              Download for free
-            </a>
-          </section>
-
           <GetLeadsCard />
         </div>
       </div>
 
-      {/* Erken lives on her own card now (see the grid above) — this just
-          keeps the chat + voice engines mounted so the card sprite's click
-          handler (botMenu state) and the Retell agent stay wired up. */}
+      {/* Keeps the chat + voice engines mounted — ContactMethods' "Talk to
+          our receptionist" buttons above call window.__startErkenVoiceCall,
+          and ErkenChatWidget keeps the GHL loader/launcher-suppression
+          wired up for the site's chat widget. */}
       <ErkenChatWidget />
       <ErkenVoiceWidget />
-      {botMenu && (
-        <>
-          <div className="fixed inset-0 z-[55]" aria-hidden onClick={closeBotMenu} />
-          <div
-            className={`fixed z-[56] flex w-[280px] flex-col gap-1 rounded-2xl border border-white/15 bg-black/80 p-2 shadow-2xl backdrop-blur-md ${
-              menuPos ? "" : "bottom-1/3 right-[6rem] max-lg:bottom-36 max-lg:right-4"
-            }`}
-            style={menuPos ? { top: menuPos.top, left: menuPos.left } : undefined}
-          >
-            {menuPanel === null && (
-              <>
-                <div className="px-3 pb-1 pt-1 text-xs text-white/55">Talk to Erken</div>
-                <button
-                  onClick={() => {
-                    closeBotMenu();
-                    openErkenChat();
-                  }}
-                  className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-                >
-                  <span aria-hidden className="text-base">💬</span> Text chat
-                </button>
-                <button
-                  onClick={() => {
-                    closeBotMenu();
-                    window.__startErkenVoiceCall?.();
-                  }}
-                  className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-                >
-                  <span aria-hidden className="text-base">🎙️</span> Voice chat
-                </button>
-                <div className="mx-2 h-px bg-white/10" aria-hidden />
-                <button
-                  onClick={() => setMenuPanel("feedback")}
-                  className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-                >
-                  <span aria-hidden className="text-base">📝</span> Feedback
-                </button>
-                <button
-                  onClick={() => setMenuPanel("roadmap")}
-                  className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-                >
-                  <span aria-hidden className="text-base">🗺️</span> Roadmap
-                </button>
-                <button
-                  onClick={() => setMenuPanel("whatsnew")}
-                  className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-                >
-                  <span aria-hidden className="text-base">✨</span> What&apos;s new
-                </button>
-                <a
-                  href="https://chromewebstore.google.com/detail/erken/mggcbjggcbdpmbglbodkadgmpapcmelc"
-                  target="_blank"
-                  rel="noopener"
-                  className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-                >
-                  <span aria-hidden className="text-base">🧩</span> Add the browser extension
-                </a>
-              </>
-            )}
-            {menuPanel === "roadmap" && (
-              <div className="w-full px-3 py-2 text-sm text-white">
-                <button
-                  onClick={() => setMenuPanel(null)}
-                  className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm font-medium text-white/90 transition-colors hover:bg-white/15"
-                >
-                  <span aria-hidden>←</span> Back to main menu
-                </button>
-                <div className="pb-1.5 text-xs text-white/55">Where Erken is going</div>
-                <div className="flex flex-col gap-1.5 leading-snug">
-                  <div>
-                    🧠 <b>Memory is here</b> — Erken remembers you, your business, and
-                    where you left off. It keeps getting smarter over time.
-                  </div>
-                  <div>
-                    ⚡ <b>Actions are coming</b> — Erken won&apos;t just show you
-                    the button, it will do the task for you, right in your
-                    account.
-                  </div>
-                  <div>
-                    🌐 <b>Works on the Erken platform today</b> — expanding
-                    to Zapier, QuickBooks, and the popular apps you already
-                    connect
-                  </div>
-                  <div>
-                    🧰 <b>Universal helpers on the way</b> — summarize any page, size up
-                    a competitor, quick market research
-                  </div>
-                  <div>
-                    💬 <b>Real conversation</b> — talk back-and-forth by voice, not one
-                    question at a time
-                  </div>
-                  <div>
-                    🖥️ <b>A desktop companion</b> — Erken on your screen, working
-                    across every app you use, not just this one
-                  </div>
-                </div>
-                <div className="mt-2 border-t border-white/10 pt-2 text-xs text-white/55">
-                  Your vote decides what Erken learns next — tell us via{" "}
-                  <button
-                    onClick={() => setMenuPanel("feedback")}
-                    className="underline decoration-white/40 underline-offset-2 transition-colors hover:text-white/90"
-                  >
-                    📝 Feedback
-                  </button>
-                  .
-                </div>
-              </div>
-            )}
-            {menuPanel === "whatsnew" && (
-              <div className="w-full px-3 py-2 text-sm text-white">
-                <button
-                  onClick={() => setMenuPanel(null)}
-                  className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm font-medium text-white/90 transition-colors hover:bg-white/15"
-                >
-                  <span aria-hidden>←</span> Back to main menu
-                </button>
-                <div className="pb-1.5 text-xs text-white/55">What&apos;s new in Erken</div>
-                <div className="flex flex-col gap-1.5 leading-snug">
-                  <div>
-                    🧭 <b>Meet the Platform</b> — a guided tour of everything the
-                    platform can do
-                  </div>
-                  <div>
-                    📂 Erken now <b>opens the menu for you</b> so it can point things
-                    out
-                  </div>
-                  <div>
-                    🚩 <b>&ldquo;Wrong instruction&rdquo; button</b> — flag Erken if it
-                    points at the wrong spot
-                  </div>
-                  <div>🔊 Smoother step-by-step voice walkthroughs</div>
-                </div>
-                <div className="mt-2 border-t border-white/10 pt-2 text-xs text-white/55">
-                  Got an idea or found a bug? Tell us via{" "}
-                  <button
-                    onClick={() => setMenuPanel("feedback")}
-                    className="underline decoration-white/40 underline-offset-2 transition-colors hover:text-white/90"
-                  >
-                    📝 Feedback
-                  </button>
-                  .
-                </div>
-              </div>
-            )}
-            {menuPanel === "feedback" && (
-              <div className="w-full px-3 py-2">
-                <button
-                  onClick={() => setMenuPanel(null)}
-                  className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-sm font-medium text-white/90 transition-colors hover:bg-white/15"
-                >
-                  <span aria-hidden>←</span> Back to main menu
-                </button>
-                <div className="pb-1.5 text-xs text-white/55">
-                  Your feedback — bugs, ideas, anything
-                </div>
-                {fbState === "sent" ? (
-                  <div className="py-2 text-sm text-white">
-                    ✅ Got it — passed along. Thank you!
-                  </div>
-                ) : (
-                  <>
-                    <textarea
-                      value={fbText}
-                      onChange={(e) => setFbText(e.target.value)}
-                      rows={3}
-                      autoFocus
-                      className="w-full resize-none rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/40 outline-none focus:border-white/30"
-                      placeholder="Tell us…"
-                    />
-                    <button
-                      onClick={sendFeedback}
-                      disabled={fbState === "sending" || !fbText.trim()}
-                      className="mt-1.5 w-full rounded-xl bg-white/15 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-white/25 disabled:opacity-40"
-                    >
-                      {fbState === "sending"
-                        ? "Sending…"
-                        : fbState === "error"
-                          ? "Couldn't send — try again"
-                          : "Send"}
-                    </button>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-        </>
-      )}
     </main>
   );
 }
