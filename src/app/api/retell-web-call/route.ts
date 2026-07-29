@@ -39,6 +39,27 @@ async function todaySpendCents(key: string): Promise<number> {
   }
 }
 
+/**
+ * Optional caller context (added for /demo/[industry] pages, 2026-07-29):
+ * the POST body may carry { dynamic_variables: Record<string,string> },
+ * forwarded to Retell as retell_llm_dynamic_variables so the agent knows
+ * which demo business it is answering for. Sanitized hard — the body is
+ * public-visitor input: max 8 keys, string values only, capped lengths.
+ * The homepage widget still POSTs with no body; that path is unchanged.
+ */
+function sanitizeDynamicVariables(raw: unknown): Record<string, string> | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const out: Record<string, string> = {};
+  let n = 0;
+  for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+    if (typeof v !== "string") continue;
+    if (!/^[a-z0-9_]{1,40}$/i.test(k)) continue;
+    out[k] = v.slice(0, 600);
+    if (++n >= 8) break;
+  }
+  return n > 0 ? out : undefined;
+}
+
 export async function POST(req: Request) {
   // Every token minted here opens a paid Retell call — gate it.
   if (!originAllowed(req)) {
@@ -68,13 +89,19 @@ export async function POST(req: Request) {
       { status: 429 },
     );
   }
+  const dynamicVariables = sanitizeDynamicVariables(
+    (await req.json().catch(() => null))?.dynamic_variables,
+  );
   const r = await fetch("https://api.retellai.com/v2/create-web-call", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${key}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ agent_id: AGENT_ID }),
+    body: JSON.stringify({
+      agent_id: AGENT_ID,
+      ...(dynamicVariables ? { retell_llm_dynamic_variables: dynamicVariables } : {}),
+    }),
   });
   if (!r.ok) {
     return NextResponse.json({ error: await r.text() }, { status: 502 });
