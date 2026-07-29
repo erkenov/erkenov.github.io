@@ -16,6 +16,7 @@
 import { Carousel, Card } from "@/components/ui/apple-cards-carousel";
 import { IconDental, IconHome, IconArrowUpRight } from "@tabler/icons-react";
 import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
+import { EverythingIncluded } from "@/components/EverythingIncluded";
 
 /* ============================================================
    A/B/C/D/E card-visual experiment (Shamil 2026-05-26 afternoon).
@@ -1291,6 +1292,7 @@ export function SceneIndustriesCarousel({
             }
           />
           {c.content}
+          <EverythingIncluded />
         </>
       ),
     };
