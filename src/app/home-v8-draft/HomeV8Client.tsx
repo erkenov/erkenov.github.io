@@ -2610,9 +2610,6 @@ export default function HomeV8Client() {
               : "translate(-50%, -115%)",
           }}
         >
-          <div className="px-3 pb-1 pt-1 text-xs text-white/55">
-            Talk to Erken
-          </div>
           <button
             role="menuitem"
             onClick={() => {

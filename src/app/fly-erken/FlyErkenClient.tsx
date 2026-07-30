@@ -101,26 +101,72 @@ function scrollToBooking() {
 }
 
 /* ================================================================== */
-/* Hero video — free stock GA-trainer footage (Pexels #17118523 +      */
-/* #17118515, a Cessna 172's takeoff roll then climb-out — small       */
-/* flight-school aircraft ONLY, owner's rule: no airliners/jets),      */
-/* joined to a 24s muted autoplay loop at 2.5 MB with a poster         */
-/* fallback. No text overlays on the video (owner's rule): clean       */
-/* footage, nothing burned over it.                                    */
+/* Hero video — a 6-clip ROTATION of owner-picked free stock footage   */
+/* (2026-07-30). Each clip plays once, then advances to the next and   */
+/* wraps around. Only clip 0 loads eagerly (keeps the original poster  */
+/* frame so first paint matches); the rest lazy-load, and the NEXT     */
+/* clip in line is quietly prefetched (hidden <video preload="auto">)  */
+/* while the current one plays so the switch has no stutter/rebuffer.  */
+/* Still muted, autoplay, no controls, no text overlays (owner's rule) */
+/* — except clip 5 (private-jet-tagged Pexels footage), which is the   */
+/* owner's explicit pick and overrides the no-jets rule for that slot  */
+/* only; it actually reads as small GA aircraft on a flight line, not  */
+/* an airliner. See data/pexels-candidates/SOURCES.md for all 6 IDs.   */
 /* ================================================================== */
+const HERO_VIDEOS = [
+  "/fly-erken/hero-1.mp4", // Pexels 17118523 — Cessna N7423X takeoff/climb-out
+  "/fly-erken/hero-2.mp4", // Pexels 17118516 — same Cessna taxiing
+  "/fly-erken/hero-3.mp4", // Pexels 17118524 — same Cessna, crew preflight push
+  "/fly-erken/hero-4.mp4", // Pexels 6739601 — pilot putting on headset in cockpit
+  "/fly-erken/hero-5.mp4", // Pexels 14109772 — drone aerial over a GA flight line
+  "/fly-erken/hero-6.mp4", // Pexels 11845171 — drone flyover of a grass airfield
+];
+
 function FlightHeroVideo() {
+  const [index, setIndex] = useState(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const nextIndex = (index + 1) % HERO_VIDEOS.length;
+
+  const advance = useCallback(() => {
+    setIndex((i) => (i + 1) % HERO_VIDEOS.length);
+  }, []);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.load();
+    v.play().catch(() => {
+      /* autoplay can be rejected before user interaction; harmless */
+    });
+  }, [index]);
+
   return (
     <div className="relative w-full max-w-[40rem] overflow-hidden rounded-2xl bg-black shadow-2xl aspect-video">
       <video
-        src="/fly-erken/hero.mp4"
-        poster="/fly-erken/hero-poster.jpg"
+        ref={videoRef}
+        key={index}
+        poster={index === 0 ? "/fly-erken/hero-poster.jpg" : undefined}
         autoPlay
         muted
-        loop
         playsInline
-        preload="metadata"
-        aria-label="A Cessna trainer taking off and climbing out"
+        preload={index === 0 ? "auto" : "metadata"}
+        onEnded={advance}
+        aria-label="Fly Erken flight-training footage"
         className="absolute inset-0 h-full w-full object-cover"
+      >
+        <source src={HERO_VIDEOS[index]} type="video/mp4" />
+      </video>
+      {/* Silent prefetch target for the next clip in the rotation — not
+          rendered, just buffered, so the swap on `ended` is instant. */}
+      <video
+        key={`preload-${nextIndex}`}
+        src={HERO_VIDEOS[nextIndex]}
+        preload="auto"
+        muted
+        playsInline
+        className="hidden"
+        aria-hidden
+        tabIndex={-1}
       />
     </div>
   );
@@ -426,7 +472,7 @@ function ServiceBody({
         </button>
         <button
           type="button"
-          onClick={() => closeCardModal(() => openFlyContact())}
+          onClick={() => openFlyContact()}
           className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 font-medium text-text transition-colors hover:border-border-strong hover:bg-surface"
         >
           Talk to us now
@@ -879,6 +925,7 @@ const FLEET: {
     title: "Cessna 152",
     spec: "2 seats · ~110 kt · the classic first trainer",
     desc: "Light, honest, and famously forgiving — the airplane half the world's pilots soloed in. Perfect for early lessons and cheap solo hours.",
+    photo: "/demo/flight-schools/fleet-cessna-152.jpg",
   },
   {
     title: "Cessna 172 Skyhawk",
@@ -1281,24 +1328,25 @@ function BookingSection() {
             assistant books the same calendar.
           </p>
         </motion.div>
-        <div
-          data-celly-avoid
-          className="mx-auto mt-10 max-w-xl rounded-2xl border border-border bg-surface p-4 md:p-6"
-        >
-          <iframe
-            src={`https://api.leadconnectorhq.com/widget/booking/${BOOKING_CALENDAR_ID}`}
-            style={{
-              width: "100%",
-              height: "760px",
-              minHeight: "560px",
-              border: "none",
-              borderRadius: "8px",
-              background: "#FFFFFF",
-            }}
-            id={`booking-${BOOKING_CALENDAR_ID}`}
-            scrolling="no"
-            title="Book a discovery flight"
-          />
+        {/* GHL always paints its classic calendar widget small on its own
+            white canvas at any iframe size (confirmed: GET /calendars/{id}
+            exposes no appearance/backgroundColor field to recolor it — no
+            widget-embed query param for it either). So instead of sizing
+            the iframe up (which just adds white space), we render it at
+            its natural width and scale the whole thing up with CSS so the
+            calendar grid itself dominates the section. No card/border/
+            shadow around it — the widget's own chrome is the only chrome. */}
+        <div data-celly-avoid className="mt-10">
+          <div className="relative mx-auto h-[924px] w-[315px] md:h-[1265px] md:w-[645px]">
+            <iframe
+              src={`https://api.leadconnectorhq.com/widget/booking/${BOOKING_CALENDAR_ID}`}
+              className="absolute inset-x-0 top-0 mx-auto h-[880px] w-[300px] origin-top scale-[1.05] rounded-2xl border-0 md:h-[900px] md:w-[460px] md:scale-[1.4]"
+              style={{ background: "#F5F1E8" }}
+              id={`booking-${BOOKING_CALENDAR_ID}`}
+              scrolling="no"
+              title="Book a discovery flight"
+            />
+          </div>
         </div>
       </div>
     </section>
@@ -2160,7 +2208,6 @@ export default function FlyErkenClient() {
             transform: choiceMenu.y < 140 ? "translate(-50%, 12%)" : "translate(-50%, -115%)",
           }}
         >
-          <div className="px-3 pb-1 pt-1 text-xs text-white/55">Talk to the front desk</div>
           <button
             role="menuitem"
             onClick={() => {
@@ -2188,11 +2235,15 @@ export default function FlyErkenClient() {
     {/* Contact-us-now chooser — voice / text chat / request a callback. */}
     {contactMenu && (
       <>
-        <div className="fixed inset-0 z-[57] bg-black/20" aria-hidden onClick={() => setContactMenu(null)} />
+        {/* z-index sits above the apple-cards Card modal (z-[200]/[210]) so
+            "Talk to us now" from an OPEN service card layers the chooser
+            over the still-open card instead of closing it (owner fix,
+            2026-07-30). */}
+        <div className="fixed inset-0 z-[215] bg-black/20" aria-hidden onClick={() => setContactMenu(null)} />
         <div
           role="menu"
           aria-label="Contact Fly Erken"
-          className="fixed z-[58] flex w-[280px] flex-col gap-1 rounded-2xl border border-white/15 bg-black/85 p-2 shadow-2xl backdrop-blur-md"
+          className="fixed z-[216] flex w-[280px] flex-col gap-1 rounded-2xl border border-white/15 bg-black/85 p-2 shadow-2xl backdrop-blur-md"
           style={
             contactMenu.anchored
               ? {
