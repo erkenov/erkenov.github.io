@@ -7,7 +7,14 @@
 // cross-site browser abuse; scripted attackers can spoof Origin, which is
 // what the rate limit is for.
 
-const ALLOWED_HOSTS = new Set(["erken.systems", "www.erken.systems", "localhost:3000"]);
+const ALLOWED_HOSTS = new Set([
+  "erken.systems",
+  "www.erken.systems",
+  // Demo domain (fly-erken clone site, 2026-07-30): its voice widget POSTs
+  // /api/retell-web-call from this origin — without it every call 403s.
+  "fly.erken.systems",
+  "localhost:3000",
+]);
 
 export function originAllowed(req: Request): boolean {
   const src = req.headers.get("origin") || req.headers.get("referer");

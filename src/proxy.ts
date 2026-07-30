@@ -20,7 +20,10 @@ import type { NextRequest } from "next/server";
  */
 
 const DEMO_HOST_ROOTS: Record<string, string> = {
-  "fly.erken.systems": "/demo/flight-schools",
+  // 2026-07-30: fly.erken.systems root now serves the homepage-clone rebuild
+  // (/fly-erken, owner-approved). The older premium page stays reachable
+  // directly at /demo/flight-schools.
+  "fly.erken.systems": "/fly-erken",
 };
 
 export function proxy(request: NextRequest) {
