@@ -35,10 +35,10 @@
  * DEMO DISCLAIMER: the school is fictional; all prices/stats are invented.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Check, Phone, X } from "lucide-react";
-import { Carousel, Card } from "@/components/ui/apple-cards-carousel";
+import { Carousel, Card, CardModalContext } from "@/components/ui/apple-cards-carousel";
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { SphereScrollStage, type CellPositionInfo } from "@/components/SphereScrollStage";
 import { CellDragonSprite } from "@/components/CellDragonSprite";
@@ -64,6 +64,7 @@ declare global {
   interface Window {
     __startDemoVoiceCall?: () => void;
     __openDemoCallbackModal?: () => void;
+    __prewarmDemoCallbackModal?: () => void;
   }
 }
 
@@ -87,13 +88,6 @@ export function openFlyContact(anchorEl?: HTMLElement | null) {
     y = r.bottom;
   }
   window.dispatchEvent(new CustomEvent(CONTACT_EVENT, { detail: { x, y, anchored: Boolean(anchorEl) } }));
-}
-
-/** Close the apple-cards Card modal from inside its content (it listens for
- *  Escape on window), then run a follow-up once the page can scroll again. */
-function closeCardModal(after?: () => void) {
-  window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
-  if (after) setTimeout(after, 80);
 }
 
 function scrollToBooking() {
@@ -442,6 +436,16 @@ function ServiceBody({
   included: string[];
   note?: string;
 }) {
+  // Real close handler for the card modal we're rendered inside of (see
+  // CardModalContext in apple-cards-carousel.tsx) — replaces a prior
+  // synthetic-Escape-keydown approach that didn't actually close the card.
+  const { close } = useContext(CardModalContext);
+  const bookNow = () => {
+    close();
+    // Let the close animation finish and the page scroll lock (body
+    // overflow) release before scrolling to the booking section.
+    setTimeout(scrollToBooking, 80);
+  };
   return (
     <div className="space-y-7 text-base leading-relaxed text-text-muted">
       <p className="text-[15px] md:text-base">{story}</p>
@@ -465,7 +469,7 @@ function ServiceBody({
       <div className="flex flex-wrap items-center gap-3 border-t border-text-muted/15 pt-6">
         <button
           type="button"
-          onClick={() => closeCardModal(scrollToBooking)}
+          onClick={bookNow}
           className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-white transition-transform duration-200 hover:scale-[1.02]"
         >
           Book now <span aria-hidden>→</span>
@@ -486,7 +490,7 @@ const SERVICES = [
   {
     category: "Start here · $199",
     title: "Discovery Flight",
-    photo: "/demo/flight-schools/cockpit-lesson.jpg",
+    photo: "/demo/flight-schools/preflight-hangar.jpg",
     story:
       "A 45-minute intro lesson where you take the controls with an instructor beside you. It's a real lesson, not a sightseeing ride — the flight goes in your logbook and counts toward your license. Bring a passenger, take photos, and land knowing whether this is your thing.",
     included: [
@@ -502,7 +506,7 @@ const SERVICES = [
   {
     category: "Study first · start online",
     title: "Ground School",
-    photo: "/demo/flight-schools/student-smile.jpg",
+    photo: "/demo/flight-schools/study-session.jpg",
     story:
       "The classroom side of flying — airspace, weather, aerodynamics, and everything on the FAA written exam. Start online tonight at your own pace, then join the live evening classes that run every eight weeks. Passing the written early is the cheapest flight time you'll ever save.",
     included: [
@@ -517,7 +521,7 @@ const SERVICES = [
   {
     category: "Zero to certificate",
     title: "Full Flight Training — Private Pilot",
-    photo: "/demo/flight-schools/preflight-hangar.jpg",
+    photo: "/demo/flight-schools/cockpit-instruction.jpg",
     story:
       "The full course from zero hours to certificated private pilot. One instructor stays with you from first lesson to checkride, your schedule lives online, and your progress is tracked against a written syllabus — so you always know what the next lesson is and what it costs.",
     included: [
@@ -548,7 +552,7 @@ const SERVICES = [
   {
     category: "Make it affordable",
     title: "Financing",
-    photo: "/demo/flight-schools/fleet-cessna.jpg",
+    photo: "/demo/flight-schools/advisor-consult.jpg",
     story:
       "Flight training is more affordable than most people assume — and you don't pay for it all at once. You pay per lesson as you fly, and for bigger programs we walk you through the real financing options and help with the paperwork, so the money question never grounds the flying.",
     included: [
@@ -563,7 +567,7 @@ const SERVICES = [
   {
     category: "College credit",
     title: "University Partnership",
-    photo: "/demo/flight-schools/sunset-pilots.jpg",
+    photo: "/demo/flight-schools/campus-students.jpg",
     story:
       "Fly here while you study. Through our partner university program in the Phoenix metro, your flight training can count toward an aviation degree — a common route for students who want the airline hiring advantages of a degree and the flying done at a small school that knows their name.",
     included: [
@@ -1586,6 +1590,13 @@ export default function FlyErkenClient() {
   const [choiceMenu, setChoiceMenu] = useState<{ x: number; y: number } | null>(null);
   const closeChoiceMenu = () => setChoiceMenu(null);
   const openChoiceMenu = (anchorEl?: HTMLElement | null) => {
+    // Both Celly's click-menu and the "Talk to us now" chooser below offer
+    // "Request a callback" — prewarm the GHL iframe the moment either menu
+    // opens (not only on the actual callback click) so by the time the
+    // visitor picks it, the form has usually already loaded and the modal
+    // opens at its final size instead of visibly resizing (owner fix,
+    // 2026-07-30 — see CallbackModal.tsx's prewarm machinery).
+    window.__prewarmDemoCallbackModal?.();
     const el = anchorEl ?? spriteContainerRef.current;
     if (el) {
       const r = el.getBoundingClientRect();
@@ -1602,6 +1613,9 @@ export default function FlyErkenClient() {
     const onOpen = (e: Event) => {
       const d = (e as CustomEvent).detail as { x: number; y: number; anchored: boolean };
       setContactMenu(d);
+      // Same prewarm as Celly's click-menu (see openChoiceMenu above) — this
+      // chooser also offers "Request a callback".
+      window.__prewarmDemoCallbackModal?.();
     };
     window.addEventListener(CONTACT_EVENT, onOpen);
     return () => window.removeEventListener(CONTACT_EVENT, onOpen);

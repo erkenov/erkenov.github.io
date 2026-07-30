@@ -61,6 +61,17 @@ export const CarouselContext = createContext<{
   currentIndex: 0,
 });
 
+/** Lets a card's `content` node close its own modal from inside (e.g. a
+ *  "Book now" button that closes the card, then scrolls elsewhere on the
+ *  page). Provided by `Card` around `card.content` in the render tree, so
+ *  any component rendered as that content picks it up via useContext —
+ *  it does NOT matter where the `content` element was authored. Replaces
+ *  an earlier approach that dispatched a synthetic Escape keydown on
+ *  window, which was unreliable and is no longer used. */
+export const CardModalContext = createContext<{ close: () => void }>({
+  close: () => {},
+});
+
 export const Carousel = ({ items, initialScroll = 0, loop = false, arrowsPosition = "left", arrowsTrailing }: CarouselProps) => {
   const carouselRef = React.useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = React.useState(false);
@@ -434,7 +445,11 @@ export const Card = ({
             >
               {card.title}
             </motion.p>
-            <div className="py-10">{card.content}</div>
+            <div className="py-10">
+              <CardModalContext.Provider value={{ close: handleClose }}>
+                {card.content}
+              </CardModalContext.Provider>
+            </div>
           </motion.div>
         </div>
       )}

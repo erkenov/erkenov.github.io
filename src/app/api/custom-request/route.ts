@@ -19,8 +19,13 @@ import { addContactTags } from "@/lib/ghl-tags";
  * one), and best-effort pings Shamil's Telegram with the full message so a
  * request never sits unseen.
  *
- * Body: { email, kind: "custom-solution" | "rent-leads", message?, channel?,
- *         phone?, company?, name? }
+ * Body: { email, kind: "custom-solution" | "rent-leads" | "callback-request",
+ *         message?, channel?, phone?, company?, name? }
+ *
+ * "callback-request" (Shamil 2026-07-30, owner addition): the erken.systems
+ * bot's click-menu third option, "Request a callback" — added additively to
+ * the existing whitelist below, same contract as the other two kinds (email
+ * still required; message is optional and left blank by that caller).
  *
  * `name` (Shamil 2026-07-20, Batch 12): a single free-text field on the
  * form, no separate first/last inputs. GHL's contact upsert takes
@@ -60,7 +65,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "invalid email" }, { status: 400 });
   }
 
-  const KIND_IDS = ["custom-solution", "rent-leads"] as const;
+  const KIND_IDS = ["custom-solution", "rent-leads", "callback-request"] as const;
   const kind = KIND_IDS.includes(body.kind as (typeof KIND_IDS)[number])
     ? (body.kind as (typeof KIND_IDS)[number])
     : "custom-solution";
@@ -82,7 +87,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "not configured" }, { status: 500 });
   }
 
-  const tags = kind === "rent-leads" ? ["rent-leads-applicant"] : ["custom-solution-request"];
+  const tags =
+    kind === "rent-leads"
+      ? ["rent-leads-applicant"]
+      : kind === "callback-request"
+        ? ["callback-request"]
+        : ["custom-solution-request"];
 
   // 1 · contact into the hub. NOTE: no `tags` here (Shamil 2026-07-21) —
   // /contacts/upsert REPLACES the contact's tags array instead of merging
@@ -185,7 +195,12 @@ export async function POST(req: Request) {
   const chat = (process.env.TELEGRAM_OWNER_CHAT || "").trim();
   if (token && chat) {
     try {
-      const title = kind === "rent-leads" ? "🏘️ RENT-LEADS APPLICANT" : "🛠️ CUSTOM SOLUTION REQUEST";
+      const title =
+        kind === "rent-leads"
+          ? "🏘️ RENT-LEADS APPLICANT"
+          : kind === "callback-request"
+            ? "📞 CALLBACK REQUESTED"
+            : "🛠️ CUSTOM SOLUTION REQUEST";
       // Name prepended ahead of the title (Shamil 2026-07-20, Batch 12) —
       // Telegram's push-notification preview shows only the first line, so
       // leading with the name (when given) makes the who-is-this legible

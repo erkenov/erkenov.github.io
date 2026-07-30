@@ -1,51 +1,54 @@
 "use client";
 
 /**
- * /start — the trial funnel page (2026-07-20 redesign: three separate
- * prepay-term plan cards instead of a radio selector, plus two new asks —
- * custom GoHighLevel/snapshot work and the rent-leads partnership — each
- * with their own zero-friction capture path into /api/custom-request).
+ * /start — the signup / call-in page. Owner-decided pricing restructure
+ * (2026-07-30): exactly THREE cards — Platform (self-serve signup, billing-
+ * period selector), Complete system (closes on a call), Custom solutions
+ * (its own ask-flow, unchanged). The old five-card layout (three prepay-term
+ * plan cards + Custom solutions + the inactive "Get leads" card) is retired;
+ * Get leads is removed from this page entirely (its /api/custom-request
+ * "rent-leads" kind is left untouched server-side in case it's reactivated).
  *
- * Zero friction by design (Shamil 2026-06-12, extended 2026-07-20): every
- * card asks for the minimum needed to start a conversation — email, plus
- * whatever's structurally required (a message, a phone number) — never more.
+ * Same-day owner addendum: the sales motion is now call-first, not
+ * self-serve-trial — "free week" / "try for free" language is gone from
+ * this page. "Talk to us now" opens the shared ContactChooser (voice / text
+ * chat, ported from fly-erken) instead of routing anywhere; only the
+ * Platform card still ends in a form, because it's the one offer that's
+ * still a self-serve signup.
+ *
+ * Zero friction by design (Shamil 2026-06-12): every capture path asks for
+ * the minimum needed to start a conversation — email, plus whatever's
+ * structurally required (a message, a phone number) — never more.
  *
  * Styled with the site's light-cream tokens (globals.css) — NOT the dark
  * palette (first version mismatched; Shamil flagged it 2026-06-12).
  *
  * 2026-07-30: the Erken store-download card + its bot-menu popover
- * (Text/Voice/Feedback/Roadmap/What's-new/extension) were removed — Erkenbot
- * is retired as a downloadable product and stays only as this site's
- * assistant. Voice access to Erken remains via the "Talk to our
- * receptionist" button already built into ContactMethods below.
+ * (Text/Voice/Feedback/Roadmap/What's-new/extension) were removed earlier
+ * the same day — Erkenbot is retired as a downloadable product and stays
+ * only as this site's assistant. Voice access to Erken remains via the
+ * "Talk to our receptionist" button already built into ContactMethods below,
+ * and now also via ContactChooser's "Talk to us now" voice option.
  */
 
 import { useEffect, useRef, useState } from "react";
 import ErkenChatWidget from "@/components/ErkenChatWidget";
 import ErkenVoiceWidget from "@/components/ErkenVoiceWidget";
+import ContactChooser, { openContactChooser } from "@/components/ContactChooser";
+import {
+  PLATFORM_BILLING_PERIODS,
+  PLATFORM_FEATURES,
+  billingPeriodNote,
+  COMPLETE_SYSTEM_PRICE,
+  COMPLETE_SYSTEM_FEATURES,
+  COMPLETE_SYSTEM_PREPAY_MONTHS,
+  COMPLETE_SYSTEM_PREPAY_TOTAL,
+  COMPLETE_SYSTEM_PREPAY_PERK,
+  COMPLETE_SYSTEM_PREPAY_PERK_VALUE,
+  type BillingPeriodId,
+} from "@/lib/pricing";
 
 type SendState = "idle" | "sending" | "sent" | "error";
-
-// Prepay tiers (Shamil 2026-07-08): three options only — month / 6 months /
-// year. $97 monthly is the anchor (matches the platform's own entry price,
-// never discounted); prepay earns the discount. Manual billing (Wise/
-// Payoneer) means fewer, bigger payments = less collection friction.
-const PLANS = [
-  { id: "monthly", label: "Monthly", price: "$97/mo", note: "billed monthly" },
-  { id: "6-months", label: "6 months", price: "$87/mo", note: "$522 once — save 10%" },
-  { id: "yearly", label: "Yearly", price: "$81/mo", note: "$970 once — 2 months free" },
-] as const;
-
-// Same platform, every tier — the price difference is only the prepay term.
-const PLAN_FEATURES = [
-  "CRM + pipelines",
-  "Calendars + booking",
-  "Automations + follow-ups",
-  "AI voice receptionist",
-  "Reputation + review management",
-  "Erken assistant included (beta)",
-  "Free first week",
-];
 
 function blobToBase64(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -61,16 +64,22 @@ function blobToBase64(blob: Blob): Promise<string> {
 }
 
 /**
- * One plan — its own inline email capture, posts { email, plan, phone?,
- * name? } to /api/signup. The email input + submit button are ALWAYS
- * rendered (Shamil 2026-07-20: the old expand-on-click two-step made the
- * button jump down and the CSS-grid row reflow every neighboring card —
- * felt unfinished). The `min-h` wrapper reserves the form's footprint so
- * swapping to the "sent" confirmation doesn't reflow the row either.
- * Field order (Shamil 2026-07-21): email, phone (optional), name (optional)
- * last — both optional extras, but name is intentionally the final field.
+ * Platform — $97/mo base, with a billing-period selector (month / 6 months /
+ * yearly) inside the card (owner-decided restructure, 2026-07-30, replacing
+ * the old three separate always-visible plan cards). One inline email
+ * capture below the selector posts { email, plan: periodId, phone?, name? }
+ * to /api/signup — periodId is one of "monthly" | "6-months" | "yearly",
+ * exactly the whitelist that route already validates against, so no API
+ * change was needed for this card. The email input + submit button are
+ * ALWAYS rendered (Shamil 2026-07-20: the old expand-on-click two-step made
+ * the button jump and reflow neighboring cards). The `min-h` wrapper
+ * reserves the form's footprint so swapping to the "sent" confirmation
+ * doesn't reflow the row either. Field order (Shamil 2026-07-21): email,
+ * phone (optional), name (optional) last.
  */
-function PlanCard({ plan }: { plan: (typeof PLANS)[number] }) {
+function PlatformCard() {
+  const [periodId, setPeriodId] = useState<BillingPeriodId>("monthly");
+  const period = PLATFORM_BILLING_PERIODS.find((p) => p.id === periodId)!;
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
@@ -86,7 +95,7 @@ function PlanCard({ plan }: { plan: (typeof PLANS)[number] }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: email.trim(),
-          plan: plan.id,
+          plan: period.id,
           ...(phone.trim() ? { phone: phone.trim() } : {}),
           ...(name.trim() ? { name: name.trim() } : {}),
         }),
@@ -99,16 +108,43 @@ function PlanCard({ plan }: { plan: (typeof PLANS)[number] }) {
 
   return (
     <section className="flex flex-col rounded-2xl border border-border bg-surface p-8">
-      <h3 className="text-lg font-semibold">{plan.label}</h3>
-      <div className="mt-2">
-        <span className="text-2xl font-bold">{plan.price}</span>
-        <span className="ml-2 text-xs text-text-dim">{plan.note}</span>
+      <h3 className="text-lg font-semibold">Platform</h3>
+
+      {/* Billing-period selector — segmented control using the site's
+          existing pill pattern (accent fill = active, transparent = idle),
+          same visual language as the badges on the old plan cards. */}
+      <div
+        role="tablist"
+        aria-label="Billing period"
+        className="mt-4 inline-flex w-fit gap-1 rounded-xl border border-border bg-surface-2 p-1"
+      >
+        {PLATFORM_BILLING_PERIODS.map((p) => (
+          <button
+            key={p.id}
+            type="button"
+            role="tab"
+            aria-selected={p.id === periodId}
+            onClick={() => setPeriodId(p.id)}
+            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+              p.id === periodId
+                ? "bg-accent text-bg"
+                : "text-text-muted hover:text-text"
+            }`}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4">
+        <span className="text-2xl font-bold">${period.perMonth}/mo</span>
+        <span className="ml-2 text-xs text-text-dim">{billingPeriodNote(period)}</span>
       </div>
       <p className="mt-4 text-xs uppercase tracking-[0.05em] text-text-dim">
         What&apos;s included
       </p>
       <ul className="mt-2 flex-1 space-y-1.5 text-sm text-text-muted">
-        {PLAN_FEATURES.map((f) => (
+        {PLATFORM_FEATURES.map((f) => (
           <li key={f} className="flex items-start gap-2">
             <span className="mt-0.5 text-accent">✓</span>
             <span>{f}</span>
@@ -155,7 +191,7 @@ function PlanCard({ plan }: { plan: (typeof PLANS)[number] }) {
                 ? "One second…"
                 : state === "error"
                   ? "Didn't go through — try again"
-                  : "Start my free week"}
+                  : "Get started"}
             </button>
           </form>
         )}
@@ -163,6 +199,60 @@ function PlanCard({ plan }: { plan: (typeof PLANS)[number] }) {
       <p className="mt-3 text-xs text-text-dim">
         No card. No questionnaire. Just your email — we set everything up and
         reach out.
+      </p>
+    </section>
+  );
+}
+
+/**
+ * Complete system — $297/mo, the emphasized/"most popular" card (owner-
+ * decided restructure, 2026-07-30). This offer closes on a call, not a
+ * form (same-day owner addendum) — the CTA opens the shared ContactChooser
+ * ("Talk to us now": voice or text chat) instead of posting anywhere.
+ */
+function CompleteSystemCard() {
+  return (
+    <section className="relative flex flex-col rounded-2xl border-2 border-accent bg-surface p-8">
+      <span className="absolute right-6 top-6 rounded-full bg-accent px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-bg">
+        Most popular
+      </span>
+      <h3 className="text-lg font-semibold">Complete system</h3>
+      <div className="mt-4">
+        <span className="text-2xl font-bold">${COMPLETE_SYSTEM_PRICE}/mo</span>
+      </div>
+      <p className="mt-2 text-xs text-text-dim">
+        Zero setup fee · No contract · Cancel anytime
+      </p>
+      <p className="mt-4 text-xs uppercase tracking-[0.05em] text-text-dim">
+        What&apos;s included
+      </p>
+      <ul className="mt-2 flex-1 space-y-1.5 text-sm text-text-muted">
+        {COMPLETE_SYSTEM_FEATURES.map((f) => (
+          <li key={f} className="flex items-start gap-2">
+            <span className="mt-0.5 text-accent">✓</span>
+            <span>{f}</span>
+          </li>
+        ))}
+      </ul>
+
+      {/* Prepay perk (owner addition, 2026-07-30) — a footnote, deliberately
+          smaller and lighter than the price/included list above it. */}
+      <p className="mt-5 rounded-lg border border-accent/30 bg-accent/10 px-3 py-2 text-xs leading-relaxed text-text-muted">
+        Prepay {COMPLETE_SYSTEM_PREPAY_MONTHS} months (${COMPLETE_SYSTEM_PREPAY_TOTAL.toLocaleString()}) →{" "}
+        <span className="text-text">{COMPLETE_SYSTEM_PREPAY_PERK} included free</span> (a $
+        {COMPLETE_SYSTEM_PREPAY_PERK_VALUE} value).
+      </p>
+
+      <button
+        type="button"
+        onClick={(e) => openContactChooser(e.currentTarget)}
+        className="mt-4 w-full cursor-pointer rounded-xl bg-accent px-6 py-3 text-base font-semibold text-bg transition-all hover:bg-accent-hover"
+      >
+        Talk to us now →
+      </button>
+      <p className="mt-3 text-xs text-text-dim">
+        We build and run the whole system for you — book a call to get
+        started.
       </p>
     </section>
   );
@@ -179,10 +269,11 @@ type MicState =
 
 /**
  * ContactMethods — the shared contact block (voice call, or a typed
- * message with an in-textarea mic for dictation) used by both
- * CustomSolutionsCard and GetLeadsCard (Shamil 2026-07-20: extracted
- * rather than duplicated so the state machine lives in exactly one
- * place). `kind` picks the /api/custom-request tag. Phone is always
+ * message with an in-textarea mic for dictation) used by CustomSolutionsCard
+ * (Shamil 2026-07-20: extracted rather than duplicated so the state machine
+ * lives in exactly one place; originally also backed the now-removed
+ * Get-leads card, hence the still-supported "rent-leads" kind below).
+ * `kind` picks the /api/custom-request tag. Phone is always
  * offered and always OPTIONAL — email is the one required field, phone is
  * a low-friction "leave it if you want a callback" extra (the endpoint
  * forwards `phone` to the GHL contact for any `kind`, not just
@@ -477,116 +568,14 @@ function CustomSolutionsCard() {
   );
 }
 
-/**
- * Get leads — Batch 15 (Shamil 2026-07-20): back in the grid, but INACTIVE.
- * It's a future offering (no lead-gen sites exist yet to deliver leads
- * from), so it advertises the idea without taking submissions. Deliberately
- * NOT using the shared ContactMethods component here — that component owns
- * live fetch() handlers and form state, and this card must have zero
- * functional handlers, not just visually-disabled ones. Instead this is a
- * static, inert copy of the same button/textarea/input shape (so it still
- * *looks* like the other contact cards, just dimmed) with every control
- * `disabled` + `aria-disabled` + `tabIndex={-1}` (belt-and-suspenders: disabled
- * already pulls inputs out of tab order and blocks all interaction; the
- * explicit tabIndex/aria-disabled make the inert state unambiguous to
- * assistive tech too) and the whole block wrapped in `pointer-events-none`
- * so nothing here is clickable even if a future edit forgets a disabled attr.
- *
- * Underlying kind value for whenever this reactivates: "rent-leads" (wired
- * to the "rent-leads-applicant" GHL tag in /api/custom-request, which keeps
- * working — nothing currently posts to it). Re-enabling: swap this static
- * markup back for `<ContactMethods kind="rent-leads" textareaPlaceholder="Tell
- * us about your company and the leads you need" />` (see CustomSolutionsCard
- * for the live pattern) and drop the badge/disabled/opacity wrapper.
- */
-function GetLeadsCard() {
-  return (
-    <section className="relative flex flex-col rounded-2xl border border-border bg-surface p-8">
-      {/* Badge color history (Shamil 2026-07-20 live review, two rounds):
-          muted border pill read as too faint -> filled sage accent (matched
-          the rest of the site's one accent color, but read as a positive/
-          active signal, wrong tone for "not available yet") -> filled clay
-          (--clay in globals.css: a desaturated terracotta/brick red picked
-          specifically to harmonize with the sage+cream palette rather than
-          clash against it — checked at ~4.8:1 contrast against the light
-          --bg text color it pairs with here, meets WCAG AA for small text).
-          Full opacity, sits outside the dimmed/opacity-50 wrapper below so
-          only the badge pops while the rest of the card stays visibly inert. */}
-      <span className="absolute right-6 top-6 rounded-full bg-[var(--clay)] px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-bg">
-        Coming soon
-      </span>
-      <div className="pointer-events-none flex flex-1 flex-col opacity-50" aria-disabled="true">
-        <h3 className="text-lg font-semibold">Get leads</h3>
-        <p className="mt-1 text-sm text-text-muted">
-          We run and market our own lead-generating sites in your industry.
-          Partner with us and we hand you live leads — delivered by phone — for
-          a share of the revenue.
-        </p>
-
-        <div className="mt-6 flex flex-col gap-2">
-          <button
-            type="button"
-            disabled
-            aria-disabled="true"
-            tabIndex={-1}
-            className="flex cursor-not-allowed items-center gap-2.5 rounded-xl border border-border bg-surface-2 px-6 py-3 text-left text-base font-medium text-text"
-          >
-            <span aria-hidden>🎙️</span> Talk to our receptionist
-          </button>
-        </div>
-
-        <div className="mt-6">
-          <p className="mt-2 font-mono text-xs uppercase tracking-[0.05em] text-text-dim">
-            or send us a message
-          </p>
-          <div className="mt-2 flex flex-col gap-2">
-            <textarea
-              disabled
-              aria-disabled="true"
-              tabIndex={-1}
-              rows={3}
-              placeholder="Tell us about your company and the leads you need"
-              className="block w-full cursor-not-allowed resize-none rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none"
-            />
-            <input
-              type="text"
-              disabled
-              aria-disabled="true"
-              tabIndex={-1}
-              placeholder="name (optional)"
-              className="w-full cursor-not-allowed rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none"
-            />
-            <input
-              type="email"
-              disabled
-              aria-disabled="true"
-              tabIndex={-1}
-              placeholder="your email"
-              className="w-full cursor-not-allowed rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none"
-            />
-            <input
-              type="tel"
-              disabled
-              aria-disabled="true"
-              tabIndex={-1}
-              placeholder="phone (optional)"
-              className="w-full cursor-not-allowed rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm text-text placeholder-text-dim outline-none"
-            />
-            <button
-              type="button"
-              disabled
-              aria-disabled="true"
-              tabIndex={-1}
-              className="mt-1 w-full cursor-not-allowed rounded-xl bg-accent px-6 py-3 text-base font-semibold text-bg"
-            >
-              Send request
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
+// Get-leads card REMOVED entirely (owner-decided pricing restructure,
+// 2026-07-30) — it was an inactive "Coming soon" placeholder with no live
+// capture path. Its underlying kind, "rent-leads", is left untouched in
+// /api/custom-request in case the partnership offer is reactivated later;
+// re-enabling it means adding a card back here with
+// `<ContactMethods kind="rent-leads" textareaPlaceholder="Tell us about your
+// company and the leads you need" />` (see CustomSolutionsCard for the
+// live pattern).
 
 export default function StartPage() {
   return (
@@ -609,36 +598,28 @@ export default function StartPage() {
           the assistant that teaches you the whole thing as you use it.
         </p>
 
-        {/* Batch 15 (Shamil 2026-07-20): rolled back Batch 14's 5-up
-            flex-wrap experiment — Shamil viewed it on his wide screen and
-            called it squeezed (email input didn't fit). Back to the
-            stable grid rhythm: 3 per row at desktop, 2-up at md, stacked
-            on mobile.
-            2026-07-30: the Erken store-download card was removed from row 2
-            (Erkenbot retired as a downloadable product), leaving Custom
-            solutions + Get leads (coming soon) as an even pair. Split into
-            its own 2-up grid below, width-matched and centered under the
-            3-up plans grid, so five cards read as a deliberate 3-then-2
-            layout instead of a 3-column grid with a gap where the sixth
-            card used to be. */}
-        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {PLANS.map((p) => (
-            <PlanCard key={p.id} plan={p} />
-          ))}
-        </div>
-
-        <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:mx-auto lg:max-w-[760px]">
+        {/* Owner-decided pricing restructure (2026-07-30): exactly three
+            cards, one row at desktop, stacked on mobile — Platform (self-
+            serve signup with a billing-period selector), Complete system
+            (emphasized, closes on a call), Custom solutions (its own
+            ask-flow). Replaces the old 3-plan-cards + Custom + Get-leads
+            five-card layout. */}
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          <PlatformCard />
+          <CompleteSystemCard />
           <CustomSolutionsCard />
-          <GetLeadsCard />
         </div>
       </div>
 
       {/* Keeps the chat + voice engines mounted — ContactMethods' "Talk to
-          our receptionist" buttons above call window.__startErkenVoiceCall,
-          and ErkenChatWidget keeps the GHL loader/launcher-suppression
-          wired up for the site's chat widget. */}
+          our receptionist" button and ContactChooser's voice option both
+          call window.__startErkenVoiceCall, and ErkenChatWidget keeps the
+          GHL loader/launcher-suppression wired up for the site's chat
+          widget. ContactChooser is the shared "Talk to us now" popup the
+          Complete-system card opens. */}
       <ErkenChatWidget />
       <ErkenVoiceWidget />
+      <ContactChooser />
     </main>
   );
 }
