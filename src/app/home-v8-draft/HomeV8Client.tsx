@@ -1168,15 +1168,8 @@ function AICarousel() {
                 <p className={`mt-1.5 text-sm leading-relaxed ${isCenter ? "text-text-muted" : "text-text-dim"}`}>
                   {card.desc}
                 </p>
-                {/* Learn more → /start#custom-solutions (no dedicated AI page
-                    yet; lands on the custom-setup card — flagged in report). */}
-                <a
-                  href="/start#custom-solutions"
-                  className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-accent transition-colors hover:text-accent-hover"
-                  tabIndex={isCenter ? 0 : -1}
-                >
-                  Learn more →
-                </a>
+                {/* Learn more link removed (Shamil 2026-07-30): the AI-team
+                    cards carry just their vignette + info, no button. */}
               </div>
             </div>
           );
