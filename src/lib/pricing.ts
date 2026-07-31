@@ -15,40 +15,46 @@
  *      self-serve form), included list in COMPLETE_SYSTEM_FEATURES.
  *   3. Custom solutions — its own ask-flow, no pricing constant needed here.
  *
- * ⚠️ 2026-07-30: the 6-month ($87/mo) and yearly ($78/mo) numbers are
- * PLACEHOLDERS the coordinator picked as clean ~10%/~20% roundings off the
- * $97 monthly base — NOT owner-approved figures. Shamil: change `perMonth`
+ * ⚠️ 2026-07-30: the Platform 6-month ($87/mo) and yearly ($78/mo) numbers
+ * are PLACEHOLDERS the coordinator picked as clean ~10%/~20% roundings off
+ * the $97 monthly base — NOT owner-approved figures. Same for the
+ * Complete-system 6-month ($267/mo) and yearly ($237/mo) rows added
+ * 2026-07-31 (same ~10%/~20% roundings off $297). Shamil: change `perMonth`
  * on the rows below to whatever you actually want to charge; the billed
  * total and the "save X%" copy on both pages recalculate automatically.
  */
 
 export type BillingPeriodId = "monthly" | "6-months" | "yearly";
 
-export const PLATFORM_BASE_MONTHLY = 97;
-
-export const PLATFORM_BILLING_PERIODS: {
+export type BillingPeriod = {
   id: BillingPeriodId;
   label: string;
   months: number;
   /** The only number to edit per row — everything else derives from it. */
   perMonth: number;
-}[] = [
+};
+
+export const PLATFORM_BASE_MONTHLY = 97;
+
+export const PLATFORM_BILLING_PERIODS: BillingPeriod[] = [
   { id: "monthly", label: "Monthly", months: 1, perMonth: 97 },
   { id: "6-months", label: "6 months", months: 6, perMonth: 87 },
   { id: "yearly", label: "Yearly", months: 12, perMonth: 78 },
 ];
 
-/** Billed total for the period + the % discount off the monthly base. */
-export function billingPeriodMath(period: (typeof PLATFORM_BILLING_PERIODS)[number]) {
+/** Billed total for the period + the % discount off that card's monthly
+ *  base. `baseMonthly` defaults to the Platform base so existing Platform
+ *  call sites stay unchanged; the Complete-system card passes its own. */
+export function billingPeriodMath(period: BillingPeriod, baseMonthly: number = PLATFORM_BASE_MONTHLY) {
   const billedTotal = period.perMonth * period.months;
-  const discountPct = Math.round((1 - period.perMonth / PLATFORM_BASE_MONTHLY) * 100);
+  const discountPct = Math.round((1 - period.perMonth / baseMonthly) * 100);
   return { billedTotal, discountPct };
 }
 
 /** Human "billed monthly" / "$522 billed every 6 months — save 10%" note. */
-export function billingPeriodNote(period: (typeof PLATFORM_BILLING_PERIODS)[number]) {
+export function billingPeriodNote(period: BillingPeriod, baseMonthly: number = PLATFORM_BASE_MONTHLY) {
   if (period.months === 1) return "billed monthly";
-  const { billedTotal, discountPct } = billingPeriodMath(period);
+  const { billedTotal, discountPct } = billingPeriodMath(period, baseMonthly);
   const cadence = period.months === 12 ? "yearly" : `every ${period.months} months`;
   return `$${billedTotal.toLocaleString()} billed ${cadence}${discountPct > 0 ? ` — save ${discountPct}%` : ""}`;
 }
@@ -66,6 +72,16 @@ export const PLATFORM_FEATURES = [
 ];
 
 export const COMPLETE_SYSTEM_PRICE = 297;
+
+// Billing-period selector rows for the Complete-system card (owner ask,
+// 2026-07-31 — "monthly, six months, and yearly, same as Platform").
+// ⚠️ 6-month/yearly perMonth are coordinator placeholders (~10%/~20% off
+// $297) — see the header warning; edit perMonth only, the rest derives.
+export const COMPLETE_SYSTEM_BILLING_PERIODS: BillingPeriod[] = [
+  { id: "monthly", label: "Monthly", months: 1, perMonth: COMPLETE_SYSTEM_PRICE },
+  { id: "6-months", label: "6 months", months: 6, perMonth: 267 },
+  { id: "yearly", label: "Yearly", months: 12, perMonth: 237 },
+];
 
 // Compressed from the canonical capability list (vault/04-tools/
 // platform-capability-list.md, approved 2026-07-29).

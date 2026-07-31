@@ -41,6 +41,7 @@ import {
   PLATFORM_FEATURES,
   billingPeriodNote,
   COMPLETE_SYSTEM_PRICE,
+  COMPLETE_SYSTEM_BILLING_PERIODS,
   COMPLETE_SYSTEM_FEATURES,
   COMPLETE_SYSTEM_PREPAY_MONTHS,
   COMPLETE_SYSTEM_PREPAY_TOTAL,
@@ -210,16 +211,46 @@ function PlatformCard() {
  * decided restructure, 2026-07-30). This offer closes on a call, not a
  * form (same-day owner addendum) — the CTA opens the shared ContactChooser
  * ("Talk to us now": voice or text chat) instead of posting anywhere.
+ * Billing-period selector added 2026-07-31 (owner ask: same monthly /
+ * 6-months / yearly options as Platform) — price preview only, since this
+ * card has no form; the period is settled on the call.
  */
 function CompleteSystemCard() {
+  const [periodId, setPeriodId] = useState<BillingPeriodId>("monthly");
+  const period = COMPLETE_SYSTEM_BILLING_PERIODS.find((p) => p.id === periodId)!;
   return (
     <section className="relative flex flex-col rounded-2xl border-2 border-accent bg-surface p-8">
       <span className="absolute right-6 top-6 rounded-full bg-accent px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-bg">
         Most popular
       </span>
       <h3 className="text-lg font-semibold">Complete system</h3>
+      <div
+        role="tablist"
+        aria-label="Billing period"
+        className="mt-4 inline-flex w-fit gap-1 rounded-xl border border-border bg-surface-2 p-1"
+      >
+        {COMPLETE_SYSTEM_BILLING_PERIODS.map((p) => (
+          <button
+            key={p.id}
+            type="button"
+            role="tab"
+            aria-selected={p.id === periodId}
+            onClick={() => setPeriodId(p.id)}
+            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+              p.id === periodId
+                ? "bg-accent text-bg"
+                : "text-text-muted hover:text-text"
+            }`}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
       <div className="mt-4">
-        <span className="text-2xl font-bold">${COMPLETE_SYSTEM_PRICE}/mo</span>
+        <span className="text-2xl font-bold">${period.perMonth}/mo</span>
+        <span className="ml-2 text-xs text-text-dim">
+          {billingPeriodNote(period, COMPLETE_SYSTEM_PRICE)}
+        </span>
       </div>
       <p className="mt-2 text-xs text-text-dim">
         Zero setup fee · No contract · Cancel anytime

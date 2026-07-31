@@ -63,6 +63,7 @@ import {
   PLATFORM_FEATURES,
   billingPeriodNote,
   COMPLETE_SYSTEM_PRICE,
+  COMPLETE_SYSTEM_BILLING_PERIODS,
   COMPLETE_SYSTEM_FEATURES,
   COMPLETE_SYSTEM_PREPAY_MONTHS,
   COMPLETE_SYSTEM_PREPAY_TOTAL,
@@ -965,6 +966,10 @@ function PlatformCardHome() {
 }
 
 function CompleteSystemCardHome() {
+  // Same billing-period selector as PlatformCardHome (owner ask,
+  // 2026-07-31) — price preview only; the period is settled on the call.
+  const [periodId, setPeriodId] = useState<BillingPeriodId>("monthly");
+  const period = COMPLETE_SYSTEM_BILLING_PERIODS.find((p) => p.id === periodId)!;
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -978,9 +983,32 @@ function CompleteSystemCardHome() {
         Most popular
       </span>
       <h3 className="text-lg font-semibold text-text">Complete system</h3>
+      <div
+        role="tablist"
+        aria-label="Billing period"
+        className="mt-4 inline-flex w-fit gap-1 rounded-xl border border-border bg-surface-2 p-1"
+      >
+        {COMPLETE_SYSTEM_BILLING_PERIODS.map((p) => (
+          <button
+            key={p.id}
+            type="button"
+            role="tab"
+            aria-selected={p.id === periodId}
+            onClick={() => setPeriodId(p.id)}
+            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+              p.id === periodId ? "bg-accent text-bg" : "text-text-muted hover:text-text"
+            }`}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
       <div className="mt-4">
         <span className="text-3xl font-bold tracking-tight text-text" style={{ letterSpacing: "-0.03em" }}>
-          ${COMPLETE_SYSTEM_PRICE}/mo
+          ${period.perMonth}/mo
+        </span>
+        <span className="ml-2 text-xs text-text-dim">
+          {billingPeriodNote(period, COMPLETE_SYSTEM_PRICE)}
         </span>
       </div>
       <p className="mt-2 text-xs text-text-dim">Zero setup fee · No contract · Cancel anytime</p>
