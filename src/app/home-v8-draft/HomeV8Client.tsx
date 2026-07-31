@@ -461,13 +461,13 @@ function DraftHeader() {
             className="flex items-center gap-1.5 font-mono text-sm text-text-muted transition-colors hover:text-text"
           >
             <Phone className="h-3.5 w-3.5" />
-            (901) 633-1400
+            (888) 799-6065
           </button>
         </nav>
         <div className="flex items-center gap-3">
           <a
-            href="tel:+19016331400"
-            aria-label="Call (901) 633-1400"
+            href="tel:+18887996065"
+            aria-label="Call (888) 799-6065"
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text-muted transition-colors hover:border-border-strong hover:text-text md:hidden"
           >
             <Phone className="h-4 w-4" />

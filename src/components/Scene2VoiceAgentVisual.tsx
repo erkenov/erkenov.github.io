@@ -31,7 +31,7 @@ export function Scene2VoiceAgentVisual() {
           with the card category "Outbound · voice". */}
       <div className="relative z-10 mb-3">
         <div className="text-lg font-bold text-white tracking-tight tabular-nums">
-          +1 (901) 633-1400
+          +1 (888) 799-6065
         </div>
         <div className="text-[12px] text-white/65">
           → Apex Auto · Austin TX
