@@ -68,9 +68,12 @@ const FORM_HOST = "https://api.leadconnectorhq.com";
 const EMBED_SCRIPT_HOST = "https://link.msgsndr.com";
 
 // The form's stable rendered size (name / phone / "what's this about" /
-// SMS-consent checkbox) — hard-locked so GHL's own resize-on-load can't
-// move the modal. Measured against the live form (Shamil 2026-07-30 polish).
-const FORM_AREA_HEIGHT = 420;
+// SMS-consent checkbox / "Call me Back" button) — hard-locked so GHL's own
+// resize-on-load can't move the modal. Re-measured 2026-07-31 at the modal's
+// real inner width (~336px): content bottom = 583px. The first-pass 420px
+// was measured at a wider viewport where the consent paragraph wrapped less,
+// so the submit button fell below the clip line and was invisible.
+const FORM_AREA_HEIGHT = 590;
 
 /** One-time <link rel="preconnect"/"dns-prefetch"> pair for the GHL hosts —
  *  shaves the connection-setup time off the FIRST callback-form load of the
@@ -224,11 +227,17 @@ export default function CallbackModal({ config }: { config: DemoConfig }) {
               same size/position in the tree; only visually relocated by the
               ancestor's fixed positioning above. */}
           <div
-            className="relative overflow-hidden rounded-lg"
+            className="relative rounded-lg"
             style={{
-              height: `${FORM_AREA_HEIGHT}px`,
-              width: `${FORM_AREA_HEIGHT}px`,
-              maxWidth: "100%",
+              // Capped by the viewport so the modal (header + form) always
+              // fits on-screen; when the cap bites (short phone screens) the
+              // wrapper scrolls vertically so the submit button is always
+              // reachable — overflow-y auto instead of hidden is the
+              // button-never-lost guarantee. Horizontal stays clipped.
+              height: `min(${FORM_AREA_HEIGHT}px, calc(100dvh - 240px))`,
+              width: "100%",
+              overflowY: "auto",
+              overflowX: "hidden",
               marginTop: open ? "16px" : 0,
               background: "#FFFFFF",
             }}

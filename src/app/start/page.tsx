@@ -35,6 +35,7 @@ import { useEffect, useRef, useState } from "react";
 import ErkenChatWidget from "@/components/ErkenChatWidget";
 import ErkenVoiceWidget from "@/components/ErkenVoiceWidget";
 import ContactChooser, { openContactChooser } from "@/components/ContactChooser";
+import CallbackRequestModal from "@/components/CallbackRequestModal";
 import {
   PLATFORM_BILLING_PERIODS,
   PLATFORM_FEATURES,
@@ -620,6 +621,10 @@ export default function StartPage() {
       <ErkenChatWidget />
       <ErkenVoiceWidget />
       <ContactChooser />
+      {/* ContactChooser's "Request a callback" item opens this via
+          window.__openErkenCallbackModal — must be mounted on every page
+          that mounts the chooser. */}
+      <CallbackRequestModal />
     </main>
   );
 }

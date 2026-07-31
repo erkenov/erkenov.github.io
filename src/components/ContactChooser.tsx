@@ -13,19 +13,17 @@
  * calls — not the demo-only window.__startDemoVoiceCall Fly Erken uses.
  * Text opens the same GHL chat widget via openErkenChat().
  *
- * NO callback option here (unlike Fly Erken's 3-way chooser): Fly Erken's
- * "Request a callback" embeds a demo-branded GHL form
- * (src/app/demo/components/CallbackModal.tsx, hardcodes "Fly Erken" copy
- * and a demo-scoped form id). The only real lead-capture route on the main
- * site, /api/custom-request, requires an email address — not a fit for a
- * quick "just leave your number" callback ask, and loosening that
- * validation for one new caller risks the two flows that already depend on
- * it (custom-solution, rent-leads). Voice + text cover the call-first
- * motion for now; a proper callback path is a follow-up if Shamil wants one.
+ * Callback option (owner ask, 2026-07-31): third menu item opens the main
+ * site's own CallbackRequestModal (src/components/CallbackRequestModal.tsx
+ * — plain name/phone/email form → /api/custom-request kind
+ * "callback-request"), NOT Fly Erken's demo-branded GHL-iframe modal.
  *
- * Usage: mount <ContactChooser /> ONCE per page. Any button anywhere on
- * that page opens it via openContactChooser(anchorEl) — anchorEl positions
- * the menu under that element; omit it to center the menu on screen.
+ * Usage: mount <ContactChooser /> ONCE per page, and mount
+ * <CallbackRequestModal /> alongside it (the callback item calls its
+ * window.__openErkenCallbackModal global — without the mount it no-ops).
+ * Any button anywhere on that page opens the chooser via
+ * openContactChooser(anchorEl) — anchorEl positions the menu under that
+ * element; omit it to center the menu on screen.
  */
 
 import { useEffect, useState } from "react";
@@ -35,6 +33,7 @@ import { openErkenChat } from "@/components/ErkenChatWidget";
 declare global {
   interface Window {
     __startErkenVoiceCall?: () => void;
+    __openErkenCallbackModal?: () => void;
   }
 }
 
@@ -145,6 +144,22 @@ export default function ContactChooser() {
           <span>
             Text chat
             <span className="block text-xs text-white/50">Type your question, get answers</span>
+          </span>
+        </button>
+        <button
+          role="menuitem"
+          onClick={() => {
+            setMenu(null);
+            window.__openErkenCallbackModal?.();
+          }}
+          className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
+        >
+          <span aria-hidden className="text-base">
+            📞
+          </span>
+          <span>
+            Request a callback
+            <span className="block text-xs text-white/50">Leave your number, we call you</span>
           </span>
         </button>
       </div>

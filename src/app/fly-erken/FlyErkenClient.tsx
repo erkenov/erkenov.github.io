@@ -1341,6 +1341,19 @@ function BookingSection() {
             calendar grid itself dominates the section. No card/border/
             shadow around it — the widget's own chrome is the only chrome. */}
         <div data-celly-avoid className="mt-10">
+          {/* form_embed.js (loaded above, and also needed by the callback
+              modal) is an iframe-resizer: it rewrites this iframe's INLINE
+              height on a 32ms interval / on any DOM mutation inside the
+              widget (hovering a time slot counts). Inline style beats the
+              Tailwind h-[...] classes, so picking a date + moving the mouse
+              made the calendar shrink-loop and collapse. An !important rule
+              outranks inline styles — this pins the height for good. */}
+          <style>{`
+            #booking-${BOOKING_CALENDAR_ID} { height: 880px !important; }
+            @media (min-width: 768px) {
+              #booking-${BOOKING_CALENDAR_ID} { height: 900px !important; }
+            }
+          `}</style>
           <div className="relative mx-auto h-[924px] w-[315px] md:h-[1265px] md:w-[645px]">
             <iframe
               src={`https://api.leadconnectorhq.com/widget/booking/${BOOKING_CALENDAR_ID}`}

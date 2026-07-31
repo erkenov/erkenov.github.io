@@ -34,15 +34,34 @@ export default function DemoVoiceWidget({ config }: { config: DemoConfig }) {
   useEffect(() => {
     const client = new RetellWebClient();
     clientRef.current = client;
+    // Browsers can block audio that starts outside a FRESH user gesture:
+    // minting the token costs two network round-trips (spend-cap check +
+    // create-web-call), which can outlive Chrome's transient-activation
+    // window. The call then connects fine (green light, transcript flows on
+    // Retell's side) but the agent is silent. startAudioPlayback() is the
+    // SDK's sanctioned unblock (LiveKit room.startAudio()) — try it as soon
+    // as the call starts, and retry on every user gesture while live (no-op
+    // once audio is already playing).
+    const unblockAudio = () => {
+      client.startAudioPlayback().catch(() => {});
+    };
+    const removeUnblockListeners = () => {
+      document.removeEventListener("pointerdown", unblockAudio);
+      document.removeEventListener("keydown", unblockAudio);
+    };
     client.on("call_started", () => {
       activeRef.current = true;
       setState("live");
       track("demo_call_started", { industry: config.slug });
+      unblockAudio();
+      document.addEventListener("pointerdown", unblockAudio);
+      document.addEventListener("keydown", unblockAudio);
     });
     client.on("call_ended", () => {
       activeRef.current = false;
       setState("idle");
       setAgentTalking(false);
+      removeUnblockListeners();
       track("demo_call_completed", { industry: config.slug });
     });
     client.on("agent_start_talking", () => setAgentTalking(true));
@@ -104,6 +123,7 @@ export default function DemoVoiceWidget({ config }: { config: DemoConfig }) {
 
     return () => {
       delete window.__startDemoVoiceCall;
+      removeUnblockListeners();
       try {
         client.stopCall();
       } catch {}
