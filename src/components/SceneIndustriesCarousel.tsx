@@ -144,6 +144,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Adventure · skydiving",
     title: "Skydiving",
     src: ph("Skydiving", "5B84A6"),
+    visual: <CardStyle2Photo src="/industries/card-skydiving-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -186,6 +187,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Automotive · repair & performance",
     title: "Automotive shops",
     src: ph("Automotive", "9C7454"),
+    visual: <CardStyle2Photo src="/industries/card-automotive-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -228,6 +230,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Motorcycle · riding & rentals",
     title: "Motorcycle shops",
     src: ph("Motorcycle", "A85C3B"),
+    visual: <CardStyle2Photo src="/industries/card-motorcycle-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -270,6 +273,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Martial arts · Jiu Jitsu",
     title: "Jiu Jitsu academies",
     src: ph("Jiu Jitsu", "5F8368"),
+    visual: <CardStyle2Photo src="/industries/card-bjj-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -312,6 +316,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Fitness · boutique gyms",
     title: "Gyms & boxes",
     src: ph("Gyms", "8A9A5B"),
+    visual: <CardStyle2Photo src="/industries/card-gym-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -354,6 +359,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Adventure · surfing",
     title: "Surf schools & camps",
     src: ph("Surfing", "5B93A0"),
+    visual: <CardStyle2Photo src="/industries/card-surfing-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -396,6 +402,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Racquet sports · tennis",
     title: "Tennis clubs & academies",
     src: ph("Tennis", "7FA06B"),
+    visual: <CardStyle2Photo src="/industries/card-tennis-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -438,6 +445,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Agritourism · farming",
     title: "Farms & agritourism",
     src: ph("Farms", "9C8B4E"),
+    visual: <CardStyle2Photo src="/industries/card-farming-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -479,6 +487,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Adventure · climbing",
     title: "Climbing gyms & guides",
     src: ph("Climbing", "7C8A99"),
+    visual: <CardStyle2Photo src="/industries/card-climbing-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -521,6 +530,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Yachting · charters & schools",
     title: "Yacht charters & sailing schools",
     src: ph("Yachting", "3F6E8C"),
+    visual: <CardStyle2Photo src="/industries/card-yachting-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -563,6 +573,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Winter sports · skiing",
     title: "Ski schools & lodges",
     src: ph("Skiing", "8FA9BE"),
+    visual: <CardStyle2Photo src="/industries/card-skiing-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -605,6 +616,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Equestrian · riding schools",
     title: "Horse riding schools",
     src: ph("Horse riding", "8B5E3C"),
+    visual: <CardStyle2Photo src="/industries/card-horseriding-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -648,6 +660,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Ranges · training courses",
     title: "Shooting ranges",
     src: ph("Shooting range", "7A7A5C"),
+    visual: <CardStyle2Photo src="/industries/card-shooting-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -689,6 +702,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Hospitality · boutique hotels",
     title: "Boutique hotels",
     src: ph("Hotels", "CDA434"),
+    visual: <CardStyle2Photo src="/industries/card-hotel-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
@@ -731,6 +745,7 @@ const INDUSTRIES: IndustryCard[] = [
     category: "Hospitality · cafes & catering",
     title: "Cafes & restaurants",
     src: ph("Cafes & restaurants", "C17A4F"),
+    visual: <CardStyle2Photo src="/industries/card-restaurant-photo.jpg" />,
     content: (
       <IndustryBodySteps
         steps={[
