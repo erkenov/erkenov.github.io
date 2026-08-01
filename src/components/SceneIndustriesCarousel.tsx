@@ -782,6 +782,95 @@ const INDUSTRIES: IndustryCard[] = [
       />
     ),
   },
+  // 16. Electronics & repair shops — phone/computer/console/drone/appliance
+  // repair. Walk-in + mail-in mix; "is it ready yet" call volume is the
+  // #1 front-counter interruption.
+  {
+    category: "Repair · electronics",
+    title: "Electronics & repair shops",
+    src: ph("Electronics repair", "4F6D7A"),
+    visual: <CardStyle2Photo src="/industries/card-electronics-photo.jpg" />,
+    content: (
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "Capture — quote requests get answered while the tech is mid-repair",
+            description:
+              "Your AI receptionist answers while your tech is elbow-deep in a teardown and can't get to the phone. It qualifies the device and issue — phone, laptop, console, drone, appliance — gives a ballpark quote, and books the walk-in slot or starts the mail-in intake right there.",
+            image: IMG.step1,
+            imageAlt: "AI receptionist quoting an electronics repair",
+          },
+          {
+            title: "Organized — every job, walk-in or mail-in, lands in one place automatically",
+            description:
+              "Device, issue, intake type, customer contact — all dropped into one organized job list the moment they reach out. No whiteboard, no sticky notes buried under the counter.",
+            image: IMG.step2,
+            imageAlt: "Repair job details saved automatically",
+          },
+          {
+            title: "Automatic — repair-status texts kill the \"is it ready yet\" calls",
+            description:
+              "Automatic texts fire at each stage — received, diagnosed, in repair, ready for pickup — so customers stop calling to check. A quote that goes quiet gets a follow-up instead of dying, and a review request and maintenance win-back go out automatically after pickup.",
+            image: IMG.step4,
+            imageAlt: "Automated repair-status texts",
+          },
+          {
+            title: "Visible — every job trackable from quote to pickup",
+            description:
+              "Quoted → diagnosed → approved → in repair → ready → picked up → reviewed. One clear board shows which quotes are stuck on approval and which jobs are ready to call about.",
+            image: IMG.step3,
+            imageAlt: "Electronics repair job pipeline view",
+          },
+        ]}
+        outcome="Shops running quote follow-up and automatic status texts typically recover a meaningful share of quotes that would have gone cold, while status-check calls to the front counter drop off almost entirely."
+      />
+    ),
+  },
+  // 17. Makerspaces & workshops — fab labs, community workshops, kids'
+  // STEM/robotics academies, plus small CNC/laser/3D-print fab services.
+  // Parents are the buyers for kids' programs; RFQs are the fab-service
+  // money maker.
+  {
+    category: "Making · workshops & fab",
+    title: "Makerspaces & workshops",
+    src: ph("Makerspace", "6E5C4A"),
+    visual: <CardStyle2Photo src="/industries/card-makerspace-photo.jpg" />,
+    content: (
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "Capture — intro-class and membership inquiries get answered while everyone's at the machines",
+            description:
+              "Your AI assistant answers while your staff are running the laser cutter or teaching a kids' robotics class. It qualifies intro-class or machine-time interest, checks age or skill level, and books the slot on the spot instead of the inquiry going unanswered until Monday.",
+            image: IMG.step1,
+            imageAlt: "AI assistant booking a makerspace intro class",
+          },
+          {
+            title: "Organized — every booking, parent contact, and RFQ lands in one place automatically",
+            description:
+              "Class and machine-time bookings, parent contact info for kids' programs, fab-service RFQ details — all dropped into one organized list instead of a shared calendar and a text thread nobody can find.",
+            image: IMG.step2,
+            imageAlt: "Makerspace booking and RFQ details saved automatically",
+          },
+          {
+            title: "Automatic — the membership funnel and party pipeline run themselves",
+            description:
+              "Intro-class attendees get a membership offer automatically the next day. Parents get automated updates on their kid's program, birthday-party and event bookings move through a real pipeline instead of a chat thread, and fab-service RFQs get a quote follow-up instead of going cold.",
+            image: IMG.step4,
+            imageAlt: "Automated membership offer and RFQ follow-up",
+          },
+          {
+            title: "Visible — every member, student, and quote trackable from first contact to booked",
+            description:
+              "Inquiry → intro class or machine time booked → membership offered → joined. RFQ → quoted → followed up → booked. One board shows exactly which first-timers and which quotes still need a nudge.",
+            image: IMG.step3,
+            imageAlt: "Makerspace member and RFQ pipeline view",
+          },
+        ]}
+        outcome="Spaces running the intro-to-membership funnel typically convert more first-time visitors into paying members, and classes fill without the schedule living in someone's head."
+      />
+    ),
+  },
 ];
 
 /**
