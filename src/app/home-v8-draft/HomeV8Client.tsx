@@ -2778,7 +2778,7 @@ export default function HomeV8Client() {
         addition, 2026-07-30) — a plain form posting to /api/custom-request,
         not Fly Erken's demo-branded GHL iframe. */}
     <CallbackRequestModal />
-    {/* Text/Voice/Callback choice menu — appears at Celly when she's clicked. */}
+    {/* Text/Callback choice menu — appears at Celly when she's clicked. */}
     {choiceMenu && (
       <>
         <div
@@ -2795,10 +2795,8 @@ export default function HomeV8Client() {
             top: choiceMenu.y,
             // Open ABOVE Celly normally; when she's near the top of the page the
             // menu would be clipped behind the browser bar, so flip it to open
-            // BELOW her instead. (~175px ≈ this 3-item menu's height + margin,
-            // bumped 2026-07-30 when "Request a callback" was added as a
-            // third item.)
-            transform: choiceMenu.y < 175
+            // BELOW her instead. (~130px ≈ this 2-item menu's height + margin.)
+            transform: choiceMenu.y < 130
               ? "translate(-50%, 12%)"
               : "translate(-50%, -115%)",
           }}
@@ -2815,19 +2813,6 @@ export default function HomeV8Client() {
               💬
             </span>{" "}
             Text chat
-          </button>
-          <button
-            role="menuitem"
-            onClick={() => {
-              closeChoiceMenu();
-              window.__startErkenVoiceCall?.();
-            }}
-            className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-          >
-            <span aria-hidden className="text-base">
-              🎙️
-            </span>{" "}
-            Voice chat
           </button>
           <button
             role="menuitem"
