@@ -471,12 +471,10 @@ import yacht from "./configs/yacht";
 import ski from "./configs/ski";
 import horse from "./configs/horse";
 import shooting from "./configs/shooting";
-// Batch 4 (2026-08-03): remaining imports added back in as their config
-// files are written — see worker-status.md for progress.
-// import hotel from "./configs/hotel";
-// import cafe from "./configs/cafe";
-// import electronics from "./configs/electronics";
-// import makerspace from "./configs/makerspace";
+import hotel from "./configs/hotel";
+import cafe from "./configs/cafe";
+import electronics from "./configs/electronics";
+import makerspace from "./configs/makerspace";
 
 const ALL_DEMOS: DemoConfig[] = [
   flightSchools,
@@ -493,6 +491,10 @@ const ALL_DEMOS: DemoConfig[] = [
   ski,
   horse,
   shooting,
+  hotel,
+  cafe,
+  electronics,
+  makerspace,
 ];
 
 export const DEMO_REGISTRY: Record<string, DemoConfig> = Object.fromEntries(

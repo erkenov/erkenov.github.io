@@ -755,6 +755,10 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Boutique hotels",
     src: ph("Hotels", "CDA434"),
     visual: <CardStyle2Photo src="/industries/card-hotel-photo.jpg" />,
+    demoUrl: "https://hotel.erken.systems",
+    demoHeadline: "A real boutique hotel setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete direct-booking hotel system — website, real-time availability, AI front desk, automated follow-ups — built on our platform and open for you to click through. Book direct and watch what your guests would experience.",
     content: (
       <IndustryBodySteps
         steps={[
@@ -798,6 +802,10 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Cafes & restaurants",
     src: ph("Cafes & restaurants", "C17A4F"),
     visual: <CardStyle2Photo src="/industries/card-restaurant-photo.jpg" />,
+    demoUrl: "https://cafe.erken.systems",
+    demoHeadline: "A real restaurant setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete restaurant and catering system — website, reservation booking, AI front desk, automated follow-ups — built on our platform and open for you to click through. Book a table and watch what your guests would experience.",
     content: (
       <IndustryBodySteps
         steps={[
@@ -842,6 +850,10 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Electronics & repair shops",
     src: ph("Electronics repair", "4F6D7A"),
     visual: <CardStyle2Photo src="/industries/card-electronics-photo.jpg" />,
+    demoUrl: "https://fix.erken.systems",
+    demoHeadline: "A real repair shop setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete device repair shop system — website, quote requests, AI receptionist, automated status texts — built on our platform and open for you to click through. Get a quote and watch what your customers would experience.",
     content: (
       <IndustryBodySteps
         steps={[
@@ -887,6 +899,10 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Makerspaces & workshops",
     src: ph("Makerspace", "6E5C4A"),
     visual: <CardStyle2Photo src="/industries/card-makerspace-photo.jpg" />,
+    demoUrl: "https://make.erken.systems",
+    demoHeadline: "A real makerspace setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete makerspace system — website, class booking, AI assistant, automated follow-ups — built on our platform and open for you to click through. Book an intro class and watch what your members would experience.",
     content: (
       <IndustryBodySteps
         steps={[
