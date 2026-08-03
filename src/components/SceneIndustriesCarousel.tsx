@@ -567,6 +567,10 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Yacht charters & sailing schools",
     src: ph("Yachting", "3F6E8C"),
     visual: <CardStyle2Photo src="/industries/card-yachting-photo.jpg" />,
+    demoUrl: "https://yacht.erken.systems",
+    demoHeadline: "A real charter company setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete yacht charter system — website, instant quotes, AI assistant, automated follow-ups — built on our platform and open for you to click through. Get a quote and watch what your clients would experience.",
     content: (
       <IndustryBodySteps
         steps={[
@@ -610,6 +614,10 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Ski schools & lodges",
     src: ph("Skiing", "8FA9BE"),
     visual: <CardStyle2Photo src="/industries/card-skiing-photo.jpg" />,
+    demoUrl: "https://ski.erken.systems",
+    demoHeadline: "A real ski lodge setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete ski school and lodge system — website, lesson and rental booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a lesson and watch what your guests would experience.",
     content: (
       <IndustryBodySteps
         steps={[
@@ -653,6 +661,10 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Horse riding schools",
     src: ph("Horse riding", "8B5E3C"),
     visual: <CardStyle2Photo src="/industries/card-horseriding-photo.jpg" />,
+    demoUrl: "https://horse.erken.systems",
+    demoHeadline: "A real riding stable setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete riding stable system — website, lesson and trail-ride booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a ride and watch what your riders would experience.",
     content: (
       <IndustryBodySteps
         steps={[
@@ -697,6 +709,10 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Shooting ranges",
     src: ph("Shooting range", "7A7A5C"),
     visual: <CardStyle2Photo src="/industries/card-shooting-photo.jpg" />,
+    demoUrl: "https://shoot.erken.systems",
+    demoHeadline: "A real range setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete shooting range system — website, course booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a course and watch what your students would experience.",
     content: (
       <IndustryBodySteps
         steps={[

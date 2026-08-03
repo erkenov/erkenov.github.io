@@ -467,12 +467,12 @@ import surf from "./configs/surf";
 import tennis from "./configs/tennis";
 import farm from "./configs/farm";
 import climbing from "./configs/climbing";
-// Batch 3+ (2026-08-03): remaining imports added back in as their config
+import yacht from "./configs/yacht";
+import ski from "./configs/ski";
+import horse from "./configs/horse";
+import shooting from "./configs/shooting";
+// Batch 4 (2026-08-03): remaining imports added back in as their config
 // files are written — see worker-status.md for progress.
-// import yacht from "./configs/yacht";
-// import ski from "./configs/ski";
-// import horse from "./configs/horse";
-// import shooting from "./configs/shooting";
 // import hotel from "./configs/hotel";
 // import cafe from "./configs/cafe";
 // import electronics from "./configs/electronics";
@@ -489,6 +489,10 @@ const ALL_DEMOS: DemoConfig[] = [
   tennis,
   farm,
   climbing,
+  yacht,
+  ski,
+  horse,
+  shooting,
 ];
 
 export const DEMO_REGISTRY: Record<string, DemoConfig> = Object.fromEntries(
