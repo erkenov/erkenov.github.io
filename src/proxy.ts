@@ -33,10 +33,11 @@ const DEMO_HOST_ROOTS: Record<string, string> = {
   //
   // sky.erken.systems repointed (PILOT, 2026-08-03) to /sky-erken — the
   // corrected main-site-template rebuild (see /fly-erken for the pattern
-  // this was cloned from). The other 16 subdomains stay on the old
-  // /demo/[industry] template until Shamil approves this pilot and
-  // replication begins; the old page is still reachable directly at
-  // /demo/skydiving.
+  // this was cloned from). Owner approved the pilot; replication to
+  // surf/tennis/farm/climb below followed the same day. The remaining
+  // subdomains stay on the old /demo/[industry] template until their own
+  // replication lands; each old page is still reachable directly at
+  // /demo/<slug>.
   "sky.erken.systems": "/sky-erken",
   // 2026-08-03: replication wave — auto/moto/bjj/gym repointed to the
   // sky-erken pattern (homepage-clone rebuild) following owner approval of
@@ -45,10 +46,14 @@ const DEMO_HOST_ROOTS: Record<string, string> = {
   "moto.erken.systems": "/moto-erken",
   "bjj.erken.systems": "/bjj-erken",
   "gym.erken.systems": "/gym-erken",
-  "surf.erken.systems": "/demo/surf",
-  "tennis.erken.systems": "/demo/tennis",
-  "farm.erken.systems": "/demo/farm",
-  "climb.erken.systems": "/demo/climbing",
+  // surf/tennis/farm/climb repointed (REPLICATION, 2026-08-03) to their own
+  // homepage-clone routes, same pattern as sky-erken. Old pages still
+  // reachable directly at /demo/surf, /demo/tennis, /demo/farm,
+  // /demo/climbing.
+  "surf.erken.systems": "/surf-erken",
+  "tennis.erken.systems": "/tennis-erken",
+  "farm.erken.systems": "/farm-erken",
+  "climb.erken.systems": "/climb-erken",
   "yacht.erken.systems": "/demo/yacht",
   "ski.erken.systems": "/demo/ski",
   "horse.erken.systems": "/demo/horse",

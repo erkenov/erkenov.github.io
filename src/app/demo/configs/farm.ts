@@ -215,6 +215,11 @@ const farm: DemoConfig = {
     headline: "Book a tour or start your CSA box — pick a real date",
     sub: "Grab an open slot below and you're confirmed instantly. Prefer a call instead? Use the callback button up top.",
     note: "Confirmed instantly — you'll get a text and email with details. Prefer to talk now? Use the voice assistant.",
+    // Reuses the SAME shared demo GHL calendar as skydiving/flight-schools
+    // (no dedicated Erken Family Farm calendar exists yet) — good enough
+    // for a click-through replication, flagged for Shamil to swap for a
+    // real/distinct calendar later.
+    calendarId: "SS2V1nuWEIbOlNrzyxpt",
   },
   cta: {
     headline: "This week's harvest is coming in.",

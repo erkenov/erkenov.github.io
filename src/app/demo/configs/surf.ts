@@ -215,6 +215,11 @@ const surf: DemoConfig = {
     headline: "Book your surf lesson or package — pick a real time",
     sub: "Grab an open slot below and you're confirmed instantly. Prefer to message first? Use the callback button up top.",
     note: "Confirmed instantly — you'll get a WhatsApp message and email with meeting point and gear details. Prefer to talk now? Use the voice assistant.",
+    // Reuses the SAME shared demo GHL calendar as skydiving/flight-schools
+    // (no dedicated Erken Surf Camp calendar exists yet) — good enough for
+    // a click-through replication, flagged for Shamil to swap for a real/
+    // distinct calendar later.
+    calendarId: "SS2V1nuWEIbOlNrzyxpt",
   },
   cta: {
     headline: "The waves are breaking right now.",

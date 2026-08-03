@@ -215,6 +215,11 @@ const climbing: DemoConfig = {
     headline: "Book your intro class — pick a real time",
     sub: "Grab an open slot below and you're confirmed instantly. Prefer a call instead? Use the callback button up top.",
     note: "Confirmed instantly — you'll get a text and email with what to bring. Prefer to talk now? Use the voice assistant.",
+    // Reuses the SAME shared demo GHL calendar as skydiving/flight-schools
+    // (no dedicated Erken Climbing Co. calendar exists yet) — good enough
+    // for a click-through replication, flagged for Shamil to swap for a
+    // real/distinct calendar later.
+    calendarId: "SS2V1nuWEIbOlNrzyxpt",
   },
   cta: {
     headline: "The wall is warmed up and waiting.",
