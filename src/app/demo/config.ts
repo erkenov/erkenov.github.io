@@ -459,13 +459,12 @@ const flightSchools: DemoConfig = {
 /* ------------------------------------------------------------------ */
 
 import skydiving from "./configs/skydiving";
-// PILOT (2026-08-03): building sky.erken.systems first per rollout
-// sequence. Remaining 16 imports added back in as their config files are
-// written — see worker-status.md for progress.
-// import automotive from "./configs/automotive";
-// import motorcycle from "./configs/motorcycle";
-// import bjj from "./configs/bjj";
-// import gym from "./configs/gym";
+import automotive from "./configs/automotive";
+import motorcycle from "./configs/motorcycle";
+import bjj from "./configs/bjj";
+import gym from "./configs/gym";
+// Batch 2+ (2026-08-03): remaining imports added back in as their config
+// files are written — see worker-status.md for progress.
 // import surf from "./configs/surf";
 // import tennis from "./configs/tennis";
 // import farm from "./configs/farm";
@@ -482,6 +481,10 @@ import skydiving from "./configs/skydiving";
 const ALL_DEMOS: DemoConfig[] = [
   flightSchools,
   skydiving,
+  automotive,
+  motorcycle,
+  bjj,
+  gym,
 ];
 
 export const DEMO_REGISTRY: Record<string, DemoConfig> = Object.fromEntries(

@@ -192,6 +192,10 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Automotive shops",
     src: ph("Automotive", "9C7454"),
     visual: <CardStyle2Photo src="/industries/card-automotive-photo.jpg" />,
+    demoUrl: "https://auto.erken.systems",
+    demoHeadline: "A real auto shop setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete auto repair shop system — website, online booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a drop-off and watch what your customers would experience.",
     content: (
       <IndustryBodySteps
         steps={[
@@ -235,6 +239,10 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Motorcycle shops",
     src: ph("Motorcycle", "A85C3B"),
     visual: <CardStyle2Photo src="/industries/card-motorcycle-photo.jpg" />,
+    demoUrl: "https://moto.erken.systems",
+    demoHeadline: "A real moto shop setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete motorcycle tour and rental system — website, online booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a tour and watch what your riders would experience.",
     content: (
       <IndustryBodySteps
         steps={[
@@ -278,6 +286,10 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Jiu Jitsu academies",
     src: ph("Jiu Jitsu", "5F8368"),
     visual: <CardStyle2Photo src="/industries/card-bjj-photo.jpg" />,
+    demoUrl: "https://bjj.erken.systems",
+    demoHeadline: "A real BJJ academy setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete Jiu-Jitsu academy system — website, trial-class booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a trial class and watch what your members would experience.",
     content: (
       <IndustryBodySteps
         steps={[
@@ -321,6 +333,10 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Gyms & boxes",
     src: ph("Gyms", "8A9A5B"),
     visual: <CardStyle2Photo src="/industries/card-gym-photo.jpg" />,
+    demoUrl: "https://gym.erken.systems",
+    demoHeadline: "A real gym setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete boutique gym system — website, trial-class booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a free trial and watch what your members would experience.",
     content: (
       <IndustryBodySteps
         steps={[
