@@ -214,6 +214,10 @@ const ski: DemoConfig = {
     kicker: "Book your trip",
     headline: "Book your lesson, rental, or room — pick real dates",
     sub: "Grab an open slot below and you're confirmed instantly. Prefer a call instead? Use the callback button up top.",
+    // Reuses the SAME shared demo GHL calendar as flight-schools/skydiving
+    // (no dedicated Erken Ski Lodge calendar exists yet) — fine for a
+    // click-through demo, flagged for a real/distinct calendar later.
+    calendarId: "SS2V1nuWEIbOlNrzyxpt",
     note: "Confirmed instantly — you'll get a text and email with pickup and check-in details. Prefer to talk now? Use the voice assistant.",
   },
   cta: {

@@ -214,6 +214,10 @@ const yacht: DemoConfig = {
     kicker: "Get a quote",
     headline: "Get your charter quote — check real fleet availability",
     sub: "Grab an open slot below and you're confirmed instantly. Prefer to talk first? Use the callback button up top.",
+    // Reuses the SAME shared demo GHL calendar as flight-schools/skydiving
+    // (no dedicated Erken Yacht Charters calendar exists yet) — fine for a
+    // click-through demo, flagged for a real/distinct calendar later.
+    calendarId: "SS2V1nuWEIbOlNrzyxpt",
     note: "Confirmed instantly — you'll get a text and email with dock details. Prefer to talk now? Use the voice assistant.",
   },
   cta: {

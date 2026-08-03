@@ -214,6 +214,10 @@ const horse: DemoConfig = {
     kicker: "Book a ride",
     headline: "Book your lesson or trail ride — pick a real time",
     sub: "Grab an open slot below and you're confirmed instantly. Prefer a call instead? Use the callback button up top.",
+    // Reuses the SAME shared demo GHL calendar as flight-schools/skydiving
+    // (no dedicated Erken Riding Stables calendar exists yet) — fine for a
+    // click-through demo, flagged for a real/distinct calendar later.
+    calendarId: "SS2V1nuWEIbOlNrzyxpt",
     note: "Confirmed instantly — you'll get a text and email with what to bring. Prefer to talk now? Use the voice assistant.",
   },
   cta: {

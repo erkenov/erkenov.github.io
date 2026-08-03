@@ -54,10 +54,13 @@ const DEMO_HOST_ROOTS: Record<string, string> = {
   "tennis.erken.systems": "/tennis-erken",
   "farm.erken.systems": "/farm-erken",
   "climb.erken.systems": "/climb-erken",
-  "yacht.erken.systems": "/demo/yacht",
-  "ski.erken.systems": "/demo/ski",
-  "horse.erken.systems": "/demo/horse",
-  "shoot.erken.systems": "/demo/shooting",
+  // 2026-08-03: replicated from the sky-erken pilot (worker repl-w3) —
+  // yacht/ski/horse/shoot now serve their own homepage-clone rebuilds.
+  // Old /demo/[industry] pages stay reachable directly.
+  "yacht.erken.systems": "/yacht-erken",
+  "ski.erken.systems": "/ski-erken",
+  "horse.erken.systems": "/horse-erken",
+  "shoot.erken.systems": "/shoot-erken",
   // 2026-08-03: replication batch (w4) — repointed to the main-site-
   // template rebuilds, same pattern as sky.erken.systems above. Old
   // /demo/[industry] pages stay reachable directly.
