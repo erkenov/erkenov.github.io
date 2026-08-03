@@ -215,6 +215,12 @@ const electronics: DemoConfig = {
     headline: "Get your repair quote — book a real drop-off slot",
     sub: "Grab an open slot below and you're confirmed instantly. Prefer a call instead? Use the callback button up top.",
     note: "Confirmed instantly — you'll get a text and email with drop-off details. Prefer to talk now? Use the voice assistant.",
+    // Reuses the SAME shared demo GHL calendar as skydiving/flight-schools
+    // (SS2V1nuWEIbOlNrzyxpt) — there is no dedicated Erken Device Repair
+    // calendar yet. Fine for a pilot click-through, flagged for Shamil to
+    // swap in a real/distinct calendar before this pattern replicates
+    // further.
+    calendarId: "SS2V1nuWEIbOlNrzyxpt",
   },
   cta: {
     headline: "The bench has an opening today.",

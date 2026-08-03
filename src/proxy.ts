@@ -53,10 +53,13 @@ const DEMO_HOST_ROOTS: Record<string, string> = {
   "ski.erken.systems": "/demo/ski",
   "horse.erken.systems": "/demo/horse",
   "shoot.erken.systems": "/demo/shooting",
-  "hotel.erken.systems": "/demo/hotel",
-  "cafe.erken.systems": "/demo/cafe",
-  "fix.erken.systems": "/demo/electronics",
-  "make.erken.systems": "/demo/makerspace",
+  // 2026-08-03: replication batch (w4) — repointed to the main-site-
+  // template rebuilds, same pattern as sky.erken.systems above. Old
+  // /demo/[industry] pages stay reachable directly.
+  "hotel.erken.systems": "/hotel-erken",
+  "cafe.erken.systems": "/cafe-erken",
+  "fix.erken.systems": "/fix-erken",
+  "make.erken.systems": "/make-erken",
 };
 
 export function proxy(request: NextRequest) {

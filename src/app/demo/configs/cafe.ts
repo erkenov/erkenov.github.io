@@ -216,6 +216,11 @@ const cafe: DemoConfig = {
     headline: "Book your table — pick a real time",
     sub: "Grab an open slot below and you're confirmed instantly. Prefer a call instead? Use the callback button up top.",
     note: "Confirmed instantly — you'll get a text and email confirmation. Prefer to talk now? Use the voice assistant.",
+    // Reuses the SAME shared demo GHL calendar as flight-schools / skydiving
+    // (no dedicated Café Erken calendar exists yet) — good enough for a
+    // click-through pilot, flagged for Shamil to swap for a real/distinct
+    // calendar before this pattern replicates further.
+    calendarId: "SS2V1nuWEIbOlNrzyxpt",
   },
   cta: {
     headline: "The kitchen is firing tonight.",
