@@ -214,6 +214,12 @@ const automotive: DemoConfig = {
     kicker: "Book a drop-off",
     headline: "Book your drop-off — pick a real bay slot",
     sub: "Grab an open slot below and you're on the schedule instantly. Prefer a call instead? Use the callback button up top.",
+    // NOTE (flag for Shamil's review, mirrors the sky-erken pilot comment):
+    // reuses the SAME shared demo GHL calendar as flight-schools/sky-erken
+    // (SS2V1nuWEIbOlNrzyxpt) — there is no dedicated Erken Auto calendar yet.
+    // Fine for a pilot click-through; a real per-industry calendar should
+    // probably exist before this pattern goes further.
+    calendarId: "SS2V1nuWEIbOlNrzyxpt",
     note: "Confirmed instantly — you'll get a text and email with drop-off details. Prefer to talk now? Use the voice assistant.",
   },
   cta: {

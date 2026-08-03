@@ -38,10 +38,13 @@ const DEMO_HOST_ROOTS: Record<string, string> = {
   // replication begins; the old page is still reachable directly at
   // /demo/skydiving.
   "sky.erken.systems": "/sky-erken",
-  "auto.erken.systems": "/demo/automotive",
-  "moto.erken.systems": "/demo/motorcycle",
-  "bjj.erken.systems": "/demo/bjj",
-  "gym.erken.systems": "/demo/gym",
+  // 2026-08-03: replication wave — auto/moto/bjj/gym repointed to the
+  // sky-erken pattern (homepage-clone rebuild) following owner approval of
+  // the pilot. Old /demo/[industry] pages stay reachable directly.
+  "auto.erken.systems": "/auto-erken",
+  "moto.erken.systems": "/moto-erken",
+  "bjj.erken.systems": "/bjj-erken",
+  "gym.erken.systems": "/gym-erken",
   "surf.erken.systems": "/demo/surf",
   "tennis.erken.systems": "/demo/tennis",
   "farm.erken.systems": "/demo/farm",
