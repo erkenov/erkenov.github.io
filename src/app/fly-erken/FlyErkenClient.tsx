@@ -1320,7 +1320,7 @@ function BookingSection() {
   // bug in one: a live-size box with nothing visibly in it.
   useEffect(() => {
     if (calendarLoaded) return;
-    const t = setTimeout(() => setCalendarFailed(true), 7000);
+    const t = setTimeout(() => setCalendarFailed(true), 15000);
     return () => clearTimeout(t);
   }, [calendarLoaded]);
 
