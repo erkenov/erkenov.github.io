@@ -145,6 +145,10 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Skydiving",
     src: ph("Skydiving", "5B84A6"),
     visual: <CardStyle2Photo src="/industries/card-skydiving-photo.jpg" />,
+    demoUrl: "https://sky.erken.systems",
+    demoHeadline: "A real dropzone setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete skydiving dropzone system — website, online booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a tandem jump and watch what your jumpers would experience.",
     content: (
       <IndustryBodySteps
         steps={[

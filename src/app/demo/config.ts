@@ -36,7 +36,24 @@ export type DemoIconName =
   | "shield"
   | "clock"
   | "map"
-  | "users";
+  | "users"
+  // Added 2026-08-03 for the 17 additional passion-industry demos
+  // (sky/auto/moto/bjj/gym/surf/tennis/farm/climb/yacht/ski/horse/shoot/
+  // hotel/cafe/fix/make) — see src/app/demo/configs/*.ts.
+  | "wind"
+  | "wrench"
+  | "bike"
+  | "dumbbell"
+  | "waves"
+  | "mountain"
+  | "anchor"
+  | "snowflake"
+  | "target"
+  | "hotel"
+  | "coffee"
+  | "cpu"
+  | "hammer"
+  | "sprout";
 
 export interface DemoTheme {
   /** Page background. */
@@ -435,10 +452,41 @@ const flightSchools: DemoConfig = {
 };
 
 /* ------------------------------------------------------------------ */
+/* 17 additional passion-industry demos (2026-08-03) — each is its own  */
+/* fictional business in its own file under ./configs, one subdomain    */
+/* each (see src/proxy.ts). Data/copy replication of the flight-schools */
+/* pattern above; no template changes beyond the DemoIconName additions.*/
+/* ------------------------------------------------------------------ */
 
-export const DEMO_REGISTRY: Record<string, DemoConfig> = {
-  [flightSchools.slug]: flightSchools,
-};
+import skydiving from "./configs/skydiving";
+// PILOT (2026-08-03): building sky.erken.systems first per rollout
+// sequence. Remaining 16 imports added back in as their config files are
+// written — see worker-status.md for progress.
+// import automotive from "./configs/automotive";
+// import motorcycle from "./configs/motorcycle";
+// import bjj from "./configs/bjj";
+// import gym from "./configs/gym";
+// import surf from "./configs/surf";
+// import tennis from "./configs/tennis";
+// import farm from "./configs/farm";
+// import climbing from "./configs/climbing";
+// import yacht from "./configs/yacht";
+// import ski from "./configs/ski";
+// import horse from "./configs/horse";
+// import shooting from "./configs/shooting";
+// import hotel from "./configs/hotel";
+// import cafe from "./configs/cafe";
+// import electronics from "./configs/electronics";
+// import makerspace from "./configs/makerspace";
+
+const ALL_DEMOS: DemoConfig[] = [
+  flightSchools,
+  skydiving,
+];
+
+export const DEMO_REGISTRY: Record<string, DemoConfig> = Object.fromEntries(
+  ALL_DEMOS.map((d) => [d.slug, d]),
+);
 
 export function getDemoConfig(slug: string): DemoConfig | undefined {
   return DEMO_REGISTRY[slug];

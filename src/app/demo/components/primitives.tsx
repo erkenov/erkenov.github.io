@@ -13,18 +13,32 @@
 
 import { motion } from "framer-motion";
 import {
+  Anchor,
+  Bike,
   CalendarCheck,
   Clock,
+  Coffee,
   Compass,
+  Cpu,
+  Dumbbell,
   Gauge,
   GraduationCap,
+  Hammer,
+  Hotel,
   KeyRound,
   MapPin,
+  Mountain,
   Phone,
   Plane,
   RadioTower,
   ShieldCheck,
+  Snowflake,
+  Sprout,
+  Target,
   Users,
+  Waves,
+  Wind,
+  Wrench,
 } from "lucide-react";
 import type { DemoIconName } from "../config";
 
@@ -140,6 +154,20 @@ const ICONS: Record<DemoIconName, React.ComponentType<{ className?: string }>> =
   clock: Clock,
   map: MapPin,
   users: Users,
+  wind: Wind,
+  wrench: Wrench,
+  bike: Bike,
+  dumbbell: Dumbbell,
+  waves: Waves,
+  mountain: Mountain,
+  anchor: Anchor,
+  snowflake: Snowflake,
+  target: Target,
+  hotel: Hotel,
+  coffee: Coffee,
+  cpu: Cpu,
+  hammer: Hammer,
+  sprout: Sprout,
 };
 
 export function DemoIcon({

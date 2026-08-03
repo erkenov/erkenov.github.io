@@ -24,6 +24,29 @@ const DEMO_HOST_ROOTS: Record<string, string> = {
   // (/fly-erken, owner-approved). The older premium page stays reachable
   // directly at /demo/flight-schools.
   "fly.erken.systems": "/fly-erken",
+
+  // 2026-08-03: 17 additional passion-industry demo subdomains, each
+  // rewritten straight to its /demo/[industry] config-driven page (see
+  // src/app/demo/config.ts + src/app/demo/configs/*.ts). Wildcard DNS on
+  // the erken.systems zone already covers these hosts; only the Vercel
+  // domain attachment is a separate one-time step per subdomain.
+  "sky.erken.systems": "/demo/skydiving",
+  "auto.erken.systems": "/demo/automotive",
+  "moto.erken.systems": "/demo/motorcycle",
+  "bjj.erken.systems": "/demo/bjj",
+  "gym.erken.systems": "/demo/gym",
+  "surf.erken.systems": "/demo/surf",
+  "tennis.erken.systems": "/demo/tennis",
+  "farm.erken.systems": "/demo/farm",
+  "climb.erken.systems": "/demo/climbing",
+  "yacht.erken.systems": "/demo/yacht",
+  "ski.erken.systems": "/demo/ski",
+  "horse.erken.systems": "/demo/horse",
+  "shoot.erken.systems": "/demo/shooting",
+  "hotel.erken.systems": "/demo/hotel",
+  "cafe.erken.systems": "/demo/cafe",
+  "fix.erken.systems": "/demo/electronics",
+  "make.erken.systems": "/demo/makerspace",
 };
 
 export function proxy(request: NextRequest) {
