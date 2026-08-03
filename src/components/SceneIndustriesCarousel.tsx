@@ -380,6 +380,10 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Surf schools & camps",
     src: ph("Surfing", "5B93A0"),
     visual: <CardStyle2Photo src="/industries/card-surfing-photo.jpg" />,
+    demoUrl: "https://surf.erken.systems",
+    demoHeadline: "A real surf camp setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete surf camp system — website, lesson booking, AI assistant, automated follow-ups — built on our platform and open for you to click through. Book a lesson and watch what your guests would experience.",
     content: (
       <IndustryBodySteps
         steps={[
@@ -423,6 +427,10 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Tennis clubs & academies",
     src: ph("Tennis", "7FA06B"),
     visual: <CardStyle2Photo src="/industries/card-tennis-photo.jpg" />,
+    demoUrl: "https://tennis.erken.systems",
+    demoHeadline: "A real tennis academy setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete tennis academy system — website, trial-lesson booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a trial lesson and watch what your members would experience.",
     content: (
       <IndustryBodySteps
         steps={[
@@ -466,6 +474,10 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Farms & agritourism",
     src: ph("Farms", "9C8B4E"),
     visual: <CardStyle2Photo src="/industries/card-farming-photo.jpg" />,
+    demoUrl: "https://farm.erken.systems",
+    demoHeadline: "A real farm setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete farm and CSA system — website, tour booking, AI assistant, automated follow-ups — built on our platform and open for you to click through. Book a visit and watch what your customers would experience.",
     content: (
       <IndustryBodySteps
         steps={[
@@ -508,6 +520,10 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Climbing gyms & guides",
     src: ph("Climbing", "7C8A99"),
     visual: <CardStyle2Photo src="/industries/card-climbing-photo.jpg" />,
+    demoUrl: "https://climb.erken.systems",
+    demoHeadline: "A real climbing gym setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete climbing gym system — website, class booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book an intro class and watch what your members would experience.",
     content: (
       <IndustryBodySteps
         steps={[
