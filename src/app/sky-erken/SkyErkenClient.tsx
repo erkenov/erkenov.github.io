@@ -1285,6 +1285,9 @@ function PricingSection() {
 const EMBED_SCRIPT_SRC = "https://link.msgsndr.com/js/form_embed.js";
 
 function BookingSection() {
+  const [calendarLoaded, setCalendarLoaded] = useState(false);
+  const [calendarFailed, setCalendarFailed] = useState(false);
+
   useEffect(() => {
     if (document.querySelector(`script[src="${EMBED_SCRIPT_SRC}"]`)) return;
     const s = document.createElement("script");
@@ -1292,6 +1295,19 @@ function BookingSection() {
     s.async = true;
     document.body.appendChild(s);
   }, []);
+
+  // If the GHL iframe never fires `load` (ad blockers commonly kill
+  // leadconnectorhq/msgsndr requests outright, and the GHL API itself can
+  // be slow/down), fall back to a plain contact CTA instead of leaving the
+  // fixed-size wrapper below rendered as a blank void the same color as
+  // the page background — a failed iframe doesn't shrink its container,
+  // so that void was both the "missing calendar" and the "huge empty gap"
+  // bug in one: a live-size box with nothing visibly in it.
+  useEffect(() => {
+    if (calendarLoaded) return;
+    const t = setTimeout(() => setCalendarFailed(true), 7000);
+    return () => clearTimeout(t);
+  }, [calendarLoaded]);
 
   return (
     <section id="booking" className="scroll-mt-20 pb-20 pt-16 md:pb-28 md:pt-20">
@@ -1318,39 +1334,67 @@ function BookingSection() {
             calendar.
           </p>
         </motion.div>
-        {/* GHL always paints its classic calendar widget small on its own
-            white canvas at any iframe size (confirmed: GET /calendars/{id}
-            exposes no appearance/backgroundColor field to recolor it — no
-            widget-embed query param for it either). So instead of sizing
-            the iframe up (which just adds white space), we render it at
-            its natural width and scale the whole thing up with CSS so the
-            calendar grid itself dominates the section. No card/border/
-            shadow around it — the widget's own chrome is the only chrome. */}
-        <div data-celly-avoid className="mt-10">
-          {/* form_embed.js (loaded above, and also needed by the callback
-              modal) is an iframe-resizer: it rewrites this iframe's INLINE
-              height on a 32ms interval / on any DOM mutation inside the
-              widget (hovering a time slot counts). Inline style beats the
-              Tailwind h-[...] classes, so picking a date + moving the mouse
-              made the calendar shrink-loop and collapse. An !important rule
-              outranks inline styles — this pins the height for good. */}
-          <style>{`
-            #booking-${BOOKING_CALENDAR_ID} { height: 880px !important; }
-            @media (min-width: 768px) {
-              #booking-${BOOKING_CALENDAR_ID} { height: 900px !important; }
-            }
-          `}</style>
-          <div className="relative mx-auto h-[924px] w-[315px] md:h-[1265px] md:w-[645px]">
-            <iframe
-              src={`https://api.leadconnectorhq.com/widget/booking/${BOOKING_CALENDAR_ID}`}
-              className="absolute inset-x-0 top-0 mx-auto h-[880px] w-[300px] origin-top scale-[1.05] rounded-2xl border-0 md:h-[900px] md:w-[460px] md:scale-[1.4]"
-              style={{ background: "#F5F1E8" }}
-              id={`booking-${BOOKING_CALENDAR_ID}`}
-              scrolling="no"
-              title="Book a tandem jump"
-            />
+        {calendarFailed ? (
+          <div
+            data-celly-avoid
+            className="mx-auto mt-10 max-w-md rounded-2xl border border-border bg-surface p-8 text-center"
+          >
+            <p className="text-base text-text-muted">
+              The live calendar didn&apos;t load. Call, text, or talk to our AI
+              front desk instead — same calendar either way.
+            </p>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+              <a
+                href={`tel:${PHONE_TEL}`}
+                className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-bg transition-all hover:bg-accent-hover"
+              >
+                <Phone className="h-4 w-4" /> {PHONE_DISPLAY}
+              </a>
+              <button
+                type="button"
+                onClick={() => openSkyContact()}
+                className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 font-medium text-text transition-colors hover:border-border-strong hover:bg-surface"
+              >
+                Talk to us now
+              </button>
+            </div>
           </div>
-        </div>
+        ) : (
+          /* GHL always paints its classic calendar widget small on its own
+             white canvas at any iframe size (confirmed: GET /calendars/{id}
+             exposes no appearance/backgroundColor field to recolor it — no
+             widget-embed query param for it either). So instead of sizing
+             the iframe up (which just adds white space), we render it at
+             its natural width and scale the whole thing up with CSS so the
+             calendar grid itself dominates the section. No card/border/
+             shadow around it — the widget's own chrome is the only chrome. */
+          <div data-celly-avoid className="mt-10">
+            {/* form_embed.js (loaded above, and also needed by the callback
+                modal) is an iframe-resizer: it rewrites this iframe's INLINE
+                height on a 32ms interval / on any DOM mutation inside the
+                widget (hovering a time slot counts). Inline style beats the
+                Tailwind h-[...] classes, so picking a date + moving the mouse
+                made the calendar shrink-loop and collapse. An !important rule
+                outranks inline styles — this pins the height for good. */}
+            <style>{`
+              #booking-${BOOKING_CALENDAR_ID} { height: 880px !important; }
+              @media (min-width: 768px) {
+                #booking-${BOOKING_CALENDAR_ID} { height: 900px !important; }
+              }
+            `}</style>
+            <div className="relative mx-auto h-[924px] w-[315px] md:h-[1265px] md:w-[645px]">
+              <iframe
+                src={`https://api.leadconnectorhq.com/widget/booking/${BOOKING_CALENDAR_ID}`}
+                className="absolute inset-x-0 top-0 mx-auto h-[880px] w-[300px] origin-top scale-[1.05] rounded-2xl border-0 md:h-[900px] md:w-[460px] md:scale-[1.4]"
+                style={{ background: "#F5F1E8" }}
+                id={`booking-${BOOKING_CALENDAR_ID}`}
+                scrolling="no"
+                title="Book a tandem jump"
+                onLoad={() => setCalendarLoaded(true)}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
