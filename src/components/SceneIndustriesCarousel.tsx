@@ -137,149 +137,7 @@ const INDUSTRIES: IndustryCard[] = [
       </>
     ),
   },
-  // 1. Skydiving — dropzones & wind tunnels. Same anatomy as flight
-  // schools (discovery experience → course → license path); weather-cancel
-  // auto-rebooking is the #1 operational pain here.
-  {
-    category: "Adventure · skydiving",
-    title: "Skydiving",
-    src: ph("Skydiving", "5B84A6"),
-    visual: <CardStyle2Photo src="/industries/card-skydiving-photo.jpg" />,
-    demoUrl: "https://sky.erken.systems",
-    demoHeadline: "A real dropzone setup, running live right now",
-    demoSub:
-      "This isn't a mockup. It's a complete skydiving dropzone system — website, online booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a tandem jump and watch what your jumpers would experience.",
-    content: (
-      <IndustryBodySteps
-        steps={[
-          {
-            title: "Capture — every call and jump inquiry gets answered",
-            description:
-              "Your AI receptionist picks up when the load is grounded and the phone won't stop, or when you're up in the plane and can't reach it at all. It qualifies tandem vs AFF course interest, checks weight and age requirements, and books an open slot on the load calendar on the spot.",
-            image: IMG.step1,
-            imageAlt: "AI receptionist booking a tandem jump slot",
-          },
-          {
-            title: "Organized — every jumper's info lands in one place automatically",
-            description:
-              "Name, jump type, weight, any prior jumps, waiver status — all dropped into one organized list the moment they reach out. Your manifest desk sees the full picture before the jumper shows up.",
-            image: IMG.step2,
-            imageAlt: "Jumper details saved automatically",
-          },
-          {
-            title: "Automatic — weather-cancel auto-rebooking runs itself",
-            description:
-              "When a load gets scrubbed for weather, every affected jumper gets an instant text with the next available slot instead of your desk fielding the same call twenty times. Confirmations, reminders, and post-jump review requests go out automatically too.",
-            image: IMG.step4,
-            imageAlt: "Automated weather-cancel rebooking messages",
-          },
-          {
-            title: "Visible — every jumper trackable from inquiry to license",
-            description:
-              "Inquiry → tandem booked → jumped → AFF course offered → licensed. One clear board shows who's ready for the next step and who needs a nudge back in.",
-            image: IMG.step3,
-            imageAlt: "Jumper pipeline view",
-          },
-        ]}
-        outcome="Dropzones running weather-cancel auto-rebooking typically recover most of a scrubbed day's bookings within 48 hours instead of losing them to whichever dropzone answers the phone first."
-      />
-    ),
-  },
-  // 2. Automotive — repair shops, performance & tuning, rentals, dealerships.
-  // Shamil's explicit call: NOT detailing/tint/wrap.
-  {
-    category: "Automotive · repair & performance",
-    title: "Automotive shops",
-    src: ph("Automotive", "9C7454"),
-    visual: <CardStyle2Photo src="/industries/card-automotive-photo.jpg" />,
-    demoUrl: "https://auto.erken.systems",
-    demoHeadline: "A real auto shop setup, running live right now",
-    demoSub:
-      "This isn't a mockup. It's a complete auto repair shop system — website, online booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a drop-off and watch what your customers would experience.",
-    content: (
-      <IndustryBodySteps
-        steps={[
-          {
-            title: "Capture — every call gets answered, even with the bay full",
-            description:
-              "Your AI receptionist picks up while your techs are elbow-deep in an engine or mid-dyno-run on a tune. It diagnoses the issue or qualifies the build request, checks your live booking calendar, and books a drop-off slot right there on the call.",
-            image: IMG.step1,
-            imageAlt: "AI receptionist answering a shop call",
-          },
-          {
-            title: "Organized — every vehicle and customer lands in one place automatically",
-            description:
-              "Make, model, mileage, the issue or the mod request — all dropped into your job list the moment they hang up. No clipboard, no whiteboard, no re-typing later.",
-            image: IMG.step2,
-            imageAlt: "Vehicle and customer details saved automatically",
-          },
-          {
-            title: "Automatic — quote follow-up and maintenance reminders run themselves",
-            description:
-              "A quote that goes quiet gets a follow-up instead of dying. Oil-change, tune-up, and seasonal-tire reminders go out automatically when a vehicle is due, and a review request lands after every pickup.",
-            image: IMG.step4,
-            imageAlt: "Automated quote follow-up and maintenance reminders",
-          },
-          {
-            title: "Visible — every job trackable from quote to pickup",
-            description:
-              "Quote requested → approved → in the bay → ready → picked up → reviewed. One clear board shows what's stuck on approval and what's about to close.",
-            image: IMG.step3,
-            imageAlt: "Automotive job pipeline view",
-          },
-        ]}
-        outcome="Shops running quote follow-up typically close a meaningfully higher share of the quotes that would have gone cold after the first callback."
-      />
-    ),
-  },
-  // 3. Motorcycle — riding schools, moto tours, rentals, repair/custom
-  // shops. Shamil's explicit call: separate from Automotive.
-  {
-    category: "Motorcycle · riding & rentals",
-    title: "Motorcycle shops",
-    src: ph("Motorcycle", "A85C3B"),
-    visual: <CardStyle2Photo src="/industries/card-motorcycle-photo.jpg" />,
-    demoUrl: "https://moto.erken.systems",
-    demoHeadline: "A real moto shop setup, running live right now",
-    demoSub:
-      "This isn't a mockup. It's a complete motorcycle tour and rental system — website, online booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a tour and watch what your riders would experience.",
-    content: (
-      <IndustryBodySteps
-        steps={[
-          {
-            title: "Capture — course, tour, and rental inquiries all get answered",
-            description:
-              "Your AI receptionist picks up for riding-course enrollment calls and for tourists messaging about a guided tour or a rental at odd hours in a different time zone. It qualifies license class or tour dates and books the slot on the spot.",
-            image: IMG.step1,
-            imageAlt: "AI receptionist booking a riding course or tour",
-          },
-          {
-            title: "Organized — every rider's info lands in one place automatically",
-            description:
-              "License class, course level, tour dates, deposit status — all dropped into one organized list. Your instructors and tour lead see the full picture before the rider shows up.",
-            image: IMG.step2,
-            imageAlt: "Rider details saved automatically",
-          },
-          {
-            title: "Automatic — deposits and win-backs run themselves",
-            description:
-              "Deposit collection links go out the moment a tour or rental is confirmed. Past riders and renters get a seasonal win-back message when the riding season opens back up, without anyone digging through last year's spreadsheet.",
-            image: IMG.step4,
-            imageAlt: "Automated deposit collection and seasonal win-back",
-          },
-          {
-            title: "Visible — every rider trackable from inquiry to repeat business",
-            description:
-              "Inquiry → course enrolled or tour booked → deposit paid → completed → reactivated. You always know who's confirmed and who's still on the fence.",
-            image: IMG.step3,
-            imageAlt: "Motorcycle rider pipeline view",
-          },
-        ]}
-        outcome="Shops answering tour and rental inquiries around the clock typically book the traveler who messages at 2am before a competitor even sees the message."
-      />
-    ),
-  },
-  // 4. Jiu Jitsu — BJJ academies. Shamil's explicit call: separate card
+  // 1. Jiu Jitsu — BJJ academies. Shamil's explicit call: separate card
   // from Gyms.
   {
     category: "Martial arts · Jiu Jitsu",
@@ -326,7 +184,7 @@ const INDUSTRIES: IndustryCard[] = [
       />
     ),
   },
-  // 5. Gyms — boutique gyms & boxes. Merge candidate with Jiu Jitsu per the
+  // 2. Gyms — boutique gyms & boxes. Merge candidate with Jiu Jitsu per the
   // money map, but Shamil's explicit call keeps them as two cards.
   {
     category: "Fitness · boutique gyms",
@@ -373,194 +231,7 @@ const INDUSTRIES: IndustryCard[] = [
       />
     ),
   },
-  // 6. Surfing — surf schools & camps. International, multilingual,
-  // WhatsApp-heavy clientele messaging while the owner is in the water.
-  {
-    category: "Adventure · surfing",
-    title: "Surf schools & camps",
-    src: ph("Surfing", "5B93A0"),
-    visual: <CardStyle2Photo src="/industries/card-surfing-photo.jpg" />,
-    demoUrl: "https://surf.erken.systems",
-    demoHeadline: "A real surf camp setup, running live right now",
-    demoSub:
-      "This isn't a mockup. It's a complete surf camp system — website, lesson booking, AI assistant, automated follow-ups — built on our platform and open for you to click through. Book a lesson and watch what your guests would experience.",
-    content: (
-      <IndustryBodySteps
-        steps={[
-          {
-            title: "Capture — every message gets answered, day or night",
-            description:
-              "Your AI assistant answers WhatsApp, web chat, and calls around the clock for international guests messaging from a different time zone while you're out on the water. It qualifies package interest and books the slot on the spot.",
-            image: IMG.step1,
-            imageAlt: "AI assistant answering a surf camp inquiry",
-          },
-          {
-            title: "Organized — every guest's info lands in one place automatically",
-            description:
-              "Package interest, dates, language, deposit status — all dropped into one organized list. Your team sees who's confirmed before the guest lands.",
-            image: IMG.step2,
-            imageAlt: "Surf camp guest details saved automatically",
-          },
-          {
-            title: "Automatic — the pre-arrival journey runs itself",
-            description:
-              "Deposit links go out the moment a package is confirmed. A pre-arrival sequence covers what to bring, airport transfers, and gear upsells, so guests show up prepped instead of your front desk explaining it all on day one.",
-            image: IMG.step4,
-            imageAlt: "Automated pre-arrival guest journey",
-          },
-          {
-            title: "Visible — every guest trackable from inquiry to repeat booking",
-            description:
-              "Inquiry → deposit paid → arrived → week completed → reviewed → reactivated next season. One board shows who's ready for a win-back message when the season turns.",
-            image: IMG.step3,
-            imageAlt: "Surf camp guest pipeline view",
-          },
-        ]}
-        outcome="Camps running a pre-arrival journey typically see more guests show up ready to book extra sessions or gear instead of figuring it out on arrival."
-      />
-    ),
-  },
-  // 7. Tennis — clubs & academies. Junior programs are the real money;
-  // parents are the buyers.
-  {
-    category: "Racquet sports · tennis",
-    title: "Tennis clubs & academies",
-    src: ph("Tennis", "7FA06B"),
-    visual: <CardStyle2Photo src="/industries/card-tennis-photo.jpg" />,
-    demoUrl: "https://tennis.erken.systems",
-    demoHeadline: "A real tennis academy setup, running live right now",
-    demoSub:
-      "This isn't a mockup. It's a complete tennis academy system — website, trial-lesson booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a trial lesson and watch what your members would experience.",
-    content: (
-      <IndustryBodySteps
-        steps={[
-          {
-            title: "Capture — every parent call gets answered, even mid-lesson",
-            description:
-              "Your AI receptionist answers when a parent calls about the junior program while your pro is on court and the front desk is unstaffed. It qualifies age and level and books a trial lesson on the spot.",
-            image: IMG.step1,
-            imageAlt: "AI receptionist booking a junior tennis trial lesson",
-          },
-          {
-            title: "Organized — every student's info lands in one place automatically",
-            description:
-              "Age, level, parent contact, lesson schedule — all dropped into one organized list. Your pros see the full roster before the first lesson.",
-            image: IMG.step2,
-            imageAlt: "Tennis student details saved automatically",
-          },
-          {
-            title: "Automatic — billing and renewals run themselves",
-            description:
-              "Recurring lesson billing runs without a monthly invoice chase. Court-utilization campaigns fill the dead 2pm hour, and renewal reminders go out before a membership quietly lapses at season's end.",
-            image: IMG.step4,
-            imageAlt: "Automated recurring billing and renewal reminders",
-          },
-          {
-            title: "Visible — every student trackable from trial to renewal",
-            description:
-              "Inquiry → trial lesson → enrolled → renewed → lapsed. One board shows which juniors are due for the next level up and which memberships need a renewal push.",
-            image: IMG.step3,
-            imageAlt: "Tennis academy student pipeline view",
-          },
-        ]}
-        outcome="Academies running renewal automation typically catch memberships before they quietly lapse at the end of a season instead of finding out after the court's already empty."
-      />
-    ),
-  },
-  // 8. Farming — agritourism, CSA, and greenhouse operations, the
-  // consumer-facing edge of farming (not commodity row-crop).
-  {
-    category: "Agritourism · farming",
-    title: "Farms & agritourism",
-    src: ph("Farms", "9C8B4E"),
-    visual: <CardStyle2Photo src="/industries/card-farming-photo.jpg" />,
-    demoUrl: "https://farm.erken.systems",
-    demoHeadline: "A real farm setup, running live right now",
-    demoSub:
-      "This isn't a mockup. It's a complete farm and CSA system — website, tour booking, AI assistant, automated follow-ups — built on our platform and open for you to click through. Book a visit and watch what your customers would experience.",
-    content: (
-      <IndustryBodySteps
-        steps={[
-          {
-            title: "Capture — every tour and box inquiry gets answered from the field",
-            description:
-              "Your AI assistant answers farm-stay, tour, and pick-your-own inquiries while you're out in the greenhouse or the field with no signal on you. It books the slot or starts the CSA sign-up right there.",
-            image: IMG.step1,
-            imageAlt: "AI assistant booking a farm tour or CSA box",
-          },
-          {
-            title: "Organized — every visitor and subscriber lands in one place automatically",
-            description:
-              "Tour date, group size, CSA box preferences and pickup location — all dropped into one organized list. No sticky notes on the farmhouse fridge.",
-            image: IMG.step2,
-            imageAlt: "Farm visitor and CSA subscriber details saved automatically",
-          },
-          {
-            title: "Automatic — seasonal campaigns and weekly comms run themselves",
-            description:
-              "CSA members get their weekly box update without you writing it by hand every Sunday night. Harvest-week and u-pick-opening announcements go out automatically to your list the moment a new window opens.",
-            image: IMG.step4,
-            imageAlt: "Automated seasonal campaigns and CSA weekly updates",
-          },
-          {
-            title: "Visible — every visitor and subscriber trackable across the season",
-            description:
-              "Inquiry → booked or subscribed → visited or delivered → repeat. One board shows which CSA members are about to lapse and which wholesale buyers haven't reordered.",
-            image: IMG.step3,
-            imageAlt: "Farm visitor and subscriber pipeline view",
-          },
-        ]}
-        outcome="Farms running seasonal campaign automation typically fill u-pick and harvest-event slots without the owner posting the same reminder by hand every week."
-      />
-    ),
-  },
-  // 9. Climbing — climbing gyms & small guiding outfits.
-  {
-    category: "Adventure · climbing",
-    title: "Climbing gyms & guides",
-    src: ph("Climbing", "7C8A99"),
-    visual: <CardStyle2Photo src="/industries/card-climbing-photo.jpg" />,
-    demoUrl: "https://climb.erken.systems",
-    demoHeadline: "A real climbing gym setup, running live right now",
-    demoSub:
-      "This isn't a mockup. It's a complete climbing gym system — website, class booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book an intro class and watch what your members would experience.",
-    content: (
-      <IndustryBodySteps
-        steps={[
-          {
-            title: "Capture — every intro-class and party inquiry gets answered",
-            description:
-              "Your AI receptionist answers while your staff are on the wall belaying an intro class. It books intro-to-climbing sessions and birthday-party slots, and qualifies guide-trip inquiries by experience level and dates.",
-            image: IMG.step1,
-            imageAlt: "AI receptionist booking a climbing intro class",
-          },
-          {
-            title: "Organized — every visitor's info lands in one place automatically",
-            description:
-              "Intro-class date, party headcount, waiver status, guide-trip experience level — all dropped into one organized list. Your team sees who's coming before they check in.",
-            image: IMG.step2,
-            imageAlt: "Climbing visitor details saved automatically",
-          },
-          {
-            title: "Automatic — the membership funnel and trip logistics run themselves",
-            description:
-              "Intro-class attendees get a membership offer automatically the next day, while it's still fresh. Guide-trip inquiries get weather-and-waiver logistics handled without a back-and-forth email chain.",
-            image: IMG.step4,
-            imageAlt: "Automated membership offer and guide-trip logistics",
-          },
-          {
-            title: "Visible — every visitor trackable from intro class to member",
-            description:
-              "Intro class → membership offered → joined → renewed. One board shows exactly which first-timers are still on the fence about signing up.",
-            image: IMG.step3,
-            imageAlt: "Climbing gym visitor pipeline view",
-          },
-        ]}
-        outcome="Gyms running the intro-to-membership funnel typically convert more first-time climbers into members instead of letting them stay a one-and-done visit."
-      />
-    ),
-  },
-  // 10. Yachting — charter operators & sailing schools. High ticket,
+  // 3. Yachting — charter operators & sailing schools. High ticket,
   // speed-to-reply decides who wins the booking.
   {
     category: "Yachting · charters & schools",
@@ -607,149 +278,7 @@ const INDUSTRIES: IndustryCard[] = [
       />
     ),
   },
-  // 11. Skiing — independent ski schools, instructor collectives, rental
-  // shops, small lodges (not mega-resorts).
-  {
-    category: "Winter sports · skiing",
-    title: "Ski schools & lodges",
-    src: ph("Skiing", "8FA9BE"),
-    visual: <CardStyle2Photo src="/industries/card-skiing-photo.jpg" />,
-    demoUrl: "https://ski.erken.systems",
-    demoHeadline: "A real ski lodge setup, running live right now",
-    demoSub:
-      "This isn't a mockup. It's a complete ski school and lodge system — website, lesson and rental booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a lesson and watch what your guests would experience.",
-    content: (
-      <IndustryBodySteps
-        steps={[
-          {
-            title: "Capture — every lesson and rental call gets answered in peak-week chaos",
-            description:
-              "Your AI receptionist answers when every line is ringing at once during peak week. It qualifies skill level, rental sizes, and lesson time, and books the slot instead of the caller hanging up and calling the shop next door.",
-            image: IMG.step1,
-            imageAlt: "AI receptionist booking a ski lesson during peak week",
-          },
-          {
-            title: "Organized — every booking's info lands in one place automatically",
-            description:
-              "Skill level, rental sizes, lesson time, lodge dates — all dropped into one organized list. Your instructors and rental desk see the full picture before the guest arrives.",
-            image: IMG.step2,
-            imageAlt: "Ski booking details saved automatically",
-          },
-          {
-            title: "Automatic — rental pre-booking and off-season reactivation run themselves",
-            description:
-              "Rental gear gets pre-booked against your fleet calendar so peak week doesn't start with a line out the door. Off-season, past guests get a reactivation message automatically instead of the database going quiet until next winter.",
-            image: IMG.step4,
-            imageAlt: "Automated rental pre-booking and off-season reactivation",
-          },
-          {
-            title: "Visible — every guest trackable from inquiry to next season",
-            description:
-              "Inquiry → booked → lesson or stay completed → reactivated next season. One board shows exactly who's due for a nudge before the snow falls again.",
-            image: IMG.step3,
-            imageAlt: "Ski school and lodge guest pipeline view",
-          },
-        ]}
-        outcome="Schools running rental pre-booking typically walk into peak week with gear already reserved instead of a line out the door on day one."
-      />
-    ),
-  },
-  // 12. Horse riding — riding schools & trail-ride operators. Among the
-  // least digitized industries on the list.
-  {
-    category: "Equestrian · riding schools",
-    title: "Horse riding schools",
-    src: ph("Horse riding", "8B5E3C"),
-    visual: <CardStyle2Photo src="/industries/card-horseriding-photo.jpg" />,
-    demoUrl: "https://horse.erken.systems",
-    demoHeadline: "A real riding stable setup, running live right now",
-    demoSub:
-      "This isn't a mockup. It's a complete riding stable system — website, lesson and trail-ride booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a ride and watch what your riders would experience.",
-    content: (
-      <IndustryBodySteps
-        steps={[
-          {
-            title: "Capture — every lesson and trail-ride inquiry gets answered",
-            description:
-              "Your AI receptionist answers while you're in the barn or leading a trail ride, replacing the paper booking book and the Facebook DMs that used to sit unread for days. It qualifies experience level and books the slot on the spot.",
-            image: IMG.step1,
-            imageAlt: "AI receptionist booking a horse riding lesson",
-          },
-          {
-            title: "Organized — every rider's info lands in one place automatically",
-            description:
-              "Experience level, lesson schedule, trail-ride date, waiver status — all dropped into one organized list. No more flipping through a paper book to find who's booked for Saturday.",
-            image: IMG.step2,
-            imageAlt: "Rider details saved automatically",
-          },
-          {
-            title: "Automatic — billing and waivers run themselves",
-            description:
-              "Recurring lesson billing goes out without a manual invoice. Waiver signatures get collected automatically before a rider ever shows up, and boarding inquiries flow into a real pipeline instead of a text thread.",
-            image: IMG.step4,
-            imageAlt: "Automated lesson billing and waiver collection",
-          },
-          {
-            title: "Visible — every rider trackable from inquiry to recurring student",
-            description:
-              "Inquiry → booked → lesson or ride completed → recurring student. One board shows who's a regular now and who needs a follow-up to come back.",
-            image: IMG.step3,
-            imageAlt: "Horse riding school rider pipeline view",
-          },
-        ]}
-        outcome="Barns moving off paper books typically see waivers signed and lessons billed automatically instead of chasing both by hand every single week."
-      />
-    ),
-  },
-  // 13. Shooting — ranges with training courses & sporting-clay clubs.
-  // Shamil's explicit call: keep the copy on training/membership/corporate
-  // events, never on selling firearms.
-  {
-    category: "Ranges · training courses",
-    title: "Shooting ranges",
-    src: ph("Shooting range", "7A7A5C"),
-    visual: <CardStyle2Photo src="/industries/card-shooting-photo.jpg" />,
-    demoUrl: "https://shoot.erken.systems",
-    demoHeadline: "A real range setup, running live right now",
-    demoSub:
-      "This isn't a mockup. It's a complete shooting range system — website, course booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a course and watch what your students would experience.",
-    content: (
-      <IndustryBodySteps
-        steps={[
-          {
-            title: "Capture — every course and membership call gets answered",
-            description:
-              "Your AI receptionist answers while your instructors are running a class on the line. It qualifies course type and certification goal, and books the slot or the corporate-event headcount right there on the call.",
-            image: IMG.step1,
-            imageAlt: "AI receptionist booking a range training course",
-          },
-          {
-            title: "Organized — every student's info lands in one place automatically",
-            description:
-              "Course type, certification level, corporate-event headcount — all dropped into one organized list. Your instructors see the roster before the class starts.",
-            image: IMG.step2,
-            imageAlt: "Range student details saved automatically",
-          },
-          {
-            title: "Automatic — membership renewals and corporate bookings run themselves",
-            description:
-              "Membership renewal reminders go out before a lane-time membership quietly lapses. Corporate-event inquiries move through a real booking pipeline instead of a phone tag chain with an office manager.",
-            image: IMG.step4,
-            imageAlt: "Automated membership renewal and corporate booking follow-up",
-          },
-          {
-            title: "Visible — every student and event trackable from inquiry to booked",
-            description:
-              "Inquiry → course booked → certified → membership renewed. One board shows which corporate events are still tentative and which need a follow-up call to close.",
-            image: IMG.step3,
-            imageAlt: "Shooting range course and event pipeline view",
-          },
-        ]}
-        outcome="Ranges running corporate-event booking automation typically fill more weekday slots that would otherwise sit empty between range hours."
-      />
-    ),
-  },
-  // 14. Hotels — boutique & independent properties, 10-80 rooms.
+  // 4. Hotels — boutique & independent properties, 10-80 rooms.
   {
     category: "Hospitality · boutique hotels",
     title: "Boutique hotels",
@@ -795,7 +324,7 @@ const INDUSTRIES: IndustryCard[] = [
       />
     ),
   },
-  // 15. Cafes & restaurants — catering & events angle, not single
+  // 5. Cafes & restaurants — catering & events angle, not single
   // low-margin cafes.
   {
     category: "Hospitality · cafes & catering",
@@ -842,7 +371,54 @@ const INDUSTRIES: IndustryCard[] = [
       />
     ),
   },
-  // 16. Electronics & repair shops — phone/computer/console/drone/appliance
+  // 6. Automotive — repair shops, performance & tuning, rentals, dealerships.
+  // Shamil's explicit call: NOT detailing/tint/wrap.
+  {
+    category: "Automotive · repair & performance",
+    title: "Automotive shops",
+    src: ph("Automotive", "9C7454"),
+    visual: <CardStyle2Photo src="/industries/card-automotive-photo.jpg" />,
+    demoUrl: "https://auto.erken.systems",
+    demoHeadline: "A real auto shop setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete auto repair shop system — website, online booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a drop-off and watch what your customers would experience.",
+    content: (
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "Capture — every call gets answered, even with the bay full",
+            description:
+              "Your AI receptionist picks up while your techs are elbow-deep in an engine or mid-dyno-run on a tune. It diagnoses the issue or qualifies the build request, checks your live booking calendar, and books a drop-off slot right there on the call.",
+            image: IMG.step1,
+            imageAlt: "AI receptionist answering a shop call",
+          },
+          {
+            title: "Organized — every vehicle and customer lands in one place automatically",
+            description:
+              "Make, model, mileage, the issue or the mod request — all dropped into your job list the moment they hang up. No clipboard, no whiteboard, no re-typing later.",
+            image: IMG.step2,
+            imageAlt: "Vehicle and customer details saved automatically",
+          },
+          {
+            title: "Automatic — quote follow-up and maintenance reminders run themselves",
+            description:
+              "A quote that goes quiet gets a follow-up instead of dying. Oil-change, tune-up, and seasonal-tire reminders go out automatically when a vehicle is due, and a review request lands after every pickup.",
+            image: IMG.step4,
+            imageAlt: "Automated quote follow-up and maintenance reminders",
+          },
+          {
+            title: "Visible — every job trackable from quote to pickup",
+            description:
+              "Quote requested → approved → in the bay → ready → picked up → reviewed. One clear board shows what's stuck on approval and what's about to close.",
+            image: IMG.step3,
+            imageAlt: "Automotive job pipeline view",
+          },
+        ]}
+        outcome="Shops running quote follow-up typically close a meaningfully higher share of the quotes that would have gone cold after the first callback."
+      />
+    ),
+  },
+  // 7. Electronics & repair shops — phone/computer/console/drone/appliance
   // repair. Walk-in + mail-in mix; "is it ready yet" call volume is the
   // #1 front-counter interruption.
   {
@@ -890,7 +466,243 @@ const INDUSTRIES: IndustryCard[] = [
       />
     ),
   },
-  // 17. Makerspaces & workshops — fab labs, community workshops, kids'
+  // 8. Horse riding — riding schools & trail-ride operators. Among the
+  // least digitized industries on the list.
+  {
+    category: "Equestrian · riding schools",
+    title: "Horse riding schools",
+    src: ph("Horse riding", "8B5E3C"),
+    visual: <CardStyle2Photo src="/industries/card-horseriding-photo.jpg" />,
+    demoUrl: "https://horse.erken.systems",
+    demoHeadline: "A real riding stable setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete riding stable system — website, lesson and trail-ride booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a ride and watch what your riders would experience.",
+    content: (
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "Capture — every lesson and trail-ride inquiry gets answered",
+            description:
+              "Your AI receptionist answers while you're in the barn or leading a trail ride, replacing the paper booking book and the Facebook DMs that used to sit unread for days. It qualifies experience level and books the slot on the spot.",
+            image: IMG.step1,
+            imageAlt: "AI receptionist booking a horse riding lesson",
+          },
+          {
+            title: "Organized — every rider's info lands in one place automatically",
+            description:
+              "Experience level, lesson schedule, trail-ride date, waiver status — all dropped into one organized list. No more flipping through a paper book to find who's booked for Saturday.",
+            image: IMG.step2,
+            imageAlt: "Rider details saved automatically",
+          },
+          {
+            title: "Automatic — billing and waivers run themselves",
+            description:
+              "Recurring lesson billing goes out without a manual invoice. Waiver signatures get collected automatically before a rider ever shows up, and boarding inquiries flow into a real pipeline instead of a text thread.",
+            image: IMG.step4,
+            imageAlt: "Automated lesson billing and waiver collection",
+          },
+          {
+            title: "Visible — every rider trackable from inquiry to recurring student",
+            description:
+              "Inquiry → booked → lesson or ride completed → recurring student. One board shows who's a regular now and who needs a follow-up to come back.",
+            image: IMG.step3,
+            imageAlt: "Horse riding school rider pipeline view",
+          },
+        ]}
+        outcome="Barns moving off paper books typically see waivers signed and lessons billed automatically instead of chasing both by hand every single week."
+      />
+    ),
+  },
+  // 9. Motorcycle — riding schools, moto tours, rentals, repair/custom
+  // shops. Shamil's explicit call: separate from Automotive.
+  {
+    category: "Motorcycle · riding & rentals",
+    title: "Motorcycle shops",
+    src: ph("Motorcycle", "A85C3B"),
+    visual: <CardStyle2Photo src="/industries/card-motorcycle-photo.jpg" />,
+    demoUrl: "https://moto.erken.systems",
+    demoHeadline: "A real moto shop setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete motorcycle tour and rental system — website, online booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a tour and watch what your riders would experience.",
+    content: (
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "Capture — course, tour, and rental inquiries all get answered",
+            description:
+              "Your AI receptionist picks up for riding-course enrollment calls and for tourists messaging about a guided tour or a rental at odd hours in a different time zone. It qualifies license class or tour dates and books the slot on the spot.",
+            image: IMG.step1,
+            imageAlt: "AI receptionist booking a riding course or tour",
+          },
+          {
+            title: "Organized — every rider's info lands in one place automatically",
+            description:
+              "License class, course level, tour dates, deposit status — all dropped into one organized list. Your instructors and tour lead see the full picture before the rider shows up.",
+            image: IMG.step2,
+            imageAlt: "Rider details saved automatically",
+          },
+          {
+            title: "Automatic — deposits and win-backs run themselves",
+            description:
+              "Deposit collection links go out the moment a tour or rental is confirmed. Past riders and renters get a seasonal win-back message when the riding season opens back up, without anyone digging through last year's spreadsheet.",
+            image: IMG.step4,
+            imageAlt: "Automated deposit collection and seasonal win-back",
+          },
+          {
+            title: "Visible — every rider trackable from inquiry to repeat business",
+            description:
+              "Inquiry → course enrolled or tour booked → deposit paid → completed → reactivated. You always know who's confirmed and who's still on the fence.",
+            image: IMG.step3,
+            imageAlt: "Motorcycle rider pipeline view",
+          },
+        ]}
+        outcome="Shops answering tour and rental inquiries around the clock typically book the traveler who messages at 2am before a competitor even sees the message."
+      />
+    ),
+  },
+  // 10. Farming — agritourism, CSA, and greenhouse operations, the
+  // consumer-facing edge of farming (not commodity row-crop).
+  {
+    category: "Agritourism · farming",
+    title: "Farms & agritourism",
+    src: ph("Farms", "9C8B4E"),
+    visual: <CardStyle2Photo src="/industries/card-farming-photo.jpg" />,
+    demoUrl: "https://farm.erken.systems",
+    demoHeadline: "A real farm setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete farm and CSA system — website, tour booking, AI assistant, automated follow-ups — built on our platform and open for you to click through. Book a visit and watch what your customers would experience.",
+    content: (
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "Capture — every tour and box inquiry gets answered from the field",
+            description:
+              "Your AI assistant answers farm-stay, tour, and pick-your-own inquiries while you're out in the greenhouse or the field with no signal on you. It books the slot or starts the CSA sign-up right there.",
+            image: IMG.step1,
+            imageAlt: "AI assistant booking a farm tour or CSA box",
+          },
+          {
+            title: "Organized — every visitor and subscriber lands in one place automatically",
+            description:
+              "Tour date, group size, CSA box preferences and pickup location — all dropped into one organized list. No sticky notes on the farmhouse fridge.",
+            image: IMG.step2,
+            imageAlt: "Farm visitor and CSA subscriber details saved automatically",
+          },
+          {
+            title: "Automatic — seasonal campaigns and weekly comms run themselves",
+            description:
+              "CSA members get their weekly box update without you writing it by hand every Sunday night. Harvest-week and u-pick-opening announcements go out automatically to your list the moment a new window opens.",
+            image: IMG.step4,
+            imageAlt: "Automated seasonal campaigns and CSA weekly updates",
+          },
+          {
+            title: "Visible — every visitor and subscriber trackable across the season",
+            description:
+              "Inquiry → booked or subscribed → visited or delivered → repeat. One board shows which CSA members are about to lapse and which wholesale buyers haven't reordered.",
+            image: IMG.step3,
+            imageAlt: "Farm visitor and subscriber pipeline view",
+          },
+        ]}
+        outcome="Farms running seasonal campaign automation typically fill u-pick and harvest-event slots without the owner posting the same reminder by hand every week."
+      />
+    ),
+  },
+  // 11. Skydiving — dropzones & wind tunnels. Same anatomy as flight
+  // schools (discovery experience → course → license path); weather-cancel
+  // auto-rebooking is the #1 operational pain here.
+  {
+    category: "Adventure · skydiving",
+    title: "Skydiving",
+    src: ph("Skydiving", "5B84A6"),
+    visual: <CardStyle2Photo src="/industries/card-skydiving-photo.jpg" />,
+    demoUrl: "https://sky.erken.systems",
+    demoHeadline: "A real dropzone setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete skydiving dropzone system — website, online booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a tandem jump and watch what your jumpers would experience.",
+    content: (
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "Capture — every call and jump inquiry gets answered",
+            description:
+              "Your AI receptionist picks up when the load is grounded and the phone won't stop, or when you're up in the plane and can't reach it at all. It qualifies tandem vs AFF course interest, checks weight and age requirements, and books an open slot on the load calendar on the spot.",
+            image: IMG.step1,
+            imageAlt: "AI receptionist booking a tandem jump slot",
+          },
+          {
+            title: "Organized — every jumper's info lands in one place automatically",
+            description:
+              "Name, jump type, weight, any prior jumps, waiver status — all dropped into one organized list the moment they reach out. Your manifest desk sees the full picture before the jumper shows up.",
+            image: IMG.step2,
+            imageAlt: "Jumper details saved automatically",
+          },
+          {
+            title: "Automatic — weather-cancel auto-rebooking runs itself",
+            description:
+              "When a load gets scrubbed for weather, every affected jumper gets an instant text with the next available slot instead of your desk fielding the same call twenty times. Confirmations, reminders, and post-jump review requests go out automatically too.",
+            image: IMG.step4,
+            imageAlt: "Automated weather-cancel rebooking messages",
+          },
+          {
+            title: "Visible — every jumper trackable from inquiry to license",
+            description:
+              "Inquiry → tandem booked → jumped → AFF course offered → licensed. One clear board shows who's ready for the next step and who needs a nudge back in.",
+            image: IMG.step3,
+            imageAlt: "Jumper pipeline view",
+          },
+        ]}
+        outcome="Dropzones running weather-cancel auto-rebooking typically recover most of a scrubbed day's bookings within 48 hours instead of losing them to whichever dropzone answers the phone first."
+      />
+    ),
+  },
+  // 12. Tennis — clubs & academies. Junior programs are the real money;
+  // parents are the buyers.
+  {
+    category: "Racquet sports · tennis",
+    title: "Tennis clubs & academies",
+    src: ph("Tennis", "7FA06B"),
+    visual: <CardStyle2Photo src="/industries/card-tennis-photo.jpg" />,
+    demoUrl: "https://tennis.erken.systems",
+    demoHeadline: "A real tennis academy setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete tennis academy system — website, trial-lesson booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a trial lesson and watch what your members would experience.",
+    content: (
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "Capture — every parent call gets answered, even mid-lesson",
+            description:
+              "Your AI receptionist answers when a parent calls about the junior program while your pro is on court and the front desk is unstaffed. It qualifies age and level and books a trial lesson on the spot.",
+            image: IMG.step1,
+            imageAlt: "AI receptionist booking a junior tennis trial lesson",
+          },
+          {
+            title: "Organized — every student's info lands in one place automatically",
+            description:
+              "Age, level, parent contact, lesson schedule — all dropped into one organized list. Your pros see the full roster before the first lesson.",
+            image: IMG.step2,
+            imageAlt: "Tennis student details saved automatically",
+          },
+          {
+            title: "Automatic — billing and renewals run themselves",
+            description:
+              "Recurring lesson billing runs without a monthly invoice chase. Court-utilization campaigns fill the dead 2pm hour, and renewal reminders go out before a membership quietly lapses at season's end.",
+            image: IMG.step4,
+            imageAlt: "Automated recurring billing and renewal reminders",
+          },
+          {
+            title: "Visible — every student trackable from trial to renewal",
+            description:
+              "Inquiry → trial lesson → enrolled → renewed → lapsed. One board shows which juniors are due for the next level up and which memberships need a renewal push.",
+            image: IMG.step3,
+            imageAlt: "Tennis academy student pipeline view",
+          },
+        ]}
+        outcome="Academies running renewal automation typically catch memberships before they quietly lapse at the end of a season instead of finding out after the court's already empty."
+      />
+    ),
+  },
+  // 13. Makerspaces & workshops — fab labs, community workshops, kids'
   // STEM/robotics academies, plus small CNC/laser/3D-print fab services.
   // Parents are the buyers for kids' programs; RFQs are the fab-service
   // money maker.
@@ -938,7 +750,195 @@ const INDUSTRIES: IndustryCard[] = [
         outcome="Spaces running the intro-to-membership funnel typically convert more first-time visitors into paying members, and classes fill without the schedule living in someone's head."
       />
     ),
+  },  // 14. Shooting — ranges with training courses & sporting-clay clubs.
+  // Shamil's explicit call: keep the copy on training/membership/corporate
+  // events, never on selling firearms.
+  {
+    category: "Ranges · training courses",
+    title: "Shooting ranges",
+    src: ph("Shooting range", "7A7A5C"),
+    visual: <CardStyle2Photo src="/industries/card-shooting-photo.jpg" />,
+    demoUrl: "https://shoot.erken.systems",
+    demoHeadline: "A real range setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete shooting range system — website, course booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a course and watch what your students would experience.",
+    content: (
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "Capture — every course and membership call gets answered",
+            description:
+              "Your AI receptionist answers while your instructors are running a class on the line. It qualifies course type and certification goal, and books the slot or the corporate-event headcount right there on the call.",
+            image: IMG.step1,
+            imageAlt: "AI receptionist booking a range training course",
+          },
+          {
+            title: "Organized — every student's info lands in one place automatically",
+            description:
+              "Course type, certification level, corporate-event headcount — all dropped into one organized list. Your instructors see the roster before the class starts.",
+            image: IMG.step2,
+            imageAlt: "Range student details saved automatically",
+          },
+          {
+            title: "Automatic — membership renewals and corporate bookings run themselves",
+            description:
+              "Membership renewal reminders go out before a lane-time membership quietly lapses. Corporate-event inquiries move through a real booking pipeline instead of a phone tag chain with an office manager.",
+            image: IMG.step4,
+            imageAlt: "Automated membership renewal and corporate booking follow-up",
+          },
+          {
+            title: "Visible — every student and event trackable from inquiry to booked",
+            description:
+              "Inquiry → course booked → certified → membership renewed. One board shows which corporate events are still tentative and which need a follow-up call to close.",
+            image: IMG.step3,
+            imageAlt: "Shooting range course and event pipeline view",
+          },
+        ]}
+        outcome="Ranges running corporate-event booking automation typically fill more weekday slots that would otherwise sit empty between range hours."
+      />
+    ),
   },
+  // 15. Skiing — independent ski schools, instructor collectives, rental
+  // shops, small lodges (not mega-resorts).
+  {
+    category: "Winter sports · skiing",
+    title: "Ski schools & lodges",
+    src: ph("Skiing", "8FA9BE"),
+    visual: <CardStyle2Photo src="/industries/card-skiing-photo.jpg" />,
+    demoUrl: "https://ski.erken.systems",
+    demoHeadline: "A real ski lodge setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete ski school and lodge system — website, lesson and rental booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a lesson and watch what your guests would experience.",
+    content: (
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "Capture — every lesson and rental call gets answered in peak-week chaos",
+            description:
+              "Your AI receptionist answers when every line is ringing at once during peak week. It qualifies skill level, rental sizes, and lesson time, and books the slot instead of the caller hanging up and calling the shop next door.",
+            image: IMG.step1,
+            imageAlt: "AI receptionist booking a ski lesson during peak week",
+          },
+          {
+            title: "Organized — every booking's info lands in one place automatically",
+            description:
+              "Skill level, rental sizes, lesson time, lodge dates — all dropped into one organized list. Your instructors and rental desk see the full picture before the guest arrives.",
+            image: IMG.step2,
+            imageAlt: "Ski booking details saved automatically",
+          },
+          {
+            title: "Automatic — rental pre-booking and off-season reactivation run themselves",
+            description:
+              "Rental gear gets pre-booked against your fleet calendar so peak week doesn't start with a line out the door. Off-season, past guests get a reactivation message automatically instead of the database going quiet until next winter.",
+            image: IMG.step4,
+            imageAlt: "Automated rental pre-booking and off-season reactivation",
+          },
+          {
+            title: "Visible — every guest trackable from inquiry to next season",
+            description:
+              "Inquiry → booked → lesson or stay completed → reactivated next season. One board shows exactly who's due for a nudge before the snow falls again.",
+            image: IMG.step3,
+            imageAlt: "Ski school and lodge guest pipeline view",
+          },
+        ]}
+        outcome="Schools running rental pre-booking typically walk into peak week with gear already reserved instead of a line out the door on day one."
+      />
+    ),
+  },
+  // 16. Climbing — climbing gyms & small guiding outfits.
+  {
+    category: "Adventure · climbing",
+    title: "Climbing gyms & guides",
+    src: ph("Climbing", "7C8A99"),
+    visual: <CardStyle2Photo src="/industries/card-climbing-photo.jpg" />,
+    demoUrl: "https://climb.erken.systems",
+    demoHeadline: "A real climbing gym setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete climbing gym system — website, class booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book an intro class and watch what your members would experience.",
+    content: (
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "Capture — every intro-class and party inquiry gets answered",
+            description:
+              "Your AI receptionist answers while your staff are on the wall belaying an intro class. It books intro-to-climbing sessions and birthday-party slots, and qualifies guide-trip inquiries by experience level and dates.",
+            image: IMG.step1,
+            imageAlt: "AI receptionist booking a climbing intro class",
+          },
+          {
+            title: "Organized — every visitor's info lands in one place automatically",
+            description:
+              "Intro-class date, party headcount, waiver status, guide-trip experience level — all dropped into one organized list. Your team sees who's coming before they check in.",
+            image: IMG.step2,
+            imageAlt: "Climbing visitor details saved automatically",
+          },
+          {
+            title: "Automatic — the membership funnel and trip logistics run themselves",
+            description:
+              "Intro-class attendees get a membership offer automatically the next day, while it's still fresh. Guide-trip inquiries get weather-and-waiver logistics handled without a back-and-forth email chain.",
+            image: IMG.step4,
+            imageAlt: "Automated membership offer and guide-trip logistics",
+          },
+          {
+            title: "Visible — every visitor trackable from intro class to member",
+            description:
+              "Intro class → membership offered → joined → renewed. One board shows exactly which first-timers are still on the fence about signing up.",
+            image: IMG.step3,
+            imageAlt: "Climbing gym visitor pipeline view",
+          },
+        ]}
+        outcome="Gyms running the intro-to-membership funnel typically convert more first-time climbers into members instead of letting them stay a one-and-done visit."
+      />
+    ),
+  },
+  // 17. Surfing — surf schools & camps. International, multilingual,
+  // WhatsApp-heavy clientele messaging while the owner is in the water.
+  {
+    category: "Adventure · surfing",
+    title: "Surf schools & camps",
+    src: ph("Surfing", "5B93A0"),
+    visual: <CardStyle2Photo src="/industries/card-surfing-photo.jpg" />,
+    demoUrl: "https://surf.erken.systems",
+    demoHeadline: "A real surf camp setup, running live right now",
+    demoSub:
+      "This isn't a mockup. It's a complete surf camp system — website, lesson booking, AI assistant, automated follow-ups — built on our platform and open for you to click through. Book a lesson and watch what your guests would experience.",
+    content: (
+      <IndustryBodySteps
+        steps={[
+          {
+            title: "Capture — every message gets answered, day or night",
+            description:
+              "Your AI assistant answers WhatsApp, web chat, and calls around the clock for international guests messaging from a different time zone while you're out on the water. It qualifies package interest and books the slot on the spot.",
+            image: IMG.step1,
+            imageAlt: "AI assistant answering a surf camp inquiry",
+          },
+          {
+            title: "Organized — every guest's info lands in one place automatically",
+            description:
+              "Package interest, dates, language, deposit status — all dropped into one organized list. Your team sees who's confirmed before the guest lands.",
+            image: IMG.step2,
+            imageAlt: "Surf camp guest details saved automatically",
+          },
+          {
+            title: "Automatic — the pre-arrival journey runs itself",
+            description:
+              "Deposit links go out the moment a package is confirmed. A pre-arrival sequence covers what to bring, airport transfers, and gear upsells, so guests show up prepped instead of your front desk explaining it all on day one.",
+            image: IMG.step4,
+            imageAlt: "Automated pre-arrival guest journey",
+          },
+          {
+            title: "Visible — every guest trackable from inquiry to repeat booking",
+            description:
+              "Inquiry → deposit paid → arrived → week completed → reviewed → reactivated next season. One board shows who's ready for a win-back message when the season turns.",
+            image: IMG.step3,
+            imageAlt: "Surf camp guest pipeline view",
+          },
+        ]}
+        outcome="Camps running a pre-arrival journey typically see more guests show up ready to book extra sessions or gear instead of figuring it out on arrival."
+      />
+    ),
+  },
+
 ];
 
 /**
