@@ -215,6 +215,11 @@ const skydiving: DemoConfig = {
     headline: "Book your tandem jump — pick a real load time",
     sub: "Grab an open slot below and you're on the manifest instantly. Prefer to talk first? Use the callback button up top.",
     note: "Confirmed instantly — you'll get a text and email with weight requirements and check-in time. Prefer to talk now? Use the voice assistant.",
+    // Reuses the SAME shared demo GHL calendar as flight-schools (no
+    // dedicated Sky Erken calendar exists yet) — good enough for a
+    // click-through pilot, flagged for Shamil to swap for a real/distinct
+    // calendar before this pattern replicates to the other 16 industries.
+    calendarId: "SS2V1nuWEIbOlNrzyxpt",
   },
   cta: {
     headline: "The plane leaves on schedule.",

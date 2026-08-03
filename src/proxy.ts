@@ -30,7 +30,14 @@ const DEMO_HOST_ROOTS: Record<string, string> = {
   // src/app/demo/config.ts + src/app/demo/configs/*.ts). Wildcard DNS on
   // the erken.systems zone already covers these hosts; only the Vercel
   // domain attachment is a separate one-time step per subdomain.
-  "sky.erken.systems": "/demo/skydiving",
+  //
+  // sky.erken.systems repointed (PILOT, 2026-08-03) to /sky-erken — the
+  // corrected main-site-template rebuild (see /fly-erken for the pattern
+  // this was cloned from). The other 16 subdomains stay on the old
+  // /demo/[industry] template until Shamil approves this pilot and
+  // replication begins; the old page is still reachable directly at
+  // /demo/skydiving.
+  "sky.erken.systems": "/sky-erken",
   "auto.erken.systems": "/demo/automotive",
   "moto.erken.systems": "/demo/motorcycle",
   "bjj.erken.systems": "/demo/bjj",
