@@ -1302,6 +1302,9 @@ const EMBED_SCRIPT_SRC = "https://link.msgsndr.com/js/form_embed.js";
 function BookingSection() {
   const [calendarLoaded, setCalendarLoaded] = useState(false);
   const [calendarFailed, setCalendarFailed] = useState(false);
+  // Live content height of the GHL widget, reported by the widget itself
+  // (see the message listener below). Null until the first report arrives.
+  const [frameHeight, setFrameHeight] = useState<number | null>(null);
 
   useEffect(() => {
     if (document.querySelector(`script[src="${EMBED_SCRIPT_SRC}"]`)) return;
@@ -1324,8 +1327,28 @@ function BookingSection() {
     return () => clearTimeout(t);
   }, [calendarLoaded]);
 
+  // The widget posts its real content height via the iframe-resizer
+  // protocol: "[iFrameSizer]<iframeId>:<height>:<width>:<trigger>"
+  // (e.g. 607px for the bare month grid, ~681px once a date's time slots
+  // expand, ~950px for the name/email/phone details form — measured live
+  // 2026-08-04). We track it and size the iframe + wrapper to match, so
+  // the section never shows dead canvas below the widget (the "huge gap"
+  // bug: a fixed 900px pin × 1.4 scale left ~400px of empty cream under
+  // the 607px month view) and never clips the taller details form.
+  // Reports under 400px are transient init states and get ignored.
+  useEffect(() => {
+    const prefix = `[iFrameSizer]booking-${BOOKING_CALENDAR_ID}:`;
+    const onMsg = (e: MessageEvent) => {
+      if (typeof e.data !== "string" || !e.data.startsWith(prefix)) return;
+      const h = parseFloat(e.data.split(":")[1]);
+      if (Number.isFinite(h) && h >= 400 && h < 4000) setFrameHeight(h);
+    };
+    window.addEventListener("message", onMsg);
+    return () => window.removeEventListener("message", onMsg);
+  }, []);
+
   return (
-    <section id="booking" className="scroll-mt-20 pb-20 pt-16 md:pb-28 md:pt-20">
+    <section id="booking" className="scroll-mt-20 pb-10 pt-16 md:pb-14 md:pt-20">
       <div className="mx-auto max-w-6xl px-6 md:px-8">
         <motion.div
           data-celly-avoid
@@ -1389,14 +1412,31 @@ function BookingSection() {
                 widget (hovering a time slot counts). Inline style beats the
                 Tailwind h-[...] classes, so picking a date + moving the mouse
                 made the calendar shrink-loop and collapse. An !important rule
-                outranks inline styles — this pins the height for good. */}
-            <style>{`
-              #booking-${BOOKING_CALENDAR_ID} { height: 880px !important; }
-              @media (min-width: 768px) {
-                #booking-${BOOKING_CALENDAR_ID} { height: 900px !important; }
-              }
-            `}</style>
-            <div className="relative mx-auto h-[924px] w-[315px] md:h-[1265px] md:w-[645px]">
+                outranks inline styles — but a FIXED pin left dead canvas
+                under the short month view and clipped the tall details
+                form. So the pin is now dynamic: the message listener above
+                tracks the widget's own reported content height and we pin
+                to exactly that. The wrapper reserves height × the CSS scale
+                (transform doesn't affect layout), with a small buffer. */}
+            {(() => {
+              const h = Math.round(frameHeight ?? 880);
+              return (
+                <style>{`
+                  #booking-${BOOKING_CALENDAR_ID} { height: ${h}px !important; }
+                  #booking-frame-wrap {
+                    height: ${Math.round(h * 1.05) + 8}px;
+                    transition: height 0.25s ease;
+                  }
+                  @media (min-width: 768px) {
+                    #booking-frame-wrap { height: ${Math.round(h * 1.4) + 8}px; }
+                  }
+                `}</style>
+              );
+            })()}
+            <div
+              id="booking-frame-wrap"
+              className="relative mx-auto w-[315px] md:w-[645px]"
+            >
               <iframe
                 src={`https://api.leadconnectorhq.com/widget/booking/${BOOKING_CALENDAR_ID}`}
                 className="absolute inset-x-0 top-0 mx-auto h-[880px] w-[300px] origin-top scale-[1.05] rounded-2xl border-0 md:h-[900px] md:w-[460px] md:scale-[1.4]"
