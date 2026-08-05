@@ -13,10 +13,12 @@
  * calls — not the demo-only window.__startDemoVoiceCall Fly Erken uses.
  * Text opens the same GHL chat widget via openErkenChat().
  *
- * Callback option (owner ask, 2026-07-31): third menu item opens the main
- * site's own CallbackRequestModal (src/components/CallbackRequestModal.tsx
- * — plain name/phone/email form → /api/custom-request kind
- * "callback-request"), NOT Fly Erken's demo-branded GHL-iframe modal.
+ * Callback option (owner ask, 2026-07-31; GHL swap 2026-08-05): third menu
+ * item opens the main site's own CallbackRequestModal
+ * (src/components/CallbackRequestModal.tsx — now embeds the same GHL
+ * "Request a Call" form as CallbackSection, so submit fires the
+ * Form Submitted → Voice AI outbound-call workflow), NOT Fly Erken's
+ * demo-branded GHL-iframe modal.
  *
  * Usage: mount <ContactChooser /> ONCE per page, and mount
  * <CallbackRequestModal /> alongside it (the callback item calls its
@@ -34,6 +36,7 @@ declare global {
   interface Window {
     __startErkenVoiceCall?: () => void;
     __openErkenCallbackModal?: () => void;
+    __prewarmErkenCallbackModal?: () => void;
   }
 }
 
@@ -61,6 +64,9 @@ export default function ContactChooser() {
     const onOpen = (e: Event) => {
       const d = (e as CustomEvent).detail as { x: number; y: number; anchored: boolean };
       setMenu(d);
+      // Start loading the callback GHL form hidden the moment the chooser
+      // opens, so it's ready if the visitor picks "Request a callback".
+      window.__prewarmErkenCallbackModal?.();
     };
     window.addEventListener(CONTACT_EVENT, onOpen);
     return () => window.removeEventListener(CONTACT_EVENT, onOpen);

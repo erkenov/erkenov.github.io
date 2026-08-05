@@ -2,53 +2,110 @@
 
 /**
  * CallbackRequestModal — "Request a callback" path for erken.systems (the
- * bot's click-menu third option, owner addition 2026-07-30, alongside its
- * existing Text chat / Voice chat buttons).
+ * contact chooser's third option, alongside Voice / Text chat).
  *
- * Fly Erken's own callback path (src/app/demo/components/CallbackModal.tsx)
- * embeds a demo-branded GHL form (hardcodes "Fly Erken" copy and a
- * demo-scoped form id) — not a fit for the main site. Instead this posts a
- * small name/phone/email form straight to /api/custom-request with
- * kind: "callback-request" (added additively to that route's whitelist,
- * tag "callback-request" — see the route for the full contract). Email is
- * still required by that route's validation, so it's asked for here too,
- * framed as "so we can confirm" rather than as the primary field — phone is
- * the actual ask and gets first position + autofocus.
+ * 2026-08-05 rewrite (owner ask): the modal now embeds the SAME GHL
+ * "Request a Call" form (e3uSHlYnl0MrQe29KItJ, Erken Systems sub-account)
+ * that the homepage's CallbackSection renders inline — instead of the old
+ * custom name/phone/email form that posted to /api/custom-request. One
+ * reason for the swap: submitting this GHL form fires the GHL workflow
+ * Form Submitted → Voice AI outbound call, so the callback actually happens
+ * (the custom form only created a tagged contact). The Fly Erken demo form
+ * (VzQbRmbNTOwfeFDNOzlQ) stays demo-scoped and is NOT reused here — it
+ * hardcodes Fly Erken copy and the demo SMS-consent flow.
  *
- * Being a plain form (no third-party iframe), it has none of the GHL-embed
- * loading jank the Fly Erken modal needed fixing — it just needs to render,
- * so there's no skeleton/prewarm machinery here.
+ * Rendering copies the demo modal's no-jank pattern
+ * (src/app/demo/components/CallbackModal.tsx): fixed-size box from first
+ * paint with an overflow-clipped wrapper so GHL's embed-script resize can't
+ * move the modal, a spinner until the iframe's content settles, opacity
+ * fade-in (no reflow), and window.__prewarmErkenCallbackModal() so the
+ * contact chooser can start loading the form hidden as soon as it opens.
  *
  * Opened via window.__openErkenCallbackModal(), the same install-on-mount
  * global-trigger pattern as window.__startErkenVoiceCall
- * (src/components/ErkenVoiceWidget.tsx) and ContactChooser. Mount ONCE per
- * page (home-v8-draft, wherever the bot's click-menu lives).
+ * (src/components/ErkenVoiceWidget.tsx). Mount ONCE per page wherever
+ * ContactChooser lives (home-v8-draft, /start).
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Phone, X } from "lucide-react";
 
 declare global {
   interface Window {
     __openErkenCallbackModal?: () => void;
+    __prewarmErkenCallbackModal?: () => void;
   }
 }
 
-type SendState = "idle" | "sending" | "sent" | "error";
+// GHL "Request a Call" form — same id as src/components/CallbackSection.tsx.
+const FORM_ID = "e3uSHlYnl0MrQe29KItJ";
+const FORM_HOST = "https://api.leadconnectorhq.com";
+const EMBED_SCRIPT_SRC = "https://link.msgsndr.com/js/form_embed.js";
+const EMBED_SCRIPT_HOST = "https://link.msgsndr.com";
+
+// The form's stable rendered height (CallbackSection embeds it at 560px
+// with data-height 527) — hard-locked so GHL's own resize-on-load can't
+// move the modal; the wrapper clips/scrolls instead.
+const FORM_AREA_HEIGHT = 560;
+
+/** One-time <link rel="preconnect"/"dns-prefetch"> pair for the GHL hosts —
+ *  shaves the connection-setup time off the FIRST form load of the session.
+ *  Idempotent so mounting on multiple pages never duplicates it. */
+function ensurePreconnect() {
+  if (typeof document === "undefined") return;
+  const add = (rel: string, href: string) => {
+    const id = `${rel}-${href}`;
+    if (document.getElementById(id)) return;
+    const link = document.createElement("link");
+    link.id = id;
+    link.rel = rel;
+    link.href = href;
+    if (rel === "preconnect") link.crossOrigin = "anonymous";
+    document.head.appendChild(link);
+  };
+  add("preconnect", FORM_HOST);
+  add("dns-prefetch", FORM_HOST);
+  add("preconnect", EMBED_SCRIPT_HOST);
+  add("dns-prefetch", EMBED_SCRIPT_HOST);
+}
 
 export default function CallbackRequestModal() {
   const [open, setOpen] = useState(false);
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [state, setState] = useState<SendState>("idle");
+  // True once a caller (the contact chooser) has asked us to start loading
+  // the form BEFORE the visitor clicks "Request a callback" — the iframe
+  // mounts hidden so it's usually loaded by the time the modal opens.
+  const [warmed, setWarmed] = useState(false);
+  const [formReady, setFormReady] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const mountIframe = open || warmed;
 
   useEffect(() => {
-    window.__openErkenCallbackModal = () => setOpen(true);
+    ensurePreconnect();
+  }, []);
+
+  useEffect(() => {
+    window.__openErkenCallbackModal = () => {
+      setOpen(true);
+      setWarmed(true);
+    };
+    window.__prewarmErkenCallbackModal = () => setWarmed(true);
     return () => {
       delete window.__openErkenCallbackModal;
+      delete window.__prewarmErkenCallbackModal;
     };
   }, []);
+
+  // Load the GHL embed script as soon as the iframe is mounted (open OR
+  // prewarmed) — not only on open, so a prewarm actually gets ahead of the
+  // click.
+  useEffect(() => {
+    if (!mountIframe) return;
+    if (document.querySelector(`script[src="${EMBED_SCRIPT_SRC}"]`)) return;
+    const s = document.createElement("script");
+    s.src = EMBED_SCRIPT_SRC;
+    s.async = true;
+    document.body.appendChild(s);
+  }, [mountIframe]);
 
   useEffect(() => {
     if (!open) return;
@@ -59,110 +116,132 @@ export default function CallbackRequestModal() {
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
-  if (!open) return null;
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (state === "sending" || !phone.trim() || !email.trim()) return;
-    setState("sending");
-    try {
-      const r = await fetch("/api/custom-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email.trim(),
-          phone: phone.trim(),
-          kind: "callback-request",
-          channel: "form",
-          ...(name.trim() ? { name: name.trim() } : {}),
-        }),
-      });
-      setState(r.ok ? "sent" : "error");
-    } catch {
-      setState("error");
-    }
+  const handleIframeLoad = () => {
+    // `load` fires when the iframe's HTML parsed, but GHL's in-page JS
+    // paints the fields a beat later — a short settle delay avoids trading
+    // "resizing modal" for "resizing content behind a transparent iframe".
+    window.setTimeout(() => setFormReady(true), 250);
   };
 
+  if (!mountIframe) return null;
+
+  // IMPORTANT: ONE return path for both "prewarming off-screen" and
+  // "visibly open" — the iframe keeps the same element types at the same
+  // tree position in both states, only classes/styles toggle by `open`.
+  // Branching into two `return`s would make React remount the iframe on
+  // open, restarting the form's network request and defeating the prewarm.
   return (
-    <div
-      className="fixed inset-0 z-[220] flex items-center justify-center px-4"
-      style={{ background: "rgba(0,0,0,0.6)" }}
-      onClick={() => setOpen(false)}
-    >
+    <>
+      {open && (
+        <div
+          className="fixed inset-0 z-[219] bg-black/60"
+          onClick={() => setOpen(false)}
+        />
+      )}
       <div
-        className="w-full max-w-sm rounded-2xl border border-white/15 bg-black/85 p-6 shadow-2xl backdrop-blur-md"
-        onClick={(e) => e.stopPropagation()}
+        className={
+          open
+            ? "fixed inset-0 z-[220] flex items-center justify-center px-4"
+            : "fixed"
+        }
+        style={open ? undefined : { left: "-9999px", top: 0, width: 1, height: 1, overflow: "hidden" }}
+        aria-hidden={!open}
+        onClick={open ? () => setOpen(false) : undefined}
       >
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 text-white">
-            <Phone className="h-5 w-5" />
-          </div>
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            aria-label="Close"
-            className="-mr-2 -mt-2 rounded-full p-2 text-white/40 transition-colors hover:text-white/90"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+        <div
+          className={open ? "w-full max-w-sm rounded-2xl border border-white/15 bg-black/85 p-6 shadow-2xl backdrop-blur-md" : ""}
+          onClick={open ? (e) => e.stopPropagation() : undefined}
+        >
+          {open && (
+            <>
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 text-white">
+                  <Phone className="h-5 w-5" />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  aria-label="Close"
+                  className="-mr-2 -mt-2 rounded-full p-2 text-white/40 transition-colors hover:text-white/90"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
 
-        <h3 className="mt-4 text-lg font-semibold text-white" style={{ letterSpacing: "-0.02em" }}>
-          Request a callback
-        </h3>
-
-        <div className="mt-4 min-h-[9rem]">
-          {state === "sent" ? (
-            <p className="rounded-xl border border-white/15 bg-white/10 p-4 text-sm leading-relaxed text-white/90">
-              Got it — we&apos;ll call you back shortly.
-            </p>
-          ) : (
-            <form onSubmit={submit} className="flex flex-col gap-2">
-              <p className="text-sm text-white/60">Leave your number and we&apos;ll call you back.</p>
-              <input
-                type="tel"
-                required
-                autoFocus
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="your phone"
-                className="w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-base text-white placeholder-white/40 outline-none transition-colors focus:border-white/40"
-              />
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your email — so we can confirm"
-                className="w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-base text-white placeholder-white/40 outline-none transition-colors focus:border-white/40"
-              />
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="name (optional)"
-                className="w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-base text-white placeholder-white/40 outline-none transition-colors focus:border-white/40"
-              />
-              <button
-                type="submit"
-                disabled={state === "sending"}
-                className="mt-1 w-full cursor-pointer rounded-xl bg-[#7ea687] px-6 py-3 text-base font-semibold text-[#08110a] transition-colors hover:bg-[#B8D4BD] disabled:opacity-50"
-              >
-                {state === "sending"
-                  ? "One second…"
-                  : state === "error"
-                    ? "Didn't go through — try again"
-                    : "Request callback"}
-              </button>
-            </form>
+              <h3 className="mt-4 text-lg font-semibold text-white" style={{ letterSpacing: "-0.02em" }}>
+                Request a callback
+              </h3>
+              <p className="mt-1 text-sm text-white/60">
+                Leave your number and our AI assistant calls you back within a minute.
+              </p>
+            </>
           )}
+
+          {/* Fixed-height, overflow-clipped wrapper — whatever GHL's script
+              does to the iframe's own height, this box never changes size. */}
+          <div
+            className="relative rounded-lg"
+            style={{
+              // Capped by the viewport so the modal always fits; when the
+              // cap bites the wrapper scrolls so the submit button stays
+              // reachable.
+              height: `min(${FORM_AREA_HEIGHT}px, calc(100dvh - 260px))`,
+              width: "100%",
+              overflowY: "auto",
+              overflowX: "hidden",
+              marginTop: open ? "16px" : 0,
+              background: "#FFFFFF",
+            }}
+          >
+            {open && !formReady && (
+              <div
+                aria-hidden
+                className="absolute inset-0 flex flex-col items-center justify-center gap-3"
+                style={{ background: "#FFFFFF" }}
+              >
+                <span
+                  className="h-6 w-6 animate-spin rounded-full"
+                  style={{ border: "2px solid rgba(0,0,0,0.1)", borderTopColor: "rgba(0,0,0,0.4)" }}
+                />
+                <span className="text-xs" style={{ color: "rgba(0,0,0,0.4)" }}>
+                  Loading form…
+                </span>
+              </div>
+            )}
+            <iframe
+              ref={iframeRef}
+              src={`${FORM_HOST}/widget/form/${FORM_ID}`}
+              onLoad={handleIframeLoad}
+              tabIndex={open ? undefined : -1}
+              style={{
+                width: "100%",
+                height: `${FORM_AREA_HEIGHT}px`,
+                border: "none",
+                opacity: open && formReady ? 1 : 0,
+                transition: "opacity 0.25s ease-out",
+              }}
+              id={`inline-${FORM_ID}`}
+              data-layout="{'id':'INLINE'}"
+              data-trigger-type="alwaysShow"
+              data-trigger-value=""
+              data-activation-type="alwaysActivated"
+              data-activation-value=""
+              data-deactivation-type="neverDeactivate"
+              data-deactivation-value=""
+              data-form-name="Request a Call"
+              data-height={String(FORM_AREA_HEIGHT)}
+              data-layout-iframe-id={`inline-${FORM_ID}`}
+              data-form-id={FORM_ID}
+              title="Request a callback"
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
-/** Opens the callback modal from anywhere (the bot's click-menu, once wired). */
+/** Opens the callback modal from anywhere (the contact chooser's third item). */
 export function openErkenCallbackModal() {
   window.__openErkenCallbackModal?.();
 }
