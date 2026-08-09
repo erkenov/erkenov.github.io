@@ -64,6 +64,7 @@ import ErkenChatWidget, {
 import DemoVoiceWidget from "@/app/demo/components/DemoVoiceWidget";
 import CallbackModal from "@/app/demo/components/CallbackModal";
 import { getDemoConfig } from "@/app/demo/config";
+import Link from "next/link";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -203,19 +204,20 @@ type BubbleVariant = {
 const CELLY_VARIANTS: BubbleVariant[] = [
   {
     text:
-      "Hi, I'm Erken — Erken BJJ's front desk. I can answer anything about trial classes, membership, or the kids program, and book you in. Ask away.",
+      "Hi, I'm Erken. This whole site is a live demo built by Erken Systems — in it I play Erken BJJ's front desk so you can test me. Want to know more about this demo, the automations, or the voice agent? Ask away.",
     widthRem: 22,
     paddingVw: 9,
     paddingVh: 11,
   },
   {
-    text: "Hi, I'm Erken — the front desk here. Ask me anything about your first class.",
+    text:
+      "Hi, I'm Erken — this site is a live demo. Ask me anything about the demo, the automations, or the voice agent behind it.",
     widthRem: 17,
     paddingVw: 7,
     paddingVh: 7,
   },
   {
-    text: "Questions about training? Ask me.",
+    text: "Curious how this demo works? Ask me.",
     widthRem: 12,
     paddingVw: 5,
     paddingVh: 4,
@@ -331,9 +333,9 @@ function BjjHeader() {
       className="sticky top-0 z-50 w-full border-b border-border/60 bg-bg/85 backdrop-blur-md"
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-8">
-        <a href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
+        <Link href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
           bjj<span className="text-accent"> </span>erken
-        </a>
+        </Link>
         <nav className="hidden items-center gap-8 md:flex">
           <a href="#services" className="text-sm text-text-muted transition-colors hover:text-text">
             Our programs
@@ -1089,7 +1091,7 @@ function PlanCard({ tier }: { tier: (typeof PRICE_TIERS)[number] }) {
           {tier.badge}
         </span>
       )}
-      <h3 className="text-lg font-semibold text-text">{tier.label}</h3>
+      <h3 className={`text-lg font-semibold text-text ${tier.badge ? "pr-36" : ""}`}>{tier.label}</h3>
       <div className="mt-2">
         <span className="text-3xl font-bold tracking-tight text-text" style={{ letterSpacing: "-0.03em" }}>
           {tier.price}
@@ -1305,9 +1307,9 @@ function BookingSection() {
 
 const ROOF_ROWS: { cat: string; elsewhere: string }[] = [
   { cat: "Adult & kids fundamentals", elsewhere: "A rotating cast of assistant instructors" },
-  { cat: "Trial-class follow-up", elsewhere: "A trial that never gets a follow-up text" },
-  { cat: "Attendance-based win-back", elsewhere: "Nobody notices until the money is missing" },
-  { cat: "Failed payment recovery", elsewhere: "Chased by hand, or not at all" },
+  { cat: "A text after your trial class", elsewhere: "A trial that never gets a follow-up text" },
+  { cat: "A nudge when you go quiet", elsewhere: "Nobody notices you stopped coming" },
+  { cat: "A heads-up if a payment fails", elsewhere: "Chased by hand, or not at all" },
   { cat: "Belt & stripe tracking", elsewhere: "Tracked on paper, if at all" },
   { cat: "Front desk & scheduling", elsewhere: "Voicemail and phone tag" },
 ];
@@ -1567,7 +1569,6 @@ export default function BjjErkenClient() {
     const close = () => closeChoiceMenu();
     window.addEventListener("scroll", close, { passive: true, once: true });
     return () => window.removeEventListener("scroll", close);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [choiceMenu]);
   const stoppedRef = useRef(false);
   const lastCellOpacityRef = useRef(1);

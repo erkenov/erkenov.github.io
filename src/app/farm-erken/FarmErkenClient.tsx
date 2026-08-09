@@ -200,19 +200,20 @@ type BubbleVariant = {
 const CELLY_VARIANTS: BubbleVariant[] = [
   {
     text:
-      "Hi, I'm Erken — Erken Family Farm's front desk. I can answer anything about the CSA box, farm tours, or u-pick, and get you booked or signed up. Ask away.",
+      "Hi, I'm Erken. This whole site is a live demo built by Erken Systems — in it I play Erken Family Farm's front desk so you can test me. Want to know more about this demo, the automations, or the voice agent? Ask away.",
     widthRem: 22,
     paddingVw: 9,
     paddingVh: 11,
   },
   {
-    text: "Hi, I'm Erken — the front desk here. Ask me anything about a visit or the CSA box.",
+    text:
+      "Hi, I'm Erken — this site is a live demo. Ask me anything about the demo, the automations, or the voice agent behind it.",
     widthRem: 17,
     paddingVw: 7,
     paddingVh: 7,
   },
   {
-    text: "Questions about the farm? Ask me.",
+    text: "Curious how this demo works? Ask me.",
     widthRem: 12,
     paddingVw: 5,
     paddingVh: 4,
@@ -1204,7 +1205,7 @@ function PlanCard({ tier }: { tier: (typeof PRICE_TIERS)[number] }) {
           {tier.badge}
         </span>
       )}
-      <h3 className="text-lg font-semibold text-text">{tier.label}</h3>
+      <h3 className={`text-lg font-semibold text-text ${tier.badge ? "pr-36" : ""}`}>{tier.label}</h3>
       <div className="mt-2">
         <span className="text-3xl font-bold tracking-tight text-text" style={{ letterSpacing: "-0.03em" }}>
           {tier.price}
@@ -1436,7 +1437,7 @@ function BookingSection() {
 
 const ROOF_ROWS: { cat: string; elsewhere: string }[] = [
   { cat: "Weekly CSA box & member updates", elsewhere: "A co-op with rotating volunteers" },
-  { cat: "Renewal & win-back messages", elsewhere: "A lapsed subscription, gone for good" },
+  { cat: "A nudge before your box renews", elsewhere: "A subscription that lapses without a word" },
   { cat: "Tour & u-pick booking", elsewhere: "A sign-up sheet on a clipboard" },
   { cat: "Reviews & harvest photos", elsewhere: "An email that never gets sent" },
   { cat: "School & group field trips", elsewhere: "Phone tag with six different people" },

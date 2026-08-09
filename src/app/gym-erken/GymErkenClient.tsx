@@ -204,19 +204,20 @@ type BubbleVariant = {
 const CELLY_VARIANTS: BubbleVariant[] = [
   {
     text:
-      "Hi, I'm Erken — Erken Fitness's front desk. I can answer anything about classes, personal training, or your free trial, and book you in. Ask away.",
+      "Hi, I'm Erken. This whole site is a live demo built by Erken Systems — in it I play Erken Fitness's front desk so you can test me. Want to know more about this demo, the automations, or the voice agent? Ask away.",
     widthRem: 22,
     paddingVw: 9,
     paddingVh: 11,
   },
   {
-    text: "Hi, I'm Erken — the front desk here. Ask me anything about your first class.",
+    text:
+      "Hi, I'm Erken — this site is a live demo. Ask me anything about the demo, the automations, or the voice agent behind it.",
     widthRem: 17,
     paddingVw: 7,
     paddingVh: 7,
   },
   {
-    text: "Questions about training? Ask me.",
+    text: "Curious how this demo works? Ask me.",
     widthRem: 12,
     paddingVw: 5,
     paddingVh: 4,
@@ -1089,7 +1090,7 @@ function PlanCard({ tier }: { tier: (typeof PRICE_TIERS)[number] }) {
           {tier.badge}
         </span>
       )}
-      <h3 className="text-lg font-semibold text-text">{tier.label}</h3>
+      <h3 className={`text-lg font-semibold text-text ${tier.badge ? "pr-36" : ""}`}>{tier.label}</h3>
       <div className="mt-2">
         <span className="text-3xl font-bold tracking-tight text-text" style={{ letterSpacing: "-0.03em" }}>
           {tier.price}
@@ -1305,10 +1306,10 @@ function BookingSection() {
 
 const ROOF_ROWS: { cat: string; elsewhere: string }[] = [
   { cat: "Coached group classes", elsewhere: "Self-directed with no real coaching" },
-  { cat: "Trial-to-member onboarding", elsewhere: "A trial that never gets a follow-up" },
-  { cat: "Attendance-based win-back", elsewhere: "Nobody notices until you've quit" },
-  { cat: "Missed-call text-back", elsewhere: "A call that goes to voicemail" },
-  { cat: "Payment recovery", elsewhere: "Failed payments chased by hand, or not at all" },
+  { cat: "A real plan after your free trial", elsewhere: "A trial that never gets a follow-up" },
+  { cat: "A nudge when you go quiet", elsewhere: "Nobody notices until you've quit" },
+  { cat: "An answer even when coaches are mid-class", elsewhere: "A call that goes to voicemail" },
+  { cat: "A heads-up if a payment fails", elsewhere: "An awkward surprise at the front desk" },
   { cat: "Front desk & scheduling", elsewhere: "Voicemail and phone tag" },
 ];
 

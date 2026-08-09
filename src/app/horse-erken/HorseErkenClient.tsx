@@ -211,19 +211,20 @@ type BubbleVariant = {
 const CELLY_VARIANTS: BubbleVariant[] = [
   {
     text:
-      "Hi, I'm Erken — Erken Stables' front desk. I can book a lesson or trail ride, check boarding, or send your waiver, and book you in. Ask away.",
+      "Hi, I'm Erken. This whole site is a live demo built by Erken Systems — in it I play Erken Stables' front desk so you can test me. Want to know more about this demo, the automations, or the voice agent? Ask away.",
     widthRem: 22,
     paddingVw: 9,
     paddingVh: 11,
   },
   {
-    text: "Hi, I'm Erken — the front desk here. Ask me anything about your first ride.",
+    text:
+      "Hi, I'm Erken — this site is a live demo. Ask me anything about the demo, the automations, or the voice agent behind it.",
     widthRem: 17,
     paddingVw: 7,
     paddingVh: 7,
   },
   {
-    text: "Questions about a ride? Ask me.",
+    text: "Curious how this demo works? Ask me.",
     widthRem: 12,
     paddingVw: 5,
     paddingVh: 4,
@@ -1135,7 +1136,7 @@ function PlanCard({ tier }: { tier: (typeof PRICE_TIERS)[number] }) {
           {tier.badge}
         </span>
       )}
-      <h3 className="text-lg font-semibold text-text">{tier.label}</h3>
+      <h3 className={`text-lg font-semibold text-text ${tier.badge ? "pr-36" : ""}`}>{tier.label}</h3>
       <div className="mt-2">
         <span className="text-3xl font-bold tracking-tight text-text" style={{ letterSpacing: "-0.03em" }}>
           {tier.price}
@@ -1369,9 +1370,9 @@ function BookingSection() {
 const ROOF_ROWS: { cat: string; elsewhere: string }[] = [
   { cat: "Lessons & trail rides", elsewhere: "A paper booking book behind the counter" },
   { cat: "Online scheduling", elsewhere: "A Facebook DM that sits unread for days" },
-  { cat: "Reminder & no-show texting", elsewhere: "A wasted slot and an empty lesson" },
+  { cat: "A text the day before your lesson", elsewhere: "A wasted slot and an empty lesson" },
   { cat: "Digital waivers", elsewhere: "Paperwork you fill out at check-in" },
-  { cat: "Boarding & payment reminders", elsewhere: "An invoice that quietly lapses" },
+  { cat: "A reminder before board is due", elsewhere: "An invoice that quietly lapses" },
   { cat: "Front desk & scheduling", elsewhere: "Voicemail and phone tag" },
 ];
 

@@ -204,19 +204,20 @@ type BubbleVariant = {
 const CELLY_VARIANTS: BubbleVariant[] = [
   {
     text:
-      "Hi, I'm Erken — Erken Moto's front desk. I can answer anything about tours, rentals, or riding courses, and book you in. Ask away.",
+      "Hi, I'm Erken. This whole site is a live demo built by Erken Systems — in it I play Erken Moto's front desk so you can test me. Want to know more about this demo, the automations, or the voice agent? Ask away.",
     widthRem: 22,
     paddingVw: 9,
     paddingVh: 11,
   },
   {
-    text: "Hi, I'm Erken — the front desk here. Ask me anything about renting or booking a tour.",
+    text:
+      "Hi, I'm Erken — this site is a live demo. Ask me anything about the demo, the automations, or the voice agent behind it.",
     widthRem: 17,
     paddingVw: 7,
     paddingVh: 7,
   },
   {
-    text: "Questions about riding? Ask me.",
+    text: "Curious how this demo works? Ask me.",
     widthRem: 12,
     paddingVw: 5,
     paddingVh: 4,
@@ -1090,7 +1091,7 @@ function PlanCard({ tier }: { tier: (typeof PRICE_TIERS)[number] }) {
           {tier.badge}
         </span>
       )}
-      <h3 className="text-lg font-semibold text-text">{tier.label}</h3>
+      <h3 className={`text-lg font-semibold text-text ${tier.badge ? "pr-36" : ""}`}>{tier.label}</h3>
       <div className="mt-2">
         <span className="text-3xl font-bold tracking-tight text-text" style={{ letterSpacing: "-0.03em" }}>
           {tier.price}
@@ -1309,7 +1310,7 @@ const ROOF_ROWS: { cat: string; elsewhere: string }[] = [
   { cat: "Riding courses", elsewhere: "A driving school across town" },
   { cat: "Repair & custom work", elsewhere: "A specialty shop with its own queue" },
   { cat: "Status updates on repairs", elsewhere: "Calling in and getting voicemail" },
-  { cat: "Seasonal reminders & reviews", elsewhere: "An email that never gets sent" },
+  { cat: "A text when riding season opens", elsewhere: "An email that never gets sent" },
   { cat: "Front desk & booking", elsewhere: "Voicemail and phone tag across time zones" },
 ];
 

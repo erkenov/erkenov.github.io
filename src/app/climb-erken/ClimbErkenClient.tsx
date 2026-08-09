@@ -53,6 +53,7 @@ import ErkenChatWidget, {
 import DemoVoiceWidget from "@/app/demo/components/DemoVoiceWidget";
 import CallbackModal from "@/app/demo/components/CallbackModal";
 import { getDemoConfig } from "@/app/demo/config";
+import Link from "next/link";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -196,19 +197,20 @@ type BubbleVariant = {
 const CELLY_VARIANTS: BubbleVariant[] = [
   {
     text:
-      "Hi, I'm Erken — Erken Climbing Co.'s front desk. I can answer anything about intro classes, belay certification, or memberships, and book you in. Ask away.",
+      "Hi, I'm Erken. This whole site is a live demo built by Erken Systems — in it I play Erken Climbing Co.'s front desk so you can test me. Want to know more about this demo, the automations, or the voice agent? Ask away.",
     widthRem: 22,
     paddingVw: 9,
     paddingVh: 11,
   },
   {
-    text: "Hi, I'm Erken — the front desk here. Ask me anything about your first class.",
+    text:
+      "Hi, I'm Erken — this site is a live demo. Ask me anything about the demo, the automations, or the voice agent behind it.",
     widthRem: 17,
     paddingVw: 7,
     paddingVh: 7,
   },
   {
-    text: "Questions about climbing? Ask me.",
+    text: "Curious how this demo works? Ask me.",
     widthRem: 12,
     paddingVw: 5,
     paddingVh: 4,
@@ -324,9 +326,9 @@ function ClimbHeader() {
       className="sticky top-0 z-50 w-full border-b border-border/60 bg-bg/85 backdrop-blur-md"
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-8">
-        <a href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
+        <Link href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
           climb<span className="text-accent"> </span>erken
-        </a>
+        </Link>
         <nav className="hidden items-center gap-8 md:flex">
           <a href="#services" className="text-sm text-text-muted transition-colors hover:text-text">
             Our programs
@@ -820,7 +822,7 @@ function JourneySection() {
               <p className="mt-4 text-base leading-relaxed text-text-muted md:text-lg">
                 Every member here walks the same five stages — from a booked
                 intro class to renewal billing that just works. You always
-                know what's next, and the paperwork is done before you arrive.
+                know what&apos;s next, and the paperwork is done before you arrive.
               </p>
               <p className="mt-3 text-base leading-relaxed text-text-muted md:text-lg">
                 No clipboard queue at check-in, no chasing a lapsed membership.
@@ -1199,7 +1201,7 @@ function PlanCard({ tier }: { tier: (typeof PRICE_TIERS)[number] }) {
           {tier.badge}
         </span>
       )}
-      <h3 className="text-lg font-semibold text-text">{tier.label}</h3>
+      <h3 className={`text-lg font-semibold text-text ${tier.badge ? "pr-36" : ""}`}>{tier.label}</h3>
       <div className="mt-2">
         <span className="text-3xl font-bold tracking-tight text-text" style={{ letterSpacing: "-0.03em" }}>
           {tier.price}
@@ -1432,7 +1434,7 @@ function BookingSection() {
 const ROOF_ROWS: { cat: string; elsewhere: string }[] = [
   { cat: "Intro classes & belay certification", elsewhere: "A gym with rotating instructors" },
   { cat: "Digital waivers, before arrival", elsewhere: "A clipboard queue at check-in" },
-  { cat: "Membership renewal billing", elsewhere: "A lapsed membership, gone for good" },
+  { cat: "A heads-up before your membership lapses", elsewhere: "A membership that lapses without a word" },
   { cat: "Reviews & trip photos", elsewhere: "An email that never gets sent" },
   { cat: "Youth team & group scheduling", elsewhere: "Phone tag with six different people" },
   { cat: "Front desk, 24/7", elsewhere: "Voicemail and phone tag" },
@@ -1702,7 +1704,6 @@ export default function ClimbErkenClient() {
     const close = () => closeChoiceMenu();
     window.addEventListener("scroll", close, { passive: true, once: true });
     return () => window.removeEventListener("scroll", close);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [choiceMenu]);
   const stoppedRef = useRef(false);
   const lastCellOpacityRef = useRef(1);
