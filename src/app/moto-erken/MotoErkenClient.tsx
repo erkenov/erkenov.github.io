@@ -46,10 +46,7 @@ import {
   Phone,
   X,
   Map,
-  Key,
-  GraduationCap,
   Wrench,
-  Users,
   ShieldCheck,
   CalendarCheck,
   MessageSquare,
@@ -75,8 +72,8 @@ const ease = [0.16, 1, 0.3, 1] as const;
 // facts + the Retell dynamic variables (demo_business / demo_industry /
 // demo_context) the voice agent needs to answer in character.
 const MOTO = getDemoConfig("motorcycle")!;
-const PHONE_TEL = "+13252416674";
-const PHONE_DISPLAY = MOTO.business.phoneDisplay; // (325) 241-6674
+const PHONE_TEL = "+18887996065";
+const PHONE_DISPLAY = MOTO.business.phoneDisplay;
 const BOOKING_CALENDAR_ID = MOTO.booking.calendarId!;
 
 declare global {
@@ -385,36 +382,15 @@ function MotoHeader() {
 
 /* ================================================================== */
 /* RIDES & SERVICES — the homepage "Built for your industry" Apple-card */
-/* carousel, cards = the shop's six services. Icon tiles instead of     */
-/* per-card photos (we only have one motorcycle stock photo in the      */
-/* repo — reusing it six times would look broken, so each card gets a   */
-/* flat icon tile matching its config icon).                            */
+/* carousel, cards = the shop's six services. Each card gets a real     */
+/* stock photo matching its subject (public/moto-erken/), rendered      */
+/* full-bleed like the fly-erken flagship demo.                         */
 /* ================================================================== */
 
-const SERVICE_ICONS: Record<
-  string,
-  React.ComponentType<{ className?: string; strokeWidth?: number }>
-> = {
-  map: Map,
-  key: Key,
-  graduation: GraduationCap,
-  wrench: Wrench,
-  users: Users,
-  shield: ShieldCheck,
-};
-
-function ServiceIconTile({ icon }: { icon: string }) {
-  const Icon = SERVICE_ICONS[icon] ?? Bike;
+function ServicePhoto({ src }: { src: string }) {
   return (
-    <div
-      className="absolute inset-0 flex items-center justify-center"
-      style={{
-        background:
-          "radial-gradient(120% 120% at 30% 20%, var(--accent-soft), transparent 60%), var(--surface-2)",
-      }}
-    >
-      <Icon className="h-16 w-16 text-accent" strokeWidth={1.5} />
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
   );
 }
 
@@ -477,7 +453,7 @@ const SERVICES = [
   {
     category: "Start here · from $189",
     title: "Guided Desert Tours",
-    icon: "map",
+    photo: "/moto-erken/guided-desert-tour.jpg",
     story:
       "Half-day and full-day guided rides through the Sonoran Desert, led by a local guide on routes graded by skill level. Deposit secures your spot, refunded if we cancel for weather.",
     included: [
@@ -493,7 +469,7 @@ const SERVICES = [
   {
     category: "From $99/day",
     title: "Motorcycle Rentals",
-    icon: "key",
+    photo: "/moto-erken/motorcycle-rental-cruiser.jpg",
     story:
       "Cruisers, adventure bikes, and sport bikes by the day or the week. Full gear included, no deposit hassle at pickup — book online from a different time zone and it's confirmed before you land.",
     included: [
@@ -506,7 +482,7 @@ const SERVICES = [
   {
     category: "From $325",
     title: "Riding Courses",
-    icon: "graduation",
+    photo: "/moto-erken/riding-course-cornering.jpg",
     story:
       "MSF-certified beginner and intermediate courses, licensing prep, and a track day clinic for experienced riders — taught by instructors who actually ride these routes.",
     included: [
@@ -519,7 +495,7 @@ const SERVICES = [
   {
     category: "From $79",
     title: "Repair & Custom Work",
-    icon: "wrench",
+    photo: "/moto-erken/repair-custom-mechanic.jpg",
     story:
       "Full-service repair, tire changes, and custom builds for owners who ride here year-round — with status texts so you're not calling in to ask if it's ready.",
     included: [
@@ -532,7 +508,7 @@ const SERVICES = [
   {
     category: "6+ riders · custom quote",
     title: "Group & Corporate Tours",
-    icon: "users",
+    photo: "/moto-erken/group-corporate-tour.jpg",
     story:
       "Bachelor parties and corporate offsites on two wheels — we block-book the fleet and route for groups of 6 or more.",
     included: [
@@ -545,7 +521,7 @@ const SERVICES = [
   {
     category: "$25/day",
     title: "Gear Rental",
-    icon: "shield",
+    photo: "/moto-erken/gear-rental-helmet.jpg",
     story:
       "Helmets, jackets, and riding boots in every size, sanitized and inspected between every renter.",
     included: [
@@ -563,10 +539,10 @@ function MotoServicesCarousel() {
       key={s.title}
       index={i}
       card={{
-        src: HERO_IMAGE,
+        src: s.photo,
         title: s.title,
         category: s.category,
-        visual: <ServiceIconTile icon={s.icon} />,
+        visual: <ServicePhoto src={s.photo} />,
         content: <ServiceBody story={s.story} included={s.included} note={s.note} />,
       }}
     />
@@ -819,30 +795,35 @@ const GEAR: {
   title: string;
   spec: string;
   desc: string;
+  photo?: string;
   icon: React.ComponentType<{ className?: string; strokeWidth?: number; style?: React.CSSProperties }>;
 }[] = [
   {
     title: "22-Bike Rental Fleet",
     spec: "Cruisers · adventure bikes · sport bikes",
     desc: "A real fleet, not a handful of leftovers — cruisers, adventure bikes, and sport bikes ready the same day you book.",
+    photo: "/moto-erken/rental-fleet-row.jpg",
     icon: Bike,
   },
   {
     title: "Guided Tour Routes",
     spec: "Sonoran Desert · graded by skill level",
     desc: "Routes our own guides ride every week, graded honestly so a first-timer never ends up on an advanced trail.",
+    photo: "/moto-erken/guided-tour-routes.jpg",
     icon: Map,
   },
   {
     title: "In-House Repair Bay",
     spec: "Full-service · tire changes · custom builds",
     desc: "The same bay that services the rental fleet handles customer bikes too, with status texts instead of a phone call to check.",
+    photo: "/moto-erken/repair-bay.jpg",
     icon: Wrench,
   },
   {
     title: "Full Gear Wall",
     spec: "Every size · sanitized between renters",
     desc: "Helmets, jackets, and boots in every size, inspected and cleaned before the next rider ever touches them.",
+    photo: "/moto-erken/gear-wall-helmets.jpg",
     icon: ShieldCheck,
   },
 ];
@@ -914,7 +895,17 @@ function GearCarousel() {
                 }
               >
                 <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-surface-2 to-[#f0ece0]">
-                  <Icon className="h-16 w-16" style={{ color: ILLO_CLAY }} strokeWidth={1.5} />
+                  {card.photo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={card.photo}
+                      alt={card.title}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      draggable={false}
+                    />
+                  ) : (
+                    <Icon className="h-16 w-16" style={{ color: ILLO_CLAY }} strokeWidth={1.5} />
+                  )}
                 </div>
                 <h3 className="mt-4 text-base font-semibold text-text" style={{ letterSpacing: "-0.01em" }}>
                   {card.title}

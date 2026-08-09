@@ -18,7 +18,7 @@ const shooting: DemoConfig = {
     short: "Erken Range",
     tagline: "Training courses & lane memberships",
     location: "6600 W Buckeye Rd · Phoenix, AZ",
-    phoneDisplay: "(325) 241-2298",
+    phoneDisplay: "(888) 799-6065",
     hours: "Mon–Sat 9am–8pm · Sun 10am–5pm",
     icon: "target",
   },

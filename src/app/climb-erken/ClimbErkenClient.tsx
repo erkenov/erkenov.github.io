@@ -41,17 +41,7 @@
 
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import {
-  Check,
-  Phone,
-  X,
-  Mountain,
-  GraduationCap,
-  ShieldCheck,
-  CalendarCheck,
-  Users,
-  Key,
-} from "lucide-react";
+import { Check, Phone, X } from "lucide-react";
 import { Carousel, Card, CardModalContext } from "@/components/ui/apple-cards-carousel";
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { SphereScrollStage, type CellPositionInfo } from "@/components/SphereScrollStage";
@@ -70,8 +60,8 @@ const ease = [0.16, 1, 0.3, 1] as const;
 // facts + the Retell dynamic variables (demo_business / demo_industry /
 // demo_context) the voice agent needs to answer in character.
 const CLIMB = getDemoConfig("climbing")!;
-const PHONE_TEL = "+13252414420";
-const PHONE_DISPLAY = CLIMB.business.phoneDisplay; // (325) 241-4420
+const PHONE_TEL = "+18887996065";
+const PHONE_DISPLAY = CLIMB.business.phoneDisplay;
 // NOTE (flag for Shamil's review): climbing.ts reuses the SAME shared demo
 // GHL calendar as skydiving/flight-schools (SS2V1nuWEIbOlNrzyxpt) — there is
 // no dedicated Erken Climbing Co. calendar yet. Fine for a click-through
@@ -384,37 +374,14 @@ function ClimbHeader() {
 
 /* ================================================================== */
 /* PROGRAMS — the homepage "Built for your industry" Apple-card        */
-/* carousel, cards = the gym's six programs. Icon tiles instead of     */
-/* per-card photos (we only have one climbing stock photo in the repo  */
-/* — reusing it six times would look broken, so each card gets a flat  */
-/* icon tile matching its config icon, same visual language as the     */
-/* JOURNEY illustrations below).                                        */
+/* carousel, cards = the gym's six programs, each with a real stock    */
+/* photo matching its subject.                                         */
 /* ================================================================== */
 
-const SERVICE_ICONS: Record<
-  string,
-  React.ComponentType<{ className?: string; strokeWidth?: number }>
-> = {
-  mountain: Mountain,
-  shield: ShieldCheck,
-  graduation: GraduationCap,
-  users: Users,
-  calendar: CalendarCheck,
-  key: Key,
-};
-
-function ServiceIconTile({ icon }: { icon: string }) {
-  const Icon = SERVICE_ICONS[icon] ?? Mountain;
+function ServicePhoto({ src }: { src: string }) {
   return (
-    <div
-      className="absolute inset-0 flex items-center justify-center"
-      style={{
-        background:
-          "radial-gradient(120% 120% at 30% 20%, var(--accent-soft), transparent 60%), var(--surface-2)",
-      }}
-    >
-      <Icon className="h-16 w-16 text-accent" strokeWidth={1.5} />
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
   );
 }
 
@@ -482,7 +449,7 @@ const SERVICES = [
   {
     category: "Start here · $35",
     title: "Intro to Climbing Class",
-    icon: "mountain",
+    photo: "/climb-erken/intro-class-indoor.jpg",
     story:
       "A 90-minute class covering basic movement, gym etiquette, and safety, with gear included. No experience or partner required — a digital waiver signed before you arrive means no paperwork line at check-in.",
     included: [
@@ -498,7 +465,7 @@ const SERVICES = [
   {
     category: "Required for top-rope",
     title: "Belay Certification",
-    icon: "shield",
+    photo: "/climb-erken/belay-certification.jpg",
     story:
       "A required course for members who want to top-rope climb with a partner. Pass the belay test and you're certified for life at our gym.",
     included: [
@@ -511,7 +478,7 @@ const SERVICES = [
   {
     category: "Half-day and full-day",
     title: "Guided Outdoor Trips",
-    icon: "graduation",
+    photo: "/climb-erken/guided-outdoor-trip.jpg",
     story:
       "Half-day and full-day guided climbs in the Superstition Mountains for members ready to move outdoors, led by AMGA-certified guides.",
     included: [
@@ -524,7 +491,7 @@ const SERVICES = [
   {
     category: "Ages 8–18",
     title: "Youth Climbing Team",
-    icon: "users",
+    photo: "/climb-erken/youth-climbing-team.jpg",
     story:
       "A competitive team program for climbers ages 8–18, training three days a week toward regional competitions.",
     included: [
@@ -537,7 +504,7 @@ const SERVICES = [
   {
     category: "Groups up to 15",
     title: "Birthday Parties & Groups",
-    icon: "calendar",
+    photo: "/climb-erken/birthday-group-party.jpg",
     story:
       "Two-hour private party packages with a dedicated staff belayer and party room, for groups of up to 15.",
     included: [
@@ -550,7 +517,7 @@ const SERVICES = [
   {
     category: "Day passes & first-timers",
     title: "Gear Rental",
-    icon: "key",
+    photo: "/climb-erken/gear-rental.jpg",
     story:
       "Shoes, harnesses, and chalk bags available for day passes and first-timers, sanitized between every use.",
     included: [
@@ -568,10 +535,10 @@ function ClimbServicesCarousel() {
       key={s.title}
       index={i}
       card={{
-        src: HERO_IMAGE,
+        src: s.photo,
         title: s.title,
         category: s.category,
-        visual: <ServiceIconTile icon={s.icon} />,
+        visual: <ServicePhoto src={s.photo} />,
         content: <ServiceBody story={s.story} included={s.included} note={s.note} />,
       }}
     />
@@ -894,30 +861,35 @@ const GEAR: {
   title: string;
   spec: string;
   desc: string;
+  photo?: string;
 }[] = [
   {
     title: "18,000 sq ft Climbing Surface",
     spec: "Bouldering and top-rope · every skill level",
     desc: "Bouldering and top-rope walls across 18,000 square feet, not a single cramped room — routes reset regularly so regulars always have something new.",
+    photo: "/climb-erken/gym-wall-surface.jpg",
   },
   {
     title: "Rental Harness & Shoes",
     spec: "Sanitized between every use · all sizes",
     desc: "The same harness and shoes your first-timers rent, sized and checked before every class — a borrowed harness never means a guessed harness.",
+    photo: "/climb-erken/rental-shoes.jpg",
   },
   {
     title: "Belay & Auto-Belay Stations",
     spec: "Auto-belay and top-rope · certified staff on floor",
     desc: "Built for learning, not showing off — auto-belay stations for solo climbers and top-rope stations for certified partners, staff on the floor the whole time.",
+    photo: "/climb-erken/belay-stations.jpg",
   },
   {
     title: "Route-Setting Crew",
     spec: "Regular resets · all grades represented",
     desc: "Two ways to keep climbing interesting — regular route resets across all grades, and a setting crew that climbs the routes themselves before they open.",
+    photo: "/climb-erken/route-setting-holds.jpg",
   },
 ];
 
-/** Flat climbing-wall silhouette used for each gear card visual. */
+/** Flat climbing-wall silhouette used when a gear card has no photo. */
 function GearGlyph({ variant }: { variant: number }) {
   if (variant === 0) {
     // climbing wall with holds
@@ -1030,7 +1002,17 @@ function GearCarousel() {
                 }
               >
                 <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-surface-2 to-[#f0ece0]">
-                  <GearGlyph variant={i} />
+                  {card.photo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={card.photo}
+                      alt={card.title}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      draggable={false}
+                    />
+                  ) : (
+                    <GearGlyph variant={i} />
+                  )}
                 </div>
                 <h3 className="mt-4 text-base font-semibold text-text" style={{ letterSpacing: "-0.01em" }}>
                   {card.title}

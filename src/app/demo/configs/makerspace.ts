@@ -16,7 +16,7 @@ const makerspace: DemoConfig = {
     short: "Erken Makerspace",
     tagline: "Build, learn, fabricate",
     location: "550 S Rockford Dr · Tempe, AZ",
-    phoneDisplay: "(325) 241-9902",
+    phoneDisplay: "(888) 799-6065",
     hours: "Mon–Fri 9am–9pm · Sat 10am–6pm",
     icon: "hammer",
   },

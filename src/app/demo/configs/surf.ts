@@ -16,7 +16,7 @@ const surf: DemoConfig = {
     short: "Erken Surf",
     tagline: "Learn to surf in Tamarindo",
     location: "Playa Tamarindo · Guanacaste, Costa Rica",
-    phoneDisplay: "+506 4001 2286",
+    phoneDisplay: "(888) 799-6065",
     hours: "Daily 6am–6pm, tide dependent",
     icon: "waves",
   },

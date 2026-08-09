@@ -16,7 +16,7 @@ const yacht: DemoConfig = {
     short: "Erken Yacht",
     tagline: "Charter, sail, learn",
     location: "Bahia Mar Marina · Fort Lauderdale, FL",
-    phoneDisplay: "(325) 241-6650",
+    phoneDisplay: "(888) 799-6065",
     hours: "Daily 8am–8pm, charters by appointment",
     icon: "anchor",
   },

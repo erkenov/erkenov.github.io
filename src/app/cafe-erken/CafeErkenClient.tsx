@@ -76,8 +76,8 @@ const ease = [0.16, 1, 0.3, 1] as const;
 // the Retell dynamic variables (demo_business / demo_industry / demo_context)
 // the voice agent needs to answer in character.
 const CAFE = getDemoConfig("cafe")!;
-const PHONE_TEL = "+13252414488";
-const PHONE_DISPLAY = CAFE.business.phoneDisplay; // (325) 241-4488
+const PHONE_TEL = "+18887996065";
+const PHONE_DISPLAY = CAFE.business.phoneDisplay;
 // NOTE (flag for Shamil's review): cafe.ts reuses the SAME shared demo GHL
 // calendar as flight-schools/skydiving (SS2V1nuWEIbOlNrzyxpt) — there is no
 // dedicated Café Erken calendar yet. Fine for a pilot click-through, but a

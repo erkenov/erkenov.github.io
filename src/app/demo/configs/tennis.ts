@@ -16,7 +16,7 @@ const tennis: DemoConfig = {
     short: "Erken Tennis",
     tagline: "Junior and adult programs",
     location: "7700 E Gainey Ranch Rd · Scottsdale, AZ",
-    phoneDisplay: "(325) 241-9034",
+    phoneDisplay: "(888) 799-6065",
     hours: "Mon–Fri 6am–8pm · Sat–Sun 7am–5pm",
     icon: "gauge",
   },

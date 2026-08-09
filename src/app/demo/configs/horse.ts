@@ -16,7 +16,7 @@ const horse: DemoConfig = {
     short: "Erken Stables",
     tagline: "Lessons, trail rides, boarding",
     location: "9800 E Rio Verde Dr · Scottsdale, AZ",
-    phoneDisplay: "(325) 241-3305",
+    phoneDisplay: "(888) 799-6065",
     hours: "Tue–Sun 7am–6pm · Mon closed",
     icon: "map",
   },

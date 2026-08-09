@@ -16,7 +16,7 @@ const farm: DemoConfig = {
     short: "Erken Farm",
     tagline: "Visit the farm, join the CSA",
     location: "14200 N Farm Rd · Queen Creek, AZ",
-    phoneDisplay: "(325) 241-1187",
+    phoneDisplay: "(888) 799-6065",
     hours: "Farm stand Wed–Sun 9am–5pm",
     icon: "sprout",
   },

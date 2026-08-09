@@ -39,6 +39,7 @@
  */
 
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Check,
@@ -46,10 +47,8 @@ import {
   X,
   Wrench,
   Gauge,
-  Hammer,
   CalendarCheck,
   ShieldCheck,
-  Clock,
   ClipboardCheck,
   MessageSquare,
   Star,
@@ -73,8 +72,8 @@ const ease = [0.16, 1, 0.3, 1] as const;
 // facts + the Retell dynamic variables (demo_business / demo_industry /
 // demo_context) the voice agent needs to answer in character.
 const AUTO = getDemoConfig("automotive")!;
-const PHONE_TEL = "+13252413390";
-const PHONE_DISPLAY = AUTO.business.phoneDisplay; // (325) 241-3390
+const PHONE_TEL = "+18887996065";
+const PHONE_DISPLAY = AUTO.business.phoneDisplay;
 const BOOKING_CALENDAR_ID = AUTO.booking.calendarId!;
 
 declare global {
@@ -333,9 +332,9 @@ function AutoHeader() {
       className="sticky top-0 z-50 w-full border-b border-border/60 bg-bg/85 backdrop-blur-md"
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-8">
-        <a href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
+        <Link href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
           auto<span className="text-accent"> </span>erken
-        </a>
+        </Link>
         <nav className="hidden items-center gap-8 md:flex">
           <a href="#services" className="text-sm text-text-muted transition-colors hover:text-text">
             Our services
@@ -383,36 +382,14 @@ function AutoHeader() {
 
 /* ================================================================== */
 /* SERVICES — the homepage "Built for your industry" Apple-card         */
-/* carousel, cards = the shop's six services. Icon tiles instead of     */
-/* per-card photos (we only have one automotive stock photo in the      */
-/* repo — reusing it six times would look broken, so each card gets a   */
-/* flat icon tile matching its config icon).                            */
+/* carousel, cards = the shop's six services, each with a real photo    */
+/* of that service (see public/auto-erken/).                            */
 /* ================================================================== */
 
-const SERVICE_ICONS: Record<
-  string,
-  React.ComponentType<{ className?: string; strokeWidth?: number }>
-> = {
-  wrench: Wrench,
-  gauge: Gauge,
-  hammer: Hammer,
-  calendar: CalendarCheck,
-  shield: ShieldCheck,
-  clock: Clock,
-};
-
-function ServiceIconTile({ icon }: { icon: string }) {
-  const Icon = SERVICE_ICONS[icon] ?? Wrench;
+function ServicePhoto({ src }: { src: string }) {
   return (
-    <div
-      className="absolute inset-0 flex items-center justify-center"
-      style={{
-        background:
-          "radial-gradient(120% 120% at 30% 20%, var(--accent-soft), transparent 60%), var(--surface-2)",
-      }}
-    >
-      <Icon className="h-16 w-16 text-accent" strokeWidth={1.5} />
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
   );
 }
 
@@ -475,7 +452,7 @@ const SERVICES = [
   {
     category: "Start here · from $89",
     title: "General Repair & Diagnostics",
-    icon: "wrench",
+    photo: "/auto-erken/mechanic-under-car.jpg",
     story:
       "Check-engine lights, brakes, suspension, and everything in between. A full diagnostic scan comes first, then a written quote before any work starts — the diagnostic fee is waived if you approve the repair.",
     included: [
@@ -491,7 +468,7 @@ const SERVICES = [
   {
     category: "In-house dyno",
     title: "Dyno Tuning",
-    icon: "gauge",
+    photo: "/auto-erken/dyno-turbo-engine.jpg",
     story:
       "A baseline pull, a tune, and a printout that shows exactly what changed — for naturally aspirated and forced-induction builds alike.",
     included: [
@@ -505,7 +482,7 @@ const SERVICES = [
   {
     category: "Custom quote",
     title: "Custom & Performance Builds",
-    icon: "hammer",
+    photo: "/auto-erken/performance-engine-build.jpg",
     story:
       "Engine swaps, forced induction, and full builds project-managed from parts sourcing to dyno day — with written cost tracking so you always know where the budget stands.",
     included: [
@@ -518,7 +495,7 @@ const SERVICES = [
   {
     category: "From $59",
     title: "Scheduled Maintenance",
-    icon: "calendar",
+    photo: "/auto-erken/oil-change-maintenance.jpg",
     story:
       "Oil changes, fluid services, and manufacturer-interval maintenance that keeps your warranty intact — booked online in under a minute.",
     included: [
@@ -531,7 +508,7 @@ const SERVICES = [
   {
     category: "$149",
     title: "Pre-Purchase Inspection",
-    icon: "shield",
+    photo: "/auto-erken/pre-purchase-inspection.jpg",
     story:
       "A 100-point inspection before you buy a used car, with photos and a written report delivered the same day.",
     included: [
@@ -544,7 +521,7 @@ const SERVICES = [
   {
     category: "No appointment needed",
     title: "Same-Day Express Service",
-    icon: "clock",
+    photo: "/auto-erken/express-tire-service.jpg",
     story:
       "Brakes, batteries, and quick fixes while you wait in the lobby — no appointment needed for express jobs.",
     included: [
@@ -562,10 +539,10 @@ function AutoServicesCarousel() {
       key={s.title}
       index={i}
       card={{
-        src: HERO_IMAGE,
+        src: s.photo,
         title: s.title,
         category: s.category,
-        visual: <ServiceIconTile icon={s.icon} />,
+        visual: <ServicePhoto src={s.photo} />,
         content: <ServiceBody story={s.story} included={s.included} note={s.note} />,
       }}
     />
@@ -815,30 +792,35 @@ const GEAR: {
   title: string;
   spec: string;
   desc: string;
+  photo?: string;
   icon: React.ComponentType<{ className?: string; strokeWidth?: number; style?: React.CSSProperties }>;
 }[] = [
   {
     title: "Nine-Lift Shop Floor",
     spec: "Full-service bays · same-day scheduling",
     desc: "Nine lifts running a real schedule, not a first-come pile-up — so your slot is your slot, even on a busy Monday.",
+    photo: "/auto-erken/shop-floor-lifts.jpg",
     icon: Wrench,
   },
   {
     title: "In-House Dyno",
     spec: "Baseline pull · before-and-after printout",
     desc: "A tune isn't a guess here — every pull is measured, printed, and handed to you so you can see exactly what changed.",
+    photo: "/auto-erken/dyno-sports-car.jpg",
     icon: Gauge,
   },
   {
     title: "Full Diagnostic Bay",
     spec: "OEM-level scan tools · every make and model",
     desc: "The same diagnostic equipment dealerships use, run by techs who explain the results in plain English, not a code number.",
+    photo: "/auto-erken/diagnostic-scan-tool.jpg",
     icon: Cpu,
   },
   {
     title: "ASE-Certified Tech Team",
     spec: "9 techs · average 11 years experience",
     desc: "One tech owns your car from drop-off to pickup — not a rotating cast of whoever happens to be free that day.",
+    photo: "/auto-erken/tech-team.jpg",
     icon: ShieldCheck,
   },
 ];
@@ -910,7 +892,17 @@ function GearCarousel() {
                 }
               >
                 <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-surface-2 to-[#f0ece0]">
-                  <Icon className="h-16 w-16" style={{ color: ILLO_CLAY }} strokeWidth={1.5} />
+                  {card.photo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={card.photo}
+                      alt={card.title}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      draggable={false}
+                    />
+                  ) : (
+                    <Icon className="h-16 w-16" style={{ color: ILLO_CLAY }} strokeWidth={1.5} />
+                  )}
                 </div>
                 <h3 className="mt-4 text-base font-semibold text-text" style={{ letterSpacing: "-0.01em" }}>
                   {card.title}
@@ -1002,7 +994,7 @@ function GearSection() {
           >
             A certified tech owns every job, the shop floor runs on a
             schedule you can plan around, and equipment is ready when your
-            car's called into the bay.
+            car&apos;s called into the bay.
           </motion.p>
         </div>
 
@@ -1579,7 +1571,6 @@ export default function AutoErkenClient() {
     const close = () => closeChoiceMenu();
     window.addEventListener("scroll", close, { passive: true, once: true });
     return () => window.removeEventListener("scroll", close);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [choiceMenu]);
   const stoppedRef = useRef(false);
   const lastCellOpacityRef = useRef(1);

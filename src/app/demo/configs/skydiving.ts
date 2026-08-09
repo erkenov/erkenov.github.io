@@ -16,7 +16,7 @@ const skydiving: DemoConfig = {
     short: "Sky Erken",
     tagline: "Jump over the desert",
     location: "Eloy Municipal Airport (E60) · Eloy, AZ",
-    phoneDisplay: "(325) 241-8821",
+    phoneDisplay: "(888) 799-6065",
     hours: "Loads run Thu–Sun, weather permitting",
     icon: "wind",
   },

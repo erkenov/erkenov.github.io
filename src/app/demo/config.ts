@@ -214,7 +214,7 @@ const flightSchools: DemoConfig = {
     short: "Fly Erken",
     tagline: "Learn to fly in Phoenix",
     location: "Deer Valley Airport (KDVT) · Phoenix, AZ",
-    phoneDisplay: "(325) 241-2460",
+    phoneDisplay: "(888) 799-6065",
     hours: "Mon–Sat 8am–5pm · Sun closed",
     icon: "plane",
   },

@@ -56,8 +56,8 @@ const ease = [0.16, 1, 0.3, 1] as const;
 // facts + the Retell dynamic variables (demo_business / demo_industry /
 // demo_context) the voice agent needs to answer in character.
 const FLY = getDemoConfig("flight-schools")!;
-const PHONE_TEL = "+13252412460";
-const PHONE_DISPLAY = FLY.business.phoneDisplay; // (325) 241-2460
+const PHONE_TEL = "+18887996065";
+const PHONE_DISPLAY = FLY.business.phoneDisplay;
 const BOOKING_CALENDAR_ID = FLY.booking.calendarId!; // SS2V1nuWEIbOlNrzyxpt
 
 declare global {

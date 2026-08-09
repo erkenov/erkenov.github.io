@@ -75,8 +75,8 @@ const ease = [0.16, 1, 0.3, 1] as const;
 // the Retell dynamic variables (demo_business / demo_industry /
 // demo_context) the voice agent needs to answer in character.
 const HOTEL = getDemoConfig("hotel")!;
-const PHONE_TEL = "+13252417710";
-const PHONE_DISPLAY = HOTEL.business.phoneDisplay; // (325) 241-7710
+const PHONE_TEL = "+18887996065";
+const PHONE_DISPLAY = HOTEL.business.phoneDisplay;
 // NOTE (flag for Shamil's review): hotel.ts reuses the SAME shared demo GHL
 // calendar as flight-schools and skydiving (SS2V1nuWEIbOlNrzyxpt) — there is
 // no dedicated Hotel Erken calendar yet. Fine for a pilot click-through, but

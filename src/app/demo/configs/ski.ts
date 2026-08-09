@@ -16,7 +16,7 @@ const ski: DemoConfig = {
     short: "Erken Ski",
     tagline: "Learn, rent, stay",
     location: "115 Silver King Dr · Park City, UT",
-    phoneDisplay: "(325) 241-8867",
+    phoneDisplay: "(888) 799-6065",
     hours: "Daily 7:30am–5pm, in-season",
     icon: "snowflake",
   },

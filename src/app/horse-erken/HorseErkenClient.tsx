@@ -43,17 +43,16 @@
  */
 
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Check,
   Phone,
   X,
   Map,
-  GraduationCap,
   ShieldCheck,
   CalendarCheck,
   Users,
-  Hotel,
 } from "lucide-react";
 import { Carousel, Card, CardModalContext } from "@/components/ui/apple-cards-carousel";
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
@@ -73,8 +72,8 @@ const ease = [0.16, 1, 0.3, 1] as const;
 // facts + the Retell dynamic variables (demo_business / demo_industry /
 // demo_context) the voice agent needs to answer in character.
 const HORSE = getDemoConfig("horse")!;
-const PHONE_TEL = "+13252413305";
-const PHONE_DISPLAY = HORSE.business.phoneDisplay; // (325) 241-3305
+const PHONE_TEL = "+18887996065";
+const PHONE_DISPLAY = HORSE.business.phoneDisplay;
 // NOTE (flag for Shamil's review): horse.ts reuses the SAME shared demo
 // GHL calendar as flight-schools/skydiving (SS2V1nuWEIbOlNrzyxpt) — there
 // is no dedicated Erken Riding Stables calendar yet. Fine for a
@@ -340,9 +339,9 @@ function HorseHeader() {
       className="sticky top-0 z-50 w-full border-b border-border/60 bg-bg/85 backdrop-blur-md"
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-8">
-        <a href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
+        <Link href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
           horse<span className="text-accent"> </span>erken
-        </a>
+        </Link>
         <nav className="hidden items-center gap-8 md:flex">
           <a href="#services" className="text-sm text-text-muted transition-colors hover:text-text">
             Lessons & rides
@@ -390,37 +389,15 @@ function HorseHeader() {
 
 /* ================================================================== */
 /* LESSONS & RIDES — the homepage "Built for your industry" Apple-card */
-/* carousel, cards = the stable's six offerings. Icon tiles instead of  */
-/* per-card photos (we only have one riding stock photo in the repo —  */
-/* reusing it six times would look broken, so each card gets a flat     */
-/* icon tile matching its config icon, same visual language as the     */
-/* JOURNEY illustrations below).                                        */
+/* carousel, cards = the stable's six offerings, each with a real       */
+/* per-card stock photo (public/horse-erken/, pexels.com) matching the  */
+/* fly-erken flagship pattern.                                          */
 /* ================================================================== */
 
-const SERVICE_ICONS: Record<
-  string,
-  React.ComponentType<{ className?: string; strokeWidth?: number }>
-> = {
-  map: Map,
-  graduation: GraduationCap,
-  hotel: Hotel,
-  users: Users,
-  shield: ShieldCheck,
-  calendar: CalendarCheck,
-};
-
-function ServiceIconTile({ icon }: { icon: string }) {
-  const Icon = SERVICE_ICONS[icon] ?? Map;
+function ServicePhoto({ src }: { src: string }) {
   return (
-    <div
-      className="absolute inset-0 flex items-center justify-center"
-      style={{
-        background:
-          "radial-gradient(120% 120% at 30% 20%, var(--accent-soft), transparent 60%), var(--surface-2)",
-      }}
-    >
-      <Icon className="h-16 w-16 text-accent" strokeWidth={1.5} />
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
   );
 }
 
@@ -488,7 +465,7 @@ const SERVICES = [
   {
     category: "Start here · from $75",
     title: "Guided Trail Ride",
-    icon: "map",
+    photo: "/horse-erken/guided-trail-ride.jpg",
     story:
       "1-hour and 2-hour guided rides through the Sonoran Desert, matched to your experience level. No prior riding required — our guides pair first-timers with the calmest, most experienced trail horses.",
     included: [
@@ -504,7 +481,7 @@ const SERVICES = [
   {
     category: "All ages and levels",
     title: "Riding Lessons",
-    icon: "graduation",
+    photo: "/horse-erken/riding-lesson-arena.jpg",
     story:
       "English and western instruction for all ages and levels, from a first time in the saddle to competition prep, with an instructor who knows every horse's temperament.",
     included: [
@@ -518,7 +495,7 @@ const SERVICES = [
   {
     category: "On 20 acres",
     title: "Horse Boarding",
-    icon: "hotel",
+    photo: "/horse-erken/boarding-stable-stalls.jpg",
     story:
       "Full-care and self-care boarding with daily turnout, on 20 acres with a covered arena and trail access. Payment reminders go out before a boarding invoice quietly lapses.",
     included: [
@@ -531,7 +508,7 @@ const SERVICES = [
   {
     category: "Ages vary",
     title: "Summer Camps",
-    icon: "users",
+    photo: "/horse-erken/summer-camp-kids-trail.jpg",
     story:
       "Full-day and half-day summer camps for kids covering riding, horse care, and stable life, booked online with the same reminders as any lesson.",
     included: [
@@ -544,7 +521,7 @@ const SERVICES = [
   {
     category: "Private events",
     title: "Birthday Parties",
-    icon: "shield",
+    photo: "/horse-erken/pony-birthday-ride.jpg",
     story:
       "Private trail ride or pony experience packages for birthday and group celebrations, with a dedicated wrangler and a waiver sent ahead so check-in is just meeting your horse.",
     included: [
@@ -557,7 +534,7 @@ const SERVICES = [
   {
     category: "Custom quote",
     title: "Show & Competition Prep",
-    icon: "calendar",
+    photo: "/horse-erken/show-jumping-prep.jpg",
     story:
       "Lesson packages built around a specific show date, with an instructor who travels to select competitions with students.",
     included: [
@@ -574,10 +551,10 @@ function HorseServicesCarousel() {
       key={s.title}
       index={i}
       card={{
-        src: HERO_IMAGE,
+        src: s.photo,
         title: s.title,
         category: s.category,
-        visual: <ServiceIconTile icon={s.icon} />,
+        visual: <ServicePhoto src={s.photo} />,
         content: <ServiceBody story={s.story} included={s.included} note={s.note} />,
       }}
     />
@@ -828,30 +805,35 @@ const GEAR: {
   title: string;
   spec: string;
   desc: string;
+  photo?: string;
 }[] = [
   {
     title: "The Herd",
     spec: "26 horses · known individually by staff",
     desc: "A 26-horse herd, each known by temperament by our staff — first-timers are matched to the calmest horse, experienced riders to one that matches their skill.",
+    photo: "/horse-erken/herd-pasture.jpg",
   },
   {
     title: "Certified Instructors",
     spec: "9 instructors and guides · English & western",
     desc: "Every lesson and guided ride runs with a certified instructor who knows both English and western technique, at any age or level.",
+    photo: "/horse-erken/instructor-lesson.jpg",
   },
   {
     title: "Boarding Barn",
     spec: "40+ horses boarded · full-care & self-care",
     desc: "A boarding barn with daily turnout, full-care and self-care options, and payment reminders before an invoice quietly lapses.",
+    photo: "/horse-erken/boarding-barn.jpg",
   },
   {
     title: "Covered Arena & Trails",
     spec: "20 acres · covered arena · desert trail access",
     desc: "A covered arena for lessons in any weather, plus direct access to Sonoran Desert trails for guided rides.",
+    photo: "/horse-erken/covered-arena.jpg",
   },
 ];
 
-/** Flat glyph used for each stable card visual — herd, coach, barn, arena. */
+/** Flat glyph used as fallback when a stable card has no photo — herd, coach, barn, arena. */
 function GearGlyph({ variant }: { variant: number }) {
   if (variant === 0) {
     // horse head silhouette
@@ -957,7 +939,17 @@ function GearCarousel() {
                 }
               >
                 <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-surface-2 to-[#f0ece0]">
-                  <GearGlyph variant={i} />
+                  {card.photo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={card.photo}
+                      alt={card.title}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      draggable={false}
+                    />
+                  ) : (
+                    <GearGlyph variant={i} />
+                  )}
                 </div>
                 <h3 className="mt-4 text-base font-semibold text-text" style={{ letterSpacing: "-0.01em" }}>
                   {card.title}
@@ -1647,7 +1639,6 @@ export default function HorseErkenClient() {
     const close = () => closeChoiceMenu();
     window.addEventListener("scroll", close, { passive: true, once: true });
     return () => window.removeEventListener("scroll", close);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [choiceMenu]);
   const stoppedRef = useRef(false);
   const lastCellOpacityRef = useRef(1);

@@ -72,8 +72,8 @@ const ease = [0.16, 1, 0.3, 1] as const;
 // facts + the Retell dynamic variables (demo_business / demo_industry /
 // demo_context) the voice agent needs to answer in character.
 const SKI = getDemoConfig("ski")!;
-const PHONE_TEL = "+13252418867";
-const PHONE_DISPLAY = SKI.business.phoneDisplay; // (325) 241-8867
+const PHONE_TEL = "+18887996065";
+const PHONE_DISPLAY = SKI.business.phoneDisplay;
 // NOTE (flag for Shamil's review): ski.ts reuses the SAME shared demo
 // GHL calendar as flight-schools/skydiving (SS2V1nuWEIbOlNrzyxpt) — there
 // is no dedicated Erken Ski Lodge calendar yet. Fine for a click-through

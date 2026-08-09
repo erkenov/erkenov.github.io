@@ -17,7 +17,7 @@ const cafe: DemoConfig = {
     short: "Café Erken",
     tagline: "Dinner, drinks, and catering",
     location: "1122 N 7th Ave · Phoenix, AZ",
-    phoneDisplay: "(325) 241-4488",
+    phoneDisplay: "(888) 799-6065",
     hours: "Tue–Sun 5pm–10pm · Mon closed",
     icon: "coffee",
   },

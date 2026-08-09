@@ -44,14 +44,13 @@
  */
 
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Check,
   Phone,
   X,
   Anchor,
-  Map,
-  GraduationCap,
   ShieldCheck,
   CalendarCheck,
   Users,
@@ -74,8 +73,8 @@ const ease = [0.16, 1, 0.3, 1] as const;
 // facts + the Retell dynamic variables (demo_business / demo_industry /
 // demo_context) the voice agent needs to answer in character.
 const YACHT = getDemoConfig("yacht")!;
-const PHONE_TEL = "+13252416650";
-const PHONE_DISPLAY = YACHT.business.phoneDisplay; // (325) 241-6650
+const PHONE_TEL = "+18887996065";
+const PHONE_DISPLAY = YACHT.business.phoneDisplay;
 // NOTE (flag for Shamil's review): yacht.ts reuses the SAME shared demo
 // GHL calendar as flight-schools/skydiving (SS2V1nuWEIbOlNrzyxpt) — there
 // is no dedicated Erken Yacht Charters calendar yet. Fine for a
@@ -341,9 +340,9 @@ function YachtHeader() {
       className="sticky top-0 z-50 w-full border-b border-border/60 bg-bg/85 backdrop-blur-md"
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-8">
-        <a href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
+        <Link href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
           yacht<span className="text-accent"> </span>erken
-        </a>
+        </Link>
         <nav className="hidden items-center gap-8 md:flex">
           <a href="#services" className="text-sm text-text-muted transition-colors hover:text-text">
             Charters & courses
@@ -391,37 +390,14 @@ function YachtHeader() {
 
 /* ================================================================== */
 /* CHARTERS & COURSES — the homepage "Built for your industry"         */
-/* Apple-card carousel, cards = the marina's six offerings. Icon tiles  */
-/* instead of per-card photos (we only have one yachting stock photo    */
-/* in the repo — reusing it six times would look broken, so each card   */
-/* gets a flat icon tile matching its config icon, same visual language */
-/* as the JOURNEY illustrations below).                                 */
+/* Apple-card carousel, cards = the marina's six offerings, each with  */
+/* its own subject-matched stock photo.                                 */
 /* ================================================================== */
 
-const SERVICE_ICONS: Record<
-  string,
-  React.ComponentType<{ className?: string; strokeWidth?: number }>
-> = {
-  anchor: Anchor,
-  map: Map,
-  graduation: GraduationCap,
-  shield: ShieldCheck,
-  calendar: CalendarCheck,
-  users: Users,
-};
-
-function ServiceIconTile({ icon }: { icon: string }) {
-  const Icon = SERVICE_ICONS[icon] ?? Anchor;
+function ServicePhoto({ src }: { src: string }) {
   return (
-    <div
-      className="absolute inset-0 flex items-center justify-center"
-      style={{
-        background:
-          "radial-gradient(120% 120% at 30% 20%, var(--accent-soft), transparent 60%), var(--surface-2)",
-      }}
-    >
-      <Icon className="h-16 w-16 text-accent" strokeWidth={1.5} />
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
   );
 }
 
@@ -489,7 +465,7 @@ const SERVICES = [
   {
     category: "Half-day or full-day · from $895",
     title: "Day Charter",
-    icon: "anchor",
+    photo: "/yacht-erken/day-charter-sailboat-sunset.jpg",
     story:
       "A licensed captain and crew take you out for a sunset sail or a full day on the water, up to 12 guests. No experience needed — you're a guest, not the crew, unless you want to be.",
     included: [
@@ -505,7 +481,7 @@ const SERVICES = [
   {
     category: "3–7 nights",
     title: "Multi-Day Charter",
-    icon: "map",
+    photo: "/yacht-erken/multi-day-charter-tropical-yacht.jpg",
     story:
       "Crewed charters through the Keys or the Bahamas, fully provisioned with a captain and chef. You show up with a bag; the boat, the route, and the meals are handled.",
     included: [
@@ -520,7 +496,7 @@ const SERVICES = [
   {
     category: "Fastest path to your own boat",
     title: "ASA Sailing Courses",
-    icon: "graduation",
+    photo: "/yacht-erken/sailing-course-lesson.jpg",
     story:
       "Basic Keelboat through Coastal Navigation, taught aboard our training fleet by ASA-certified instructors. Most students feel ready to sail on their own by the end of the weekend.",
     included: [
@@ -534,7 +510,7 @@ const SERVICES = [
   {
     category: "Sail without owning",
     title: "Boat Club Membership",
-    icon: "users",
+    photo: "/yacht-erken/boat-club-marina.jpg",
     story:
       "Unlimited access to a fleet of boats without the cost of ownership. Maintenance, docking, and insurance are all included — you just show up and cast off.",
     included: [
@@ -547,7 +523,7 @@ const SERVICES = [
   {
     category: "Full-boat buyouts",
     title: "Corporate & Event Charters",
-    icon: "calendar",
+    photo: "/yacht-erken/corporate-event-yacht-party.jpg",
     story:
       "Proposals, celebrations, and corporate team days. We block the boat for your group and coordinate catering through our team, so the day runs without you managing vendors.",
     included: [
@@ -560,7 +536,7 @@ const SERVICES = [
   {
     category: "Certified sailors",
     title: "Captained Bareboat Add-On",
-    icon: "shield",
+    photo: "/yacht-erken/captained-bareboat-helm.jpg",
     story:
       "Certified sailors can charter bareboat on their own certification, or add a licensed captain for local knowledge and peace of mind in unfamiliar waters.",
     included: [
@@ -578,10 +554,10 @@ function YachtServicesCarousel() {
       key={s.title}
       index={i}
       card={{
-        src: HERO_IMAGE,
+        src: s.photo,
         title: s.title,
         category: s.category,
-        visual: <ServiceIconTile icon={s.icon} />,
+        visual: <ServicePhoto src={s.photo} />,
         content: <ServiceBody story={s.story} included={s.included} note={s.note} />,
       }}
     />
@@ -832,30 +808,35 @@ const GEAR: {
   title: string;
   spec: string;
   desc: string;
+  photo: string;
 }[] = [
   {
     title: "Charter Fleet",
     spec: "6 boats · sail & power · up to 12 guests",
     desc: "A six-boat fleet ranging from a sunset-sail sloop to a full crewed power yacht, all inspected and provisioned before every charter leaves the dock.",
+    photo: "/yacht-erken/fleet-sailboats-bay.jpg",
   },
   {
     title: "USCG-Licensed Captains",
     spec: "Licensed on every crewed charter · local waters",
     desc: "Every crewed charter and multi-day trip runs with a USCG-licensed captain who knows these waters and briefs your itinerary before you step aboard.",
+    photo: "/yacht-erken/captain-navigating-yacht.jpg",
   },
   {
     title: "ASA Training Fleet",
     spec: "Dedicated course boats · all six ASA levels",
     desc: "A separate training fleet built for instruction, not showing off — forgiving handling and a certified instructor aboard for every course level.",
+    photo: "/yacht-erken/training-sailboat-keelboat.jpg",
   },
   {
     title: "Boat Club Fleet",
     spec: "Member-only hours · maintenance included",
     desc: "The same well-kept fleet, available to boat club members without the cost of ownership — maintenance, docking, and insurance handled for you.",
+    photo: "/yacht-erken/club-fleet-marina-sunset.jpg",
   },
 ];
 
-/** Flat glyph used for each fleet card visual — sail, captain, training, club. */
+/** Flat glyph used as fallback when a fleet card has no photo — sail, captain, training, club. */
 function GearGlyph({ variant }: { variant: number }) {
   if (variant === 0) {
     // sailboat
@@ -974,7 +955,17 @@ function GearCarousel() {
                 }
               >
                 <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-surface-2 to-[#f0ece0]">
-                  <GearGlyph variant={i} />
+                  {card.photo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={card.photo}
+                      alt={card.title}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      draggable={false}
+                    />
+                  ) : (
+                    <GearGlyph variant={i} />
+                  )}
                 </div>
                 <h3 className="mt-4 text-base font-semibold text-text" style={{ letterSpacing: "-0.01em" }}>
                   {card.title}
@@ -1667,7 +1658,6 @@ export default function YachtErkenClient() {
     const close = () => closeChoiceMenu();
     window.addEventListener("scroll", close, { passive: true, once: true });
     return () => window.removeEventListener("scroll", close);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [choiceMenu]);
   const stoppedRef = useRef(false);
   const lastCellOpacityRef = useRef(1);

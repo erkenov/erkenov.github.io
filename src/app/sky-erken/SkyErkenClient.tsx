@@ -42,17 +42,8 @@
 
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import {
-  Check,
-  Phone,
-  X,
-  Wind,
-  GraduationCap,
-  ShieldCheck,
-  CalendarCheck,
-  Users,
-  RadioTower,
-} from "lucide-react";
+import Link from "next/link";
+import { Check, Phone, X } from "lucide-react";
 import { Carousel, Card, CardModalContext } from "@/components/ui/apple-cards-carousel";
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { SphereScrollStage, type CellPositionInfo } from "@/components/SphereScrollStage";
@@ -71,8 +62,8 @@ const ease = [0.16, 1, 0.3, 1] as const;
 // facts + the Retell dynamic variables (demo_business / demo_industry /
 // demo_context) the voice agent needs to answer in character.
 const SKY = getDemoConfig("skydiving")!;
-const PHONE_TEL = "+13252418821";
-const PHONE_DISPLAY = SKY.business.phoneDisplay; // (325) 241-8821
+const PHONE_TEL = "+18887996065";
+const PHONE_DISPLAY = SKY.business.phoneDisplay;
 // NOTE (flag for Shamil's review): skydiving.ts reuses the SAME shared demo
 // GHL calendar as flight-schools (SS2V1nuWEIbOlNrzyxpt) — there is no
 // dedicated Sky Erken calendar yet. Fine for a pilot click-through, but a
@@ -338,9 +329,9 @@ function SkyHeader() {
       className="sticky top-0 z-50 w-full border-b border-border/60 bg-bg/85 backdrop-blur-md"
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-8">
-        <a href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
+        <Link href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
           sky<span className="text-accent"> </span>erken
-        </a>
+        </Link>
         <nav className="hidden items-center gap-8 md:flex">
           <a href="#services" className="text-sm text-text-muted transition-colors hover:text-text">
             Our programs
@@ -388,37 +379,14 @@ function SkyHeader() {
 
 /* ================================================================== */
 /* PROGRAMS — the homepage "Built for your industry" Apple-card        */
-/* carousel, cards = the dropzone's six programs. Icon tiles instead of */
-/* per-card photos (we only have one skydiving stock photo in the repo  */
-/* — reusing it six times would look broken, so each card gets a flat  */
-/* icon tile matching its config icon, same visual language as the     */
-/* JOURNEY illustrations below).                                        */
+/* carousel, cards = the dropzone's six programs, each with its own     */
+/* stock photo.                                                         */
 /* ================================================================== */
 
-const SERVICE_ICONS: Record<
-  string,
-  React.ComponentType<{ className?: string; strokeWidth?: number }>
-> = {
-  wind: Wind,
-  graduation: GraduationCap,
-  shield: ShieldCheck,
-  calendar: CalendarCheck,
-  users: Users,
-  radio: RadioTower,
-};
-
-function ServiceIconTile({ icon }: { icon: string }) {
-  const Icon = SERVICE_ICONS[icon] ?? Wind;
+function ServicePhoto({ src }: { src: string }) {
   return (
-    <div
-      className="absolute inset-0 flex items-center justify-center"
-      style={{
-        background:
-          "radial-gradient(120% 120% at 30% 20%, var(--accent-soft), transparent 60%), var(--surface-2)",
-      }}
-    >
-      <Icon className="h-16 w-16 text-accent" strokeWidth={1.5} />
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
   );
 }
 
@@ -486,7 +454,7 @@ const SERVICES = [
   {
     category: "Start here · $229",
     title: "Tandem Jump",
-    icon: "wind",
+    photo: "/sky-erken/tandem-freefall.jpg",
     story:
       "Strapped to an instructor with 1,000+ jumps, you freefall for 60 seconds from 13,000 feet before a 5-minute canopy ride back down. No experience, no license, and no training required — just a 20-minute ground briefing before you board.",
     included: [
@@ -502,7 +470,7 @@ const SERVICES = [
   {
     category: "Fastest path to solo",
     title: "AFF Licensing Course",
-    icon: "graduation",
+    photo: "/sky-erken/aff-student-exit.jpg",
     story:
       "Accelerated Freefall — seven levels of coached freefall, ground school, and ratings review. Most students license inside three to six months, jumping with a coach beside you until you're cleared to fly the sky alone.",
     included: [
@@ -518,7 +486,7 @@ const SERVICES = [
   {
     category: "For licensed jumpers",
     title: "Gear Rental & Check",
-    icon: "shield",
+    photo: "/sky-erken/gear-rental-jumpsuit.jpg",
     story:
       "Rig, altimeter, and jumpsuit rental for licensed jumpers, plus a pre-jump gear inspection from a certified rigger every time you fly — a borrowed rig never means a guessed rig.",
     included: [
@@ -532,7 +500,7 @@ const SERVICES = [
   {
     category: "Book same-day or ahead",
     title: "Load Space (Experienced)",
-    icon: "calendar",
+    photo: "/sky-erken/load-space-door-exit.jpg",
     story:
       "Licensed jumpers buy load space same-day or reserve online ahead of a weekend. The manifest board is live, so you always know which load you're on before you drive out.",
     included: [
@@ -545,7 +513,7 @@ const SERVICES = [
   {
     category: "6 or more jumpers",
     title: "Group & Event Jumps",
-    icon: "users",
+    photo: "/sky-erken/group-boarding-plane.jpg",
     story:
       "Bachelor parties, birthdays, and corporate team days. We block-book the load and handle the whole manifest so your group shows up, suits up, and jumps together.",
     included: [
@@ -558,7 +526,7 @@ const SERVICES = [
   {
     category: "Take the proof home",
     title: "Video & Photo Package",
-    icon: "radio",
+    photo: "/sky-erken/video-camera-flyer.jpg",
     story:
       "A second jumper flies alongside with a helmet cam, or your instructor wears one. Edited footage is delivered the same day — the moment you can't describe to anyone doesn't stay undocumented.",
     included: [
@@ -576,10 +544,10 @@ function SkyServicesCarousel() {
       key={s.title}
       index={i}
       card={{
-        src: HERO_IMAGE,
+        src: s.photo,
         title: s.title,
         category: s.category,
-        visual: <ServiceIconTile icon={s.icon} />,
+        visual: <ServicePhoto src={s.photo} />,
         content: <ServiceBody story={s.story} included={s.included} note={s.note} />,
       }}
     />
@@ -904,30 +872,35 @@ const GEAR: {
   title: string;
   spec: string;
   desc: string;
+  photo?: string;
 }[] = [
   {
     title: "Turbine Jump Plane",
     spec: "20-minute ride · to 13,000 feet · every load",
     desc: "A turbine aircraft, not a piston trainer — the ride to altitude is fast, and a full load boards, climbs, and jumps on a schedule you can actually plan around.",
+    photo: "/sky-erken/turbine-jump-plane.jpg",
   },
   {
     title: "Tandem Rig",
     spec: "Square canopy · dual-deployment safety system",
     desc: "The same rig your instructor has jumped thousands of times. A backup parachute and an automatic activation device are standard on every tandem jump, no exceptions.",
+    photo: "/sky-erken/tandem-rig-landing.jpg",
   },
   {
     title: "AFF Student Rig",
     spec: "Docile student canopy · radio-equipped helmet",
     desc: "Built for learning, not showing off — a forgiving canopy and a coach talking you down by radio on your earliest solo jumps.",
+    photo: "/sky-erken/student-canopy-flight.jpg",
   },
   {
     title: "Altimeter & Audible",
     spec: "Analog backup · audible alert in your helmet",
     desc: "Two ways to know your altitude on every jump — a wrist altimeter you can see, and an audible alarm you can hear, so nobody's guessing at 13,000 feet.",
+    photo: "/sky-erken/wrist-altimeter.jpg",
   },
 ];
 
-/** Flat parachute-canopy silhouette used for each gear card visual. */
+/** Flat parachute-canopy silhouette used when a gear card has no photo. */
 function GearGlyph({ variant }: { variant: number }) {
   if (variant === 0) {
     // plane
@@ -1027,7 +1000,17 @@ function GearCarousel() {
                 }
               >
                 <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-surface-2 to-[#f0ece0]">
-                  <GearGlyph variant={i} />
+                  {card.photo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={card.photo}
+                      alt={card.title}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      draggable={false}
+                    />
+                  ) : (
+                    <GearGlyph variant={i} />
+                  )}
                 </div>
                 <h3 className="mt-4 text-base font-semibold text-text" style={{ letterSpacing: "-0.01em" }}>
                   {card.title}
@@ -1720,7 +1703,6 @@ export default function SkyErkenClient() {
     const close = () => closeChoiceMenu();
     window.addEventListener("scroll", close, { passive: true, once: true });
     return () => window.removeEventListener("scroll", close);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [choiceMenu]);
   const stoppedRef = useRef(false);
   const lastCellOpacityRef = useRef(1);

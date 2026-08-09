@@ -16,7 +16,7 @@ const bjj: DemoConfig = {
     short: "Erken BJJ",
     tagline: "Train hard, roll smart",
     location: "3300 E Camelback Rd · Phoenix, AZ",
-    phoneDisplay: "(325) 241-5512",
+    phoneDisplay: "(888) 799-6065",
     hours: "Mon–Fri 6am–9pm · Sat 9am–1pm",
     icon: "shield",
   },

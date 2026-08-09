@@ -16,7 +16,7 @@ const gym: DemoConfig = {
     short: "Erken Fitness",
     tagline: "Train together, get stronger",
     location: "918 E Indian School Rd · Phoenix, AZ",
-    phoneDisplay: "(325) 241-7743",
+    phoneDisplay: "(888) 799-6065",
     hours: "Mon–Fri 5am–8pm · Sat–Sun 8am–12pm",
     icon: "dumbbell",
   },

@@ -44,17 +44,8 @@
 
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import {
-  Check,
-  Phone,
-  X,
-  Sprout,
-  MapPin,
-  CalendarCheck,
-  Users,
-  ShieldCheck,
-  Clock,
-} from "lucide-react";
+import Link from "next/link";
+import { Check, Phone, X } from "lucide-react";
 import { Carousel, Card, CardModalContext } from "@/components/ui/apple-cards-carousel";
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { SphereScrollStage, type CellPositionInfo } from "@/components/SphereScrollStage";
@@ -73,8 +64,8 @@ const ease = [0.16, 1, 0.3, 1] as const;
 // the Retell dynamic variables (demo_business / demo_industry / demo_context)
 // the voice agent needs to answer in character.
 const FARM = getDemoConfig("farm")!;
-const PHONE_TEL = "+13252411187";
-const PHONE_DISPLAY = FARM.business.phoneDisplay; // (325) 241-1187
+const PHONE_TEL = "+18887996065";
+const PHONE_DISPLAY = FARM.business.phoneDisplay;
 // NOTE (flag for Shamil's review): farm.ts reuses the SAME shared demo GHL
 // calendar as skydiving/flight-schools (SS2V1nuWEIbOlNrzyxpt) — there is no
 // dedicated Erken Family Farm calendar yet. Fine for a click-through
@@ -337,9 +328,9 @@ function FarmHeader() {
       className="sticky top-0 z-50 w-full border-b border-border/60 bg-bg/85 backdrop-blur-md"
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-8">
-        <a href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
+        <Link href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
           farm<span className="text-accent"> </span>erken
-        </a>
+        </Link>
         <nav className="hidden items-center gap-8 md:flex">
           <a href="#services" className="text-sm text-text-muted transition-colors hover:text-text">
             Our programs
@@ -394,30 +385,10 @@ function FarmHeader() {
 /* the JOURNEY illustrations below).                                    */
 /* ================================================================== */
 
-const SERVICE_ICONS: Record<
-  string,
-  React.ComponentType<{ className?: string; strokeWidth?: number }>
-> = {
-  sprout: Sprout,
-  map: MapPin,
-  calendar: CalendarCheck,
-  users: Users,
-  shield: ShieldCheck,
-  clock: Clock,
-};
-
-function ServiceIconTile({ icon }: { icon: string }) {
-  const Icon = SERVICE_ICONS[icon] ?? Sprout;
+function ServicePhoto({ src }: { src: string }) {
   return (
-    <div
-      className="absolute inset-0 flex items-center justify-center"
-      style={{
-        background:
-          "radial-gradient(120% 120% at 30% 20%, var(--accent-soft), transparent 60%), var(--surface-2)",
-      }}
-    >
-      <Icon className="h-16 w-16 text-accent" strokeWidth={1.5} />
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
   );
 }
 
@@ -485,7 +456,7 @@ const SERVICES = [
   {
     category: "Start here · $38/week",
     title: "Weekly CSA Box",
-    icon: "sprout",
+    photo: "/farm-erken/csa-vegetable-box.jpg",
     story:
       "A seasonal mix of whatever's ripe that week, picked the morning of pickup or delivery. Pause or skip any week from your account — no phone call needed, no penalty.",
     included: [
@@ -500,7 +471,7 @@ const SERVICES = [
   {
     category: "90 minutes · $18/person",
     title: "Guided Farm Tours",
-    icon: "map",
+    photo: "/farm-erken/farm-tour-walk.jpg",
     story:
       "A 90-minute walking tour of the fields, greenhouse, and animals, ending with a tasting from that week's harvest. Booked online with real, live availability.",
     included: [
@@ -513,7 +484,7 @@ const SERVICES = [
   {
     category: "Seasonal · varies",
     title: "Seasonal U-Pick",
-    icon: "calendar",
+    photo: "/farm-erken/u-pick-strawberries.jpg",
     story:
       "Strawberries in spring, tomatoes in summer, pumpkins in fall — pick your own at farm-stand prices during open windows. The opening announcement goes out to the list the day the field is ready.",
     included: [
@@ -526,7 +497,7 @@ const SERVICES = [
   {
     category: "Educational visits",
     title: "School & Group Field Trips",
-    icon: "users",
+    photo: "/farm-erken/field-trip-kids.jpg",
     story:
       "Educational visits for school groups covering where food comes from, with hands-on planting and harvesting activities.",
     included: [
@@ -539,7 +510,7 @@ const SERVICES = [
   {
     category: "Monthly · $85/person",
     title: "Farm-to-Table Dinners",
-    icon: "shield",
+    photo: "/farm-erken/farm-to-table-dinner.jpg",
     story:
       "Monthly outdoor dinners in the field featuring a local chef cooking that week's harvest, seated at long communal tables.",
     included: [
@@ -552,7 +523,7 @@ const SERVICES = [
   {
     category: "Standing orders",
     title: "Wholesale & Restaurant Accounts",
-    icon: "clock",
+    photo: "/farm-erken/wholesale-crates.jpg",
     story:
       "Weekly wholesale delivery for local restaurants and markets, with a standing order system and seasonal availability sheets.",
     included: [
@@ -570,10 +541,10 @@ function FarmServicesCarousel() {
       key={s.title}
       index={i}
       card={{
-        src: HERO_IMAGE,
+        src: s.photo,
         title: s.title,
         category: s.category,
-        visual: <ServiceIconTile icon={s.icon} />,
+        visual: <ServicePhoto src={s.photo} />,
         content: <ServiceBody story={s.story} included={s.included} note={s.note} />,
       }}
     />
@@ -857,7 +828,7 @@ function JourneySection() {
               <p className="mt-4 text-base leading-relaxed text-text-muted md:text-lg">
                 Every member here walks the same five stages — from the first
                 sign-up to a weekly update that goes out automatically. You
-                always know what's in the box, even when we're out in the
+                always know what&apos;s in the box, even when we&apos;re out in the
                 greenhouse with no signal.
               </p>
               <p className="mt-3 text-base leading-relaxed text-text-muted md:text-lg">
@@ -899,30 +870,35 @@ const GEAR: {
   title: string;
   spec: string;
   desc: string;
+  photo?: string;
 }[] = [
   {
     title: "40 Acres in Production",
     spec: "Certified Naturally Grown · no synthetic pesticides",
     desc: "Forty acres in Queen Creek, not a leased plot — the same land farmed by the same family since 1998, grown without synthetic pesticides.",
+    photo: "/farm-erken/farmland-rows-aerial.jpg",
   },
   {
     title: "Greenhouse Starts",
     spec: "Seedlings raised on site · seasonal rotation",
     desc: "Every crop starts in our own greenhouse, not a wholesale nursery — the same care that goes into a CSA box starts weeks before it's picked.",
+    photo: "/farm-erken/greenhouse-seedlings.jpg",
   },
   {
     title: "Harvest-Morning Picking",
     spec: "Picked same-day · packed within hours",
     desc: "CSA boxes are picked the morning they go out, not pulled from cold storage — the freshest version of whatever's ripe that week.",
+    photo: "/farm-erken/harvest-basket.jpg",
   },
   {
     title: "Farm Stand & Tour Route",
     spec: "Wed–Sun 9am–5pm · 90-minute walking loop",
     desc: "Two ways to see the farm — a Saturday walk-up at the farm stand, or a guided 90-minute tour through the fields, greenhouse, and animals.",
+    photo: "/farm-erken/farm-stand.jpg",
   },
 ];
 
-/** Flat farm-equipment silhouette used for each gear card visual. */
+/** Flat farm-equipment silhouette used when a gear card has no photo. */
 function GearGlyph({ variant }: { variant: number }) {
   if (variant === 0) {
     // field rows
@@ -1033,7 +1009,17 @@ function GearCarousel() {
                 }
               >
                 <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-surface-2 to-[#f0ece0]">
-                  <GearGlyph variant={i} />
+                  {card.photo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={card.photo}
+                      alt={card.title}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      draggable={false}
+                    />
+                  ) : (
+                    <GearGlyph variant={i} />
+                  )}
                 </div>
                 <h3 className="mt-4 text-base font-semibold text-text" style={{ letterSpacing: "-0.01em" }}>
                   {card.title}
@@ -1264,10 +1250,10 @@ function PricingSection() {
             className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
             style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
           >
-            Start at $38/week. Know what's in every box.
+            Start at $38/week. Know what&apos;s in every box.
           </h2>
           <p className="mt-4 text-base text-text-muted md:text-lg">
-            Transparent seasonal pricing, no guessing what's ripe — and a
+            Transparent seasonal pricing, no guessing what&apos;s ripe — and a
             missed week never costs you your subscription.
           </p>
         </motion.div>
@@ -1623,8 +1609,8 @@ function QuestionsSection() {
             Talk to us — any hour, any way.
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-text-muted md:text-lg">
-            What's in this week's box, tour times, pet policy — ask anything.
-            The front desk answers around the clock, even when we're out in
+            What&apos;s in this week&apos;s box, tour times, pet policy — ask anything.
+            The front desk answers around the clock, even when we&apos;re out in
             the greenhouse with no signal.
           </p>
           <div className="mt-8 flex justify-center">
@@ -1720,7 +1706,6 @@ export default function FarmErkenClient() {
     const close = () => closeChoiceMenu();
     window.addEventListener("scroll", close, { passive: true, once: true });
     return () => window.removeEventListener("scroll", close);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [choiceMenu]);
   const stoppedRef = useRef(false);
   const lastCellOpacityRef = useRef(1);

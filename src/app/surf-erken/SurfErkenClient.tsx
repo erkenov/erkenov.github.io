@@ -41,17 +41,9 @@
  */
 
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import {
-  Check,
-  Phone,
-  X,
-  WavesLadder,
-  GraduationCap,
-  Key,
-  ShieldCheck,
-  Users,
-} from "lucide-react";
+import { Check, Phone, X } from "lucide-react";
 import { Carousel, Card, CardModalContext } from "@/components/ui/apple-cards-carousel";
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { SphereScrollStage, type CellPositionInfo } from "@/components/SphereScrollStage";
@@ -70,8 +62,8 @@ const ease = [0.16, 1, 0.3, 1] as const;
 // the Retell dynamic variables (demo_business / demo_industry / demo_context)
 // the voice agent needs to answer in character.
 const SURF = getDemoConfig("surf")!;
-const PHONE_TEL = "+50640012286";
-const PHONE_DISPLAY = SURF.business.phoneDisplay; // +506 4001 2286
+const PHONE_TEL = "+18887996065";
+const PHONE_DISPLAY = SURF.business.phoneDisplay;
 // NOTE (flag for Shamil's review): surf.ts reuses the SAME shared demo GHL
 // calendar as skydiving/flight-schools (SS2V1nuWEIbOlNrzyxpt) — there is no
 // dedicated Erken Surf Camp calendar yet. Fine for a click-through
@@ -335,9 +327,9 @@ function SurfHeader() {
       className="sticky top-0 z-50 w-full border-b border-border/60 bg-bg/85 backdrop-blur-md"
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-8">
-        <a href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
+        <Link href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
           surf<span className="text-accent"> </span>erken
-        </a>
+        </Link>
         <nav className="hidden items-center gap-8 md:flex">
           <a href="#services" className="text-sm text-text-muted transition-colors hover:text-text">
             Our programs
@@ -385,37 +377,14 @@ function SurfHeader() {
 
 /* ================================================================== */
 /* PROGRAMS — the homepage "Built for your industry" Apple-card        */
-/* carousel, cards = the camp's six programs. Icon tiles instead of    */
-/* per-card photos (we only have one surfing stock photo in the repo   */
-/* — reusing it six times would look broken, so each card gets a flat  */
-/* icon tile matching its config icon, same visual language as the     */
-/* JOURNEY illustrations below).                                        */
+/* carousel, cards = the camp's six programs, each with its own stock  */
+/* photo (public/surf-erken/).                                         */
 /* ================================================================== */
 
-const SERVICE_ICONS: Record<
-  string,
-  React.ComponentType<{ className?: string; strokeWidth?: number }>
-> = {
-  waves: WavesLadder,
-  graduation: GraduationCap,
-  key: Key,
-  phone: Phone,
-  users: Users,
-  shield: ShieldCheck,
-};
-
-function ServiceIconTile({ icon }: { icon: string }) {
-  const Icon = SERVICE_ICONS[icon] ?? WavesLadder;
+function ServicePhoto({ src }: { src: string }) {
   return (
-    <div
-      className="absolute inset-0 flex items-center justify-center"
-      style={{
-        background:
-          "radial-gradient(120% 120% at 30% 20%, var(--accent-soft), transparent 60%), var(--surface-2)",
-      }}
-    >
-      <Icon className="h-16 w-16 text-accent" strokeWidth={1.5} />
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
   );
 }
 
@@ -483,7 +452,7 @@ const SERVICES = [
   {
     category: "Start here · $65",
     title: "Beginner Group Lesson",
-    icon: "waves",
+    photo: "/surf-erken/beginner-group-lesson.jpg",
     story:
       "A 2-hour lesson covering pop-up technique, wave selection, and safety, in groups of 4 or fewer on the gentlest part of the break. No experience or gear needed — board and rash guard are included.",
     included: [
@@ -499,7 +468,7 @@ const SERVICES = [
   {
     category: "Full progression, one week",
     title: "7-Day Surf & Stay Package",
-    icon: "graduation",
+    photo: "/surf-erken/surf-stay-beach-pavilion.jpg",
     story:
       "Daily lessons, board rental, and shared accommodation steps from the beach — the full progression from pop-up to riding unassisted, with an instructor tracking your progress day to day.",
     included: [
@@ -515,7 +484,7 @@ const SERVICES = [
   {
     category: "By the hour, day, or week",
     title: "Board & Wetsuit Rental",
-    icon: "key",
+    photo: "/surf-erken/board-rental-rack.jpg",
     story:
       "Soft-tops for beginners, performance shortboards for progressing surfers, by the hour, day, or week. Tamarindo's warm water means most surfers skip the wetsuit entirely.",
     included: [
@@ -529,7 +498,7 @@ const SERVICES = [
   {
     category: "One-on-one coaching",
     title: "Private Coaching",
-    icon: "phone",
+    photo: "/surf-erken/private-coaching-wave.jpg",
     story:
       "One-on-one sessions with a certified coach for surfers working on a specific skill, filmed and reviewed after the session so you can see exactly what to fix.",
     included: [
@@ -542,7 +511,7 @@ const SERVICES = [
   {
     category: "6 or more guests",
     title: "Group & Retreat Bookings",
-    icon: "users",
+    photo: "/surf-erken/group-retreat-surfers.jpg",
     story:
       "Custom week-long retreats for groups of 6+, with yoga, accommodation, and meal packages arranged alongside the surfing — the whole trip handled in one conversation.",
     included: [
@@ -555,7 +524,7 @@ const SERVICES = [
   {
     category: "Ages 8–14",
     title: "Kids Surf Camp",
-    icon: "shield",
+    photo: "/surf-erken/kids-surf-camp.jpg",
     story:
       "Half-day supervised sessions for ages 8–14 during school-holiday weeks, with certified junior coaches watching every set.",
     included: [
@@ -573,10 +542,10 @@ function SurfServicesCarousel() {
       key={s.title}
       index={i}
       card={{
-        src: HERO_IMAGE,
+        src: s.photo,
         title: s.title,
         category: s.category,
-        visual: <ServiceIconTile icon={s.icon} />,
+        visual: <ServicePhoto src={s.photo} />,
         content: <ServiceBody story={s.story} included={s.included} note={s.note} />,
       }}
     />
@@ -859,7 +828,7 @@ function JourneySection() {
               </h2>
               <p className="mt-4 text-base leading-relaxed text-text-muted md:text-lg">
                 Every student here walks the same five stages — from the first
-                message, in any time zone, to a debrief the second you're back
+                message, in any time zone, to a debrief the second you&apos;re back
                 on the beach. You always know what happens next, especially
                 if the swell doesn&apos;t cooperate.
               </p>
@@ -902,30 +871,35 @@ const GEAR: {
   title: string;
   spec: string;
   desc: string;
+  photo?: string;
 }[] = [
   {
     title: "Soft-Top Beginner Board",
     spec: "Foam deck · forgiving rails · every lesson",
     desc: "A soft, stable board built for learning, not a hard-edged shortboard — the ride is forgiving on your first hundred pop-ups, and included in every lesson.",
+    photo: "/surf-erken/soft-top-beginner-board.jpg",
   },
   {
     title: "Performance Shortboard",
     spec: "Fiberglass · sized to your progression",
     desc: "For surfers ready to move off the soft-top. We size boards to your weight and level so the transition off training gear doesn't set you back.",
+    photo: "/surf-erken/performance-shortboard.jpg",
   },
   {
     title: "Leash & Fin Setup",
     spec: "Ankle leash · removable thruster fins",
     desc: "Every rental leaves the rack checked — leash intact, fins tight, wax fresh. A borrowed board never means a guessed board.",
+    photo: "/surf-erken/leash-fin-setup.jpg",
   },
   {
     title: "Session Video Camera",
     spec: "Water housing · reviewed session-side",
     desc: "Two ways to see your own surfing — filmed from the beach or from the water, so nobody's guessing what actually happened on that wave.",
+    photo: "/surf-erken/session-video-camera.jpg",
   },
 ];
 
-/** Flat surf-gear silhouette used for each gear card visual. */
+/** Flat surf-gear silhouette used when a gear card has no photo. */
 function GearGlyph({ variant }: { variant: number }) {
   if (variant === 0) {
     // soft-top board
@@ -1031,7 +1005,17 @@ function GearCarousel() {
                 }
               >
                 <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-surface-2 to-[#f0ece0]">
-                  <GearGlyph variant={i} />
+                  {card.photo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={card.photo}
+                      alt={card.title}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      draggable={false}
+                    />
+                  ) : (
+                    <GearGlyph variant={i} />
+                  )}
                 </div>
                 <h3 className="mt-4 text-base font-semibold text-text" style={{ letterSpacing: "-0.01em" }}>
                   {card.title}
@@ -1122,7 +1106,7 @@ function GearSection() {
             className="max-w-md text-sm leading-relaxed text-text-muted md:text-base"
           >
             Every board and leash is checked before it leaves the rack, and
-            gear is sized to your progression, not whatever's left on the shelf.
+            gear is sized to your progression, not whatever&apos;s left on the shelf.
           </motion.p>
         </div>
 
@@ -1724,7 +1708,6 @@ export default function SurfErkenClient() {
     const close = () => closeChoiceMenu();
     window.addEventListener("scroll", close, { passive: true, once: true });
     return () => window.removeEventListener("scroll", close);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [choiceMenu]);
   const stoppedRef = useRef(false);
   const lastCellOpacityRef = useRef(1);

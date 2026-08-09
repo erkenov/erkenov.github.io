@@ -46,11 +46,9 @@ import {
   Phone,
   X,
   ShieldCheck,
-  Dumbbell,
   GraduationCap,
   Users,
   CalendarCheck,
-  Clock,
   ClipboardCheck,
   MessageSquare,
   Star,
@@ -73,8 +71,8 @@ const ease = [0.16, 1, 0.3, 1] as const;
 // the Retell dynamic variables (demo_business / demo_industry /
 // demo_context) the voice agent needs to answer in character.
 const BJJ = getDemoConfig("bjj")!;
-const PHONE_TEL = "+13252415512";
-const PHONE_DISPLAY = BJJ.business.phoneDisplay; // (325) 241-5512
+const PHONE_TEL = "+18887996065";
+const PHONE_DISPLAY = BJJ.business.phoneDisplay;
 const BOOKING_CALENDAR_ID = BJJ.booking.calendarId!;
 
 declare global {
@@ -383,36 +381,14 @@ function BjjHeader() {
 
 /* ================================================================== */
 /* PROGRAMS — the homepage "Built for your industry" Apple-card         */
-/* carousel, cards = the academy's six programs. Icon tiles instead of  */
-/* per-card photos (we only have one bjj stock photo in the repo —      */
-/* reusing it six times would look broken, so each card gets a flat     */
-/* icon tile matching its config icon).                                 */
+/* carousel, cards = the academy's six programs, each with its own      */
+/* subject-matched stock photo (fly-erken ServicePhoto pattern).        */
 /* ================================================================== */
 
-const SERVICE_ICONS: Record<
-  string,
-  React.ComponentType<{ className?: string; strokeWidth?: number }>
-> = {
-  shield: ShieldCheck,
-  dumbbell: Dumbbell,
-  graduation: GraduationCap,
-  users: Users,
-  calendar: CalendarCheck,
-  clock: Clock,
-};
-
-function ServiceIconTile({ icon }: { icon: string }) {
-  const Icon = SERVICE_ICONS[icon] ?? ShieldCheck;
+function ServicePhoto({ src }: { src: string }) {
   return (
-    <div
-      className="absolute inset-0 flex items-center justify-center"
-      style={{
-        background:
-          "radial-gradient(120% 120% at 30% 20%, var(--accent-soft), transparent 60%), var(--surface-2)",
-      }}
-    >
-      <Icon className="h-16 w-16 text-accent" strokeWidth={1.5} />
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
   );
 }
 
@@ -475,7 +451,7 @@ const SERVICES = [
   {
     category: "Start here · free trial",
     title: "Adult Fundamentals",
-    icon: "shield",
+    photo: "/bjj-erken/adult-fundamentals-drilling.jpg",
     story:
       "The on-ramp for new members — positions, escapes, and live rolling introduced at a pace that doesn't overwhelm your first month. Your free trial is a real fundamentals class, not a sales pitch.",
     included: [
@@ -491,7 +467,7 @@ const SERVICES = [
   {
     category: "$179/mo",
     title: "Adult All-Levels & Advanced",
-    icon: "dumbbell",
+    photo: "/bjj-erken/adult-all-levels-training.jpg",
     story:
       "Open-mat rolling and advanced technique classes for members past fundamentals, six days a week — taught by the same black belts who teach the beginner classes.",
     included: [
@@ -504,7 +480,7 @@ const SERVICES = [
   {
     category: "Ages 5–12 · $149/mo",
     title: "Kids BJJ",
-    icon: "graduation",
+    photo: "/bjj-erken/kids-bjj-class.jpg",
     story:
       "Discipline, focus, and self-defense fundamentals in a structured kids curriculum with its own belt system — separate from the adult program, same mat space.",
     included: [
@@ -517,7 +493,7 @@ const SERVICES = [
   {
     category: "Invite-only",
     title: "Competition Team",
-    icon: "users",
+    photo: "/bjj-erken/competition-team-match.jpg",
     story:
       "Invite-only team training for members preparing for local and regional IBJJF tournaments — extra mat time with instructors who compete themselves.",
     included: [
@@ -530,7 +506,7 @@ const SERVICES = [
   {
     category: "$90/session",
     title: "Private Lessons",
-    icon: "calendar",
+    photo: "/bjj-erken/private-lesson-coaching.jpg",
     story:
       "One-on-one instruction with a black belt for members working through a specific weakness or preparing for competition.",
     included: [
@@ -543,7 +519,7 @@ const SERVICES = [
   {
     category: "Saturdays · included",
     title: "Open Mat",
-    icon: "clock",
+    photo: "/bjj-erken/open-mat-rolling.jpg",
     story:
       "Unstructured rolling time every Saturday for members who want extra reps outside the regular class schedule.",
     included: [
@@ -561,10 +537,10 @@ function BjjServicesCarousel() {
       key={s.title}
       index={i}
       card={{
-        src: HERO_IMAGE,
+        src: s.photo,
         title: s.title,
         category: s.category,
-        visual: <ServiceIconTile icon={s.icon} />,
+        visual: <ServicePhoto src={s.photo} />,
         content: <ServiceBody story={s.story} included={s.included} note={s.note} />,
       }}
     />
@@ -817,30 +793,35 @@ const GEAR: {
   title: string;
   spec: string;
   desc: string;
+  photo?: string;
   icon: React.ComponentType<{ className?: string; strokeWidth?: number; style?: React.CSSProperties }>;
 }[] = [
   {
     title: "Full Mat Space",
     spec: "Camelback Corridor · adult & kids programs",
     desc: "One mat space, two curriculums — adults and kids train separately but share the same academy and the same standards.",
+    photo: "/bjj-erken/academy-mat-space.jpg",
     icon: Users,
   },
   {
     title: "Black Belt Instruction",
     spec: "6 black belts · every fundamentals class",
     desc: "A black belt teaches every fundamentals class personally — not a rotating assistant handed the beginners.",
+    photo: "/bjj-erken/black-belt-instruction.jpg",
     icon: ShieldCheck,
   },
   {
     title: "Belt & Stripe Tracking",
     spec: "Tracked and visible · every promotion",
     desc: "Your progress lives on a real chart, not a coach's memory — so you always know exactly where you stand.",
+    photo: "/bjj-erken/belt-stripe-closeup.jpg",
     icon: Star,
   },
   {
     title: "IBJJF-Affiliated Curriculum",
     spec: "Structured levels · competition-ready",
     desc: "A real curriculum that scales from your first trial class to the invite-only competition team.",
+    photo: "/bjj-erken/curriculum-technique.jpg",
     icon: GraduationCap,
   },
 ];
@@ -912,7 +893,17 @@ function GearCarousel() {
                 }
               >
                 <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-surface-2 to-[#f0ece0]">
-                  <Icon className="h-16 w-16" style={{ color: ILLO_CLAY }} strokeWidth={1.5} />
+                  {card.photo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={card.photo}
+                      alt={card.title}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      draggable={false}
+                    />
+                  ) : (
+                    <Icon className="h-16 w-16" style={{ color: ILLO_CLAY }} strokeWidth={1.5} />
+                  )}
                 </div>
                 <h3 className="mt-4 text-base font-semibold text-text" style={{ letterSpacing: "-0.01em" }}>
                   {card.title}

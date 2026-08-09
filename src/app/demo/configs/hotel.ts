@@ -16,7 +16,7 @@ const hotel: DemoConfig = {
     short: "Hotel Erken",
     tagline: "Book direct, stay longer",
     location: "212 W Camelback Rd · Phoenix, AZ",
-    phoneDisplay: "(325) 241-7710",
+    phoneDisplay: "(888) 799-6065",
     hours: "Front desk 24/7",
     icon: "hotel",
   },

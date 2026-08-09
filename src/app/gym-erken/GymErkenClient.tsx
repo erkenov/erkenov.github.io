@@ -39,6 +39,7 @@
  */
 
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Check,
@@ -49,7 +50,6 @@ import {
   CalendarCheck,
   Users,
   ShieldCheck,
-  Clock,
   ClipboardCheck,
   MessageSquare,
   Star,
@@ -72,8 +72,8 @@ const ease = [0.16, 1, 0.3, 1] as const;
 // the Retell dynamic variables (demo_business / demo_industry /
 // demo_context) the voice agent needs to answer in character.
 const GYM = getDemoConfig("gym")!;
-const PHONE_TEL = "+13252417743";
-const PHONE_DISPLAY = GYM.business.phoneDisplay; // (325) 241-7743
+const PHONE_TEL = "+18887996065";
+const PHONE_DISPLAY = GYM.business.phoneDisplay;
 const BOOKING_CALENDAR_ID = GYM.booking.calendarId!;
 
 declare global {
@@ -332,9 +332,9 @@ function GymHeader() {
       className="sticky top-0 z-50 w-full border-b border-border/60 bg-bg/85 backdrop-blur-md"
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-8">
-        <a href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
+        <Link href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
           gym<span className="text-accent"> </span>erken
-        </a>
+        </Link>
         <nav className="hidden items-center gap-8 md:flex">
           <a href="#services" className="text-sm text-text-muted transition-colors hover:text-text">
             Our programs
@@ -382,36 +382,14 @@ function GymHeader() {
 
 /* ================================================================== */
 /* PROGRAMS — the homepage "Built for your industry" Apple-card         */
-/* carousel, cards = the gym's six programs. Icon tiles instead of      */
-/* per-card photos (we only have one gym stock photo in the repo —      */
-/* reusing it six times would look broken, so each card gets a flat     */
-/* icon tile matching its config icon).                                 */
+/* carousel, cards = the gym's six programs, each with its own stock    */
+/* photo (public/gym-erken/, fly-erken pattern).                        */
 /* ================================================================== */
 
-const SERVICE_ICONS: Record<
-  string,
-  React.ComponentType<{ className?: string; strokeWidth?: number }>
-> = {
-  dumbbell: Dumbbell,
-  graduation: GraduationCap,
-  calendar: CalendarCheck,
-  users: Users,
-  shield: ShieldCheck,
-  clock: Clock,
-};
-
-function ServiceIconTile({ icon }: { icon: string }) {
-  const Icon = SERVICE_ICONS[icon] ?? Dumbbell;
+function ServicePhoto({ src }: { src: string }) {
   return (
-    <div
-      className="absolute inset-0 flex items-center justify-center"
-      style={{
-        background:
-          "radial-gradient(120% 120% at 30% 20%, var(--accent-soft), transparent 60%), var(--surface-2)",
-      }}
-    >
-      <Icon className="h-16 w-16 text-accent" strokeWidth={1.5} />
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
   );
 }
 
@@ -474,7 +452,7 @@ const SERVICES = [
   {
     category: "Start here · free trial",
     title: "Group Training Classes",
-    icon: "dumbbell",
+    photo: "/gym-erken/group-training-class.jpg",
     story:
       "Capped-headcount coached classes covering strength, conditioning, and mobility. Every workout scaled to your level by the coach on the floor, not left to guesswork.",
     included: [
@@ -490,7 +468,7 @@ const SERVICES = [
   {
     category: "Included for new members",
     title: "Foundations Program",
-    icon: "graduation",
+    photo: "/gym-erken/foundations-form-coaching.jpg",
     story:
       "A 4-week onboarding track for new members covering form, movement basics, and how our class structure works — before you're thrown into the deep end.",
     included: [
@@ -503,7 +481,7 @@ const SERVICES = [
   {
     category: "Included",
     title: "Open Gym Access",
-    icon: "calendar",
+    photo: "/gym-erken/open-gym-solo-training.jpg",
     story:
       "Self-directed training time outside class hours for members who want extra reps on their own program.",
     included: [
@@ -516,7 +494,7 @@ const SERVICES = [
   {
     category: "From $75/session",
     title: "Personal Training",
-    icon: "users",
+    photo: "/gym-erken/personal-training-session.jpg",
     story:
       "One-on-one coaching for members working toward a specific goal — a competition, an injury comeback, or just faster progress.",
     included: [
@@ -529,7 +507,7 @@ const SERVICES = [
   {
     category: "$99/mo",
     title: "Nutrition Coaching",
-    icon: "shield",
+    photo: "/gym-erken/nutrition-coaching.jpg",
     story:
       "Monthly check-ins with a coach on nutrition habits that actually stick — no crash diets or meal-plan spreadsheets.",
     included: [
@@ -542,7 +520,7 @@ const SERVICES = [
   {
     category: "Custom quote",
     title: "Corporate Wellness",
-    icon: "clock",
+    photo: "/gym-erken/corporate-wellness.jpg",
     story:
       "On-site or in-gym sessions for local companies looking to add a fitness perk for their team.",
     included: [
@@ -560,10 +538,10 @@ function GymServicesCarousel() {
       key={s.title}
       index={i}
       card={{
-        src: HERO_IMAGE,
+        src: s.photo,
         title: s.title,
         category: s.category,
-        visual: <ServiceIconTile icon={s.icon} />,
+        visual: <ServicePhoto src={s.photo} />,
         content: <ServiceBody story={s.story} included={s.included} note={s.note} />,
       }}
     />
@@ -773,7 +751,7 @@ function JourneySection() {
               <p className="mt-4 text-base leading-relaxed text-text-muted md:text-lg">
                 No intimidation, no sales pitch. You train first, then
                 decide — and if your attendance quietly drops off, a real
-                coach notices before you've fully checked out.
+                coach notices before you&apos;ve fully checked out.
               </p>
               <p className="mt-3 text-base leading-relaxed text-text-muted md:text-lg">
                 No missed call that goes to voicemail, no failed payment
@@ -815,30 +793,35 @@ const GEAR: {
   title: string;
   spec: string;
   desc: string;
+  photo?: string;
   icon: React.ComponentType<{ className?: string; strokeWidth?: number; style?: React.CSSProperties }>;
 }[] = [
   {
     title: "Capped Class Sizes",
     spec: "16 members max · every rep coached",
     desc: "Classes cap at 16 so a coach can actually watch your form and correct it in real time, not just count reps from across the room.",
+    photo: "/gym-erken/capped-class-sizes.jpg",
     icon: Users,
   },
   {
     title: "Certified Coaching Staff",
     spec: "11 coaches · every class supervised",
     desc: "No unsupervised sessions here — a certified coach leads every single class, scaling the workout to whoever's on the floor that day.",
+    photo: "/gym-erken/certified-coaching-staff.jpg",
     icon: ShieldCheck,
   },
   {
     title: "Foundations Onboarding",
     spec: "4-week track · every new member",
     desc: "Every new member gets a structured first month covering form and movement basics before jumping into the full class schedule.",
+    photo: "/gym-erken/foundations-onboarding.jpg",
     icon: GraduationCap,
   },
   {
     title: "89% Six-Month Retention",
     spec: "real accountability, not just billing",
     desc: "Coaches notice when attendance drops and reach out — the number one reason members here stick around past the industry average.",
+    photo: "/gym-erken/member-retention.jpg",
     icon: Star,
   },
 ];
@@ -910,7 +893,17 @@ function GearCarousel() {
                 }
               >
                 <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-surface-2 to-[#f0ece0]">
-                  <Icon className="h-16 w-16" style={{ color: ILLO_CLAY }} strokeWidth={1.5} />
+                  {card.photo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={card.photo}
+                      alt={card.title}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      draggable={false}
+                    />
+                  ) : (
+                    <Icon className="h-16 w-16" style={{ color: ILLO_CLAY }} strokeWidth={1.5} />
+                  )}
                 </div>
                 <h3 className="mt-4 text-base font-semibold text-text" style={{ letterSpacing: "-0.01em" }}>
                   {card.title}
@@ -1574,7 +1567,6 @@ export default function GymErkenClient() {
     const close = () => closeChoiceMenu();
     window.addEventListener("scroll", close, { passive: true, once: true });
     return () => window.removeEventListener("scroll", close);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [choiceMenu]);
   const stoppedRef = useRef(false);
   const lastCellOpacityRef = useRef(1);

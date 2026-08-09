@@ -43,17 +43,12 @@
  */
 
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Check,
   Phone,
   X,
-  GraduationCap,
-  Users,
-  Gauge,
-  CalendarCheck,
-  ShieldCheck,
-  Clock,
 } from "lucide-react";
 import { Carousel, Card, CardModalContext } from "@/components/ui/apple-cards-carousel";
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
@@ -73,8 +68,8 @@ const ease = [0.16, 1, 0.3, 1] as const;
 // the Retell dynamic variables (demo_business / demo_industry / demo_context)
 // the voice agent needs to answer in character.
 const TENNIS = getDemoConfig("tennis")!;
-const PHONE_TEL = "+13252419034";
-const PHONE_DISPLAY = TENNIS.business.phoneDisplay; // (325) 241-9034
+const PHONE_TEL = "+18887996065";
+const PHONE_DISPLAY = TENNIS.business.phoneDisplay;
 // NOTE (flag for Shamil's review): tennis.ts reuses the SAME shared demo GHL
 // calendar as skydiving/flight-schools (SS2V1nuWEIbOlNrzyxpt) — there is no
 // dedicated Erken Tennis Academy calendar yet. Fine for a click-through
@@ -337,9 +332,9 @@ function TennisHeader() {
       className="sticky top-0 z-50 w-full border-b border-border/60 bg-bg/85 backdrop-blur-md"
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-8">
-        <a href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
+        <Link href="/" className="font-mono text-sm font-medium uppercase tracking-tight text-text">
           tennis<span className="text-accent"> </span>erken
-        </a>
+        </Link>
         <nav className="hidden items-center gap-8 md:flex">
           <a href="#services" className="text-sm text-text-muted transition-colors hover:text-text">
             Our programs
@@ -387,37 +382,15 @@ function TennisHeader() {
 
 /* ================================================================== */
 /* PROGRAMS — the homepage "Built for your industry" Apple-card        */
-/* carousel, cards = the academy's six programs. Icon tiles instead of */
-/* per-card photos (we only have one tennis stock photo in the repo    */
-/* — reusing it six times would look broken, so each card gets a flat  */
-/* icon tile matching its config icon, same visual language as the     */
-/* JOURNEY illustrations below).                                        */
+/* carousel, cards = the academy's six programs. Each card carries a    */
+/* real stock photo (public/tennis-erken/), same full-bleed pattern as  */
+/* the fly-erken flagship.                                              */
 /* ================================================================== */
 
-const SERVICE_ICONS: Record<
-  string,
-  React.ComponentType<{ className?: string; strokeWidth?: number }>
-> = {
-  graduation: GraduationCap,
-  users: Users,
-  gauge: Gauge,
-  calendar: CalendarCheck,
-  shield: ShieldCheck,
-  clock: Clock,
-};
-
-function ServiceIconTile({ icon }: { icon: string }) {
-  const Icon = SERVICE_ICONS[icon] ?? GraduationCap;
+function ServicePhoto({ src }: { src: string }) {
   return (
-    <div
-      className="absolute inset-0 flex items-center justify-center"
-      style={{
-        background:
-          "radial-gradient(120% 120% at 30% 20%, var(--accent-soft), transparent 60%), var(--surface-2)",
-      }}
-    >
-      <Icon className="h-16 w-16 text-accent" strokeWidth={1.5} />
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
   );
 }
 
@@ -485,7 +458,7 @@ const SERVICES = [
   {
     category: "Ages 5–18 · from $220/mo",
     title: "Junior Development Program",
-    icon: "graduation",
+    photo: "/tennis-erken/junior-development-practice.jpg",
     story:
       "Age- and level-based groups from ages 5 to 18, following a written USTA-aligned curriculum with quarterly level assessments. A trial lesson places your child in the right group — not just the next open slot.",
     included: [
@@ -501,7 +474,7 @@ const SERVICES = [
   {
     category: "All levels welcome",
     title: "Adult Clinics",
-    icon: "users",
+    photo: "/tennis-erken/adult-clinic-play.jpg",
     story:
       "Beginner through advanced group clinics that run year-round, matched by skill level so you're never the weakest or strongest player on court.",
     included: [
@@ -515,7 +488,7 @@ const SERVICES = [
   {
     category: "One-on-one coaching",
     title: "Private Lessons",
-    icon: "gauge",
+    photo: "/tennis-erken/private-lesson-coaching.jpg",
     story:
       "One-on-one coaching with a USPTA pro, video-reviewed for players working on a specific technical fix.",
     included: [
@@ -528,7 +501,7 @@ const SERVICES = [
   {
     category: "Day or night, 12 courts",
     title: "Court Rental",
-    icon: "calendar",
+    photo: "/tennis-erken/court-rental-aerial.jpg",
     story:
       "Members and non-members book any of our 12 courts online, day or night under the lights. Real availability, not a phone-tag guessing game.",
     included: [
@@ -541,7 +514,7 @@ const SERVICES = [
   {
     category: "Invite-only",
     title: "Tournament Team",
-    icon: "shield",
+    photo: "/tennis-erken/tournament-serve-clay.jpg",
     story:
       "Invite-only competitive team for junior players preparing for USTA sanctioned tournaments, with match strategy sessions.",
     included: [
@@ -554,7 +527,7 @@ const SERVICES = [
   {
     category: "School breaks",
     title: "Summer Camps",
-    icon: "clock",
+    photo: "/tennis-erken/summer-camp-kids.jpg",
     story:
       "Full-day and half-day camps during school breaks combining tennis, fitness, and match play.",
     included: [
@@ -572,10 +545,10 @@ function TennisServicesCarousel() {
       key={s.title}
       index={i}
       card={{
-        src: HERO_IMAGE,
+        src: s.photo,
         title: s.title,
         category: s.category,
-        visual: <ServiceIconTile icon={s.icon} />,
+        visual: <ServicePhoto src={s.photo} />,
         content: <ServiceBody story={s.story} included={s.included} note={s.note} />,
       }}
     />
@@ -892,30 +865,35 @@ const GEAR: {
   title: string;
   spec: string;
   desc: string;
+  photo?: string;
 }[] = [
   {
     title: "12 Lit Courts",
     spec: "Hard court · evening lighting · every night",
     desc: "Twelve courts on site, not a shared municipal schedule — evening and weekend availability year-round, booked online in real time.",
+    photo: "/tennis-erken/lit-courts-night.jpg",
   },
   {
     title: "Junior Development Balls",
     spec: "Low-compression · matched to age group",
     desc: "Younger players train with lower-compression balls that stay in the court, building real technique before the jump to a full-speed ball.",
+    photo: "/tennis-erken/junior-balls-basket.jpg",
   },
   {
     title: "Coach Video Review",
     spec: "Court-side camera · session playback",
     desc: "Private lessons are filmed and reviewed session-side, so a technical fix isn't just described — it's shown.",
+    photo: "/tennis-erken/video-review-camera.jpg",
   },
   {
     title: "Stringing & Racket Check",
     spec: "On-site stringing · same-day turnaround",
     desc: "Two ways to keep your racket dialed in — a tension check before big matches, and same-day restringing so equipment never costs you a lesson.",
+    photo: "/tennis-erken/racket-stringing.jpg",
   },
 ];
 
-/** Flat court-and-gear silhouette used for each gear card visual. */
+/** Flat court-and-gear silhouette used when a gear card has no photo. */
 function GearGlyph({ variant }: { variant: number }) {
   if (variant === 0) {
     // court
@@ -1024,7 +1002,17 @@ function GearCarousel() {
                 }
               >
                 <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-surface-2 to-[#f0ece0]">
-                  <GearGlyph variant={i} />
+                  {card.photo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={card.photo}
+                      alt={card.title}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      draggable={false}
+                    />
+                  ) : (
+                    <GearGlyph variant={i} />
+                  )}
                 </div>
                 <h3 className="mt-4 text-base font-semibold text-text" style={{ letterSpacing: "-0.01em" }}>
                   {card.title}
@@ -1717,7 +1705,6 @@ export default function TennisErkenClient() {
     const close = () => closeChoiceMenu();
     window.addEventListener("scroll", close, { passive: true, once: true });
     return () => window.removeEventListener("scroll", close);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [choiceMenu]);
   const stoppedRef = useRef(false);
   const lastCellOpacityRef = useRef(1);

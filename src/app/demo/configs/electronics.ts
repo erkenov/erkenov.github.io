@@ -16,7 +16,7 @@ const electronics: DemoConfig = {
     short: "Erken Repair",
     tagline: "Phones, laptops, consoles, drones",
     location: "3010 E Baseline Rd · Tempe, AZ",
-    phoneDisplay: "(325) 241-3357",
+    phoneDisplay: "(888) 799-6065",
     hours: "Mon–Sat 9am–7pm · Sun 11am–4pm",
     icon: "cpu",
   },

@@ -16,7 +16,7 @@ const automotive: DemoConfig = {
     short: "Erken Auto",
     tagline: "Repair, tune, rebuild",
     location: "1440 E McDowell Rd · Phoenix, AZ",
-    phoneDisplay: "(325) 241-3390",
+    phoneDisplay: "(888) 799-6065",
     hours: "Mon–Sat 7am–6pm · Sun closed",
     icon: "wrench",
   },

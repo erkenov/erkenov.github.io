@@ -16,7 +16,7 @@ const motorcycle: DemoConfig = {
     short: "Erken Moto",
     tagline: "Ride, tour, repair",
     location: "2210 N Scottsdale Rd · Scottsdale, AZ",
-    phoneDisplay: "(325) 241-6674",
+    phoneDisplay: "(888) 799-6065",
     hours: "Tue–Sun 8am–6pm · Mon closed",
     icon: "bike",
   },

@@ -16,7 +16,7 @@ const climbing: DemoConfig = {
     short: "Erken Climbing",
     tagline: "Climb indoors, guide outdoors",
     location: "4455 E Thomas Rd · Phoenix, AZ",
-    phoneDisplay: "(325) 241-4420",
+    phoneDisplay: "(888) 799-6065",
     hours: "Mon–Fri 6am–11pm · Sat–Sun 8am–9pm",
     icon: "mountain",
   },
