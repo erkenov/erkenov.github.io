@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 /**
  * SceneIndustriesCarousel — "Built for your industry" Apple Cards.
@@ -24,9 +24,45 @@
  */
 
 import { Carousel, Card } from "@/components/ui/apple-cards-carousel";
-import { IconArrowUpRight } from "@tabler/icons-react";
 import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
 import { EverythingIncluded } from "@/components/EverythingIncluded";
+import DemoVoiceWidget from "@/app/demo/components/DemoVoiceWidget";
+import { getDemoConfig, type DemoConfig } from "@/app/demo/config";
+import { openErkenChat } from "@/components/ErkenChatWidget";
+
+declare global {
+  interface Window {
+    __startDemoVoiceCall?: () => void;
+  }
+}
+
+/** Card demoUrl hostname prefix → demo config slug, where the subdomain
+ *  shortname differs from the registry slug (fly.erken.systems →
+ *  "flight-schools", etc.). Prefixes not listed here match their slug
+ *  directly (bjj, gym, yacht, horse, farm, tennis, surf). */
+const DEMO_SUBDOMAIN_TO_SLUG: Record<string, string> = {
+  fly: "flight-schools",
+  auto: "automotive",
+  moto: "motorcycle",
+  sky: "skydiving",
+  climb: "climbing",
+};
+
+/** Card → DemoConfig for the popup's inline voice demo. Derives the
+ *  registry slug from the card's demoUrl hostname; cards without a
+ *  demoUrl (or with an unmatched one) fall back to the flight-school
+ *  config — same fallback the old FLIGHT_DEMO_URL link used. */
+function demoConfigForCard(demoUrl?: string): DemoConfig {
+  const fallback = getDemoConfig("flight-schools")!;
+  if (!demoUrl) return fallback;
+  let prefix = "";
+  try {
+    prefix = new URL(demoUrl).hostname.split(".")[0];
+  } catch {
+    return fallback;
+  }
+  return getDemoConfig(DEMO_SUBDOMAIN_TO_SLUG[prefix] ?? prefix) ?? fallback;
+}
 
 // Style 2 — full-bleed photographic image. Pure photo, no overlay.
 // The only closed-card visual treatment still in use (2026-08-01): the
@@ -54,9 +90,10 @@ type IndustryCard = {
    *  When provided, replaces the default colored BlurImage background.
    *  Used for the A/B/C/D/E card-visual experiment. */
   visual?: React.ReactNode;
-  /** Live demo subdomain for this industry. When set, the popup's video
-   *  showcase renders the primary "Try the live demo" CTA. When absent,
-   *  the showcase says the demo is coming and links to the roofing one. */
+  /** Live demo subdomain for this industry (e.g. https://fly.erken.systems).
+   *  2026-08-12: no longer linked out to — the popup mounts an INLINE voice
+   *  demo whose DemoConfig is derived from this URL's hostname (see
+   *  demoConfigForCard). When absent, the flight-school config is used. */
   demoUrl?: string;
   /** Optional per-industry override for the showcase headline/sub. */
   demoHeadline?: string;
@@ -194,14 +231,14 @@ const INDUSTRIES: IndustryCard[] = [
     demoUrl: "https://gym.erken.systems",
     demoHeadline: "A real gym setup, running live right now",
     demoSub:
-      "This isn't a mockup. It's a complete boutique gym system — website, trial-class booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a free trial and watch what your members would experience.",
+      "This isn't a mockup. It's a complete boutique gym system — website, class booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book an intro class and watch what your members would experience.",
     content: (
       <IndustryBodySteps
         steps={[
           {
             title: "Capture — every trial and class inquiry gets booked",
             description:
-              "Your AI receptionist answers while you're coaching a class or running a WOD. It books a free trial class or intro session right off the website or a walk-by scan, and confirms it the same day.",
+              "Your AI receptionist answers while you're coaching a class or running a WOD. It books an intro class or session right off the website or a walk-by scan, and confirms it the same day.",
             image: IMG.step1,
             imageAlt: "AI receptionist booking a gym trial",
           },
@@ -661,9 +698,16 @@ const INDUSTRIES: IndustryCard[] = [
  * (Shamil 2026-07-14: "as many videos and clickable things as possible").
  * Horizontal 16:9 demo video on top (placeholder = the main-page intro clip
  * for now; per-industry streamer-style demo videos swap in later), pitch +
- * "try the live demo" CTA below it, the step-by-step breakdown stays under
- * that. Rolled out on the flight-school card first; other industries follow once
- * the treatment is approved and each has a live demo subdomain.
+ * CTAs below it, the step-by-step breakdown stays under that.
+ *
+ * 2026-08-12 (owner ruling): the "Try the live demo" button — which
+ * navigated away to the demo subdomain — is REPLACED by an inline demo:
+ * "Talk to the AI receptionist" starts a Retell web call right inside the
+ * popup (DemoVoiceWidget mounted below, configured per industry from the
+ * card's demoUrl hostname) and "Chat with it" opens the shared site chat
+ * widget. No navigation. DemoVoiceWidget unmounts with the popup (the
+ * carousel renders card.content only while open), and its effect cleanup
+ * stops any live call.
  */
 function IndustryDemoShowcase({
   demoUrl,
@@ -674,17 +718,24 @@ function IndustryDemoShowcase({
   headline: string;
   sub: string;
 }) {
+  const demoConfig = demoConfigForCard(demoUrl);
   return (
     // Horizontal 16:9 demo video ON TOP (streamer-style: full screen + cam in
     // the corner), pitch + CTA below (2026-07-20: was a narrow vertical clip
     // beside the text). Same video source; the frame is now landscape and the
     // text sits under the wide player where it reads naturally.
-    <div className="mb-12 flex flex-col gap-6">
+    // --d-accent: DemoVoiceWidget's fallback panel reads var(--d-accent) for
+    // its Send button (demo pages set the whole --d-* palette per industry);
+    // the popup just maps it to the site's own accent.
+    <div
+      className="mb-12 flex flex-col gap-6"
+      style={{ "--d-accent": "var(--accent)" } as React.CSSProperties}
+    >
       {/* Horizontal 16:9 demo video — placeholder: the main-page intro clip */}
       <div className="mx-auto w-full max-w-2xl">
         <Scene1IntroVideo orientation="landscape" />
       </div>
-      {/* Pitch + CTA */}
+      {/* Pitch + CTAs */}
       <div className="mx-auto w-full max-w-2xl">
         <div className="mono-label text-accent text-xs mb-3">See it working</div>
         <h4
@@ -696,29 +747,43 @@ function IndustryDemoShowcase({
         <p className="mt-3 text-[15px] md:text-base text-text-muted leading-relaxed">
           {sub}
         </p>
-        {/* Try for free is the primary next step (→ /start). Every card also
-            gets the "Try the live demo" secondary CTA: cards with their own
-            demoUrl link there, every other card falls back to the one live
-            flight-school demo until its own demo subdomain exists. */}
-        <div className="mt-6 flex flex-wrap items-center gap-3">
+        {/* Inline demo (2026-08-12): test the AI receptionist by voice or
+            chat WITHOUT leaving this page — the voice call runs in-browser
+            via the DemoVoiceWidget mounted below; the chat opens the shared
+            site widget. Get started stays the primary next step (→ /start). */}
+        <p className="mt-4 text-sm font-medium text-text">
+          Try it right here — talk to the AI receptionist or chat with it, no
+          need to leave this page:
+        </p>
+        <div className="mt-4 flex flex-wrap items-center gap-3">
           <a
             href="/start"
             className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-white transition-transform duration-200 hover:scale-[1.02]"
           >
-            Try for free
+            Get started
             <span aria-hidden>→</span>
           </a>
-          <a
-            href={demoUrl ?? FLIGHT_DEMO_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={() => window.__startDemoVoiceCall?.()}
+            className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-white transition-transform duration-200 hover:scale-[1.02]"
+          >
+            Talk to the AI receptionist
+          </button>
+          <button
+            type="button"
+            onClick={() => openErkenChat()}
             className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 font-medium text-text transition-colors hover:border-border-strong hover:bg-surface"
           >
-            Try the live demo
-            <IconArrowUpRight size={18} stroke={2} />
-          </a>
+            Chat with it
+          </button>
         </div>
       </div>
+      {/* Mounted inside the popup content, so exactly ONE instance exists
+          (only while a card is open) and closing the popup unmounts it —
+          the widget's cleanup ends any live call and removes the
+          window.__startDemoVoiceCall global. */}
+      <DemoVoiceWidget config={demoConfig} />
     </div>
   );
 }
@@ -817,9 +882,10 @@ export function SceneIndustriesCarousel({
   arrowsTrailing?: React.ReactNode;
 } = {}) {
   // Every popup opens with the video showcase (2026-07-14: "every piece of
-  // info on the site has a video twin"). Every card's "Try the live demo"
-  // button links to its own demoUrl when set; every other card links to the
-  // one live flight-school demo until per-industry demos exist.
+  // info on the site has a video twin"). The demo is INLINE (2026-08-12):
+  // each popup mounts a DemoVoiceWidget whose DemoConfig comes from the
+  // card's demoUrl hostname (flight-school config as fallback), and "Chat
+  // with it" opens the shared site chat widget — no navigation away.
   const items = INDUSTRIES.map((c, i) => {
     const card: IndustryCard = {
       ...c,

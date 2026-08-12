@@ -13,10 +13,10 @@ import HomeV8Client from "./HomeV8Client";
  *   3. Pipeline — HubSpot-style sticky-column, always-expanded phase panels
  *   4. AI section — "Built-in AI that works for you 24/7" (3 agent cards)
  *   5. Meet Erken — five sell bullets + three CTAs in one row
- *   6. Pricing — full /start-style plan cards
+ *   6. Pricing — three Platform billing-period cards (Monthly / 6 months /
+ *      Yearly; Complete-system and Custom-solutions cards removed 2026-08-12)
  *   7. Stack-comparison — replace-your-stack table ($400–700/mo vs $97)
- *   8. Custom solutions
- *   9. Integrations marquee — last section (auto-scroll ticker)
+ *   8. Integrations marquee — last section (auto-scroll ticker)
  *   (the get-leads / "you want customers" section was removed; the real
  *    coming-soon card still lives on /start)
  *   (no footer, no divider lines between sections)

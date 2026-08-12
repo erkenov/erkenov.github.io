@@ -10,7 +10,6 @@
 import { useEffect } from "react";
 import ErkenChatWidget from "@/components/ErkenChatWidget";
 import type { DemoConfig, DemoSectionId } from "../config";
-import CallbackModal from "../components/CallbackModal";
 import DemoVoiceWidget from "../components/DemoVoiceWidget";
 import {
   AboutSection,
@@ -105,7 +104,6 @@ export default function DemoPageClient({ config }: { config: DemoConfig }) {
       </main>
       <DemoFooter config={config} />
       <ErkenDemoBadge />
-      <CallbackModal config={config} />
       {config.voice.enabled ? <DemoVoiceWidget config={config} /> : null}
       {config.chat.enabled ? <ErkenChatWidget /> : null}
     </div>

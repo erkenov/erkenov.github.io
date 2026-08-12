@@ -6,7 +6,7 @@ import HomeV8Client from "./home-v8-draft/HomeV8Client";
  *
  * `/` now renders the same client tree as /home-v8-draft — the restructured
  * homepage (hero → industries → pipeline → AI → Meet Erken → pricing → stack
- * comparison → custom solutions → integrations marquee) with the live
+ * comparison → integrations marquee) with the live
  * SphereScrollStage + roaming Celly. This route carries PRODUCTION metadata
  * and is INDEXABLE; /home-v8-draft keeps its own noindex metadata as a draft
  * alias.
@@ -18,12 +18,12 @@ import HomeV8Client from "./home-v8-draft/HomeV8Client";
 export const metadata: Metadata = {
   title: "Erken Systems — Smart Business Systems Builder",
   description:
-    "One platform runs your business — leads captured, tracked, and reported on automatically — with built-in AI and Erken, the assistant that teaches you every step. Voice agents, CRM, automations, dashboards; built by an operator, not an agency. $97/mo, first week free.",
+    "One platform runs your business — leads captured, tracked, and reported on automatically — with built-in AI and Erken, the assistant that teaches you every step. Voice agents, CRM, automations, dashboards; built by an operator, not an agency. From $77/mo.",
   robots: { index: true, follow: true },
   openGraph: {
     title: "Erken Systems — Smart Business Systems Builder",
     description:
-      "One platform runs your business, with built-in AI and an assistant that teaches you every step. $97/mo, first week free.",
+      "One platform runs your business, with built-in AI and an assistant that teaches you every step. From $77/mo.",
     type: "website",
   },
 };

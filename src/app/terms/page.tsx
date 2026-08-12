@@ -7,7 +7,7 @@ export default function TermsPage() {
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "48px 24px", color: "#EAF3EC", background: "#0d1322", minHeight: "100vh", fontFamily: "-apple-system, Segoe UI, Roboto, sans-serif", lineHeight: 1.6 }}>
       <h1 style={{ fontSize: 28, marginBottom: 8 }}>Terms of Service — Erken Systems</h1>
-      <p style={{ color: "#a0a0b8", marginBottom: 28 }}>Last updated: July 5, 2026</p>
+      <p style={{ color: "#a0a0b8", marginBottom: 28 }}>Last updated: August 12, 2026</p>
 
       <p>These Terms of Service (&quot;Terms&quot;) govern your use of erken.systems and the services provided by <strong>Individual Entrepreneur Shamil Erkenov</strong>, registered in Georgia, identification number 322960587, operating as <strong>Erken Systems</strong> (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;). By using our website or services, you agree to these Terms.</p>
 
@@ -23,8 +23,8 @@ export default function TermsPage() {
       <h2 style={{ fontSize: 20, marginTop: 28 }}>Acceptable use</h2>
       <p>You agree to use our services only for lawful business purposes. You may not use them to send spam or unlawful communications, attempt to breach or overload our systems, infringe on anyone&apos;s rights, or resell access without our written permission. We may suspend access that violates these rules.</p>
 
-      <h2 style={{ fontSize: 20, marginTop: 28 }}>Accounts and free trial</h2>
-      <p>New platform accounts include a <strong>1-week free trial</strong>. After the trial ends, continued platform access is billed at <strong>$97 per month</strong> unless you cancel before the trial ends. You are responsible for keeping your account credentials secure and for activity under your account.</p>
+      <h2 style={{ fontSize: 20, marginTop: 28 }}>Accounts and billing</h2>
+      <p>New platform accounts are billed at the plan selected at signup: <strong>$97 per month</strong> billed monthly, <strong>$87 per month</strong> billed every six months ($522), or <strong>$77 per month</strong> billed yearly ($924). AI voice-agent minutes are billed separately at cost, pay-per-use. You are responsible for keeping your account credentials secure and for activity under your account.</p>
 
       <h2 style={{ fontSize: 20, marginTop: 28 }}>Payment terms</h2>
       <p>We currently bill by manual invoicing and payment links sent to your email or phone. Payment is due upon receipt unless the invoice states otherwise. If payment is not received, we may suspend platform access until the balance is settled. Setup services are quoted and invoiced separately.</p>

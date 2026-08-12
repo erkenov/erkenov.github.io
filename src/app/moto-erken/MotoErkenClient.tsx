@@ -31,7 +31,7 @@
  *   5. Pricing cards -> tours/rentals/courses; "Book now" scrolls to the
  *      embedded GHL booking calendar.
  *   6. Stack-comparison table -> "One shop, everything included."
- *   7. Custom solutions -> "Still have questions?" contact chooser.
+ *   7. "Still have questions?" contact section.
  *   8. Erken bot comes along: text chat = the GHL widget; VOICE calls go
  *      through DemoVoiceWidget so Retell receives the Erken Moto dynamic
  *      variables and answers as the shop's front desk.
@@ -63,7 +63,6 @@ import ErkenChatWidget, {
   useErkenChatOpen,
 } from "@/components/ErkenChatWidget";
 import DemoVoiceWidget from "@/app/demo/components/DemoVoiceWidget";
-import CallbackModal from "@/app/demo/components/CallbackModal";
 import { getDemoConfig } from "@/app/demo/config";
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -79,14 +78,12 @@ const BOOKING_CALENDAR_ID = MOTO.booking.calendarId!;
 declare global {
   interface Window {
     __startDemoVoiceCall?: () => void;
-    __openDemoCallbackModal?: () => void;
-    __prewarmDemoCallbackModal?: () => void;
   }
 }
 
 /* ================================================================== */
-/* Contact chooser — the "Talk to us now" choice UI (voice / text /    */
-/* callback). Opened from the header, the hero, service cards, and the */
+/* Contact chooser — the "Talk to us now" choice UI (voice / text).    */
+/* Opened from the header, the hero, service cards, and the            */
 /* Still-have-questions section via a window event so any child can    */
 /* trigger the single instance living in MotoErkenClient.               */
 /* ================================================================== */
@@ -1251,8 +1248,8 @@ function BookingSection() {
           </div>
         ) : (
           <div data-celly-avoid className="mt-10">
-            {/* form_embed.js (loaded above, and also needed by the callback
-                modal) is an iframe-resizer: it rewrites this iframe's INLINE
+            {/* form_embed.js (loaded above) is an iframe-resizer: it
+                rewrites this iframe's INLINE
                 height on a 32ms interval / on any DOM mutation inside the
                 widget (hovering a time slot counts). Inline style beats the
                 Tailwind h-[...] classes, so picking a date + moving the mouse
@@ -1529,7 +1526,6 @@ export default function MotoErkenClient() {
   const [choiceMenu, setChoiceMenu] = useState<{ x: number; y: number } | null>(null);
   const closeChoiceMenu = () => setChoiceMenu(null);
   const openChoiceMenu = (anchorEl?: HTMLElement | null) => {
-    window.__prewarmDemoCallbackModal?.();
     const el = anchorEl ?? spriteContainerRef.current;
     if (el) {
       const r = el.getBoundingClientRect();
@@ -1540,13 +1536,12 @@ export default function MotoErkenClient() {
       setChoiceMenu({ x: window.innerWidth / 2, y: window.innerHeight * 0.5 });
     }
   };
-  // The "Talk to us now" chooser (voice / text / callback).
+  // The "Talk to us now" chooser (voice / text).
   const [contactMenu, setContactMenu] = useState<{ x: number; y: number; anchored: boolean } | null>(null);
   useEffect(() => {
     const onOpen = (e: Event) => {
       const d = (e as CustomEvent).detail as { x: number; y: number; anchored: boolean };
       setContactMenu(d);
-      window.__prewarmDemoCallbackModal?.();
     };
     window.addEventListener(CONTACT_EVENT, onOpen);
     return () => window.removeEventListener(CONTACT_EVENT, onOpen);
@@ -2034,8 +2029,8 @@ export default function MotoErkenClient() {
 
   return (
     <>
-    {/* --d-* theme vars for the reused demo components (DemoVoiceWidget +
-        CallbackModal), mapped to this site's own cream/sage palette
+    {/* --d-* theme vars for the reused demo component (DemoVoiceWidget),
+        mapped to this site's own cream/sage palette
         (identical to the sky-erken pilot's — same site skin, different
         content). */}
     <style>{`
@@ -2137,9 +2132,8 @@ export default function MotoErkenClient() {
     <ErkenChatWidget />
     {/* Voice widget = the DEMO variant: every call carries the Erken Moto
         dynamic variables so the Retell agent answers as this shop's front
-        desk. CallbackModal = the GHL "Request a Callback" form. */}
+        desk. */}
     <DemoVoiceWidget config={MOTO} />
-    <CallbackModal config={MOTO} />
 
     {/* Celly's Text/Voice menu. */}
     {choiceMenu && (
@@ -2179,7 +2173,7 @@ export default function MotoErkenClient() {
       </>
     )}
 
-    {/* Contact-us-now chooser — voice / text chat / request a callback. */}
+    {/* Contact-us-now chooser — voice / text chat. */}
     {contactMenu && (
       <>
         <div className="fixed inset-0 z-[215] bg-black/20" aria-hidden onClick={() => setContactMenu(null)} />
@@ -2234,20 +2228,6 @@ export default function MotoErkenClient() {
             <span>
               Text chat
               <span className="block text-xs text-white/50">Type your question, get answers</span>
-            </span>
-          </button>
-          <button
-            role="menuitem"
-            onClick={() => {
-              setContactMenu(null);
-              window.__openDemoCallbackModal?.();
-            }}
-            className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-          >
-            <span aria-hidden className="text-base">📞</span>
-            <span>
-              Request a callback
-              <span className="block text-xs text-white/50">We call you back to book</span>
             </span>
           </button>
         </div>

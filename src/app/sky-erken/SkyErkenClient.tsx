@@ -16,7 +16,7 @@
  *   - Section / header / carousel / pricing-card / comparison-table patterns.
  *
  * What changed (mirroring fly-erken's section-by-section mapping):
- *   1. Hero: "Talk to us now" (voice / text chat / callback chooser); hero
+ *   1. Hero: "Talk to us now" (voice / text chat chooser); hero
  *      visual = the existing repo skydiving photo (no new stock footage
  *      sourced for this pilot).
  *   2. Industries carousel → PROGRAMS carousel (6 dropzone services, content
@@ -31,8 +31,7 @@
  *      booking calendar.
  *   6. Stack-comparison table → "One dropzone, everything included" fused
  *      with the Eloy advantage strip.
- *   7. Custom solutions → "Still have questions?" with the same contact
- *      chooser.
+ *   7. "Still have questions?" contact section.
  *   8. Erken bot comes along: text chat = the same GHL widget; VOICE calls
  *      go through DemoVoiceWidget so Retell receives the Sky Erken dynamic
  *      variables and answers as the dropzone's front desk.
@@ -53,7 +52,6 @@ import ErkenChatWidget, {
   useErkenChatOpen,
 } from "@/components/ErkenChatWidget";
 import DemoVoiceWidget from "@/app/demo/components/DemoVoiceWidget";
-import CallbackModal from "@/app/demo/components/CallbackModal";
 import { getDemoConfig } from "@/app/demo/config";
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -74,14 +72,12 @@ const BOOKING_CALENDAR_ID = SKY.booking.calendarId!;
 declare global {
   interface Window {
     __startDemoVoiceCall?: () => void;
-    __openDemoCallbackModal?: () => void;
-    __prewarmDemoCallbackModal?: () => void;
   }
 }
 
 /* ================================================================== */
-/* Contact chooser — the "Talk to us now" choice UI (voice / text /    */
-/* callback). Opened from the header, the hero, service cards, and the */
+/* Contact chooser — the "Talk to us now" choice UI (voice / text).   */
+/* Opened from the header, the hero, service cards, and the           */
 /* Still-have-questions section via a window event so any child can    */
 /* trigger the single instance living in SkyErkenClient.               */
 /* ================================================================== */
@@ -1376,8 +1372,8 @@ function BookingSection() {
              calendar grid itself dominates the section. No card/border/
              shadow around it — the widget's own chrome is the only chrome. */
           <div data-celly-avoid className="mt-10">
-            {/* form_embed.js (loaded above, and also needed by the callback
-                modal) is an iframe-resizer: it rewrites this iframe's INLINE
+            {/* form_embed.js (loaded above) is an iframe-resizer: it rewrites
+                this iframe's INLINE
                 height on a 32ms interval / on any DOM mutation inside the
                 widget (hovering a time slot counts). Inline style beats the
                 Tailwind h-[...] classes, so picking a date + moving the mouse
@@ -1657,13 +1653,6 @@ export default function SkyErkenClient() {
   const [choiceMenu, setChoiceMenu] = useState<{ x: number; y: number } | null>(null);
   const closeChoiceMenu = () => setChoiceMenu(null);
   const openChoiceMenu = (anchorEl?: HTMLElement | null) => {
-    // Both Celly's click-menu and the "Talk to us now" chooser below offer
-    // "Request a callback" — prewarm the GHL iframe the moment either menu
-    // opens (not only on the actual callback click) so by the time the
-    // visitor picks it, the form has usually already loaded and the modal
-    // opens at its final size instead of visibly resizing (owner fix,
-    // 2026-07-30 — see CallbackModal.tsx's prewarm machinery).
-    window.__prewarmDemoCallbackModal?.();
     const el = anchorEl ?? spriteContainerRef.current;
     if (el) {
       const r = el.getBoundingClientRect();
@@ -1674,15 +1663,12 @@ export default function SkyErkenClient() {
       setChoiceMenu({ x: window.innerWidth / 2, y: window.innerHeight * 0.5 });
     }
   };
-  // The "Talk to us now" chooser (voice / text / callback).
+  // The "Talk to us now" chooser (voice / text).
   const [contactMenu, setContactMenu] = useState<{ x: number; y: number; anchored: boolean } | null>(null);
   useEffect(() => {
     const onOpen = (e: Event) => {
       const d = (e as CustomEvent).detail as { x: number; y: number; anchored: boolean };
       setContactMenu(d);
-      // Same prewarm as Celly's click-menu (see openChoiceMenu above) — this
-      // chooser also offers "Request a callback".
-      window.__prewarmDemoCallbackModal?.();
     };
     window.addEventListener(CONTACT_EVENT, onOpen);
     return () => window.removeEventListener(CONTACT_EVENT, onOpen);
@@ -2169,9 +2155,9 @@ export default function SkyErkenClient() {
 
   return (
     <>
-    {/* --d-* theme vars for the reused demo components (DemoVoiceWidget +
-        CallbackModal), mapped to this site's own cream/sage palette
-        (identical to fly-erken's — same site skin, different content). */}
+    {/* --d-* theme vars for the reused demo component (DemoVoiceWidget),
+        mapped to this site's own cream/sage palette (identical to
+        fly-erken's — same site skin, different content). */}
     <style>{`
       :root {
         --d-bg: #F5F1E8;
@@ -2271,9 +2257,8 @@ export default function SkyErkenClient() {
     <ErkenChatWidget />
     {/* Voice widget = the DEMO variant: every call carries the Sky Erken
         dynamic variables so the Retell agent answers as this dropzone's
-        front desk. CallbackModal = the GHL "Request a Callback" form. */}
+        front desk. */}
     <DemoVoiceWidget config={SKY} />
-    <CallbackModal config={SKY} />
 
     {/* Celly's Text/Voice menu. */}
     {choiceMenu && (
@@ -2313,7 +2298,7 @@ export default function SkyErkenClient() {
       </>
     )}
 
-    {/* Contact-us-now chooser — voice / text chat / request a callback. */}
+    {/* Contact-us-now chooser — voice / text chat. */}
     {contactMenu && (
       <>
         {/* z-index sits above the apple-cards Card modal (z-[200]/[210]) so
@@ -2372,20 +2357,6 @@ export default function SkyErkenClient() {
             <span>
               Text chat
               <span className="block text-xs text-white/50">Type your question, get answers</span>
-            </span>
-          </button>
-          <button
-            role="menuitem"
-            onClick={() => {
-              setContactMenu(null);
-              window.__openDemoCallbackModal?.();
-            }}
-            className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-          >
-            <span aria-hidden className="text-base">📞</span>
-            <span>
-              Request a callback
-              <span className="block text-xs text-white/50">We call you back to book</span>
             </span>
           </button>
         </div>

@@ -28,8 +28,8 @@ const SECTIONS = [
     side: "left" as const,
     kicker: "Erken Systems",
     headline: "One platform runs your business. Erken teaches you how.",
-    body: "If you can answer your phone, you can run this. Every business runs the same pipeline — leads come in, get captured, get tracked, get reported on. The platform runs all four steps. And Erken — the assistant living on every screen — shows you the right button and walks you through any task, out loud. $97 a month after a free week. The assistant is free.",
-    cta: "Try for free",
+    body: "If you can answer your phone, you can run this. Every business runs the same pipeline — leads come in, get captured, get tracked, get reported on. The platform runs all four steps. And Erken — the assistant living on every screen — shows you the right button and walks you through any task, out loud. From $77 a month. The assistant is free.",
+    cta: "Get started",
   },
   {
     side: "right" as const,

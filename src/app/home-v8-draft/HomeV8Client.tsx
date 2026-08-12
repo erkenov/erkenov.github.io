@@ -55,21 +55,12 @@ import ErkenChatWidget, {
   useErkenChatOpen,
 } from "@/components/ErkenChatWidget";
 import ErkenVoiceWidget from "@/components/ErkenVoiceWidget";
-import ContactChooser, { openContactChooser } from "@/components/ContactChooser";
-import CallbackRequestModal from "@/components/CallbackRequestModal";
 import {
   PLATFORM_BASE_MONTHLY,
   PLATFORM_BILLING_PERIODS,
   PLATFORM_FEATURES,
   billingPeriodNote,
-  COMPLETE_SYSTEM_PRICE,
-  COMPLETE_SYSTEM_BILLING_PERIODS,
-  COMPLETE_SYSTEM_FEATURES,
-  COMPLETE_SYSTEM_PREPAY_MONTHS,
-  COMPLETE_SYSTEM_PREPAY_TOTAL,
-  COMPLETE_SYSTEM_PREPAY_PERK,
-  COMPLETE_SYSTEM_PREPAY_PERK_VALUE,
-  type BillingPeriodId,
+  type BillingPeriod,
 } from "@/lib/pricing";
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -85,8 +76,8 @@ const SECTIONS = [
     kicker: "Erken Systems",
     headline: "One platform runs your business. Erken teaches you how.",
     body: "If you can answer your phone, you can run this. Every business runs the same pipeline — leads get captured, saved, tracked, followed up automatically, and reported on. The platform runs all five steps. And Erken — the assistant living on every screen — shows you the right button and walks you through any task, out loud. The assistant is free.",
-    cta: "Talk to us now",
-    priceTease: "Platform from $97 a month.",
+    cta: "Get started",
+    priceTease: "Platform from $77 a month.",
     secondaryCta: { label: "See your industry", href: "#industries" },
   },
 ];
@@ -174,17 +165,16 @@ function Section({
         {(cta || secondaryCta) && (
           <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
             {cta && (
-              /* CTA → the shared ContactChooser ("Talk to us now": voice or
-                 text chat), not a /start link (owner addendum, 2026-07-30:
-                 the sales motion is call-first, not self-serve-trial — was
-                 previously an <a href="/start"> "Try for free" link). */
-              <button
-                type="button"
-                onClick={(e) => openContactChooser(e.currentTarget)}
+              /* Primary CTA → /start signup (owner ruling, 2026-08-12:
+                 "Get started" replaces "Talk to us now"; the chooser is
+                 retired). The "Talk to us" ghost button beside it opens the
+                 Erken chat so the talk-to-a-human path stays obvious. */
+              <a
+                href="/start"
                 className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
               >
                 {cta} →
-              </button>
+              </a>
             )}
             {secondaryCta && (
               /* Secondary "See your industry" → scrolls to #industries
@@ -196,6 +186,13 @@ function Section({
                 {secondaryCta.label}
               </a>
             )}
+            <button
+              type="button"
+              onClick={() => openErkenChat()}
+              className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-3 text-sm font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
+            >
+              Talk to us
+            </button>
           </div>
         )}
       </div>
@@ -419,8 +416,9 @@ function SectionKicker({ children }: { children: React.ReactNode }) {
 }
 
 /** Sticky header — logo + Industries / How it works / Pricing anchors +
- *  persistent "Talk to us now" (owner addendum, 2026-07-30: was "Try for
- *  free"). z-50 (not z-40) matches the live Header.tsx
+ *  persistent "Talk to us" (opens the Erken chat) + "Get started" → /start
+ *  (owner ruling, 2026-08-12: replaces the "Talk to us now" chooser).
+ *  z-50 (not z-40) matches the live Header.tsx
  *  and clears SceneIndustriesCarousel's z-40 arrow buttons (the carousel
  *  arrow stacking bug from Shamil's live review). Tagged data-celly-avoid
  *  so Celly never parks under it. */
@@ -474,11 +472,17 @@ function DraftHeader() {
           </a>
           <button
             type="button"
-            onClick={(e) => openContactChooser(e.currentTarget)}
+            onClick={() => openErkenChat()}
+            className="rounded-lg px-4 py-2 text-sm font-medium text-text-muted transition-colors hover:text-text"
+          >
+            Talk to us
+          </button>
+          <a
+            href="/start"
             className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
           >
-            Talk to us now
-          </button>
+            Get started
+          </a>
         </div>
       </div>
     </header>
@@ -513,21 +517,29 @@ function IndustriesSection() {
         </motion.div>
       </div>
       {/* Carousel + ONE centered control cluster directly under it: the two
-          (heavier) arrows then the Try-for-free button, as a single row
-          (rev-3 live fix — the arrows were easy to miss and the CTA floated
-          like an orphan below). The arrows hide on mobile (finger-scroll);
-          the button stays centered at both widths. */}
+          (heavier) arrows then the CTAs, as a single row (rev-3 live fix —
+          the arrows were easy to miss and the CTA floated like an orphan
+          below). The arrows hide on mobile (finger-scroll); the buttons
+          stay centered at both widths. */}
       <div data-celly-avoid className="mt-4">
         <SceneIndustriesCarousel
           arrowsPosition="center"
           arrowsTrailing={
-            <button
-              type="button"
-              onClick={(e) => openContactChooser(e.currentTarget)}
-              className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
-            >
-              Talk to us now →
-            </button>
+            <>
+              <a
+                href="/start"
+                className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
+              >
+                Get started →
+              </a>
+              <button
+                type="button"
+                onClick={() => openErkenChat()}
+                className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3.5 text-base font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
+              >
+                Talk to us
+              </button>
+            </>
           }
         />
       </div>
@@ -859,19 +871,25 @@ function PipelineSection() {
                 Open a stage to see what runs inside it.
               </p>
               <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-                <button
-                  type="button"
-                  onClick={(e) => openContactChooser(e.currentTarget)}
+                <a
+                  href="/start"
                   className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
                 >
-                  Talk to us now →
-                </button>
+                  Get started →
+                </a>
                 <a
                   href="#pricing"
                   className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3.5 text-base font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
                 >
                   See pricing
                 </a>
+                <button
+                  type="button"
+                  onClick={() => openErkenChat()}
+                  className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3.5 text-base font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
+                >
+                  Talk to us
+                </button>
               </div>
             </motion.div>
           </div>
@@ -887,21 +905,20 @@ function PipelineSection() {
   );
 }
 
-/* ---- Pricing — owner-decided restructure (2026-07-30): exactly THREE
- * cards — Platform (self-serve, billing-period selector, still routes to
- * /start's real form — this page has no inline email capture), Complete
- * system (emphasized, closes on a call via ContactChooser), Custom
- * solutions (folded in from what used to be its own section below this
- * one). Numbers/features come from src/lib/pricing.ts, the single source
- * shared with /start so both pages can't drift out of sync.
+/* ---- Pricing — owner-approved restructure (2026-08-12): FOUR cards — the
+ * Platform as THREE separate billing-period cards (Monthly $97, 6 months
+ * $87/mo, Yearly $77/mo — same PLATFORM_FEATURES on each, differing only in
+ * price + derived billing note). The Complete-system AND Custom-solutions
+ * cards are removed everywhere. Numbers/features come from
+ * src/lib/pricing.ts, the single source shared with /start so both pages
+ * can't drift out of sync.
  *
- * Same-day owner addendum: no "Try for free" / free-trial language — the
- * Complete-system CTA is "Talk to us now" (opens the shared ContactChooser
- * ported from fly-erken); the Platform CTA is "Get started" and still links
- * to /start, since that's where its actual signup form lives. */
-function PlatformCardHome() {
-  const [periodId, setPeriodId] = useState<BillingPeriodId>("monthly");
-  const period = PLATFORM_BILLING_PERIODS.find((p) => p.id === periodId)!;
+ * No "Try for free" / free-trial language. Each period card's CTA is
+ * "Get started" and links to /start, where that period's actual signup
+ * form lives. The 6-months card carries the emphasized treatment (accent
+ * border + "Most popular" badge) that the old Complete-system card had. */
+function PlatformPeriodCardHome({ period }: { period: BillingPeriod }) {
+  const emphasized = period.id === "6-months";
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -909,35 +926,18 @@ function PlatformCardHome() {
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.5, ease }}
       whileHover={{ y: -2 }}
-      className="relative flex flex-col rounded-2xl border border-border bg-surface p-8 transition-colors duration-200 hover:border-border-strong"
+      className={`relative flex flex-col rounded-2xl bg-surface p-8 transition-colors duration-200 ${
+        emphasized
+          ? "border-2 border-accent hover:border-accent-hover"
+          : "border border-border hover:border-border-strong"
+      }`}
     >
-      <h3 className="text-lg font-semibold text-text">Platform</h3>
-
-      {/* Billing-period selector — same segmented-control pattern as /start
-          (accent fill = active). Purely a price preview here; the actual
-          choice is made on /start's form, which is why it isn't wired into
-          the CTA's href — anyone can flip it and land on /start either way. */}
-      <div
-        role="tablist"
-        aria-label="Billing period"
-        className="mt-4 inline-flex w-fit gap-1 rounded-xl border border-border bg-surface-2 p-1"
-      >
-        {PLATFORM_BILLING_PERIODS.map((p) => (
-          <button
-            key={p.id}
-            type="button"
-            role="tab"
-            aria-selected={p.id === periodId}
-            onClick={() => setPeriodId(p.id)}
-            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-              p.id === periodId ? "bg-accent text-bg" : "text-text-muted hover:text-text"
-            }`}
-          >
-            {p.label}
-          </button>
-        ))}
-      </div>
-
+      {emphasized && (
+        <span className="absolute right-6 top-6 rounded-full bg-accent px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-bg">
+          Most popular
+        </span>
+      )}
+      <h3 className="text-lg font-semibold text-text">{period.label}</h3>
       <div className="mt-4">
         <span className="text-3xl font-bold tracking-tight text-text" style={{ letterSpacing: "-0.03em" }}>
           ${period.perMonth}/mo
@@ -965,117 +965,6 @@ function PlatformCardHome() {
   );
 }
 
-function CompleteSystemCardHome() {
-  // Same billing-period selector as PlatformCardHome (owner ask,
-  // 2026-07-31) — price preview only; the period is settled on the call.
-  const [periodId, setPeriodId] = useState<BillingPeriodId>("monthly");
-  const period = COMPLETE_SYSTEM_BILLING_PERIODS.find((p) => p.id === periodId)!;
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.5, ease }}
-      whileHover={{ y: -2 }}
-      className="relative flex flex-col rounded-2xl border-2 border-accent bg-surface p-8 transition-colors duration-200 hover:border-accent-hover"
-    >
-      <span className="absolute right-6 top-6 rounded-full bg-accent px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-bg">
-        Most popular
-      </span>
-      <h3 className="text-lg font-semibold text-text">Complete system</h3>
-      <div
-        role="tablist"
-        aria-label="Billing period"
-        className="mt-4 inline-flex w-fit gap-1 rounded-xl border border-border bg-surface-2 p-1"
-      >
-        {COMPLETE_SYSTEM_BILLING_PERIODS.map((p) => (
-          <button
-            key={p.id}
-            type="button"
-            role="tab"
-            aria-selected={p.id === periodId}
-            onClick={() => setPeriodId(p.id)}
-            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-              p.id === periodId ? "bg-accent text-bg" : "text-text-muted hover:text-text"
-            }`}
-          >
-            {p.label}
-          </button>
-        ))}
-      </div>
-      <div className="mt-4">
-        <span className="text-3xl font-bold tracking-tight text-text" style={{ letterSpacing: "-0.03em" }}>
-          ${period.perMonth}/mo
-        </span>
-        <span className="ml-2 text-xs text-text-dim">
-          {billingPeriodNote(period, COMPLETE_SYSTEM_PRICE)}
-        </span>
-      </div>
-      <p className="mt-2 text-xs text-text-dim">Zero setup fee · No contract · Cancel anytime</p>
-      <p className="mt-4 font-mono text-xs uppercase tracking-[0.05em] text-text-dim">
-        What&apos;s included
-      </p>
-      <ul className="mt-2 flex-1 space-y-1.5 text-sm text-text-muted">
-        {COMPLETE_SYSTEM_FEATURES.map((f) => (
-          <li key={f} className="flex items-start gap-2">
-            <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" strokeWidth={2.5} />
-            <span>{f}</span>
-          </li>
-        ))}
-      </ul>
-
-      {/* Prepay perk (owner addition, 2026-07-30) — a footnote, deliberately
-          smaller/lighter than the price and included list above it. */}
-      <p className="mt-5 rounded-lg border border-accent/30 bg-[var(--accent-soft)] px-3 py-2 text-xs leading-relaxed text-text-muted">
-        Prepay {COMPLETE_SYSTEM_PREPAY_MONTHS} months (${COMPLETE_SYSTEM_PREPAY_TOTAL.toLocaleString()}) →{" "}
-        <span className="text-text">{COMPLETE_SYSTEM_PREPAY_PERK} included free</span> (a $
-        {COMPLETE_SYSTEM_PREPAY_PERK_VALUE} value).
-      </p>
-
-      <button
-        type="button"
-        onClick={(e) => openContactChooser(e.currentTarget)}
-        className="mt-4 inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
-      >
-        Talk to us now →
-      </button>
-    </motion.div>
-  );
-}
-
-/* Custom solutions — folded in from what used to be its own full-width
- * section (rev-3 had it as a separate CustomSolutionsSection below Pricing;
- * the 2026-07-30 restructure makes it the third card in the same grid,
- * matching /start's CustomSolutionsCard visually). */
-function CustomSolutionsCardHome() {
-  return (
-    <motion.div
-      id="custom-solutions"
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.5, ease }}
-      whileHover={{ y: -2 }}
-      className="flex scroll-mt-24 flex-col rounded-2xl border border-border bg-surface p-8 transition-colors duration-200 hover:border-border-strong"
-    >
-      <h3 className="text-lg font-semibold text-text">Custom solutions</h3>
-      <p className="mt-1 text-sm text-text-muted">
-        Want your snapshot configured for you, or any custom platform
-        configuration? Describe what you need — we&apos;ll assess it and
-        send you an offer.
-      </p>
-      <div className="mt-auto pt-8">
-        <a
-          href="/start#custom-solutions"
-          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
-        >
-          Get a custom offer →
-        </a>
-      </div>
-    </motion.div>
-  );
-}
-
 function PricingSection() {
   return (
     <section id="pricing" className="py-20 md:py-28">
@@ -1093,19 +982,26 @@ function PricingSection() {
             className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
             style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
           >
-            Start light, or go all-in.
+            One platform. Pick how you pay.
           </h2>
           <p className="mt-4 text-base text-text-muted md:text-lg">
-            Run the platform yourself from ${PLATFORM_BASE_MONTHLY}/mo, or let
-            us build and run the whole system for you.
+            Everything included from ${PLATFORM_BASE_MONTHLY}/mo — pay less
+            per month when you prepay.
           </p>
         </motion.div>
 
         <div data-celly-avoid className="mt-10 grid gap-6 md:grid-cols-3">
-          <PlatformCardHome />
-          <CompleteSystemCardHome />
-          <CustomSolutionsCardHome />
+          {PLATFORM_BILLING_PERIODS.map((p) => (
+            <PlatformPeriodCardHome key={p.id} period={p} />
+          ))}
         </div>
+        {/* Usage-cost disclosure (owner ask, 2026-08-12): voice minutes are
+            pass-through, so heavy call volume never surprises anyone. No
+            per-minute number — rates change. */}
+        <p className="mt-6 max-w-2xl text-xs leading-relaxed text-text-dim">
+          AI voice minutes are billed separately at cost — you only pay for
+          what you use, so a busy month never brings a surprise bill.
+        </p>
       </div>
     </section>
   );
@@ -1398,23 +1294,6 @@ const STACK_ROWS: { cat: string; tools: string[]; price: number }[] = [
 ];
 const STACK_TOTAL = STACK_ROWS.reduce((s, r) => s + r.price, 0); // 1191
 
-/** Owner addition, 2026-07-30: the actual Platform-vs-Complete-System
- * difference the category rows below can't show (every category is
- * included in BOTH — same underlying platform). These four rows make that
- * difference concrete: who builds it, who configures it, who keeps it
- * running, how fast it's live. Column naming rule: never "snapshot"
- * (internal jargon) — always "Complete System", matching the pricing card. */
-const DIFFERENCE_ROWS: { label: string; platform: string; complete: string }[] = [
-  { label: "Website", platform: "You build it", complete: "We build it for you" },
-  {
-    label: "Automations & voice agent",
-    platform: "You configure it",
-    complete: "We configure it for you",
-  },
-  { label: "Ongoing maintenance", platform: "Self-managed", complete: "We maintain it" },
-  { label: "Time to live", platform: "As fast as you set it up", complete: "Ready on day one" },
-];
-
 /** A tool as a uniform pill: a real logo (Simple Icons vendored) when we have
  *  the mark, otherwise a monogram square (first letter) so text-only tools
  *  carry the same visual weight and the column reads uniform. */
@@ -1464,56 +1343,25 @@ function StackComparisonSection() {
             One platform instead of fourteen subscriptions.
           </h2>
           <p className="mt-4 text-base text-text-muted md:text-lg">
-            Same platform either way — under one login, one bill. The
-            difference is who sets it up and runs it day to day.
+            Everything below is included — platform and AI receptionist under
+            one login, one bill, from $77/mo.
           </p>
         </motion.div>
 
-        {/* DESKTOP — highlighted-plan-column pattern: the CATEGORY rows show
-            every tool/category is included in BOTH paid columns (same
-            underlying platform); the four DIFFERENCE_ROWS above them are
-            what actually separates Platform from Complete System (who
-            builds/configures/maintains it). Complete System ($297) is the
-            hero column — solid accent, white text, EXTENDS BELOW the table
-            as a rounded overhang holding its price + CTA (owner call,
-            2026-07-30: "the accent column moves to the $297 column").
-            Platform ($97) is a plain column next to it. One CSS grid
-            guarantees row alignment across all five columns; mb reserves
-            space for the overhang. */}
-        <div data-celly-avoid className="relative mb-24 mt-10 hidden md:block">
-          <div className="grid grid-cols-[1.15fr_1.6fr_0.65fr_0.85fr_150px] overflow-hidden rounded-t-2xl rounded-bl-2xl shadow-[0_18px_50px_-24px_rgba(42,38,32,0.35)]">
+        {/* DESKTOP — the CATEGORY rows show every tool/category the platform
+            replaces, with the struck DIY total next to the single Platform
+            price. One CSS grid guarantees row alignment across all four
+            columns. (2026-08-12: the Complete System column + its overhang
+            CTA were removed with that offer.) */}
+        <div data-celly-avoid className="relative mt-10 hidden md:block">
+          <div className="grid grid-cols-[1.15fr_1.6fr_0.65fr_0.85fr] overflow-hidden rounded-2xl shadow-[0_18px_50px_-24px_rgba(42,38,32,0.35)]">
             {/* Header */}
             <div className="bg-[var(--accent-soft)] px-6 py-3.5 font-mono text-[11px] uppercase tracking-[0.08em] text-text">Category</div>
             <div className="bg-[var(--accent-soft)] px-3 py-3.5 font-mono text-[11px] uppercase tracking-[0.08em] text-text">The tools you&apos;d buy</div>
             <div className="bg-[var(--accent-soft)] px-3 py-3.5 font-mono text-[11px] uppercase tracking-[0.08em] text-text">Price on its own</div>
             <div className="flex items-center bg-[var(--accent-soft)] px-3 py-3.5 font-mono text-[11px] uppercase tracking-[0.08em] text-text">Platform ${PLATFORM_BASE_MONTHLY}</div>
-            <div className="flex items-center justify-center bg-accent px-3 py-3.5 text-center font-mono text-[11px] uppercase tracking-[0.08em] text-white">
-              Complete System ${COMPLETE_SYSTEM_PRICE}
-            </div>
 
-            {/* Difference rows — the platform-vs-complete distinction, not a
-                tools-you'd-buy comparison, so the first two columns are
-                blank (n/a) here. */}
-            {DIFFERENCE_ROWS.map((row, i) => {
-              const zebra = i % 2 === 1 ? "bg-surface-2/60" : "bg-surface";
-              const bt = i > 0 ? "border-t border-border/50" : "";
-              return (
-                <Fragment key={row.label}>
-                  <div className={`flex items-center px-6 py-3.5 font-semibold text-text ${zebra} ${bt}`}>{row.label}</div>
-                  <div className={`flex items-center px-3 py-3.5 text-sm text-text-dim ${zebra} ${bt}`}>—</div>
-                  <div className={`flex items-center px-3 py-3.5 text-sm text-text-dim ${zebra} ${bt}`}>—</div>
-                  <div className={`flex items-center px-3 py-3.5 text-sm font-medium text-text-muted ${zebra} ${bt}`}>
-                    {row.platform}
-                  </div>
-                  <div className={`flex items-center bg-accent px-3 py-3.5 text-center text-sm font-semibold text-white ${i > 0 ? "border-t border-white/15" : ""}`}>
-                    {row.complete}
-                  </div>
-                </Fragment>
-              );
-            })}
-
-            {/* Category rows — every category included in BOTH paid columns
-                (same underlying platform either way). */}
+            {/* Category rows — every category included in the Platform. */}
             {STACK_ROWS.map((row, i) => {
               const zebra = i % 2 === 1 ? "bg-surface-2/60" : "bg-surface";
               return (
@@ -1531,9 +1379,6 @@ function StackComparisonSection() {
                   </div>
                   <div className={`flex items-center justify-center ${zebra} border-t border-border/50`}>
                     <Check className="h-5 w-5 text-accent" strokeWidth={3} />
-                  </div>
-                  <div className="flex items-center justify-center border-t border-white/15 bg-accent">
-                    <Check className="h-5 w-5 text-white" strokeWidth={3} />
                   </div>
                 </Fragment>
               );
@@ -1559,54 +1404,16 @@ function StackComparisonSection() {
                 </span>
                 <span className="mb-0.5 text-sm font-medium text-text-dim">/mo</span>
               </div>
-              <div className="text-[11px] text-text-dim">you run it</div>
+              <div className="text-[11px] text-text-dim">all included</div>
             </div>
-            <div className="flex flex-col items-center justify-center border-t-2 border-white/25 bg-accent py-5 text-white">
-              <div className="flex items-end gap-1">
-                <span className="text-3xl font-bold tracking-tight md:text-4xl" style={{ letterSpacing: "-0.02em" }}>
-                  ${COMPLETE_SYSTEM_PRICE}
-                </span>
-                <span className="mb-1 text-sm font-medium text-white/85">/mo</span>
-              </div>
-              <div className="text-[11px] font-medium text-white/85">done for you</div>
-            </div>
-          </div>
-          {/* Overhang — Complete System's accent column extends past the
-              table's bottom, CTA inside (moved here from the old $97
-              "Included" column, owner call 2026-07-30). */}
-          <div className="absolute right-0 top-full w-[150px] rounded-b-2xl bg-accent px-3 pb-4 pt-3 text-center shadow-[0_18px_40px_-16px_rgba(126,166,135,0.85)]">
-            <button
-              type="button"
-              onClick={(e) => openContactChooser(e.currentTarget)}
-              className="inline-flex w-full items-center justify-center gap-1 rounded-lg bg-white px-3 py-2.5 text-xs font-semibold text-accent shadow-sm transition-transform hover:scale-[1.02]"
-            >
-              Talk to us now →
-            </button>
           </div>
         </div>
 
-        {/* MOBILE — stacked rows + a full-width green footer card (the green
-            column treatment collapses to a footer so stacking never breaks).
-            The 4 DIFFERENCE_ROWS get their own compact 2-column card first
-            (Platform vs Complete System) since they don't fit the
-            tools/price row shape below. */}
+        {/* MOBILE — stacked rows + a full-width green footer card (the
+            included-check treatment collapses to a footer so stacking never
+            breaks). */}
         <div data-celly-avoid className="mt-10 md:hidden">
           <div className="overflow-hidden rounded-2xl border border-border">
-            <div className="grid grid-cols-2 bg-[var(--accent-soft)] text-center font-mono text-[11px] uppercase tracking-[0.08em] text-text">
-              <div className="px-3 py-2.5">Platform ${PLATFORM_BASE_MONTHLY}</div>
-              <div className="bg-accent px-3 py-2.5 text-white">Complete System ${COMPLETE_SYSTEM_PRICE}</div>
-            </div>
-            {DIFFERENCE_ROWS.map((row, i) => (
-              <div key={row.label} className={i > 0 ? "border-t border-border/50" : ""}>
-                <div className="px-4 pt-3 text-xs font-semibold text-text">{row.label}</div>
-                <div className="grid grid-cols-2 gap-3 px-4 pb-3 pt-1 text-sm">
-                  <div className="text-text-muted">{row.platform}</div>
-                  <div className="font-medium text-accent">{row.complete}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 overflow-hidden rounded-2xl border border-border">
             {STACK_ROWS.map((row, i) => (
               <div key={row.cat} className={`px-5 py-4 ${i > 0 ? "border-t border-border/50" : ""}`}>
                 <div className="flex items-center justify-between gap-3">
@@ -1633,33 +1440,27 @@ function StackComparisonSection() {
               </span>
             </div>
           </div>
-          {/* Green footer card — Complete System is the featured mobile CTA
-              (accent hero, owner call 2026-07-30); Platform's cheaper
-              self-serve price is a smaller line underneath, linking to the
-              full pricing cards instead of duplicating a whole second card. */}
+          {/* Green footer card — the Platform's price vs the struck stack
+              total, CTA to the pricing cards above. */}
           <div
             className="relative mt-4 overflow-hidden rounded-2xl p-6 text-white shadow-[0_18px_44px_-18px_rgba(126,166,135,0.75)]"
             style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-hover))" }}
           >
             <div className="flex items-end gap-2">
               <span className="text-4xl font-bold tracking-tight" style={{ letterSpacing: "-0.03em" }}>
-                ${COMPLETE_SYSTEM_PRICE}
+                ${PLATFORM_BASE_MONTHLY}
               </span>
-              <span className="mb-1 text-base font-medium text-white/85">/mo, done for you</span>
+              <span className="mb-1 text-base font-medium text-white/85">/mo, everything included</span>
             </div>
             <div className="mt-1 text-sm text-white/90">
-              About <b>${(STACK_TOTAL - COMPLETE_SYSTEM_PRICE).toLocaleString()} a month</b> back in
-              your pocket — we build and run it.
+              About <b>${(STACK_TOTAL - PLATFORM_BASE_MONTHLY).toLocaleString()} a month</b> back in
+              your pocket.
             </div>
-            <button
-              type="button"
-              onClick={(e) => openContactChooser(e.currentTarget)}
+            <a
+              href="#pricing"
               className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-accent shadow-sm transition-transform hover:scale-[1.02]"
             >
-              Talk to us now →
-            </button>
-            <a href="#pricing" className="mt-3 block text-center text-xs text-white/75 underline underline-offset-2">
-              Prefer to run it yourself? Platform is ${PLATFORM_BASE_MONTHLY}/mo.
+              See pricing →
             </a>
           </div>
         </div>
@@ -2698,10 +2499,9 @@ export default function HomeV8Client() {
       {/* 4. AI section (ROUND 3) — "Built-in AI that works for you 24/7". */}
       <AISection />
 
-      {/* 6. Pricing — owner-decided 3-card restructure (2026-07-30): Platform
-          / Complete system / Custom solutions, all in one grid. Custom
-          solutions used to be its own section (step 8, below) — folded in
-          as the third card here instead. */}
+      {/* 6. Pricing — owner-approved 3-card restructure (2026-08-12): three
+          Platform billing-period cards (Monthly / 6 months / Yearly), all
+          in one grid. */}
       <PricingSection />
 
       {/* 7. Stack-comparison table (ROUND 3) — replace-your-stack. */}
@@ -2769,16 +2569,11 @@ export default function HomeV8Client() {
         Hidden on mobile, where the chat panel is full-screen. */}
     <ErkenChatWidget />
     <ErkenVoiceWidget />
-    {/* "Talk to us now" chooser (voice / text — see ContactChooser for why
-        there's no callback option here) triggered from the header, hero,
-        and section CTAs above. Separate from Celly's own click-menu just
-        below. */}
-    <ContactChooser />
-    {/* Backs the bot click-menu's "Request a callback" button (owner
-        addition, 2026-07-30) — a plain form posting to /api/custom-request,
-        not Fly Erken's demo-branded GHL iframe. */}
-    <CallbackRequestModal />
-    {/* Text/Voice/Callback choice menu — appears at Celly when she's clicked. */}
+    {/* Text/Voice choice menu — appears at Celly when she's clicked.
+        (2026-08-12: the "Request a callback" third item is removed, and the
+        separate ContactChooser/CallbackRequestModal mounts are gone — every
+        former "Talk to us now" CTA is now "Get started" → /start with a
+        "Talk to us" chat button beside it.) */}
     {choiceMenu && (
       <>
         <div
@@ -2795,10 +2590,8 @@ export default function HomeV8Client() {
             top: choiceMenu.y,
             // Open ABOVE Celly normally; when she's near the top of the page the
             // menu would be clipped behind the browser bar, so flip it to open
-            // BELOW her instead. (~175px ≈ this 3-item menu's height + margin,
-            // bumped 2026-07-30 when "Request a callback" was added as a
-            // third item.)
-            transform: choiceMenu.y < 175
+            // BELOW her instead. (~130px ≈ this 2-item menu's height + margin.)
+            transform: choiceMenu.y < 130
               ? "translate(-50%, 12%)"
               : "translate(-50%, -115%)",
           }}
@@ -2828,19 +2621,6 @@ export default function HomeV8Client() {
               🎙️
             </span>{" "}
             Voice chat
-          </button>
-          <button
-            role="menuitem"
-            onClick={() => {
-              closeChoiceMenu();
-              window.__openErkenCallbackModal?.();
-            }}
-            className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-          >
-            <span aria-hidden className="text-base">
-              📞
-            </span>{" "}
-            Request a callback
           </button>
         </div>
       </>
