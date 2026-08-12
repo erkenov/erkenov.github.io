@@ -1351,15 +1351,21 @@ function StackComparisonSection() {
         {/* DESKTOP — the CATEGORY rows show every tool/category the platform
             replaces, with the struck DIY total next to the single Platform
             price. One CSS grid guarantees row alignment across all four
-            columns. (2026-08-12: the Complete System column + its overhang
-            CTA were removed with that offer.) */}
-        <div data-celly-avoid className="relative mt-10 hidden md:block">
-          <div className="grid grid-cols-[1.15fr_1.6fr_0.65fr_0.85fr] overflow-hidden rounded-2xl shadow-[0_18px_50px_-24px_rgba(42,38,32,0.35)]">
+            columns. 2026-08-12 (owner ask): with the Complete System column
+            gone, the PLATFORM column carries the emphasis treatment the
+            accent column used to have — solid accent bg, white text, and
+            the rounded overhang below the table holding the "Get started"
+            CTA (→ /start). The totals row's two prices share one structure
+            (same size, items-end) so their baselines line up. */}
+        <div data-celly-avoid className="relative mb-24 mt-10 hidden md:block">
+          <div className="grid grid-cols-[1.15fr_1.6fr_0.65fr_150px] overflow-hidden rounded-t-2xl rounded-bl-2xl shadow-[0_18px_50px_-24px_rgba(42,38,32,0.35)]">
             {/* Header */}
             <div className="bg-[var(--accent-soft)] px-6 py-3.5 font-mono text-[11px] uppercase tracking-[0.08em] text-text">Category</div>
             <div className="bg-[var(--accent-soft)] px-3 py-3.5 font-mono text-[11px] uppercase tracking-[0.08em] text-text">The tools you&apos;d buy</div>
             <div className="bg-[var(--accent-soft)] px-3 py-3.5 font-mono text-[11px] uppercase tracking-[0.08em] text-text">Price on its own</div>
-            <div className="flex items-center bg-[var(--accent-soft)] px-3 py-3.5 font-mono text-[11px] uppercase tracking-[0.08em] text-text">Platform ${PLATFORM_BASE_MONTHLY}</div>
+            <div className="flex items-center justify-center bg-accent px-3 py-3.5 text-center font-mono text-[11px] uppercase tracking-[0.08em] text-white">
+              Platform ${PLATFORM_BASE_MONTHLY}
+            </div>
 
             {/* Category rows — every category included in the Platform. */}
             {STACK_ROWS.map((row, i) => {
@@ -1377,35 +1383,49 @@ function StackComparisonSection() {
                   <div className={`flex items-center px-3 py-3.5 text-sm font-semibold text-text-muted ${zebra} border-t border-border/50`}>
                     ${row.price}/mo
                   </div>
-                  <div className={`flex items-center justify-center ${zebra} border-t border-border/50`}>
-                    <Check className="h-5 w-5 text-accent" strokeWidth={3} />
+                  <div className="flex items-center justify-center border-t border-white/15 bg-accent">
+                    <Check className="h-5 w-5 text-white" strokeWidth={3} />
                   </div>
                 </Fragment>
               );
             })}
 
-            {/* Totals row */}
+            {/* Totals row — both price cells use the SAME inner structure
+                (items-end row, identical size classes) so the struck stack
+                total and the Platform price sit on one baseline. */}
             <div className="flex items-center border-t-2 border-border bg-[var(--accent-soft)] px-6 py-5 text-sm font-semibold text-text">
               The whole stack
             </div>
             <div className="border-t-2 border-border bg-[var(--accent-soft)]" />
             <div className="flex flex-col justify-center border-t-2 border-border bg-[var(--accent-soft)] px-3 py-5">
-              <div className="text-2xl font-bold tracking-tight md:text-3xl">
-                <span className="text-[var(--clay)] line-through decoration-[var(--clay)]/70 decoration-2">
-                  ${STACK_TOTAL.toLocaleString()}
-                </span>
-              </div>
-              <div className="text-[11px] text-text-dim">/mo, billed separately</div>
-            </div>
-            <div className="flex flex-col justify-center border-t-2 border-border bg-[var(--accent-soft)] px-3 py-5">
               <div className="flex items-end gap-1">
-                <span className="text-2xl font-bold tracking-tight text-text md:text-3xl" style={{ letterSpacing: "-0.02em" }}>
-                  ${PLATFORM_BASE_MONTHLY}
+                <span className="text-2xl font-bold tracking-tight text-[var(--clay)] line-through decoration-[var(--clay)]/70 decoration-2 md:text-3xl" style={{ letterSpacing: "-0.02em" }}>
+                  ${STACK_TOTAL.toLocaleString()}
                 </span>
                 <span className="mb-0.5 text-sm font-medium text-text-dim">/mo</span>
               </div>
-              <div className="text-[11px] text-text-dim">all included</div>
+              <div className="text-[11px] text-text-dim">billed separately</div>
             </div>
+            <div className="flex flex-col items-center justify-center border-t-2 border-white/25 bg-accent py-5 text-white">
+              <div className="flex items-end gap-1">
+                <span className="text-2xl font-bold tracking-tight md:text-3xl" style={{ letterSpacing: "-0.02em" }}>
+                  ${PLATFORM_BASE_MONTHLY}
+                </span>
+                <span className="mb-0.5 text-sm font-medium text-white/85">/mo</span>
+              </div>
+              <div className="text-[11px] font-medium text-white/85">all included</div>
+            </div>
+          </div>
+          {/* Overhang — the Platform's accent column extends past the
+              table's bottom with the CTA inside (same treatment the old
+              accent column had; now "Get started" → /start). */}
+          <div className="absolute right-0 top-full w-[150px] rounded-b-2xl bg-accent px-3 pb-4 pt-3 text-center shadow-[0_18px_40px_-16px_rgba(126,166,135,0.85)]">
+            <a
+              href="/start"
+              className="inline-flex w-full items-center justify-center gap-1 rounded-lg bg-white px-3 py-2.5 text-xs font-semibold text-accent shadow-sm transition-transform hover:scale-[1.02]"
+            >
+              Get started →
+            </a>
           </div>
         </div>
 
@@ -1441,7 +1461,8 @@ function StackComparisonSection() {
             </div>
           </div>
           {/* Green footer card — the Platform's price vs the struck stack
-              total, CTA to the pricing cards above. */}
+              total, with the same "Get started" → /start CTA the desktop
+              accent-column overhang carries. */}
           <div
             className="relative mt-4 overflow-hidden rounded-2xl p-6 text-white shadow-[0_18px_44px_-18px_rgba(126,166,135,0.75)]"
             style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-hover))" }}
@@ -1457,10 +1478,10 @@ function StackComparisonSection() {
               your pocket.
             </div>
             <a
-              href="#pricing"
+              href="/start"
               className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-accent shadow-sm transition-transform hover:scale-[1.02]"
             >
-              See pricing →
+              Get started →
             </a>
           </div>
         </div>
