@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { PAYMENT_LINK } from "@/lib/pricing";
 
 /**
  * /trades — "See all trades by category" (Shamil 2026-08-13, Stone Systems
@@ -225,7 +224,7 @@ export default function TradesPage() {
             your business.
           </p>
           <a
-            href={PAYMENT_LINK}
+            href="/#pricing"
             className="mt-6 inline-block rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover"
           >
             Get started →

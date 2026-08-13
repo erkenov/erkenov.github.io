@@ -9,7 +9,7 @@ import {
 import { PLATFORM_BILLING_PERIODS, billingPeriodNote } from "@/lib/pricing";
 import ProductSections from "@/components/ProductSections";
 import WhyUs from "@/components/WhyUs";
-import { PAYMENT_LINK, PAYMENT_LINKS } from "@/lib/pricing";
+import { PAYMENT_LINKS } from "@/lib/pricing";
 
 /**
  * /receptionist — direct-response funnel selling the AI Receptionist to
@@ -144,10 +144,10 @@ export default function ReceptionistPage() {
             <PrimaryCta href="#demo">Hear it answer a call</PrimaryCta>
           </div>
           <a
-            href={PAYMENT_LINK}
+            href="#pricing"
             className="mt-5 inline-block text-sm font-medium text-[#8fb496] underline decoration-[#8fb496]/40 underline-offset-4 transition hover:text-[#a8c7ae]"
           >
-            or buy now →
+            or see plans →
           </a>
         </section>
 
@@ -333,7 +333,7 @@ export default function ReceptionistPage() {
             Stop losing students to the voicemail.
           </h2>
           <div className="mt-8">
-            <PrimaryCta href={PAYMENT_LINK}>Get started now</PrimaryCta>
+            <PrimaryCta href="#pricing">Get started now</PrimaryCta>
           </div>
           <p className="mt-16 font-mono text-xs tracking-[0.14em] text-white/30 uppercase">
             Erken Systems · AI receptionist for flight schools

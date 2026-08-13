@@ -32,19 +32,19 @@ const SECTIONS: Record<SectionId, ProductSection> = {
   website: {
     id: "website",
     kicker: "The foundation",
-    title: "A website that pulls its weight",
+    title: "A website that brings you customers",
     bullets: [
       {
-        lead: "Built to be found.",
-        text: "Every site ships with the right keywords, meta, headers, and load speed — current SEO and AI-search (GEO) standards from day one. The honest part: that's the starting line, not the finish. Rankings are a long game, and someone has to keep playing it. What we guarantee is a site built right.",
+        lead: "Built to be found on Google — and in AI answers.",
+        text: "Your site ships with proper SEO and GEO — the technical setup that makes Google and AI assistants show your business when people search for what you do. The honest part: that's the starting line, not the finish. Rankings are a long game, and someone has to keep playing it. What we guarantee is a site built right.",
       },
       {
         lead: "Your best reviews, front and center.",
         text: "Your top reviews showcased on every page, kept current, every one answered. And when a bad experience happens, our follow-up system helps you fix the mistake before it ever becomes a public review.",
       },
       {
-        lead: "Made for phones.",
-        text: "Most of your customers find you on a phone. Click-to-call buttons, fast loading, clear next steps — no pinching and zooming.",
+        lead: "Works perfectly on a phone.",
+        text: "Most customers will find you on their phone, so that's what we build for first: big buttons, tap-to-call, fast loading. No pinching, no zooming — and no customers lost to a clunky site.",
       },
       {
         lead: "Starts conversations, not email threads.",
@@ -80,15 +80,15 @@ const SECTIONS: Record<SectionId, ProductSection> = {
   reviews: {
     id: "reviews",
     kicker: "After the job",
-    title: "Reviews, grown the honest way",
+    title: "Protect your rating — without risking fines",
     bullets: [
       {
-        lead: "Every customer gets asked — happy or not.",
-        text: "No filtering, no gating. The review link goes to everyone, which is exactly what keeps your Google profile safe.",
+        lead: "Bad reviews stopped before they reach Google.",
+        text: "A day after the job, the system asks the customer how it went. Unhappy? You get alerted instantly and fix it first — then they can review the full picture, including how you made it right.",
       },
       {
-        lead: "Unhappy customers reach you first.",
-        text: "You get the chance to own the mistake and fix it — then they can review the full picture, including how you made it right.",
+        lead: "Protection without the legal risk.",
+        text: "Some agencies secretly filter out unhappy customers to fake a perfect score. That can get your reviews wiped and cost tens of thousands in fines. We build it the honest way: everyone gets the review link — you get the same protection, none of the risk.",
       },
       {
         lead: "Gentle automatic reminders.",

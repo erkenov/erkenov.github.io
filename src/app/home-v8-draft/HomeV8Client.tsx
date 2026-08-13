@@ -8,8 +8,10 @@
  * What is inherited verbatim from preview-v7 (so every live effect survives):
  *   - SphereScrollStage (Three.js fixed cell-dragon canvas + dust)
  *   - The roaming Celly overlay: findEmptySpot auto-positioner,
- *     scroll-driven dragon-draw, on-stop fly-to-empty-spot, click-to-chat
- *     menu (Text/Voice), chat-dock pin, the gooey cloud speech bubble.
+ *     scroll-driven dragon-draw, on-stop fly-to-empty-spot, chat-dock pin,
+ *     the gooey cloud speech bubble. (2026-08-13: clicking Celly or her
+ *     bubble now opens the site chat DIRECTLY — the Text/Voice
+ *     click-to-chat menu is removed, owner ruling.)
  *
  * What changed from preview-v7:
  *   - The four full-screen pipeline step scenes (SECTIONS[1..4] with
@@ -25,6 +27,12 @@
  *     "See your industry" secondary button was removed 2026-08-13, Shamil.)
  *   - Meet Erken section removed 2026-07-30 (Erkenbot retired as a
  *     downloadable product; it stays only as this site's assistant).
+ *   - 2026-08-13 (owner pre-launch pass): hero headline/body rewritten to
+ *     sell the platform + receptionist without pitching the Erken
+ *     assistant; every generic "Get started" CTA now SCROLLS to #pricing
+ *     (reversal of the 2026-08-12 straight-to-payment ruling — one button
+ *     can't pick between three payment links); only the per-tier pricing
+ *     cards link to Payoneer.
  *   - Added: full /start-style pricing cards, Custom solutions, Get leads
  *     door. Added a sticky DraftHeader (logo / Industries / How it works /
  *     Pricing / persistent Try-for-free), z-50. (2026-07-21: dust canvas/
@@ -61,7 +69,6 @@ import {
   PLATFORM_BASE_MONTHLY,
   PLATFORM_BILLING_PERIODS,
   PLATFORM_FEATURES,
-  PAYMENT_LINK,
   PAYMENT_LINKS,
   billingPeriodNote,
   type BillingPeriod,
@@ -79,8 +86,8 @@ const SECTIONS = [
   {
     side: "left" as const,
     kicker: "Erken Systems",
-    headline: "One platform runs your business. Erken teaches you how.",
-    body: "If you can answer your phone, you can run this. Every business runs the same pipeline — leads get captured, saved, tracked, followed up automatically, and reported on. The platform runs all five steps. And Erken — the assistant living on every screen — shows you the right button and walks you through any task, out loud. The assistant is free.",
+    headline: "One platform runs your business. We build it for you.",
+    body: "Every business runs the same pipeline — calls get answered, leads get captured, follow-ups go out automatically, jobs get booked, reviews get collected. The platform runs all five steps, and the AI receptionist answers your phone, website chat, and texts around the clock — so no lead slips through while you're on the job. We set everything up; you approve it and get back to work.",
     cta: "Get started",
     priceTease: "Platform from $77 a month.",
   },
@@ -168,12 +175,15 @@ function Section({
         {cta && (
           <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
             {cta && (
-              /* Primary CTA → /start signup (owner ruling, 2026-08-12:
-                 "Get started" replaces "Talk to us now"; the chooser is
-                 retired). The "Talk to us" ghost button beside it opens the
-                 Erken chat so the talk-to-a-human path stays obvious. */
+              /* Primary CTA scrolls to the pricing section (owner ruling,
+                 2026-08-13 — reversal of the 2026-08-12 straight-to-payment
+                 ruling: one "Get started" button can't pick between three
+                 billing periods, so it sends visitors to the plan cards,
+                 and each card carries its own payment link). The "Talk to
+                 us" ghost button beside it opens the Erken chat so the
+                 talk-to-a-human path stays obvious. */
               <a
-                href={PAYMENT_LINK}
+                href="#pricing"
                 className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
               >
                 {cta} →
@@ -409,8 +419,10 @@ function SectionKicker({ children }: { children: React.ReactNode }) {
 }
 
 /** Sticky header — logo + Industries / How it works / Pricing anchors +
- *  persistent "Talk to us" (opens the Erken chat) + "Get started" → /start
- *  (owner ruling, 2026-08-12: replaces the "Talk to us now" chooser).
+ *  persistent "Talk to us" (opens the Erken chat) + "Get started" which
+ *  scrolls to #pricing (owner ruling, 2026-08-13 — reversal of the
+ *  2026-08-12 straight-to-payment ruling: the visitor picks a plan on the
+ *  pricing cards, each with its own payment link).
  *  z-50 (not z-40) matches the live Header.tsx
  *  and clears SceneIndustriesCarousel's z-40 arrow buttons (the carousel
  *  arrow stacking bug from Shamil's live review). Tagged data-celly-avoid
@@ -471,7 +483,7 @@ function DraftHeader() {
             Talk to us
           </button>
           <a
-            href={PAYMENT_LINK}
+            href="#pricing"
             className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
           >
             Get started
@@ -520,7 +532,7 @@ function IndustriesSection() {
           arrowsTrailing={
             <>
               <a
-                href={PAYMENT_LINK}
+                href="#pricing"
                 className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
               >
                 Get started →
@@ -875,7 +887,7 @@ function PipelineSection() {
               </p>
               <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
                 <a
-                  href={PAYMENT_LINK}
+                  href="#pricing"
                   className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
                 >
                   Get started →
@@ -1425,7 +1437,7 @@ function StackComparisonSection() {
               accent column had; now "Get started" → /start). */}
           <div className="absolute right-0 top-full w-[150px] rounded-b-2xl bg-accent px-3 pb-4 pt-3 text-center shadow-[0_18px_40px_-16px_rgba(126,166,135,0.85)]">
             <a
-              href={PAYMENT_LINK}
+              href="#pricing"
               className="inline-flex w-full items-center justify-center gap-1 rounded-lg bg-white px-3 py-2.5 text-xs font-semibold text-accent shadow-sm transition-transform hover:scale-[1.02]"
             >
               Get started →
@@ -1482,7 +1494,7 @@ function StackComparisonSection() {
               your pocket.
             </div>
             <a
-              href={PAYMENT_LINK}
+              href="#pricing"
               className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-accent shadow-sm transition-transform hover:scale-[1.02]"
             >
               Get started →
@@ -1581,33 +1593,9 @@ export default function HomeV8Client() {
   // Bubble visibility — true when user has stopped scrolling for the
   // SCROLL_STOP_DELAY window, false the instant scroll begins again.
   const [bubbleVisible, setBubbleVisible] = useState(false);
-  // Text/Voice choice menu shown when Celly is clicked, anchored to her
-  // current screen position. Text → opens the chat; Voice → starts the call.
-  // (2026-07-30: Feedback/Roadmap/What's-new sub-panels and the browser-
-  // extension link were removed — Erkenbot is retired as a downloadable
-  // product and stays only as this site's assistant, so the menu is back
-  // to its original two items.)
-  const [choiceMenu, setChoiceMenu] = useState<{ x: number; y: number } | null>(
-    null,
-  );
-  const closeChoiceMenu = () => {
-    setChoiceMenu(null);
-  };
-  // Opens the Text/Voice menu. Anchors to the roaming Celly by default; pass
-  // an element to anchor the same menu beside it instead.
-  const openChoiceMenu = (anchorEl?: HTMLElement | null) => {
-    const el = anchorEl ?? spriteContainerRef.current;
-    if (el) {
-      const r = el.getBoundingClientRect();
-      // Keep the (center-anchored) menu within the viewport sides so it can't
-      // clip off the left/right edges when Celly roams to a corner.
-      const half = 120;
-      const x = Math.max(half, Math.min(window.innerWidth - half, r.left + r.width / 2));
-      setChoiceMenu({ x, y: r.top + r.height * 0.28 });
-    } else {
-      setChoiceMenu({ x: window.innerWidth / 2, y: window.innerHeight * 0.5 });
-    }
-  };
+  // (2026-08-13, owner ruling: the Text/Voice choice menu is GONE —
+  // clicking Celly or her bubble opens the GHL chat widget directly via
+  // openErkenChat().)
   // True while the GHL chat panel is open. When open, the roaming Celly
   // (+ her bubble) is hidden via the body.erken-chat-open CSS rule below,
   // and a second, docked Celly is rendered beside the chat panel.
@@ -1618,15 +1606,6 @@ export default function HomeV8Client() {
   useEffect(() => {
     chatFreezeRef.current = chatOpen;
   }, [chatOpen]);
-  // Close the Text/Voice menu the moment the user scrolls — otherwise it
-  // stays stranded where Celly used to be after she repositions on stop.
-  useEffect(() => {
-    if (!choiceMenu) return;
-    const close = () => closeChoiceMenu();
-    window.addEventListener("scroll", close, { passive: true, once: true });
-    return () => window.removeEventListener("scroll", close);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [choiceMenu]);
   // Mirror of bubbleVisible into a ref so the 60fps handleCellMove
   // callback (deps: []) can read the latest value without re-creating.
   // Drives Celly's opacity in the same scroll-stop logic as the bubble.
@@ -2596,7 +2575,7 @@ export default function HomeV8Client() {
         // position math isn't affected by sprite's horizontal flip.
         bubbleText={null}
         onClick={() => {
-          openChoiceMenu();
+          openErkenChat();
         }}
       />
     </div>
@@ -2606,62 +2585,6 @@ export default function HomeV8Client() {
         Hidden on mobile, where the chat panel is full-screen. */}
     <ErkenChatWidget />
     <ErkenVoiceWidget />
-    {/* Text/Voice choice menu — appears at Celly when she's clicked.
-        (2026-08-12: the "Request a callback" third item is removed, and the
-        separate ContactChooser/CallbackRequestModal mounts are gone — every
-        former "Talk to us now" CTA is now "Get started" → /start with a
-        "Talk to us" chat button beside it.) */}
-    {choiceMenu && (
-      <>
-        <div
-          className="fixed inset-0 z-[55]"
-          aria-hidden
-          onClick={closeChoiceMenu}
-        />
-        <div
-          role="menu"
-          aria-label="How would you like to talk to Erken?"
-          className="fixed z-[56] flex flex-col gap-1 rounded-2xl border border-white/15 bg-black/80 p-2 shadow-2xl backdrop-blur-md"
-          style={{
-            left: choiceMenu.x,
-            top: choiceMenu.y,
-            // Open ABOVE Celly normally; when she's near the top of the page the
-            // menu would be clipped behind the browser bar, so flip it to open
-            // BELOW her instead. (~130px ≈ this 2-item menu's height + margin.)
-            transform: choiceMenu.y < 130
-              ? "translate(-50%, 12%)"
-              : "translate(-50%, -115%)",
-          }}
-        >
-          <button
-            role="menuitem"
-            onClick={() => {
-              closeChoiceMenu();
-              openErkenChat();
-            }}
-            className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-          >
-            <span aria-hidden className="text-base">
-              💬
-            </span>{" "}
-            Text chat
-          </button>
-          <button
-            role="menuitem"
-            onClick={() => {
-              closeChoiceMenu();
-              window.__startErkenVoiceCall?.();
-            }}
-            className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/15"
-          >
-            <span aria-hidden className="text-base">
-              🎙️
-            </span>{" "}
-            Voice chat
-          </button>
-        </div>
-      </>
-    )}
     {/* Bump Celly to full opacity when the cursor is on her. */}
     <style>{`
       .celly-container:hover,
@@ -2723,11 +2646,11 @@ export default function HomeV8Client() {
       tabIndex={bubbleVisible ? 0 : -1}
       aria-label="Talk to Celly"
       onClick={() => {
-        openChoiceMenu();
+        openErkenChat();
       }}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
-          openChoiceMenu();
+          openErkenChat();
         }
       }}
       className="fixed z-[53] cursor-pointer"

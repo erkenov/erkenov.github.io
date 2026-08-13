@@ -401,7 +401,10 @@ export const Card = ({
   useOutsideClick(containerRef, () => handleClose());
 
   const handleOpen = () => {
-    setOpen(true);
+    // Cards are NOT clickable (Shamil 2026-08-13: "when you click on it,
+    // nothing should happen — they should not open the detail"). The modal
+    // code below stays but is unreachable.
+    return;
   };
 
   const handleClose = () => {
