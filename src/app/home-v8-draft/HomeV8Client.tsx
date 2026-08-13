@@ -21,8 +21,8 @@
  *     win-back). All phases are always expanded (rev-3), each showing its
  *     full checklist in a 2-col grid. Flat-SVG phase icons, home-draft style.
  *   - Industries moved UP to 2nd (right after the hero).
- *   - Hero keeps the live founder video + gains the price tease and a
- *     "See your industry" secondary button.
+ *   - Hero keeps the live founder video + gains the price tease. (The
+ *     "See your industry" secondary button was removed 2026-08-13, Shamil.)
  *   - Meet Erken section removed 2026-07-30 (Erkenbot retired as a
  *     downloadable product; it stays only as this site's assistant).
  *   - Added: full /start-style pricing cards, Custom solutions, Get leads
@@ -72,8 +72,9 @@ const ease = [0.16, 1, 0.3, 1] as const;
 // v8 restructure: only the HERO stays as an L/R Section. The four
 // full-screen pipeline step scenes that used to follow it are replaced by
 // the compressed illustrated PipelineStepper below. The hero keeps the
-// live founder video (Scene1IntroVideo) and gains a one-line price tease +
-// a "See your industry" secondary button (home-draft additions).
+// live founder video (Scene1IntroVideo) and gains a one-line price tease
+// (home-draft additions; the "See your industry" button was removed
+// 2026-08-13).
 const SECTIONS = [
   {
     side: "left" as const,
@@ -82,7 +83,6 @@ const SECTIONS = [
     body: "If you can answer your phone, you can run this. Every business runs the same pipeline — leads get captured, saved, tracked, followed up automatically, and reported on. The platform runs all five steps. And Erken — the assistant living on every screen — shows you the right button and walks you through any task, out loud. The assistant is free.",
     cta: "Get started",
     priceTease: "Platform from $77 a month.",
-    secondaryCta: { label: "See your industry", href: "#industries" },
   },
 ];
 
@@ -112,7 +112,6 @@ function Section({
   side,
   cta,
   priceTease,
-  secondaryCta,
   media,
   mediaWrapperClassName,
   mediaAvoidCelly = true,
@@ -178,16 +177,6 @@ function Section({
                 className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
               >
                 {cta} →
-              </a>
-            )}
-            {secondaryCta && (
-              /* Secondary "See your industry" → scrolls to #industries
-                 (home-draft addition). */
-              <a
-                href={secondaryCta.href}
-                className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-3 text-sm font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
-              >
-                {secondaryCta.label}
               </a>
             )}
             <button
@@ -2505,9 +2494,8 @@ export default function HomeV8Client() {
       // longer exists. Every remaining section uses the default +0.4 lift.
     >
       {/* 1. HERO — the LIVE hero Section (kept), with its real founder
-          intro video (Scene1IntroVideo). home-draft additions layered in
-          via the Section component: the price tease line + the secondary
-          "See your industry" button (both live on SECTIONS[0]).
+          intro video (Scene1IntroVideo). home-draft addition layered in
+          via the Section component: the price tease line (on SECTIONS[0]).
           NOTE: the live hero already ships the REAL founder video, so it is
           kept here instead of downgrading to home-draft's "Founder video —
           coming" placeholder — see the worker report. */}
