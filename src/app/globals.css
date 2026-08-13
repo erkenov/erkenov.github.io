@@ -60,6 +60,13 @@ body {
   font-feature-settings: "ss01", "cv11";
 }
 
+/* Hand cursor on every button (Shamil 2026-08-13: "Talk to us" showed a
+   plain cursor — buttons should behave like links on hover). */
+button,
+[role="button"] {
+  cursor: pointer;
+}
+
 /* Subtle grid background pattern for hero — barely visible, adds texture (light theme: warm gray on cream) */
 .grid-bg {
   background-image:
