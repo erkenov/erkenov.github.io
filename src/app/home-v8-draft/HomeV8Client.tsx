@@ -165,7 +165,7 @@ function Section({
         {priceTease && (
           <p className="mt-3 font-mono text-sm text-accent">{priceTease}</p>
         )}
-        {(cta || secondaryCta) && (
+        {cta && (
           <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
             {cta && (
               /* Primary CTA → /start signup (owner ruling, 2026-08-12:
