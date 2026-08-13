@@ -21,6 +21,25 @@
 
 export type BillingPeriodId = "monthly" | "6-months" | "yearly";
 
+/**
+ * PAYMENT_LINKS — real Payoneer payment links, one per billing period
+ * (received from Shamil 2026-08-13: $97/mo, $522 6-months, $924 yearly).
+ * Get-started CTAs skip the /start form and go STRAIGHT to payment
+ * (same-day ruling). PAYMENT_LINK = the monthly link, used by generic
+ * Get-started buttons (header, carousel, hero, trades); pricing cards use
+ * their own per-tier link.
+ */
+export const PAYMENT_LINKS: Record<BillingPeriodId, string> = {
+  monthly:
+    "https://link.payoneer.com/Token?t=8CE04254DA3D431B978F0A31063187B2&src=tpl",
+  "6-months":
+    "https://link.payoneer.com/Token?t=D6878CB3F28949B7BD1A0609C3865B04&src=tpl",
+  yearly:
+    "https://link.payoneer.com/Token?t=564C09FED5C144C58338A630D3ED832B&src=tpl",
+};
+
+export const PAYMENT_LINK = PAYMENT_LINKS.monthly;
+
 export type BillingPeriod = {
   id: BillingPeriodId;
   label: string;

@@ -49,6 +49,8 @@ import { STACK_LOGOS } from "./stack-logos";
 import { SphereScrollStage, type CellPositionInfo } from "@/components/SphereScrollStage";
 import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
 import { SceneIndustriesCarousel } from "@/components/SceneIndustriesCarousel";
+import ProductSections from "@/components/ProductSections";
+import WhyUs from "@/components/WhyUs";
 import { CellDragonSprite } from "@/components/CellDragonSprite";
 import ErkenChatWidget, {
   openErkenChat,
@@ -59,11 +61,16 @@ import {
   PLATFORM_BASE_MONTHLY,
   PLATFORM_BILLING_PERIODS,
   PLATFORM_FEATURES,
+  PAYMENT_LINK,
+  PAYMENT_LINKS,
   billingPeriodNote,
   type BillingPeriod,
 } from "@/lib/pricing";
 
 const ease = [0.16, 1, 0.3, 1] as const;
+
+const CHROME_EXTENSION_URL =
+  "https://chromewebstore.google.com/detail/erken/mggcbjggcbdpmbglbodkadgmpapcmelc";
 
 // v8 restructure: only the HERO stays as an L/R Section. The four
 // full-screen pipeline step scenes that used to follow it are replaced by
@@ -170,7 +177,7 @@ function Section({
                  retired). The "Talk to us" ghost button beside it opens the
                  Erken chat so the talk-to-a-human path stays obvious. */
               <a
-                href="/start"
+                href={PAYMENT_LINK}
                 className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
               >
                 {cta} →
@@ -478,7 +485,7 @@ function DraftHeader() {
             Talk to us
           </button>
           <a
-            href="/start"
+            href={PAYMENT_LINK}
             className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
           >
             Get started
@@ -527,7 +534,7 @@ function IndustriesSection() {
           arrowsTrailing={
             <>
               <a
-                href="/start"
+                href={PAYMENT_LINK}
                 className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
               >
                 Get started →
@@ -542,6 +549,16 @@ function IndustriesSection() {
             </>
           }
         />
+        {/* Stone Systems pattern (Shamil 2026-08-13): featured cards in the
+            carousel, the full 4-column category list on /trades. */}
+        <div className="mt-6 text-center">
+          <a
+            href="/trades"
+            className="text-sm font-medium text-text-muted underline decoration-accent/40 underline-offset-4 transition-colors hover:text-accent"
+          >
+            See all trades by category →
+          </a>
+        </div>
       </div>
     </section>
   );
@@ -872,7 +889,7 @@ function PipelineSection() {
               </p>
               <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
                 <a
-                  href="/start"
+                  href={PAYMENT_LINK}
                   className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
                 >
                   Get started →
@@ -956,12 +973,94 @@ function PlatformPeriodCardHome({ period }: { period: BillingPeriod }) {
         ))}
       </ul>
       <a
-        href="/start"
+        href={PAYMENT_LINKS[period.id]}
         className="mt-6 inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
       >
         Get started →
       </a>
     </motion.div>
+  );
+}
+
+/* ---- Meet Erken — restored verbatim 2026-08-13 (Shamil) from the
+ * pre-retirement v8 (commit db017db^): five sell bullets + two CTAs.
+ * NOTE: the "Download for free" CTA links the Chrome extension again —
+ * Erkenbot was retired as a downloadable product 2026-07-29; Shamil
+ * ordered the section back, which re-opens that decision. Flagged. ---- */
+const ERKEN_BULLETS = [
+  { emoji: "🗣️", bold: "Ask it anything", rest: " — by voice or chat, about the platform or your business" },
+  { emoji: "👉", bold: "Shows you the exact button", rest: " — walks you through any task on screen, out loud, step by step" },
+  { emoji: "🧠", bold: "Remembers you", rest: " — your business, your setup, where you left off" },
+  { emoji: "⚡", bold: "Actions on the way", rest: " — soon it won't just guide, it'll do the task for you" },
+  { emoji: "🧩", bold: "Already in your browser", rest: " — free extension, installs in one click" },
+];
+
+function MeetErkenSection({
+  onSpriteClick,
+}: {
+  onSpriteClick: (anchorEl: HTMLElement | null) => void;
+}) {
+  return (
+    <section id="meet-erken" className="relative px-6 md:px-12 pt-24 md:pt-36 pb-16 md:pb-24">
+      <div
+        data-celly-avoid
+        className="relative z-30 mx-auto flex max-w-3xl flex-col items-center gap-6 text-center md:flex-row md:items-center md:gap-14 md:text-left"
+      >
+        <div
+          role="button"
+          tabIndex={0}
+          title="Chat with Erken"
+          aria-label="Chat with Erken"
+          onClick={(e) => onSpriteClick(e.currentTarget)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") onSpriteClick(e.currentTarget);
+          }}
+          className="shrink-0 cursor-pointer md:-ml-[75px]"
+        >
+          <CellDragonSprite scale={0.5} pointDirection="right" />
+        </div>
+        <div className="flex-1">
+        <div className="flex items-center gap-2.5">
+          <SectionKicker>Meet Erken</SectionKicker>
+          <span className="rounded-full border border-border px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-text-muted">
+            Beta
+          </span>
+        </div>
+        <h2
+          className="mt-3 text-3xl md:text-5xl font-bold tracking-tight"
+          style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
+        >
+          The assistant who teaches you the whole platform.
+        </h2>
+        <div className="mt-6 flex flex-col gap-2.5 text-left text-sm leading-relaxed text-text-muted md:text-base">
+          {ERKEN_BULLETS.map((b) => (
+            <div key={b.bold}>
+              <span aria-hidden>{b.emoji}</span>{" "}
+              <b className="text-text">{b.bold}</b>
+              {b.rest}
+            </div>
+          ))}
+        </div>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3 md:justify-start">
+          <a
+            href={CHROME_EXTENSION_URL}
+            target="_blank"
+            rel="noopener"
+            className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
+          >
+            Download for free
+          </a>
+          <button
+            type="button"
+            onClick={() => openErkenChat()}
+            className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-border px-6 py-3.5 text-base font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
+          >
+            Try it on this page
+          </button>
+        </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -1421,7 +1520,7 @@ function StackComparisonSection() {
               accent column had; now "Get started" → /start). */}
           <div className="absolute right-0 top-full w-[150px] rounded-b-2xl bg-accent px-3 pb-4 pt-3 text-center shadow-[0_18px_40px_-16px_rgba(126,166,135,0.85)]">
             <a
-              href="/start"
+              href={PAYMENT_LINK}
               className="inline-flex w-full items-center justify-center gap-1 rounded-lg bg-white px-3 py-2.5 text-xs font-semibold text-accent shadow-sm transition-transform hover:scale-[1.02]"
             >
               Get started →
@@ -1478,7 +1577,7 @@ function StackComparisonSection() {
               your pocket.
             </div>
             <a
-              href="/start"
+              href={PAYMENT_LINK}
               className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-accent shadow-sm transition-transform hover:scale-[1.02]"
             >
               Get started →
@@ -2508,27 +2607,45 @@ export default function HomeV8Client() {
         mediaAvoidCelly={true}
       />
 
-      {/* 2. Industries — moved UP to 2nd (self-identification hook). */}
+      {/* 2. Product sections — "What you get" block (website → receptionist
+          → reviews → campaigns), shared with /receptionist
+          (src/components/ProductSections.tsx; Shamil 2026-08-13: Stone
+          Systems' alternating text/media rhythm, our honest copy, review
+          section keeps the interactive demo). */}
+      <ProductSections theme="light" />
+
+      {/* 3. Why us — right after the product block (Shamil 2026-08-13:
+          "fair questions" follows "keep them coming back"). */}
+      <WhyUs theme="light" />
+
+      {/* 4. Pricing — moved right after Why us (Shamil 2026-08-13). Owner-
+          approved 3-card restructure (2026-08-12): three Platform
+          billing-period cards (Monthly / 6 months / Yearly), all in one
+          grid. */}
+      <PricingSection />
+
+      {/* 5. Industries — right after pricing (Shamil 2026-08-13, second
+          move same day: was between pipeline and AI). */}
       <IndustriesSection />
 
-      {/* 3. Pipeline — HubSpot-style sticky-column section: pinned left
+      {/* 6. Pipeline — HubSpot-style sticky-column section: pinned left
           story + right-side always-expanded phase panels (Capture/Nurture/
           Close/fans/win-back). Replaces the four full-screen step scenes
           (Scene2/3/4 + MacbookFrame3D). */}
       <PipelineSection />
 
-      {/* 4. AI section (ROUND 3) — "Built-in AI that works for you 24/7". */}
+      {/* 7. AI section (ROUND 3) — "Built-in AI that works for you 24/7". */}
       <AISection />
 
-      {/* 6. Pricing — owner-approved 3-card restructure (2026-08-12): three
-          Platform billing-period cards (Monthly / 6 months / Yearly), all
-          in one grid. */}
-      <PricingSection />
+      {/* 8. Meet Erken — restored 2026-08-13 (Shamil) from the pre-retirement
+          v8 (commit db017db^); the section was pulled 2026-07-30 when
+          Erkenbot was retired as a downloadable product. */}
+      <MeetErkenSection onSpriteClick={openChoiceMenu} />
 
-      {/* 7. Stack-comparison table (ROUND 3) — replace-your-stack. */}
+      {/* 9. Stack-comparison table (ROUND 3) — replace-your-stack. */}
       <StackComparisonSection />
 
-      {/* 8. Integrations marquee (ROUND 3) — LAST section (no footer). */}
+      {/* 10. Integrations marquee (ROUND 3) — LAST section (no footer). */}
       <IntegrationsMarquee />
 
       {/* Get-leads / "you want customers" section REMOVED from the homepage

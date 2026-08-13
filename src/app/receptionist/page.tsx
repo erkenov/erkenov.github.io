@@ -1,17 +1,15 @@
 import type { Metadata } from "next";
 import {
-  BellRing,
-  BookOpenCheck,
-  CalendarCheck,
   MessageSquare,
   PhoneCall,
   Play,
-  Radio,
-  UserPlus,
   Check,
   ChevronDown,
 } from "lucide-react";
 import { PLATFORM_BILLING_PERIODS, billingPeriodNote } from "@/lib/pricing";
+import ProductSections from "@/components/ProductSections";
+import WhyUs from "@/components/WhyUs";
+import { PAYMENT_LINK, PAYMENT_LINKS } from "@/lib/pricing";
 
 /**
  * /receptionist — direct-response funnel selling the AI Receptionist to
@@ -24,8 +22,8 @@ import { PLATFORM_BILLING_PERIODS, billingPeriodNote } from "@/lib/pricing";
  */
 
 // ── Config placeholders ────────────────────────────────────────────────
-// TODO: replace with the real checkout + booking links before launch.
-const PAYMENT_LINK = "#todo-payoneer-link";
+// PAYMENT_LINK comes from @/lib/pricing (single source, Shamil 2026-08-13).
+// TODO: replace with the real booking link before launch.
 const CALL_BOOKING_LINK = "#todo-booking-link";
 const DEMO_PHONE = "+1 (325) 241-2460";
 // ────────────────────────────────────────────────────────────────────────
@@ -71,29 +69,6 @@ function Divider() {
   );
 }
 
-const WHAT_IT_DOES = [
-  {
-    icon: Radio,
-    text: "Answers every call, chat, and SMS within seconds — 24/7, weekends and holidays included.",
-  },
-  {
-    icon: CalendarCheck,
-    text: "Books discovery flights straight into your calendar.",
-  },
-  {
-    icon: BookOpenCheck,
-    text: "Answers questions about your programs and pricing using your actual info.",
-  },
-  {
-    icon: UserPlus,
-    text: "Captures name, phone, and email of every single lead.",
-  },
-  {
-    icon: BellRing,
-    text: "Texts and emails you the moment a lead comes in.",
-  },
-];
-
 const HOW_IT_WORKS = [
   {
     title: "Forward your unanswered calls",
@@ -114,6 +89,7 @@ const INCLUDED = [
   "Done-for-you setup — we build it, you approve it",
   "Your programs and pricing baked in",
   "New leads texted to you instantly",
+  "Post-flight follow-up & review engine",
 ];
 
 const FAQ = [
@@ -231,55 +207,21 @@ export default function ReceptionistPage() {
           </div>
         </section>
 
-        <Divider />
-
-        {/* 4 ─ What it does ─────────────────────────────────────── */}
-        <section>
-          <SectionLabel>What it does</SectionLabel>
-          <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
-            A front desk that never sleeps
-          </h2>
-          <ul className="mt-10 space-y-6">
-            {WHAT_IT_DOES.map(({ icon: Icon, text }) => (
-              <li key={text} className="flex items-start gap-4">
-                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#8fb496]/25 bg-[#8fb496]/10">
-                  <Icon className="h-4.5 w-4.5 text-[#8fb496]" />
-                </span>
-                <p className="text-lg leading-relaxed text-[#d8d5cb]">{text}</p>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <Divider />
-
-        {/* 5 ─ How it works ─────────────────────────────────────── */}
-        <section>
-          <SectionLabel>How it works</SectionLabel>
-          <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
-            Live in three steps
-          </h2>
-          <ol className="mt-10 space-y-10">
-            {HOW_IT_WORKS.map((step, i) => (
-              <li key={step.title} className="flex items-start gap-5">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-400/40 font-mono text-sm font-semibold text-amber-400">
-                  {i + 1}
-                </span>
-                <div>
-                  <h3 className="text-xl font-semibold">{step.title}</h3>
-                  <p className="mt-2 leading-relaxed text-[#a7ada3]">
-                    {step.text}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        <Divider />
       </div>
 
-      {/* 6 ─ Pricing — owner-approved restructure (2026-08-12): three
+      {/* 4 ─ Product sections — shared block (src/components/
+          ProductSections.tsx), funnel order = receptionist-first. Full-width,
+          sits outside the max-w-3xl column like pricing does. */}
+      <ProductSections
+        order={["receptionist", "reviews", "website", "campaigns"]}
+        heading="What you get"
+      />
+
+      {/* 4b ─ Why us — right after the product block (Shamil 2026-08-13). */}
+      <WhyUs />
+
+      {/* 5 ─ Pricing — moved right after Why us (Shamil 2026-08-13).
+          Owner-approved restructure (2026-08-12): three
           billing-period cards (Monthly $97 / 6 months $87/mo / Yearly
           $77/mo), same INCLUDED list on each, all CTAs to PAYMENT_LINK.
           The "$197 one-time setup" line is gone. This section gets a wider
@@ -312,7 +254,7 @@ export default function ReceptionistPage() {
                     ))}
                   </ul>
                   <a
-                    href={PAYMENT_LINK}
+                    href={PAYMENT_LINKS[p.id]}
                     className="mt-8 inline-block w-full rounded-xl bg-amber-400 px-4 py-3 text-center text-base font-semibold text-[#1a1405] transition hover:bg-amber-300"
                   >
                     Get started now
@@ -332,6 +274,33 @@ export default function ReceptionistPage() {
             </a>
           </div>
         </section>
+      </div>
+
+      <div className="relative mx-auto max-w-3xl px-6">
+        {/* 6 ─ How it works ─────────────────────────────────────── */}
+        <section>
+          <SectionLabel>How it works</SectionLabel>
+          <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
+            Live in three steps
+          </h2>
+          <ol className="mt-10 space-y-10">
+            {HOW_IT_WORKS.map((step, i) => (
+              <li key={step.title} className="flex items-start gap-5">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-400/40 font-mono text-sm font-semibold text-amber-400">
+                  {i + 1}
+                </span>
+                <div>
+                  <h3 className="text-xl font-semibold">{step.title}</h3>
+                  <p className="mt-2 leading-relaxed text-[#a7ada3]">
+                    {step.text}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <Divider />
       </div>
 
       <div className="relative mx-auto max-w-3xl px-6">
