@@ -69,9 +69,6 @@ import {
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-const CHROME_EXTENSION_URL =
-  "https://chromewebstore.google.com/detail/erken/mggcbjggcbdpmbglbodkadgmpapcmelc";
-
 // v8 restructure: only the HERO stays as an L/R Section. The four
 // full-screen pipeline step scenes that used to follow it are replaced by
 // the compressed illustrated PipelineStepper below. The hero keeps the
@@ -982,87 +979,6 @@ function PlatformPeriodCardHome({ period }: { period: BillingPeriod }) {
   );
 }
 
-/* ---- Meet Erken — restored verbatim 2026-08-13 (Shamil) from the
- * pre-retirement v8 (commit db017db^): five sell bullets + two CTAs.
- * NOTE: the "Download for free" CTA links the Chrome extension again —
- * Erkenbot was retired as a downloadable product 2026-07-29; Shamil
- * ordered the section back, which re-opens that decision. Flagged. ---- */
-const ERKEN_BULLETS = [
-  { emoji: "🗣️", bold: "Ask it anything", rest: " — by voice or chat, about the platform or your business" },
-  { emoji: "👉", bold: "Shows you the exact button", rest: " — walks you through any task on screen, out loud, step by step" },
-  { emoji: "🧠", bold: "Remembers you", rest: " — your business, your setup, where you left off" },
-  { emoji: "⚡", bold: "Actions on the way", rest: " — soon it won't just guide, it'll do the task for you" },
-  { emoji: "🧩", bold: "Already in your browser", rest: " — free extension, installs in one click" },
-];
-
-function MeetErkenSection({
-  onSpriteClick,
-}: {
-  onSpriteClick: (anchorEl: HTMLElement | null) => void;
-}) {
-  return (
-    <section id="meet-erken" className="relative px-6 md:px-12 pt-24 md:pt-36 pb-16 md:pb-24">
-      <div
-        data-celly-avoid
-        className="relative z-30 mx-auto flex max-w-3xl flex-col items-center gap-6 text-center md:flex-row md:items-center md:gap-14 md:text-left"
-      >
-        <div
-          role="button"
-          tabIndex={0}
-          title="Chat with Erken"
-          aria-label="Chat with Erken"
-          onClick={(e) => onSpriteClick(e.currentTarget)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") onSpriteClick(e.currentTarget);
-          }}
-          className="shrink-0 cursor-pointer md:-ml-[75px]"
-        >
-          <CellDragonSprite scale={0.5} pointDirection="right" />
-        </div>
-        <div className="flex-1">
-        <div className="flex items-center gap-2.5">
-          <SectionKicker>Meet Erken</SectionKicker>
-          <span className="rounded-full border border-border px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-text-muted">
-            Beta
-          </span>
-        </div>
-        <h2
-          className="mt-3 text-3xl md:text-5xl font-bold tracking-tight"
-          style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
-        >
-          The assistant who teaches you the whole platform.
-        </h2>
-        <div className="mt-6 flex flex-col gap-2.5 text-left text-sm leading-relaxed text-text-muted md:text-base">
-          {ERKEN_BULLETS.map((b) => (
-            <div key={b.bold}>
-              <span aria-hidden>{b.emoji}</span>{" "}
-              <b className="text-text">{b.bold}</b>
-              {b.rest}
-            </div>
-          ))}
-        </div>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3 md:justify-start">
-          <a
-            href={CHROME_EXTENSION_URL}
-            target="_blank"
-            rel="noopener"
-            className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
-          >
-            Download for free
-          </a>
-          <button
-            type="button"
-            onClick={() => openErkenChat()}
-            className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-border px-6 py-3.5 text-base font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
-          >
-            Try it on this page
-          </button>
-        </div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 function PricingSection() {
   return (
@@ -2637,12 +2553,7 @@ export default function HomeV8Client() {
       {/* 7. AI section (ROUND 3) — "Built-in AI that works for you 24/7". */}
       <AISection />
 
-      {/* 8. Meet Erken — restored 2026-08-13 (Shamil) from the pre-retirement
-          v8 (commit db017db^); the section was pulled 2026-07-30 when
-          Erkenbot was retired as a downloadable product. */}
-      <MeetErkenSection onSpriteClick={openChoiceMenu} />
-
-      {/* 9. Stack-comparison table (ROUND 3) — replace-your-stack. */}
+      {/* 8. Stack-comparison table (ROUND 3) — replace-your-stack. */}
       <StackComparisonSection />
 
       {/* 10. Integrations marquee (ROUND 3) — LAST section (no footer). */}
