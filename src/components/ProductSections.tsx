@@ -77,7 +77,7 @@ const SECTIONS: Record<SectionId, ProductSection> = {
   },
   reviews: {
     id: "reviews",
-    title: "More 5-star reviews — more new customers",
+    title: "A flood of fresh 5-star reviews",
     bullets: [
       {
         lead: "New reviews start rolling in on day one.",
