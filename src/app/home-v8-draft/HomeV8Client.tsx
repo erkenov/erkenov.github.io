@@ -59,6 +59,7 @@ import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
 import { SceneIndustriesCarousel } from "@/components/SceneIndustriesCarousel";
 import ProductSections from "@/components/ProductSections";
 import Faq from "@/components/Faq";
+import Process from "@/components/Process";
 import WhyUs from "@/components/WhyUs";
 import { CellDragonSprite } from "@/components/CellDragonSprite";
 import ErkenChatWidget, {
@@ -2507,6 +2508,11 @@ export default function HomeV8Client() {
           billing-period cards (Monthly / 6 months / Yearly), all in one
           grid. */}
       <PricingSection />
+
+      {/* 4b. Process — "What working with us looks like" 3-step timeline
+              (Shamil 2026-08-16, modeled on Stone Systems' process
+              section, our voice). */}
+      <Process theme="light" />
 
       {/* 5. Industries — right after pricing (Shamil 2026-08-13, second
           move same day: was between pipeline and AI). */}
