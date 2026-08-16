@@ -32,6 +32,14 @@ const LINKS: Record<string, { label: string; url: string }> = {
 };
 
 export async function POST(req: Request) {
+  // Shared-secret guard (2026-08-16 security pass): without it this endpoint
+  // is an open SMS relay on the Erken Systems line. The secret lives only in
+  // the Vercel env + the GHL custom-action header config — never in the repo.
+  const expected = process.env.GHL_ACTION_SECRET;
+  if (!expected || req.headers.get("x-action-secret") !== expected) {
+    return NextResponse.json({ ok: false, error: "forbidden" }, { status: 403 });
+  }
+
   const dry = new URL(req.url).searchParams.get("dry") === "1";
   let body: {
     phone?: string;
