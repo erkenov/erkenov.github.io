@@ -750,14 +750,15 @@ function IndustryDemoShowcase({
         {/* Inline demo (2026-08-12): test the AI receptionist by voice or
             chat WITHOUT leaving this page — the voice call runs in-browser
             via the DemoVoiceWidget mounted below; the chat opens the shared
-            site widget. Get started stays the primary next step (→ /start). */}
+            site widget. Get started → #pricing (2026-08-16: /start trial
+            funnel retired — buyers go through the pricing cards). */}
         <p className="mt-4 text-sm font-medium text-text">
           Try it right here — talk to the AI receptionist or chat with it, no
           need to leave this page:
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <a
-            href="/start"
+            href="#pricing"
             className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-white transition-transform duration-200 hover:scale-[1.02]"
           >
             Get started
