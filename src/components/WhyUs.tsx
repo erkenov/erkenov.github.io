@@ -1,4 +1,4 @@
-import { RefreshCw, Calculator } from "lucide-react";
+import { RefreshCw, Calculator, Unlock } from "lucide-react";
 
 /**
  * WhyUs — the "why work with us" block (Shamil 2026-08-13, inspired by Stone
@@ -6,9 +6,10 @@ import { RefreshCw, Calculator } from "lucide-react";
  * not "we're nice people" (nobody believes that) but the math that makes a
  * fair price rational — build once on snapshots, serve hundreds, keep
  * improving everyone's system.
- * Slimmed to TWO cards (Shamil 2026-08-16): "Contracts not necessary"
- * removed; "Affordable" merged with "A hundred clients, not one";
- * "Constant improvements" merged with "Someone watching the market".
+ * Slimmed and re-merged (Shamil 2026-08-16): "Affordable" absorbed
+ * "A hundred clients, not one"; "Constant improvements" absorbed
+ * "Someone watching the market". Third card = "Contracts not necessary",
+ * restored as the easy placeholder until he thinks of something better.
  * Used on the homepage (light). The dark theme stays available for any
  * future funnel page (the /receptionist funnel was retired 2026-08-16 —
  * the main page is the selling page now).
@@ -48,6 +49,14 @@ const CARDS = [
     lead: "Constant improvements, included.",
     body: "Your system keeps getting better at no extra charge — new automations, better scripts, smarter follow-ups. And because platforms and AI move fast, we watch the market for you: we test what's worth having and bring it to you first. You'll never have to wonder if something better is out there — if there is, we'll offer it.",
   },
+  {
+    // Third card = easy placeholder for now (Shamil 2026-08-16: "make it
+    // easy, maybe I'll think of something better later") — restored the
+    // contracts card since the copy already existed.
+    icon: Unlock,
+    lead: "Contracts not necessary.",
+    body: "We work month to month — if you're happy, you'll stay, and if you're not, you shouldn't have to pay to leave. But if you want one — for your accountant, your partner, or your peace of mind — just ask and we'll put one together for you.",
+  },
 ];
 
 export default function WhyUs({ theme = "dark" }: { theme?: Theme }) {
@@ -67,7 +76,7 @@ export default function WhyUs({ theme = "dark" }: { theme?: Theme }) {
             Fair questions, straight answers
           </h2>
         </div>
-        <div className="mx-auto mt-14 grid max-w-4xl gap-6 sm:grid-cols-2">
+        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {CARDS.map(({ icon: Icon, lead, body }) => (
             <div
               key={lead}
