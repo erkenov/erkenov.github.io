@@ -63,6 +63,7 @@ import {
   PLATFORM_HEADLINE_MONTHLY,
   PLATFORM_BILLING_PERIODS,
   PLATFORM_FEATURES,
+  PAYMENT_LINKS,
   billingPeriodNote,
   type BillingPeriod,
 } from "@/lib/pricing";
@@ -774,6 +775,37 @@ function PipelineSection() {
  * border + "Most popular" badge) that the old Complete-system card had. */
 function PlatformPeriodCardHome({ period }: { period: BillingPeriod }) {
   const emphasized = period.id === "6-months";
+  const [submitting, setSubmitting] = useState(false);
+
+  // Lead capture BEFORE payment (2026-08-16, v2 — fields live ON the card
+  // again; /get-started parked): first/last in two columns, email + phone
+  // full-width so longer values never clip. Submit → /api/lead → Payoneer.
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
+    const data = new FormData(e.currentTarget);
+    try {
+      await fetch("/api/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: data.get("firstName"),
+          lastName: data.get("lastName"),
+          phone: data.get("phone"),
+          email: data.get("email"),
+          plan: period.id,
+        }),
+      });
+    } catch {
+      // Never block the payment redirect on a lead-capture failure.
+    }
+    window.location.href = PAYMENT_LINKS[period.id];
+  }
+
+  const inputCls =
+    "w-full rounded-lg border border-border bg-bg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:border-accent focus:outline-none";
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -810,12 +842,24 @@ function PlatformPeriodCardHome({ period }: { period: BillingPeriod }) {
           </li>
         ))}
       </ul>
-      <a
-        href={`/get-started?plan=${period.id}`}
-        className="mt-6 inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
-      >
-        Get started →
-      </a>
+      <form onSubmit={handleSubmit} className="mt-6">
+        <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-2">
+            <input name="firstName" required placeholder="First name" autoComplete="given-name" className={inputCls} />
+            <input name="lastName" required placeholder="Last name" autoComplete="family-name" className={inputCls} />
+          </div>
+          <input name="email" required type="email" placeholder="Email" autoComplete="email" className={inputCls} />
+          <input name="phone" required type="tel" placeholder="Phone" autoComplete="tel" className={inputCls} />
+        </div>
+        <button
+          type="submit"
+          disabled={submitting}
+          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-white transition-transform hover:scale-[1.02] disabled:opacity-60"
+          style={{ background: "linear-gradient(90deg, #8D63DA, #1C71DF)" }}
+        >
+          {submitting ? "One moment…" : "Continue to pay →"}
+        </button>
+      </form>
     </motion.div>
   );
 }

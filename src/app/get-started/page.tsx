@@ -100,9 +100,10 @@ function GetStartedForm() {
         <button
           type="submit"
           disabled={submitting}
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-[#FF4800] px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#e64100] disabled:opacity-60"
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg px-6 py-3.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02] disabled:opacity-60"
+          style={{ background: "linear-gradient(90deg, #8D63DA, #1C71DF)" }}
         >
-          {submitting ? "One moment…" : "Continue to payment →"}
+          {submitting ? "One moment…" : "Continue to pay →"}
         </button>
 
         <ul className="mt-5 space-y-1.5 text-xs text-gray-500">

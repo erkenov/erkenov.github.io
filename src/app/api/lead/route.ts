@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { addContactTags } from "@/lib/ghl-tags";
 
 /**
  * POST /api/lead — pricing-card lead capture (Shamil 2026-08-16).
@@ -43,6 +44,9 @@ export async function POST(req: Request) {
   }
 
   try {
+    // Upsert WITHOUT tags in the body — upsert's tags field REPLACES the
+    // contact's whole tag array (2026-07-21 lesson, see ghl-tags.ts). Tags
+    // go on additively after we have the contact id.
     const res = await fetch(`${GHL_BASE}/contacts/upsert`, {
       method: "POST",
       headers: {
@@ -58,9 +62,22 @@ export async function POST(req: Request) {
         phone,
         email,
         source: "erken.systems pricing card",
-        tags: ["website-pricing-lead", ...(plan ? [`plan-${plan}`] : [])],
       }),
     });
+    const d = (await res.json().catch(() => ({}))) as { contact?: { id?: string } };
+    const contactId = d?.contact?.id;
+    if (contactId) {
+      try {
+        await addContactTags({
+          key,
+          locationId,
+          contactId,
+          tags: ["website-pricing-lead", ...(plan ? [`plan-${plan}`] : [])],
+        });
+      } catch {
+        // Tagging hiccup must not fail the redirect.
+      }
+    }
     return NextResponse.json({ ok: true, ghl: res.status });
   } catch (e) {
     return NextResponse.json({ ok: true, ghl: `error: ${String(e)}` });

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { addContactTags } from "@/lib/ghl-tags";
 
 /**
  * POST /api/send-payment-link — called mid-call by the GHL Voice AI agent as
@@ -71,7 +72,9 @@ export async function POST(req: Request) {
   const plan = LINKS[body.plan ?? ""] ?? LINKS.monthly;
 
   try {
-    // 1) Upsert the contact (phone is the identity on a voice call).
+    // 1) Upsert the contact — WITHOUT tags in the body: upsert's tags field
+    // REPLACES the contact's whole tag array (2026-07-21 lesson, see
+    // ghl-tags.ts). Tags go on additively after.
     const up = await fetch(`${GHL_BASE}/contacts/upsert`, {
       method: "POST",
       headers,
@@ -82,13 +85,22 @@ export async function POST(req: Request) {
         lastName: body.lastName,
         email: body.email,
         source: "erken.systems voice agent",
-        tags: ["voice-agent-buyer", `plan-${body.plan ?? "monthly"}`],
       }),
     });
     const upJson = (await up.json()) as { contact?: { id?: string } };
     const contactId = upJson?.contact?.id;
     if (!up.ok || !contactId) {
       return NextResponse.json({ ok: false, step: "upsert", ghl: up.status, detail: upJson });
+    }
+    try {
+      await addContactTags({
+        key,
+        locationId,
+        contactId,
+        tags: ["voice-agent-buyer", `plan-${body.plan ?? "monthly"}`],
+      });
+    } catch {
+      // Tagging hiccup must not fail the SMS.
     }
     if (dry) {
       return NextResponse.json({ ok: true, dry: true, contactId, plan: plan.label });
