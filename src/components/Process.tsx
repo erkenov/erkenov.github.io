@@ -29,7 +29,7 @@ const T = {
 const STEPS = [
   {
     title: "Ask the AI anything",
-    text: "Questions? Our AI receptionist answers instantly — chat, voice, or text. No sales calls.",
+    text: "Questions? Our AI receptionist answers instantly — chat, voice, or text. No sales calls. And if the AI can't cover something, ask it to pass your message to Shamil — he'll call you personally.",
   },
   {
     title: "Pay and fill one form",

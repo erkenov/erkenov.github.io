@@ -51,6 +51,11 @@ export type BillingPeriod = {
 
 export const PLATFORM_BASE_MONTHLY = 97;
 
+/** One-time setup fee (Shamil 2026-08-16: setup is back, $297 — shown
+ *  alongside the $97/mo in the stack-comparison table). The old $197 setup
+ *  line was removed 2026-08-12; this supersedes that removal. */
+export const PLATFORM_SETUP_FEE = 297;
+
 export const PLATFORM_BILLING_PERIODS: BillingPeriod[] = [
   { id: "monthly", label: "Monthly", months: 1, perMonth: 97 },
   { id: "6-months", label: "6 months", months: 6, perMonth: 87 },

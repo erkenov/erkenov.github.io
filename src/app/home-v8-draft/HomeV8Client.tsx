@@ -61,6 +61,7 @@ import WhyUs from "@/components/WhyUs";
 import ErkenChatWidget, { openErkenChat } from "@/components/ErkenChatWidget";
 import {
   PLATFORM_BASE_MONTHLY,
+  PLATFORM_SETUP_FEE,
   PLATFORM_BILLING_PERIODS,
   PLATFORM_FEATURES,
   PAYMENT_LINKS,
@@ -703,21 +704,22 @@ function PipelineSection() {
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.5, ease }}
             >
-              <SectionKicker>How it runs</SectionKicker>
+              {/* Reframed (Shamil 2026-08-16): everything before this section
+                  sells the SETUP (site + receptionist + reviews + campaigns).
+                  This section, sitting after pricing on purpose so it never
+                  overwhelms the pitch, sells the rest of the platform — the
+                  extra firepower they get beyond the setup. */}
+              <SectionKicker>The full platform</SectionKicker>
               <h2
                 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl"
                 style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
               >
-                One pipeline runs it all.
+                And that&apos;s just the setup.
               </h2>
               <p className="mt-4 text-base leading-relaxed text-text-muted md:text-lg">
-                Every customer moves through the same five stages — from first
-                click to a repeat visit. The whole platform runs each one
-                underneath your business, so you never stitch tools together.
-                You just watch it work.
-              </p>
-              <p className="mt-3 text-base leading-relaxed text-text-muted md:text-lg">
-                Open a stage to see what runs inside it.
+                Everything above is what we build for you in the first 7–10
+                days. Underneath it sits the full platform — every feature
+                below is already included in your $97, ready when you are.
               </p>
               <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
                 <a
@@ -817,7 +819,19 @@ function PlatformPeriodCardHome({ period }: { period: BillingPeriod }) {
 
 function PricingSection() {
   return (
-    <section id="pricing" className="py-20 md:py-28">
+    <section
+      id="pricing"
+      className="relative overflow-hidden py-20 md:py-28"
+      // Colorful warm wash rescued from the removed "Your AI team" section
+      // (Shamil 2026-08-16): soft peach + sage + a touch of gold over cream.
+      style={{
+        background:
+          "radial-gradient(58% 80% at 14% 8%, rgba(232,155,122,0.24), transparent 60%)," +
+          "radial-gradient(54% 74% at 88% 14%, rgba(126,166,135,0.24), transparent 62%)," +
+          "radial-gradient(52% 62% at 62% 96%, rgba(242,201,76,0.14), transparent 62%)," +
+          "linear-gradient(180deg, #FBF7EF 0%, var(--bg) 100%)",
+      }}
+    >
       <div className="mx-auto max-w-6xl px-6 md:px-8">
         <motion.div
           data-celly-avoid
@@ -866,256 +880,6 @@ function PricingSection() {
 /* integrations-and-ai-lineup.md). Brand-neutral: never name the         */
 /* underlying platform vendor. Honest ranges only.                      */
 /* ================================================================== */
-
-/* ---- AI section — modeled beat-for-beat on HubSpot's Breeze "Built-in AI
- * agents that work for you 24/7" section: a bright-but-subtle colorful warm
- * wash (theirs peach→pink; ours a peach/sage/gold wash on cream), headline
- * top-left + promise top-right, and an auto-advancing card carousel (center
- * card raised + white, side cards tinted + recessed, side arrows, dots,
- * pause on hover/focus) with the mini UI vignettes inside. AI lineup reframed
- * brand-neutral per the research (Voice AI → AI phone agent, Conversation AI
- * → AI chat agent, Reviews AI → AI review replies). Copy stays no-hard-claims
- * (billing/included decision still open). Between pipeline and Meet Erken. -- */
-// Minimal vignettes (Shamil: HubSpot's are ONE clean floating mini-window,
-// not several stacked pieces). Each returns a single small window; the card
-// provides the tinted padded backdrop it floats on.
-function VignettePhone() {
-  return (
-    <div className="flex items-center gap-2.5">
-      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent/15 text-base">📞</span>
-      <div className="text-left text-xs leading-tight">
-        <div className="font-semibold text-text">Call booked</div>
-        <div className="text-text-dim">Tue · 2:00 PM</div>
-      </div>
-    </div>
-  );
-}
-function VignetteChat() {
-  return (
-    <div className="max-w-[12rem] rounded-2xl rounded-bl-sm bg-accent px-3.5 py-2.5 text-left text-xs leading-snug text-bg">
-      Yes — I can book you Friday at 10 AM.
-    </div>
-  );
-}
-function VignetteReview() {
-  return (
-    <div className="text-center">
-      <div className="text-sm tracking-[0.18em] text-accent">★★★★★</div>
-      <div className="mt-1.5 text-xs text-text">&ldquo;Thank you, Maria!&rdquo;</div>
-    </div>
-  );
-}
-
-const AI_CARDS: { title: string; desc: string; Vignette: () => React.ReactElement }[] = [
-  {
-    title: "AI phone agent",
-    desc: "Answers every call in two rings, checks your live calendar, and books the job — day or night.",
-    Vignette: VignettePhone,
-  },
-  {
-    title: "AI chat agent",
-    desc: "Replies on web chat, SMS, and DMs, qualifies the lead, and books the appointment in the same thread.",
-    Vignette: VignetteChat,
-  },
-  {
-    title: "AI review replies",
-    desc: "Responds to every Google and Facebook review in your voice — on autopilot or one tap to approve.",
-    Vignette: VignetteReview,
-  },
-];
-
-/* HubSpot-Breeze-style auto-advancing carousel: the active card sits raised
- * and white in the CENTER, the others tinted + recessed to the sides. Auto-
- * rotates on a timer, pauses on hover/focus, side arrows + dots for manual
- * control. On mobile only the center card shows (sides fade out). Respects
- * prefers-reduced-motion (no auto-advance; arrows/dots still work). */
-function AICarousel() {
-  const n = AI_CARDS.length;
-  const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
-
-  useEffect(() => {
-    if (paused) return;
-    if (
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
-    )
-      return;
-    const t = setInterval(() => setActive((a) => (a + 1) % n), 3800);
-    return () => clearInterval(t);
-  }, [paused, n]);
-
-  const go = (dir: number) => setActive((a) => (a + dir + n) % n);
-
-  return (
-    <div
-      className="relative"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocusCapture={() => setPaused(true)}
-      onBlurCapture={() => setPaused(false)}
-    >
-      {/* Taller deck so the PORTRAIT cards dominate the section by size. */}
-      <div className="relative mx-auto flex h-[460px] max-w-4xl items-center justify-center md:h-[480px]">
-        {AI_CARDS.map((card, i) => {
-          const offset = (((i - active) % n) + n) % n; // 0=center,1=right,n-1=left
-          const slot = offset === 0 ? "center" : offset === 1 ? "right" : "left";
-          const isCenter = slot === "center";
-          const sideX = slot === "right" ? "64%" : "-64%";
-          // Drive the deck with plain CSS transforms + transitions (framer's
-          // `animate` object wasn't applying transforms reliably here). Mobile
-          // hides the side cards via a media-query class (max-md:opacity-0) —
-          // more reliable than a JS isMobile flag.
-          const transform = isCenter
-            ? "translateX(0) scale(1)"
-            : `translateX(${sideX}) scale(0.82)`;
-          return (
-            <div
-              key={card.title}
-              className={`absolute w-[280px] transition-[transform,opacity] duration-500 sm:w-[300px] ${
-                isCenter ? "opacity-100" : "opacity-[0.55] max-md:opacity-0"
-              }`}
-              style={{
-                zIndex: isCenter ? 20 : 10,
-                transform,
-                transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)",
-              }}
-              aria-hidden={!isCenter}
-            >
-              {/* Vertical PORTRAIT card (~3:4), phone-screen proportions. */}
-              <div
-                className={
-                  isCenter
-                    ? "flex h-[420px] flex-col rounded-2xl border border-border bg-surface p-5 shadow-[0_26px_70px_-24px_rgba(126,166,135,0.6)]"
-                    : "flex h-[420px] flex-col rounded-2xl border border-border bg-surface-2 p-5 shadow-sm"
-                }
-              >
-                {/* Minimal vignette: ONE floating mini-window centered on a
-                    tinted backdrop, generous padding. */}
-                <div className="flex flex-1 items-center justify-center rounded-xl border border-border/50 bg-gradient-to-br from-surface-2 to-[#f0ece0]">
-                  <div className="rounded-2xl border border-border bg-surface px-5 py-4 shadow-md">
-                    <card.Vignette />
-                  </div>
-                </div>
-                <h3
-                  className="mt-4 text-base font-semibold text-text"
-                  style={{ letterSpacing: "-0.01em" }}
-                >
-                  {card.title}
-                </h3>
-                <p className={`mt-1.5 text-sm leading-relaxed ${isCenter ? "text-text-muted" : "text-text-dim"}`}>
-                  {card.desc}
-                </p>
-                {/* Learn more link removed (Shamil 2026-07-30): the AI-team
-                    cards carry just their vignette + info, no button. */}
-              </div>
-            </div>
-          );
-        })}
-
-        {/* Side arrows */}
-        <button
-          type="button"
-          onClick={() => go(-1)}
-          aria-label="Previous AI agent"
-          className="absolute left-0 top-1/2 z-30 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-surface text-text shadow-md transition-colors hover:border-border-strong hover:bg-surface-2 md:left-2"
-        >
-          <IconArrowNarrowLeft className="h-5 w-5" />
-        </button>
-        <button
-          type="button"
-          onClick={() => go(1)}
-          aria-label="Next AI agent"
-          className="absolute right-0 top-1/2 z-30 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-surface text-text shadow-md transition-colors hover:border-border-strong hover:bg-surface-2 md:right-2"
-        >
-          <IconArrowNarrowRight className="h-5 w-5" />
-        </button>
-      </div>
-
-      {/* Dots */}
-      <div className="mt-6 flex justify-center gap-2">
-        {AI_CARDS.map((c, i) => (
-          <button
-            key={c.title}
-            type="button"
-            onClick={() => setActive(i)}
-            aria-label={`Show ${c.title}`}
-            aria-current={i === active}
-            className={`h-2 rounded-full transition-all ${
-              i === active ? "w-6 bg-accent" : "w-2 bg-border hover:bg-border-strong"
-            }`}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function AISection() {
-  return (
-    <section
-      id="ai"
-      className="relative overflow-hidden py-20 md:py-28"
-      // HubSpot-Breeze-style bright-but-subtle COLORFUL warm wash, translated
-      // to our palette: soft peach (warm clay-light) + sage + a touch of gold
-      // over cream. Bright and popping, not cluttered (rev-3 addendum).
-      style={{
-        background:
-          "radial-gradient(58% 80% at 14% 8%, rgba(232,155,122,0.24), transparent 60%)," +
-          "radial-gradient(54% 74% at 88% 14%, rgba(126,166,135,0.24), transparent 62%)," +
-          "radial-gradient(52% 62% at 62% 96%, rgba(242,201,76,0.14), transparent 62%)," +
-          "linear-gradient(180deg, #FBF7EF 0%, var(--bg) 100%)",
-      }}
-    >
-      {/* Compact heading block (Shamil: the CAROUSEL must dominate by size —
-          keep the type tight so the eye lands on the cards first). */}
-      <div className="relative mx-auto max-w-6xl px-6 md:px-8">
-        <div className="grid gap-x-8 gap-y-2 md:grid-cols-2 md:items-end">
-          <motion.div
-            data-celly-avoid
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.5, ease }}
-          >
-            <SectionKicker>Your AI team</SectionKicker>
-            <h2
-              className="mt-2 text-2xl font-bold tracking-tight md:text-3xl"
-              style={{ letterSpacing: "-0.02em", lineHeight: 1.15 }}
-            >
-              Built-in AI that works for you 24/7.
-            </h2>
-          </motion.div>
-          <motion.p
-            data-celly-avoid
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.5, ease, delay: 0.1 }}
-            className="max-w-md text-sm leading-relaxed text-text-muted md:text-base"
-          >
-            Chat, calls, reviews, content, and workflows — a whole AI team,
-            included and working together from day one. It answers, books,
-            replies, and writes while you run the business.
-          </motion.p>
-        </div>
-
-        <div data-celly-avoid className="mt-8">
-          <AICarousel />
-        </div>
-
-        <p data-celly-avoid className="mt-8 text-center text-sm text-text-muted">
-          Also included: <b className="text-text">an AI content writer</b>,{" "}
-          <b className="text-text">AI-assisted page building</b>, and an{" "}
-          <b className="text-text">AI workflow assistant</b>.
-        </p>
-        <p className="mt-2 text-center text-xs text-text-dim">
-          Included on every plan — with pay-as-you-go and unlimited AI tiers as you scale.
-        </p>
-      </div>
-    </section>
-  );
-}
 
 /* ---- Stack-comparison table ("replace your whole stack"). Real tool LOGOS
  * (Simple Icons where available, text chip otherwise) + a single defensible
@@ -1194,7 +958,8 @@ function StackComparisonSection() {
           </h2>
           <p className="mt-4 text-base text-text-muted md:text-lg">
             Everything below is included — platform and AI receptionist under
-            one login, one bill, from $77/mo.
+            one login, one bill, from $77/mo + ${PLATFORM_SETUP_FEE} one-time
+            setup.
           </p>
         </motion.div>
 
@@ -1264,6 +1029,9 @@ function StackComparisonSection() {
                 <span className="mb-0.5 text-sm font-medium text-white/85">/mo</span>
               </div>
               <div className="text-[11px] font-medium text-white/85">all included</div>
+              <div className="mt-1 text-[11px] font-medium text-white/85">
+                + ${PLATFORM_SETUP_FEE} setup, one time
+              </div>
             </div>
           </div>
           {/* Overhang — the Platform's accent column extends past the
@@ -1467,39 +1235,33 @@ export default function HomeV8Client() {
           "fair questions" follows "keep them coming back"). */}
       <WhyUs theme="light" />
 
-      {/* 4. Pricing — moved right after Why us (Shamil 2026-08-13). Owner-
-          approved 3-card restructure (2026-08-12): three Platform
-          billing-period cards (Monthly / 6 months / Yearly), all in one
-          grid. */}
-      <PricingSection />
-
-      {/* 4b. Process — "What working with us looks like" 3-step timeline
-              (Shamil 2026-08-16, modeled on Stone Systems' process
-              section, our voice). */}
-      <Process theme="light" />
-
-      {/* 5. Industries — right after pricing (Shamil 2026-08-13, second
-          move same day: was between pipeline and AI). */}
-      <IndustriesSection />
-
-      {/* 6. Pipeline — HubSpot-style sticky-column section: pinned left
-          story + right-side always-expanded phase panels (Capture/Nurture/
-          Close/fans/win-back). Replaces the four full-screen step scenes
-          (Scene2/3/4 + MacbookFrame3D). */}
-      <PipelineSection />
-
-      {/* 7. AI section (ROUND 3) — "Built-in AI that works for you 24/7". */}
-      <AISection />
-
-      {/* 8. Stack-comparison table (ROUND 3) — replace-your-stack. */}
+      {/* 4. Stack comparison + FAQ — moved BEFORE pricing (Shamil
+          2026-08-16): the value math and the objection-handling earn the
+          right to show the price. */}
       <StackComparisonSection />
-
-      {/* 9. FAQ (Shamil 2026-08-16) — Stone Systems' five-question FAQ,
-             rewritten in our honest voice (src/components/Faq.tsx). */}
       <Faq theme="light" />
 
-      {/* 10. Integrations marquee (ROUND 3) — LAST section (no footer). */}
+      {/* 5. Pricing — owner-approved 3-card restructure (2026-08-12): three
+          Platform billing-period cards (Monthly / 6 months / Yearly).
+          Background = the colorful warm wash rescued from the removed AI
+          section (Shamil 2026-08-16). */}
+      <PricingSection />
+
+      {/* 6. Integrations marquee — right after pricing (Shamil 2026-08-16). */}
       <IntegrationsMarquee />
+
+      {/* 7. Process — "What working with us looks like" 4-step timeline
+              (Shamil 2026-08-16: no sales call — AI answers, pay, one form,
+              build 7–10 days, video handover). */}
+      <Process theme="light" />
+
+      {/* 8. Industries. */}
+      <IndustriesSection />
+
+      {/* 9. Pipeline — reframed 2026-08-16 as "the full platform" convincer
+          ("And that's just the setup."): everything before pricing sells the
+          setup; this sells the rest of the platform to the still-unsure. */}
+      <PipelineSection />
 
       {/* Get-leads / "you want customers" section REMOVED from the homepage
           (rev-3 addendum: it was a coming-soon dead end here; the real
