@@ -28,16 +28,20 @@ const T = {
 
 const STEPS = [
   {
-    title: "Intro call — 20 minutes",
-    text: "Yes, it's technically a sales call — no point pretending otherwise. But a useful one: bring every question you have, we'll show you the system running live, and you'll leave knowing exactly what you'd get and what it costs.",
+    title: "Ask the AI anything",
+    text: "Questions? Our AI receptionist answers instantly — chat, voice, or text. No sales calls.",
   },
   {
-    title: "We build your system — 7–10 days",
-    text: "You fill out one onboarding form — your services, prices, common questions, booking rules. We take it from there: website, receptionist, review engine, campaigns — built, connected, and tested before you ever see it.",
+    title: "Pay and fill one form",
+    text: "One onboarding form: your services, prices, common questions. Shamil reviews it personally and confirms everything with you.",
   },
   {
-    title: "Launch call — 25 minutes",
-    text: "We walk you through everything live and hand you the keys. And by \"everything\" we mostly mean two buttons — the system answers, follows up, and asks for reviews on its own.",
+    title: "We build it — 7–10 days",
+    text: "Most of that is the phone carrier verifying your number. We handle everything else.",
+  },
+  {
+    title: "Video handover",
+    text: "A short video call: you see the whole system working, and get the keys.",
   },
 ];
 
@@ -58,7 +62,7 @@ export default function Process({ theme = "dark" }: { theme?: Theme }) {
             What working with us looks like
           </h2>
         </div>
-        <div className="relative mt-14 grid gap-10 sm:grid-cols-3">
+        <div className="relative mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Connecting line behind the step numbers (desktop only). */}
           <div
             aria-hidden
