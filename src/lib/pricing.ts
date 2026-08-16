@@ -51,6 +51,12 @@ export type BillingPeriod = {
 
 export const PLATFORM_BASE_MONTHLY = 97;
 
+/** Headline price shown across the site (stack table, section intros):
+ *  $77 = the yearly rate (Shamil 2026-08-16: "everywhere 77, except the
+ *  monthly and 6-month pricing cards"). Card math still uses
+ *  PLATFORM_BASE_MONTHLY — do NOT reuse this for savings calculations. */
+export const PLATFORM_HEADLINE_MONTHLY = 77;
+
 export const PLATFORM_BILLING_PERIODS: BillingPeriod[] = [
   { id: "monthly", label: "Monthly", months: 1, perMonth: 97 },
   { id: "6-months", label: "6 months", months: 6, perMonth: 87 },

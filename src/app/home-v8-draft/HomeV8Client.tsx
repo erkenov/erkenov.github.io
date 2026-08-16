@@ -60,7 +60,7 @@ import Process from "@/components/Process";
 import WhyUs from "@/components/WhyUs";
 import ErkenChatWidget, { openErkenChat } from "@/components/ErkenChatWidget";
 import {
-  PLATFORM_BASE_MONTHLY,
+  PLATFORM_HEADLINE_MONTHLY,
   PLATFORM_BILLING_PERIODS,
   PLATFORM_FEATURES,
   PAYMENT_LINKS,
@@ -775,6 +775,39 @@ function PipelineSection() {
  * border + "Most popular" badge) that the old Complete-system card had. */
 function PlatformPeriodCardHome({ period }: { period: BillingPeriod }) {
   const emphasized = period.id === "6-months";
+  const [submitting, setSubmitting] = useState(false);
+
+  // Lead capture BEFORE payment (Shamil 2026-08-16): first/last/phone/email
+  // all mandatory — phone+email keep the lead reachable, first+last identify
+  // the payer (Payoneer shows only a name). Saved to GHL via /api/lead, then
+  // the buyer lands on the Payoneer link either way.
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    try {
+      await fetch("/api/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: data.get("firstName"),
+          lastName: data.get("lastName"),
+          phone: data.get("phone"),
+          email: data.get("email"),
+          plan: period.id,
+        }),
+      });
+    } catch {
+      // Never block the payment redirect on a lead-capture failure.
+    }
+    window.location.href = PAYMENT_LINKS[period.id];
+  }
+
+  const inputCls =
+    "w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text placeholder:text-text-dim focus:border-accent focus:outline-none";
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -811,12 +844,21 @@ function PlatformPeriodCardHome({ period }: { period: BillingPeriod }) {
           </li>
         ))}
       </ul>
-      <a
-        href={PAYMENT_LINKS[period.id]}
-        className="mt-6 inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
-      >
-        Get started →
-      </a>
+      <form onSubmit={handleSubmit} className="mt-6">
+        <div className="grid grid-cols-2 gap-2">
+          <input name="firstName" required placeholder="First name" autoComplete="given-name" className={inputCls} />
+          <input name="lastName" required placeholder="Last name" autoComplete="family-name" className={inputCls} />
+          <input name="phone" required type="tel" placeholder="Phone" autoComplete="tel" className={inputCls} />
+          <input name="email" required type="email" placeholder="Email" autoComplete="email" className={inputCls} />
+        </div>
+        <button
+          type="submit"
+          disabled={submitting}
+          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02] disabled:opacity-60"
+        >
+          {submitting ? "One moment…" : "Get started →"}
+        </button>
+      </form>
     </motion.div>
   );
 }
@@ -854,8 +896,8 @@ function PricingSection() {
             One platform. Pick how you pay.
           </h2>
           <p className="mt-4 text-base text-text-muted md:text-lg">
-            Everything included from ${PLATFORM_BASE_MONTHLY}/mo — pay less
-            per month when you prepay.
+            Everything included from ${PLATFORM_HEADLINE_MONTHLY}/mo — pay
+            monthly, or prepay to lock that rate.
           </p>
         </motion.div>
 
@@ -984,7 +1026,7 @@ function StackComparisonSection() {
             <div className="bg-[var(--accent-soft)] px-3 py-3.5 font-mono text-[11px] uppercase tracking-[0.08em] text-text">The tools you&apos;d buy</div>
             <div className="bg-[var(--accent-soft)] px-3 py-3.5 font-mono text-[11px] uppercase tracking-[0.08em] text-text">Price on its own</div>
             <div className="flex items-center justify-center bg-accent px-3 py-3.5 text-center font-mono text-[11px] uppercase tracking-[0.08em] text-white">
-              Platform ${PLATFORM_BASE_MONTHLY}
+              Platform ${PLATFORM_HEADLINE_MONTHLY}
             </div>
 
             {/* Category rows — every category included in the Platform. */}
@@ -1025,22 +1067,15 @@ function StackComparisonSection() {
                 <span className="mb-0.5 text-sm font-medium text-text-dim">/mo</span>
               </div>
               <div className="text-[11px] text-text-dim">billed separately</div>
-              {/* Competitors typically charge a setup fee on top (Shamil
-                  2026-08-16: "$297 setup goes in THEIR column — I don't
-                  charge it"). */}
-              <div className="text-[11px] text-text-dim">+ $297 setup fee</div>
             </div>
             <div className="flex flex-col items-center justify-center border-t-2 border-white/25 bg-accent py-5 text-white">
               <div className="flex items-end gap-1">
                 <span className="text-2xl font-bold tracking-tight md:text-3xl" style={{ letterSpacing: "-0.02em" }}>
-                  ${PLATFORM_BASE_MONTHLY}
+                  ${PLATFORM_HEADLINE_MONTHLY}
                 </span>
                 <span className="mb-0.5 text-sm font-medium text-white/85">/mo</span>
               </div>
               <div className="text-[11px] font-medium text-white/85">all included</div>
-              <div className="mt-1 text-[11px] font-medium text-white/85">
-                no setup fee
-              </div>
             </div>
           </div>
           {/* Overhang — the Platform's accent column extends past the
@@ -1086,9 +1121,6 @@ function StackComparisonSection() {
                 <span className="ml-1 text-sm font-normal">/mo</span>
               </span>
             </div>
-            <div className="bg-[var(--accent-soft)] px-5 pb-3 text-right text-[11px] text-text-dim">
-              + $297 setup fee with most providers
-            </div>
           </div>
           {/* Green footer card — the Platform's price vs the struck stack
               total, with the same "Get started" → /start CTA the desktop
@@ -1099,15 +1131,12 @@ function StackComparisonSection() {
           >
             <div className="flex items-end gap-2">
               <span className="text-4xl font-bold tracking-tight" style={{ letterSpacing: "-0.03em" }}>
-                ${PLATFORM_BASE_MONTHLY}
+                ${PLATFORM_HEADLINE_MONTHLY}
               </span>
               <span className="mb-1 text-base font-medium text-white/85">/mo, everything included</span>
             </div>
-            <div className="mt-0.5 text-xs font-medium text-white/85">
-              No setup fee — others charge ~$297.
-            </div>
             <div className="mt-1 text-sm text-white/90">
-              About <b>${(STACK_TOTAL - PLATFORM_BASE_MONTHLY).toLocaleString()} a month</b> back in
+              About <b>${(STACK_TOTAL - PLATFORM_HEADLINE_MONTHLY).toLocaleString()} a month</b> back in
               your pocket.
             </div>
             <a
