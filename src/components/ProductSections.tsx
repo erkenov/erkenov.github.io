@@ -11,17 +11,17 @@ import { Check, Play } from "lucide-react";
  * (Shamil 2026-08-16: the interactive ReviewDemo animation in the review
  * section was replaced with a video placeholder too — video comes later).
  *
- * Copy: Stone Systems' sales logic rewritten in our honest voice — the
- * gating-flavored claims became the fix-first philosophy; SEO/GEO is
- * mentioned honestly as built-in-but-a-long-game, with the "do we sell
- * ongoing SEO" decision deliberately parked.
+ * Copy formula (Shamil 2026-08-16, Stone-style): the H3 header states the
+ * OUTCOME the client gets; the check-marked bullets explain HOW, in short
+ * plain language. The small kicker labels ("The foundation" etc.) were
+ * removed same day — they made the blocks fade together; the big headers
+ * carry the sage accent color instead.
  */
 
 type SectionId = "website" | "receptionist" | "reviews" | "campaigns";
 
 type ProductSection = {
   id: SectionId;
-  kicker: string;
   title: string;
   bullets: { lead: string; text: string }[];
   /** Video slot label for sections that get a founder video later. */
@@ -31,44 +31,42 @@ type ProductSection = {
 const SECTIONS: Record<SectionId, ProductSection> = {
   website: {
     id: "website",
-    kicker: "The foundation",
     title: "A website that brings you customers",
     bullets: [
       {
-        lead: "Built to be found on Google — and in AI answers.",
-        text: "Your site ships with proper SEO and GEO — the technical setup that makes Google and AI assistants show your business when people search for what you do. The honest part: that's the starting line, not the finish. Rankings are a long game, and someone has to keep playing it. What we guarantee is a site built right.",
+        lead: "Found on Google — and in AI answers.",
+        text: "Proper SEO and GEO built in from day one, so Google and AI assistants show your business when people search for what you do. The honest part: rankings are a long game. We build the site right — we don't sell miracles.",
       },
       {
-        lead: "Your best reviews, front and center.",
-        text: "Your top reviews showcased on every page, kept current, every one answered. And when a bad experience happens, our follow-up system helps you fix the mistake before it ever becomes a public review.",
+        lead: "Your best reviews do the selling.",
+        text: "Your top reviews shown on every page, kept current, every one answered — the first thing a new customer checks.",
       },
       {
         lead: "Works perfectly on a phone.",
-        text: "Most customers will find you on their phone, so that's what we build for first: big buttons, tap-to-call, fast loading. No pinching, no zooming — and no customers lost to a clunky site.",
+        text: "That's where most customers find you, so that's what we build for first: big buttons, tap-to-call, fast loading.",
       },
       {
-        lead: "Starts conversations, not email threads.",
-        text: "Forms and chat that open an SMS conversation the moment someone reaches out — so their number is captured even if they leave the site.",
+        lead: "Every visitor can reach you in one tap.",
+        text: "Forms and chat open a text conversation the moment someone reaches out — their number is captured even if they leave the site.",
       },
     ],
     videoLabel: "Shamil walks through a real website build",
   },
   receptionist: {
     id: "receptionist",
-    kicker: "The receptionist",
-    title: "A front desk that never sleeps",
+    title: "An AI receptionist that never misses a lead",
     bullets: [
       {
-        lead: "Every call, chat, and text — answered in seconds.",
-        text: "Around 80% of callers who reach voicemail hang up without leaving a message — and most of them dial the next business on the list. The receptionist picks up 24/7, weekends and holidays included.",
+        lead: "Answers phone, SMS, and web chat — in seconds.",
+        text: "One receptionist on every channel, 24/7, weekends and holidays included. Around 80% of callers who reach voicemail hang up and dial the next business — yours get an answer.",
       },
       {
-        lead: "One receptionist on every channel.",
-        text: "Voice on the phone, voice on your website, and SMS chat — same knowledge, same manners, everywhere your customers are.",
+        lead: "Knows your business inside out.",
+        text: "Trained on your services, prices, and the questions your customers actually ask — it answers like your best employee.",
       },
       {
         lead: "Books straight into your calendar.",
-        text: "Answers questions from your actual info, schedules the appointment, and captures every lead's name, number, and email.",
+        text: "Schedules the appointment on the spot and captures every lead's name, number, and email.",
       },
       {
         lead: "You know the moment it happens.",
@@ -79,36 +77,34 @@ const SECTIONS: Record<SectionId, ProductSection> = {
   },
   reviews: {
     id: "reviews",
-    kicker: "After the job",
-    title: "Protect your rating — without risking fines",
+    title: "Every happy customer becomes a 5-star review",
     bullets: [
       {
-        lead: "Bad reviews stopped before they reach Google.",
-        text: "A day after the job, the system asks the customer how it went. Unhappy? You get alerted instantly and fix it first — then they can review the full picture, including how you made it right.",
+        lead: "Bad experiences caught before they reach Google.",
+        text: "A day after the job, the system asks the customer how it went. Unhappy? You're alerted instantly and fix it first — then they review the full picture.",
       },
       {
-        lead: "Protection without the legal risk.",
-        text: "Some agencies secretly filter out unhappy customers to fake a perfect score. That can get your reviews wiped and cost tens of thousands in fines. We build it the honest way: everyone gets the review link — you get the same protection, none of the risk.",
+        lead: "Protected — without the legal risk.",
+        text: "Some agencies secretly filter out unhappy customers to fake a perfect score — that can get your reviews wiped and cost tens of thousands in fines. Here, everyone gets the review link: same protection, none of the risk.",
       },
       {
         lead: "Gentle automatic reminders.",
-        text: "Most happy customers don't refuse to leave a review — they forget. Spaced follow-ups over a few weeks jog their memory without nagging.",
+        text: "Happy customers don't refuse to leave a review — they forget. Spaced follow-ups over a few weeks jog their memory without nagging.",
       },
       {
         lead: "Your past customers go to work on day one.",
-        text: "We gradually run your existing customer list through review and referral requests — and every new customer gets the same from then on.",
+        text: "Your existing list gets review and referral requests the moment we switch on; every new customer gets the same from then on.",
       },
     ],
     videoLabel: "Shamil runs a real customer through the review flow",
   },
   campaigns: {
     id: "campaigns",
-    kicker: "Keep them coming back",
-    title: "One-click campaigns & referrals",
+    title: "Past customers come back — and bring friends",
     bullets: [
       {
-        lead: "Your customer list, one click away.",
-        text: "Send an offer, an update, or a seasonal reminder to everyone who's ever bought from you — repeat business on demand.",
+        lead: "Repeat business on demand.",
+        text: "Send an offer, an update, or a seasonal reminder to everyone who's ever bought from you — one click.",
       },
       {
         lead: "The referral ask is built in.",
@@ -116,7 +112,7 @@ const SECTIONS: Record<SectionId, ProductSection> = {
       },
       {
         lead: "On from day one.",
-        text: "Existing customers get their referral and feedback request the moment we switch on; every new customer gets it automatically after that.",
+        text: "Existing customers get their first request the moment we switch on; every new customer gets it automatically after that.",
       },
     ],
     videoLabel: "Shamil sends a campaign to a real customer list",
@@ -128,8 +124,9 @@ type Theme = "dark" | "light";
 
 const T = {
   dark: {
-    kicker: "text-[#8fb496]",
-    title: "text-[#ece9e0]",
+    // Section headers in sage (Shamil 2026-08-16: kickers removed, the big
+    // header carries the accent color instead).
+    title: "text-[#8fb496]",
     // Bullet leads in amber (Erken particle color) — Shamil 2026-08-13.
     lead: "text-amber-400",
     body: "text-[#a7ada3]",
@@ -139,8 +136,7 @@ const T = {
     note: "text-[#a7ada3]",
   },
   light: {
-    kicker: "text-accent",
-    title: "text-text",
+    title: "text-accent",
     // Darker amber on the light theme so it stays readable on cream.
     lead: "text-amber-700",
     body: "text-text-muted",
@@ -149,22 +145,6 @@ const T = {
     note: "text-text-muted",
   },
 } as const;
-
-function Kicker({
-  children,
-  theme,
-}: {
-  children: React.ReactNode;
-  theme: Theme;
-}) {
-  return (
-    <p
-      className={`font-mono text-xs font-medium tracking-[0.18em] uppercase ${T[theme].kicker}`}
-    >
-      {children}
-    </p>
-  );
-}
 
 function VideoSlot({ label, theme }: { label: string; theme: Theme }) {
   return (
@@ -202,9 +182,8 @@ function SectionBlock({
     >
       {/* Text column */}
       <div className={flip ? "md:order-2" : ""}>
-        <Kicker theme={theme}>{section.kicker}</Kicker>
         <h3
-          className={`mt-4 text-3xl font-semibold tracking-tight text-balance sm:text-4xl ${t.title}`}
+          className={`text-3xl font-semibold tracking-tight text-balance sm:text-4xl ${t.title}`}
         >
           {section.title}
         </h3>

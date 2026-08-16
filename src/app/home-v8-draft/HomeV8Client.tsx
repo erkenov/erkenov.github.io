@@ -88,8 +88,8 @@ const SECTIONS = [
   {
     side: "left" as const,
     kicker: "Erken Systems",
-    headline: "One platform runs your business. We build it for you.",
-    body: "Every business runs the same pipeline — calls get answered, leads get captured, follow-ups go out automatically, jobs get booked, reviews get collected. The platform runs all five steps, and the AI receptionist answers your phone, website chat, and texts around the clock — so no lead slips through while you're on the job. We set everything up; you approve it and get back to work.",
+    headline: "Websites & AI receptionists for service businesses",
+    body: "Here's the truth: most small businesses lose customers to a missed call or a website that doesn't work on a phone. We build you a site that gets found on Google, and an AI receptionist that answers every call, text, and chat — 24/7. No miracles, no fluff. You commit to using it — it never lets a lead slip.",
     cta: "Get started",
     priceTease: "Platform from $77 a month.",
   },
