@@ -2492,10 +2492,10 @@ export default function HomeV8Client() {
       />
 
       {/* 2. Product sections — "What you get" block (website → receptionist
-          → reviews → campaigns), shared with /receptionist
-          (src/components/ProductSections.tsx; Shamil 2026-08-13: Stone
-          Systems' alternating text/media rhythm, our honest copy, review
-          section keeps the interactive demo). */}
+          → reviews → campaigns) — src/components/ProductSections.tsx;
+          Shamil 2026-08-13: Stone Systems' alternating text/media rhythm,
+          our honest copy. Media side = uniform video slots since
+          2026-08-16 (founder videos come later). */}
       <ProductSections theme="light" />
 
       {/* 3. Why us — right after the product block (Shamil 2026-08-13:

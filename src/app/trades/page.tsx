@@ -23,7 +23,7 @@ const CATEGORIES: Category[] = [
   {
     title: "Aviation & adventure",
     trades: [
-      { name: "Flight schools", href: "/receptionist" },
+      { name: "Flight schools" },
       { name: "Skydiving", href: "/sky-erken" },
       { name: "Climbing gyms & guides", href: "/climb-erken" },
       { name: "Surf schools & camps", href: "/surf-erken" },

@@ -5,7 +5,8 @@ import { ChevronDown } from "lucide-react";
  * on Stone Systems' five-question FAQ — same questions and sales logic,
  * rewritten in our honest voice; do NOT copy their answer text verbatim).
  * Shared light/dark theming like ProductSections/WhyUs. Currently mounted
- * on the homepage (light); /receptionist keeps its own funnel-specific FAQ.
+ * on the homepage (light) — the main page is the selling page now
+ * (the /receptionist funnel was retired 2026-08-16).
  */
 
 type Theme = "dark" | "light";

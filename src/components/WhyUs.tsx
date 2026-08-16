@@ -9,7 +9,9 @@ import { RefreshCw, Calculator } from "lucide-react";
  * Slimmed to TWO cards (Shamil 2026-08-16): "Contracts not necessary"
  * removed; "Affordable" merged with "A hundred clients, not one";
  * "Constant improvements" merged with "Someone watching the market".
- * Shared by the homepage (light) and /receptionist (dark).
+ * Used on the homepage (light). The dark theme stays available for any
+ * future funnel page (the /receptionist funnel was retired 2026-08-16 —
+ * the main page is the selling page now).
  */
 
 type Theme = "dark" | "light";

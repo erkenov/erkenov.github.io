@@ -1,9 +1,10 @@
 import { Check, Play } from "lucide-react";
 
 /**
- * ProductSections — the "what you get" product block, shared by the
- * homepage (Stone-order: website → receptionist → reviews → campaigns) and
- * the /receptionist funnel (receptionist-first order).
+ * ProductSections — the "what you get" product block, used on the homepage
+ * (website → receptionist → reviews → campaigns). The /receptionist funnel
+ * (which used the receptionist-first order) was retired 2026-08-16 — the
+ * main page is the selling page now; the `order` prop stays for reuse.
  *
  * Layout: alternating text/media sections in Stone Systems' rhythm. Every
  * section's media side is a video slot for founder-recorded walkthroughs

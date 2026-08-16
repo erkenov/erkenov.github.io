@@ -1,9 +1,10 @@
 /**
  * Shared platform pricing constants — single source of truth for the
  * erken.systems pricing surfaces: the homepage pricing section
- * (src/app/home-v8-draft/HomeV8Client.tsx), the signup flow
- * (src/app/start/page.tsx), and the /receptionist funnel. Edit the numbers
- * here once, every page stays in sync.
+ * (src/app/home-v8-draft/HomeV8Client.tsx) and the signup flow
+ * (src/app/start/page.tsx). Edit the numbers here once, every page stays
+ * in sync. (The /receptionist funnel, a former consumer, was retired
+ * 2026-08-16.)
  *
  * Owner-approved pricing restructure, 2026-08-12: the "Complete system"
  * offer is REMOVED everywhere — and by a same-day addendum, the "Custom
