@@ -10,11 +10,12 @@ import { PAYMENT_LINKS } from "@/lib/pricing";
  * a Payoneer link, only pricing.ts changes; every published URL keeps
  * working. /pay/monthly | /pay/6-months | /pay/yearly, /pay → monthly.
  */
-export function GET(
+export async function GET(
   _req: Request,
-  { params }: { params: { plan: string } }
+  { params }: { params: Promise<{ plan: string }> }
 ) {
-  const url = PAYMENT_LINKS[params.plan as keyof typeof PAYMENT_LINKS];
+  const { plan } = await params;
+  const url = PAYMENT_LINKS[plan as keyof typeof PAYMENT_LINKS];
   if (!url) return NextResponse.redirect(new URL("/#pricing", _req.url));
   return NextResponse.redirect(url, 302);
 }
