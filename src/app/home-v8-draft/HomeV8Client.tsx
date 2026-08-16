@@ -851,6 +851,16 @@ function PlatformPeriodCardHome({ period }: { period: BillingPeriod }) {
           <input name="email" required type="email" placeholder="Email" autoComplete="email" className={inputCls} />
           <input name="phone" required type="tel" placeholder="Phone" autoComplete="tel" className={inputCls} />
         </div>
+        {/* TCPA consent (Shamil 2026-08-16): the follow-up machine texts,
+            emails, and voice-calls non-payers — that needs affirmative
+            written consent, so this checkbox is required. */}
+        <label className="mt-3 flex items-start gap-2.5 text-xs leading-relaxed text-text-dim">
+          <input type="checkbox" required className="mt-0.5 shrink-0 accent-[#8D63DA]" />
+          <span>
+            I agree to receive SMS, email, and calls from Erken Systems about
+            my order and setup. No spam — only what my account needs.
+          </span>
+        </label>
         <button
           type="submit"
           disabled={submitting}
