@@ -34,20 +34,20 @@ const SECTIONS: Record<SectionId, ProductSection> = {
     title: "A website that brings you customers",
     bullets: [
       {
-        lead: "Found on Google — and in AI answers.",
-        text: "Proper SEO and GEO built in from day one, so Google and AI assistants show your business when people search for what you do. The honest part: rankings are a long game. We build the site right — we don't sell miracles.",
+        lead: "Customers find you on Google — not your competitor.",
+        text: "Proper SEO and GEO built in from day one, so you show up when locals search for what you do. The honest part: rankings are a long game — we build the site right, we don't sell miracles.",
       },
       {
-        lead: "Your best reviews do the selling.",
-        text: "Your top reviews shown on every page, kept current, every one answered — the first thing a new customer checks.",
+        lead: "New customers trust you before they ever call.",
+        text: "Your best reviews on every page, kept current, every one answered — the first thing people check before choosing.",
       },
       {
-        lead: "Works perfectly on a phone.",
-        text: "That's where most customers find you, so that's what we build for first: big buttons, tap-to-call, fast loading.",
+        lead: "Looks perfect on the phone they found you on.",
+        text: "That's where most customers come from, so that's what we build for first: big buttons, tap-to-call, fast loading.",
       },
       {
-        lead: "Every visitor can reach you in one tap.",
-        text: "Forms and chat open a text conversation the moment someone reaches out — their number is captured even if they leave the site.",
+        lead: "You get their number — even if they leave.",
+        text: "Forms and chat open a text conversation the moment someone reaches out, so no visitor leaves without a trace.",
       },
     ],
     videoLabel: "Shamil walks through a real website build",
@@ -57,62 +57,62 @@ const SECTIONS: Record<SectionId, ProductSection> = {
     title: "An AI receptionist that never misses a lead",
     bullets: [
       {
-        lead: "Answers phone, SMS, and web chat — in seconds.",
-        text: "One receptionist on every channel, 24/7, weekends and holidays included. Around 80% of callers who reach voicemail hang up and dial the next business — yours get an answer.",
+        lead: "Every caller gets an answer — in seconds, 24/7.",
+        text: "Phone, SMS, and web chat — one receptionist on all of them, weekends and holidays included. Around 80% of callers who reach voicemail hang up and dial the next business; yours won't.",
       },
       {
-        lead: "Knows your business inside out.",
-        text: "Trained on your services, prices, and the questions your customers actually ask — it answers like your best employee.",
+        lead: "Answers like your best employee.",
+        text: "It's trained on your services, prices, and the questions your customers actually ask — it knows your business inside out.",
       },
       {
-        lead: "Books straight into your calendar.",
-        text: "Schedules the appointment on the spot and captures every lead's name, number, and email.",
+        lead: "Your calendar fills itself.",
+        text: "It books the appointment on the spot and captures every lead's name, number, and email.",
       },
       {
-        lead: "You know the moment it happens.",
-        text: "Every booking and every lead is texted and emailed to you instantly — nothing waits in a dashboard you forget to check.",
+        lead: "You get a text the moment someone books.",
+        text: "Every booking and every lead lands in your pocket instantly — nothing waits in a dashboard you forget to check.",
       },
     ],
     videoLabel: "Shamil shows the receptionist handling a real call",
   },
   reviews: {
     id: "reviews",
-    title: "Every happy customer becomes a 5-star review",
+    title: "More 5-star reviews — more new customers",
     bullets: [
       {
-        lead: "Bad experiences caught before they reach Google.",
-        text: "A day after the job, the system asks the customer how it went. Unhappy? You're alerted instantly and fix it first — then they review the full picture.",
+        lead: "New reviews start rolling in on day one.",
+        text: "The request goes out the same day the job is done, while the good feeling is fresh — and your existing customers get asked right away too.",
       },
       {
-        lead: "Protected — without the legal risk.",
+        lead: "Happy customers actually follow through.",
+        text: "They don't refuse to leave a review — they forget. Gentle spaced reminders over the next few weeks make sure it happens, without nagging.",
+      },
+      {
+        lead: "A bad day never becomes a bad review.",
+        text: "If a customer had a problem, you're alerted instantly and fix it first — then they review the full picture, including how you made it right.",
+      },
+      {
+        lead: "All the protection, none of the legal risk.",
         text: "Some agencies secretly filter out unhappy customers to fake a perfect score — that can get your reviews wiped and cost tens of thousands in fines. Here, everyone gets the review link: same protection, none of the risk.",
-      },
-      {
-        lead: "Gentle automatic reminders.",
-        text: "Happy customers don't refuse to leave a review — they forget. Spaced follow-ups over a few weeks jog their memory without nagging.",
-      },
-      {
-        lead: "Your past customers go to work on day one.",
-        text: "Your existing list gets review and referral requests the moment we switch on; every new customer gets the same from then on.",
       },
     ],
     videoLabel: "Shamil runs a real customer through the review flow",
   },
   campaigns: {
     id: "campaigns",
-    title: "Past customers come back — and bring friends",
+    title: "One-click marketing campaigns",
     bullets: [
       {
-        lead: "Repeat business on demand.",
-        text: "Send an offer, an update, or a seasonal reminder to everyone who's ever bought from you — one click.",
+        lead: "Slow week? Fill it with one click.",
+        text: "Send an offer, an update, or a seasonal reminder to everyone who's ever bought from you — repeat business on demand.",
       },
       {
-        lead: "The referral ask is built in.",
-        text: "Every happy customer is automatically invited to send a friend your way — the highest-trust lead there is.",
+        lead: "Every happy customer brings you the next one.",
+        text: "The referral ask is built in — each customer is automatically invited to send a friend your way, the highest-trust lead there is.",
       },
       {
-        lead: "On from day one.",
-        text: "Existing customers get their first request the moment we switch on; every new customer gets it automatically after that.",
+        lead: "It runs itself from day one.",
+        text: "Existing customers get their first campaign the moment we switch on; every new customer gets it automatically after that.",
       },
     ],
     videoLabel: "Shamil sends a campaign to a real customer list",
