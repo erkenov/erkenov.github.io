@@ -58,6 +58,7 @@ import { SphereScrollStage, type CellPositionInfo } from "@/components/SphereScr
 import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
 import { SceneIndustriesCarousel } from "@/components/SceneIndustriesCarousel";
 import ProductSections from "@/components/ProductSections";
+import Faq from "@/components/Faq";
 import WhyUs from "@/components/WhyUs";
 import { CellDragonSprite } from "@/components/CellDragonSprite";
 import ErkenChatWidget, {
@@ -2522,6 +2523,10 @@ export default function HomeV8Client() {
 
       {/* 8. Stack-comparison table (ROUND 3) — replace-your-stack. */}
       <StackComparisonSection />
+
+      {/* 9. FAQ (Shamil 2026-08-16) — Stone Systems' five-question FAQ,
+             rewritten in our honest voice (src/components/Faq.tsx). */}
+      <Faq theme="light" />
 
       {/* 10. Integrations marquee (ROUND 3) — LAST section (no footer). */}
       <IntegrationsMarquee />

@@ -1,15 +1,14 @@
-import { Play, ShieldCheck } from "lucide-react";
-import ReviewDemo from "@/components/ReviewDemo";
+import { Check, Play } from "lucide-react";
 
 /**
  * ProductSections — the "what you get" product block, shared by the
  * homepage (Stone-order: website → receptionist → reviews → campaigns) and
  * the /receptionist funnel (receptionist-first order).
  *
- * Layout: alternating text/media sections in Stone Systems' rhythm, but
- * the media side is asymmetric on purpose (Shamil 2026-08-13): the review
- * section keeps the INTERACTIVE demo (visitors do the flow themselves),
- * the other sections carry video slots for founder-recorded walkthroughs.
+ * Layout: alternating text/media sections in Stone Systems' rhythm. Every
+ * section's media side is a video slot for founder-recorded walkthroughs
+ * (Shamil 2026-08-16: the interactive ReviewDemo animation in the review
+ * section was replaced with a video placeholder too — video comes later).
  *
  * Copy: Stone Systems' sales logic rewritten in our honest voice — the
  * gating-flavored claims became the fix-first philosophy; SEO/GEO is
@@ -99,6 +98,7 @@ const SECTIONS: Record<SectionId, ProductSection> = {
         text: "We gradually run your existing customer list through review and referral requests — and every new customer gets the same from then on.",
       },
     ],
+    videoLabel: "Shamil runs a real customer through the review flow",
   },
   campaigns: {
     id: "campaigns",
@@ -193,7 +193,6 @@ function SectionBlock({
   flip: boolean;
   theme: Theme;
 }) {
-  const isReviews = section.id === "reviews";
   const t = T[theme];
   return (
     <div className="grid items-center gap-10 md:grid-cols-2 md:gap-14">
@@ -207,30 +206,21 @@ function SectionBlock({
         </h3>
         <ul className="mt-8 space-y-6">
           {section.bullets.map((b) => (
-            <li key={b.lead}>
-              <p className={`text-lg font-semibold ${t.lead}`}>{b.lead}</p>
-              <p className={`mt-1.5 leading-relaxed ${t.body}`}>{b.text}</p>
+            <li key={b.lead} className="flex items-start gap-3">
+              <Check className={`mt-1 h-5 w-5 shrink-0 ${t.lead}`} />
+              <div>
+                <p className={`text-lg font-semibold ${t.lead}`}>{b.lead}</p>
+                <p className={`mt-1.5 leading-relaxed ${t.body}`}>{b.text}</p>
+              </div>
             </li>
           ))}
         </ul>
       </div>
-      {/* Media column */}
+      {/* Media column — uniform video slots for all sections (Shamil
+          2026-08-16): the interactive ReviewDemo animation is OUT for now;
+          a founder-recorded video goes in later like the other sections. */}
       <div className={flip ? "md:order-1" : ""}>
-        {isReviews ? (
-          <div>
-            {/* The phone mockup stays dark in both themes — it reads as a
-                device screenshot, not page chrome. */}
-            <ReviewDemo />
-            <p
-              className={`mt-4 flex items-center justify-center gap-2 text-center text-xs ${t.note}`}
-            >
-              <ShieldCheck className="h-3.5 w-3.5 text-[#8fb496]" />
-              Full video walkthrough with Shamil — coming soon
-            </p>
-          </div>
-        ) : (
-          <VideoSlot label={section.videoLabel!} theme={theme} />
-        )}
+        <VideoSlot label={section.videoLabel!} theme={theme} />
       </div>
     </div>
   );
