@@ -1,16 +1,14 @@
 "use client";
 
 /**
- * ErkenChatWidget — loads the GoHighLevel chat widget and makes Celly
- * (the CellDragonSprite) its trigger instead of GHL's default bubble.
+ * ErkenChatWidget — loads the GoHighLevel chat widget. GHL's own default
+ * bubble is the chat launcher now (Celly retired 2026-08-16, owner ruling).
  *
  * - Injects the GHL loader script once.
- * - Hides GHL's floating launcher button (`.lc_text-widget--bubble`,
- *   lives in the <chat-widget> shadow DOM) so the only visible "open
- *   chat" affordance is Celly herself.
  * - openErkenChat() opens the panel via the official
  *   window.leadConnector.chatWidget.openWidget() API (probed live
  *   2026-06-05), retrying briefly if the script hasn't loaded yet.
+ *   "Talk to us" buttons across the site call this.
  */
 
 import { useEffect, useState } from "react";
@@ -87,27 +85,8 @@ export default function ErkenChatWidget() {
       s.setAttribute("data-widget-id", WIDGET_ID);
       document.body.appendChild(s);
     }
-
-    // 2) Once <chat-widget> hydrates, hide its default launcher bubble.
-    //    Celly is the trigger; the panel still opens via openWidget().
-    let tries = 0;
-    const hideLauncher = () => {
-      const w = document.querySelector("chat-widget") as
-        | (HTMLElement & { shadowRoot: ShadowRoot | null })
-        | null;
-      if (w?.shadowRoot) {
-        if (!w.shadowRoot.getElementById("erken-hide-launcher")) {
-          const style = document.createElement("style");
-          style.id = "erken-hide-launcher";
-          style.textContent =
-            ".lc_text-widget--bubble{display:none !important;}";
-          w.shadowRoot.appendChild(style);
-        }
-        return;
-      }
-      if (tries++ < 40) setTimeout(hideLauncher, 200);
-    };
-    hideLauncher();
+    // (2026-08-16: the hideLauncher step that hid GHL's default bubble is
+    //  gone — Celly retired; GHL's own bubble is the launcher now.)
   }, []);
 
   return null;
