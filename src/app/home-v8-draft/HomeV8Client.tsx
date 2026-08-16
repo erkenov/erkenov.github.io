@@ -880,13 +880,15 @@ function PricingSection() {
     <section
       id="pricing"
       className="relative overflow-hidden py-20 md:py-28"
-      // Colorful warm wash rescued from the removed "Your AI team" section
-      // (Shamil 2026-08-16): soft peach + sage + a touch of gold over cream.
+      // Cooled wash (Shamil 2026-08-16): violet/blue tints matching the
+      // Payoneer-gradient CTAs + a sage thread for brand. ROLLBACK (the old
+      // warm wash): rgba(232,155,122,0.24) at 14% 8%, rgba(126,166,135,0.24)
+      // at 88% 14%, rgba(242,201,76,0.14) at 62% 96%.
       style={{
         background:
-          "radial-gradient(58% 80% at 14% 8%, rgba(232,155,122,0.24), transparent 60%)," +
-          "radial-gradient(54% 74% at 88% 14%, rgba(126,166,135,0.24), transparent 62%)," +
-          "radial-gradient(52% 62% at 62% 96%, rgba(242,201,76,0.14), transparent 62%)," +
+          "radial-gradient(58% 80% at 14% 8%, rgba(141,99,218,0.18), transparent 60%)," +
+          "radial-gradient(54% 74% at 88% 14%, rgba(28,113,223,0.16), transparent 62%)," +
+          "radial-gradient(52% 62% at 62% 96%, rgba(126,166,135,0.16), transparent 62%)," +
           "linear-gradient(180deg, #FBF7EF 0%, var(--bg) 100%)",
       }}
     >
