@@ -30,6 +30,10 @@ type Data = {
 const money = (n: number, c = "USD") =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: c }).format(n);
 
+/** Payoneer no-amount payment link (payer enters the amount themselves).
+ *  Shamil generates it in Payoneer → paste here. 2026-08-16. */
+const TOP_UP_LINK = "PAYONEER_TOP_UP_LINK_HERE";
+
 export default function BalancePage() {
   const [data, setData] = useState<Data | null>(null);
   const [error, setError] = useState(false);
@@ -110,6 +114,17 @@ export default function BalancePage() {
                   Covers your voice minutes, texts, and AI usage.
                 </div>
               )}
+              {/* Top-up button (Shamil 2026-08-16): Payoneer no-amount link,
+                  payer enters the sum. target _blank escapes the GHL iframe. */}
+              <a
+                href={TOP_UP_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-5 rounded-lg px-6 py-3 text-sm font-semibold transition-transform hover:scale-[1.02]"
+                style={{ background: "#E89F1F", color: "#1a1405" }}
+              >
+                Top up balance →
+              </a>
             </div>
 
             {/* Tiles */}
