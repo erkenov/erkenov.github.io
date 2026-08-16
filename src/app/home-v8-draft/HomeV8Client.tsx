@@ -178,7 +178,7 @@ function Section({
                  talk-to-a-human path stays obvious. */
               <a
                 href="#pricing"
-                className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
+                className="inline-flex items-center gap-2 rounded-lg bg-[linear-gradient(90deg,#8D63DA,#1C71DF)] px-5 py-3 text-sm font-medium text-white transition-all hover:brightness-110"
               >
                 {cta} →
               </a>
@@ -328,7 +328,7 @@ function DraftHeader() {
           </button>
           <a
             href="#pricing"
-            className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
+            className="rounded-lg bg-[linear-gradient(90deg,#8D63DA,#1C71DF)] px-4 py-2 text-sm font-medium text-white transition-all hover:brightness-110"
           >
             Get started
           </a>
@@ -377,7 +377,7 @@ function IndustriesSection() {
             <>
               <a
                 href="#pricing"
-                className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
+                className="inline-flex items-center gap-2 rounded-lg bg-[linear-gradient(90deg,#8D63DA,#1C71DF)] px-6 py-3.5 text-base font-medium text-white transition-all hover:brightness-110 hover:scale-[1.02]"
               >
                 Get started →
               </a>
@@ -729,7 +729,7 @@ function PipelineSection() {
               <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
                 <a
                   href="#pricing"
-                  className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3.5 text-base font-medium text-bg transition-all hover:bg-accent-hover hover:scale-[1.02]"
+                  className="inline-flex items-center gap-2 rounded-lg bg-[linear-gradient(90deg,#8D63DA,#1C71DF)] px-6 py-3.5 text-base font-medium text-white transition-all hover:brightness-110 hover:scale-[1.02]"
                 >
                   Get started →
                 </a>
@@ -1095,7 +1095,7 @@ function StackComparisonSection() {
           <div className="absolute right-0 top-full w-[150px] rounded-b-2xl bg-accent px-3 pb-4 pt-3 text-center shadow-[0_18px_40px_-16px_rgba(126,166,135,0.85)]">
             <a
               href="#pricing"
-              className="inline-flex w-full items-center justify-center gap-1 rounded-lg bg-white px-3 py-2.5 text-xs font-semibold text-accent shadow-sm transition-transform hover:scale-[1.02]"
+              className="inline-flex w-full items-center justify-center gap-1 rounded-lg bg-[linear-gradient(90deg,#8D63DA,#1C71DF)] px-3 py-2.5 text-xs font-semibold text-white shadow-sm transition-all hover:brightness-110 hover:scale-[1.02]"
             >
               Get started →
             </a>
@@ -1152,7 +1152,7 @@ function StackComparisonSection() {
             </div>
             <a
               href="#pricing"
-              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-accent shadow-sm transition-transform hover:scale-[1.02]"
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[linear-gradient(90deg,#8D63DA,#1C71DF)] px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:brightness-110 hover:scale-[1.02]"
             >
               Get started →
             </a>

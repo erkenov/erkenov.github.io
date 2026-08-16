@@ -48,13 +48,13 @@ function GetStartedForm() {
   }
 
   const inputCls =
-    "w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#FF4800] focus:outline-none focus:ring-1 focus:ring-[#FF4800]";
+    "w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#1C71DF] focus:outline-none focus:ring-1 focus:ring-[#1C71DF]";
 
   return (
     <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 shadow-xl">
       {/* Payoneer-style header */}
       <div className="mb-6 text-center">
-        <p className="font-mono text-xs font-semibold tracking-[0.2em] text-[#FF4800] uppercase">
+        <p className="font-mono text-xs font-semibold tracking-[0.2em] text-[#1C71DF] uppercase">
           Erken Systems
         </p>
         <h1 className="mt-2 text-2xl font-bold tracking-tight text-gray-900">
@@ -75,7 +75,7 @@ function GetStartedForm() {
               onClick={() => setPlan(p.id)}
               className={`rounded-lg border px-2 py-3 text-center transition-colors ${
                 plan === p.id
-                  ? "border-[#FF4800] bg-[#FF4800]/5 ring-1 ring-[#FF4800]"
+                  ? "border-[#1C71DF] bg-[#1C71DF]/5 ring-1 ring-[#1C71DF]"
                   : "border-gray-200 hover:border-gray-300"
               }`}
             >
@@ -109,7 +109,7 @@ function GetStartedForm() {
         <ul className="mt-5 space-y-1.5 text-xs text-gray-500">
           {["No contracts — cancel anytime", "No setup fee", "Live in 7–10 days"].map((f) => (
             <li key={f} className="flex items-center gap-2">
-              <Check className="h-3.5 w-3.5 text-[#FF4800]" strokeWidth={3} />
+              <Check className="h-3.5 w-3.5 text-[#1C71DF]" strokeWidth={3} />
               {f}
             </li>
           ))}

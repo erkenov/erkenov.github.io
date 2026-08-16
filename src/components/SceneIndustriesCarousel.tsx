@@ -759,7 +759,7 @@ function IndustryDemoShowcase({
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <a
             href="#pricing"
-            className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-white transition-transform duration-200 hover:scale-[1.02]"
+            className="inline-flex items-center gap-2 rounded-lg bg-[linear-gradient(90deg,#8D63DA,#1C71DF)] px-6 py-3 font-medium text-white transition-all duration-200 hover:brightness-110 hover:scale-[1.02]"
           >
             Get started
             <span aria-hidden>→</span>
@@ -767,7 +767,7 @@ function IndustryDemoShowcase({
           <button
             type="button"
             onClick={() => window.__startDemoVoiceCall?.()}
-            className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 font-medium text-white transition-transform duration-200 hover:scale-[1.02]"
+            className="inline-flex items-center gap-2 rounded-lg bg-[linear-gradient(90deg,#8D63DA,#1C71DF)] px-6 py-3 font-medium text-white transition-all duration-200 hover:brightness-110 hover:scale-[1.02]"
           >
             Talk to the AI receptionist
           </button>
