@@ -196,7 +196,10 @@ function SectionBlock({
 }) {
   const t = T[theme];
   return (
-    <div className="grid items-center gap-10 md:grid-cols-2 md:gap-14">
+    <div
+      id={`product-${section.id}`}
+      className="grid scroll-mt-24 items-center gap-10 md:grid-cols-2 md:gap-14"
+    >
       {/* Text column */}
       <div className={flip ? "md:order-2" : ""}>
         <Kicker theme={theme}>{section.kicker}</Kicker>

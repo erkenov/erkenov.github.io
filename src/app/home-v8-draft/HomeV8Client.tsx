@@ -50,7 +50,7 @@
 
 import { useCallback, useEffect, useRef, useState, Fragment } from "react";
 import { motion } from "framer-motion";
-import { Check, Phone } from "lucide-react";
+import { Check, ChevronDown, Phone } from "lucide-react";
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { INTEGRATION_LOGOS } from "./integration-logos";
 import { STACK_LOGOS } from "./stack-logos";
@@ -443,6 +443,36 @@ function DraftHeader() {
           erken<span className="text-accent"> </span>systems
         </a>
         <nav className="hidden items-center gap-8 md:flex">
+          {/* Products dropdown (Shamil 2026-08-16, Stone Systems nav
+              pattern): hover/focus menu of the four product anchors in
+              the "What you get" block (ids live in ProductSections.tsx). */}
+          <div className="group relative">
+            <button
+              type="button"
+              className="flex items-center gap-1 text-sm text-text-muted transition-colors hover:text-text"
+            >
+              Products
+              <ChevronDown className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" />
+            </button>
+            <div className="invisible absolute top-full left-0 pt-2 opacity-0 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+              <div className="w-64 rounded-xl border border-border bg-surface p-2 shadow-lg">
+                {[
+                  ["Website", "#product-website"],
+                  ["AI receptionist", "#product-receptionist"],
+                  ["Review engine", "#product-reviews"],
+                  ["Campaigns & referrals", "#product-campaigns"],
+                ].map(([label, href]) => (
+                  <a
+                    key={href}
+                    href={href}
+                    className="block rounded-lg px-3 py-2 text-sm text-text-muted transition-colors hover:bg-surface-2 hover:text-text"
+                  >
+                    {label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
           <a href="#industries" className="text-sm text-text-muted transition-colors hover:text-text">
             Industries
           </a>
