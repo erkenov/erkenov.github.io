@@ -48,7 +48,7 @@
 
 import { useEffect, useState, Fragment } from "react";
 import { motion } from "framer-motion";
-import { Check, ChevronDown, Phone } from "lucide-react";
+import { Check, ChevronDown, Globe, Megaphone, Phone, PhoneCall, Star } from "lucide-react";
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { INTEGRATION_LOGOS } from "./integration-logos";
 import { STACK_LOGOS } from "./stack-logos";
@@ -61,7 +61,6 @@ import WhyUs from "@/components/WhyUs";
 import ErkenChatWidget, { openErkenChat } from "@/components/ErkenChatWidget";
 import {
   PLATFORM_BASE_MONTHLY,
-  PLATFORM_SETUP_FEE,
   PLATFORM_BILLING_PERIODS,
   PLATFORM_FEATURES,
   PAYMENT_LINKS,
@@ -256,9 +255,9 @@ function DraftHeader() {
           erken<span className="text-accent"> </span>systems
         </a>
         <nav className="hidden items-center gap-8 md:flex">
-          {/* Products dropdown (Shamil 2026-08-16, Stone Systems nav
-              pattern): hover/focus menu of the four product anchors in
-              the "What you get" block (ids live in ProductSections.tsx). */}
+          {/* Products mega menu (Shamil 2026-08-16, Stone Systems nav
+              pattern): a big box where each product carries an icon and a
+              one-line summary. Anchors live in ProductSections.tsx. */}
           <div className="group relative">
             <button
               type="button"
@@ -267,20 +266,26 @@ function DraftHeader() {
               Products
               <ChevronDown className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" />
             </button>
-            <div className="invisible absolute top-full left-0 pt-2 opacity-0 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-              <div className="w-64 rounded-xl border border-border bg-surface p-2 shadow-lg">
+            <div className="invisible absolute top-full left-1/2 -translate-x-1/2 pt-3 opacity-0 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+              <div className="w-96 rounded-2xl border border-border bg-surface p-3 shadow-xl">
                 {[
-                  ["Website", "#product-website"],
-                  ["AI receptionist", "#product-receptionist"],
-                  ["Review engine", "#product-reviews"],
-                  ["Campaigns & referrals", "#product-campaigns"],
-                ].map(([label, href]) => (
+                  { icon: Globe, name: "Website", desc: "Built to be found on Google — and to turn visitors into customers.", href: "#product-website" },
+                  { icon: PhoneCall, name: "AI receptionist", desc: "Answers every call, text, and chat 24/7 — and books the job.", href: "#product-receptionist" },
+                  { icon: Star, name: "Review engine", desc: "A flood of fresh 5-star reviews, on autopilot.", href: "#product-reviews" },
+                  { icon: Megaphone, name: "Campaigns & referrals", desc: "One-click campaigns that bring past customers back — with friends.", href: "#product-campaigns" },
+                ].map(({ icon: Icon, name, desc, href }) => (
                   <a
                     key={href}
                     href={href}
-                    className="block rounded-lg px-3 py-2 text-sm text-text-muted transition-colors hover:bg-surface-2 hover:text-text"
+                    className="flex items-start gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-surface-2"
                   >
-                    {label}
+                    <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-accent/25 bg-accent/10 text-accent">
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <span>
+                      <span className="block text-sm font-semibold text-text">{name}</span>
+                      <span className="mt-0.5 block text-xs leading-relaxed text-text-muted">{desc}</span>
+                    </span>
                   </a>
                 ))}
               </div>
@@ -289,7 +294,7 @@ function DraftHeader() {
           <a href="#industries" className="text-sm text-text-muted transition-colors hover:text-text">
             Industries
           </a>
-          <a href="#pipeline" className="text-sm text-text-muted transition-colors hover:text-text">
+          <a href="#process" className="text-sm text-text-muted transition-colors hover:text-text">
             How it works
           </a>
           <a href="#pricing" className="text-sm text-text-muted transition-colors hover:text-text">
@@ -860,11 +865,12 @@ function PricingSection() {
           ))}
         </div>
         {/* Usage-cost disclosure (owner ask, 2026-08-12): voice minutes are
-            pass-through, so heavy call volume never surprises anyone. No
-            per-minute number — rates change. */}
-        <p className="mt-6 max-w-2xl text-xs leading-relaxed text-text-dim">
-          AI voice minutes are billed separately at cost — you only pay for
-          what you use, so a busy month never brings a surprise bill.
+            pass-through. Amber + approximate per-minute rate (Shamil
+            2026-08-16) so nobody imagines scary metered pricing. */}
+        <p className="mt-6 max-w-2xl text-xs font-medium leading-relaxed text-amber-700">
+          AI voice minutes are billed separately at cost — roughly 10¢ a
+          minute, so even a busy month of answered calls adds a few dollars,
+          never a surprise bill.
         </p>
       </div>
     </section>
@@ -958,8 +964,7 @@ function StackComparisonSection() {
           </h2>
           <p className="mt-4 text-base text-text-muted md:text-lg">
             Everything below is included — platform and AI receptionist under
-            one login, one bill, from $77/mo + ${PLATFORM_SETUP_FEE} one-time
-            setup.
+            one login, one bill, from $77/mo.
           </p>
         </motion.div>
 
@@ -1020,6 +1025,10 @@ function StackComparisonSection() {
                 <span className="mb-0.5 text-sm font-medium text-text-dim">/mo</span>
               </div>
               <div className="text-[11px] text-text-dim">billed separately</div>
+              {/* Competitors typically charge a setup fee on top (Shamil
+                  2026-08-16: "$297 setup goes in THEIR column — I don't
+                  charge it"). */}
+              <div className="text-[11px] text-text-dim">+ $297 setup fee</div>
             </div>
             <div className="flex flex-col items-center justify-center border-t-2 border-white/25 bg-accent py-5 text-white">
               <div className="flex items-end gap-1">
@@ -1030,7 +1039,7 @@ function StackComparisonSection() {
               </div>
               <div className="text-[11px] font-medium text-white/85">all included</div>
               <div className="mt-1 text-[11px] font-medium text-white/85">
-                + ${PLATFORM_SETUP_FEE} setup, one time
+                no setup fee
               </div>
             </div>
           </div>
@@ -1077,6 +1086,9 @@ function StackComparisonSection() {
                 <span className="ml-1 text-sm font-normal">/mo</span>
               </span>
             </div>
+            <div className="bg-[var(--accent-soft)] px-5 pb-3 text-right text-[11px] text-text-dim">
+              + $297 setup fee with most providers
+            </div>
           </div>
           {/* Green footer card — the Platform's price vs the struck stack
               total, with the same "Get started" → /start CTA the desktop
@@ -1090,6 +1102,9 @@ function StackComparisonSection() {
                 ${PLATFORM_BASE_MONTHLY}
               </span>
               <span className="mb-1 text-base font-medium text-white/85">/mo, everything included</span>
+            </div>
+            <div className="mt-0.5 text-xs font-medium text-white/85">
+              No setup fee — others charge ~$297.
             </div>
             <div className="mt-1 text-sm text-white/90">
               About <b>${(STACK_TOTAL - PLATFORM_BASE_MONTHLY).toLocaleString()} a month</b> back in
@@ -1235,11 +1250,12 @@ export default function HomeV8Client() {
           "fair questions" follows "keep them coming back"). */}
       <WhyUs theme="light" />
 
-      {/* 4. Stack comparison + FAQ — moved BEFORE pricing (Shamil
-          2026-08-16): the value math and the objection-handling earn the
-          right to show the price. */}
+      {/* 4. Stack comparison + FAQ + Process — all BEFORE pricing (Shamil
+          2026-08-16): value math, objection-handling, and the easy 4-step
+          process earn the right to show the price. */}
       <StackComparisonSection />
       <Faq theme="light" />
+      <Process theme="light" />
 
       {/* 5. Pricing — owner-approved 3-card restructure (2026-08-12): three
           Platform billing-period cards (Monthly / 6 months / Yearly).
@@ -1247,20 +1263,15 @@ export default function HomeV8Client() {
           section (Shamil 2026-08-16). */}
       <PricingSection />
 
-      {/* 6. Integrations marquee — right after pricing (Shamil 2026-08-16). */}
-      <IntegrationsMarquee />
-
-      {/* 7. Process — "What working with us looks like" 4-step timeline
-              (Shamil 2026-08-16: no sales call — AI answers, pay, one form,
-              build 7–10 days, video handover). */}
-      <Process theme="light" />
-
-      {/* 8. Industries. */}
+      {/* 6. Industries — right after pricing (Shamil 2026-08-16). */}
       <IndustriesSection />
 
-      {/* 9. Pipeline — reframed 2026-08-16 as "the full platform" convincer
-          ("And that's just the setup."): everything before pricing sells the
-          setup; this sells the rest of the platform to the still-unsure. */}
+      {/* 7. Integrations marquee. */}
+      <IntegrationsMarquee />
+
+      {/* 8. Pipeline — reframed 2026-08-16 as "the full platform" convincer
+          ("And that's just the setup."), kept AFTER pricing so it never
+          overwhelms the pitch. */}
       <PipelineSection />
 
       {/* Get-leads / "you want customers" section REMOVED from the homepage

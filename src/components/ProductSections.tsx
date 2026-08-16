@@ -127,6 +127,9 @@ const T = {
     // Section headers in sage (Shamil 2026-08-16: kickers removed, the big
     // header carries the accent color instead).
     title: "text-[#8fb496]",
+    // The "What you get" H2 stays neutral so it doesn't blend into the
+    // sage section headers below it (Shamil 2026-08-16).
+    heading: "text-[#ece9e0]",
     // Bullet leads in amber (Erken particle color) — Shamil 2026-08-13.
     lead: "text-amber-400",
     body: "text-[#a7ada3]",
@@ -137,6 +140,7 @@ const T = {
   },
   light: {
     title: "text-accent",
+    heading: "text-text",
     // Darker amber on the light theme so it stays readable on cream.
     lead: "text-amber-700",
     body: "text-text-muted",
@@ -225,7 +229,7 @@ export default function ProductSections({
           {/* Heading promoted from a small kicker to a real H2 (Shamil
               2026-08-13: "the what you get header should be bigger"). */}
           <h2
-            className={`text-3xl font-semibold tracking-tight text-balance sm:text-4xl md:text-5xl ${T[theme].title}`}
+            className={`text-3xl font-semibold tracking-tight text-balance sm:text-4xl md:text-5xl ${T[theme].heading}`}
           >
             {heading}
           </h2>
