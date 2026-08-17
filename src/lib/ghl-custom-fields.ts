@@ -1,12 +1,14 @@
 /**
- * ghl-custom-fields.ts — set custom field values on a GoHighLevel contact by
- * field KEY, via PUT /contacts/{contactId} (Shamil 2026-08-17).
+ * ghl-custom-fields.ts — set custom field values on a GoHighLevel contact via
+ * PUT /contacts/{contactId} (Shamil 2026-08-17).
  *
- * Why keys, not ids: GHL's update-contact schema takes customFields as
- * objects with `id` OR `key` (docs: "Pass either id or key of custom field")
- * plus `fieldValue` (the newer, preferred name; `field_value` is deprecated).
- * Keys keep call sites free of opaque GHL field ids — no extra env vars, and
- * the field name in the sub-account is the contract.
+ * Why field IDs, not keys: empirically verified against the live API
+ * (2026-08-17, see session log) — `customFields: [{key, fieldValue}]` (any
+ * key form, incl. the full "contact.xxx" fieldKey, any Version header) is
+ * SILENTLY IGNORED (HTTP 200, nothing written). Only
+ * `customFields: [{id, fieldValue}]` with the dated `Version: 2021-07-28`
+ * header actually persists. Note GHL's GET contact can lag a few seconds
+ * before echoing the write — verify with a delay, never immediately.
  *
  * Only the listed fields are touched: PUT updates the properties present in
  * the body, so sending just `customFields` does not clobber the contact's
@@ -21,19 +23,19 @@
 const GHL_BASE = "https://services.leadconnectorhq.com";
 
 /**
- * Set custom field values on a contact, keyed by field key (e.g.
- * "payment_link"). Entries with a missing key or empty value are dropped.
- * No-op (logged) if creds/contactId are missing or the API rejects it.
+ * Set custom field values on a contact, keyed by GHL field ID. Entries with
+ * a missing id or empty value are dropped. No-op (logged) if creds/contactId
+ * are missing or the API rejects it.
  */
 export async function setContactCustomFields(opts: {
   key: string;
   contactId: string;
-  fields: { key: string; value: string }[];
+  fields: { id: string; value: string }[];
 }): Promise<void> {
   const { key, contactId } = opts;
   const customFields = (opts.fields || [])
-    .filter((f) => f.key && f.value)
-    .map((f) => ({ key: f.key, fieldValue: f.value }));
+    .filter((f) => f.id && f.value)
+    .map((f) => ({ id: f.id, fieldValue: f.value }));
   if (!key || !contactId || !customFields.length) return;
 
   try {

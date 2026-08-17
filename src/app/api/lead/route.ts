@@ -101,12 +101,15 @@ export async function POST(req: Request) {
   // (link.payoneer.com/Token?t=<32-hex-token>&src=tpl) carries no numeric id
   // to extract — there is nothing to derive it from. Best-effort: a write
   // failure must never keep the buyer from the payment page.
-  if (paymentUrl && key && contactId) {
+  // GHL quirk: custom-field writes only persist by field ID (keys are
+  // silently ignored) — the ID comes from env GHL_CF_PAYMENT_LINK_ID.
+  const paymentLinkFieldId = process.env.GHL_CF_PAYMENT_LINK_ID;
+  if (paymentUrl && key && contactId && paymentLinkFieldId) {
     try {
       await setContactCustomFields({
         key,
         contactId,
-        fields: [{ key: "payment_link", value: paymentUrl }],
+        fields: [{ id: paymentLinkFieldId, value: paymentUrl }],
       });
     } catch {
       // Custom-field hiccup must not fail the redirect.
