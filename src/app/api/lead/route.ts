@@ -12,6 +12,12 @@ import { addContactTags } from "@/lib/ghl-tags";
  *
  * Never hard-fails: if GHL is unreachable we still return ok so the buyer
  * always reaches the payment page (the lead is lost, the sale is not).
+ *
+ * Per-customer payment links (2026-08-17): Payoneer links are one-time
+ * payable, so after the GHL upsert we check the next unused link out of the
+ * Google Apps Script ledger (PAYMENT_LEDGER_URL) and hand it back as
+ * paymentUrl. Ledger hiccup → paymentUrl: null and the frontend falls back
+ * to the static /pay/{plan} link — the never-hard-fail contract holds.
  */
 
 const GHL_BASE = "https://services.leadconnectorhq.com";
@@ -39,47 +45,87 @@ export async function POST(req: Request) {
 
   const key = process.env.GHL_API_KEY;
   const locationId = process.env.GHL_LOCATION_ID;
-  if (!key || !locationId) {
-    return NextResponse.json({ ok: true, ghl: "skipped: env missing" });
+  let ghl: number | string = "skipped: env missing";
+
+  if (key && locationId) {
+    try {
+      // Upsert WITHOUT tags in the body — upsert's tags field REPLACES the
+      // contact's whole tag array (2026-07-21 lesson, see ghl-tags.ts). Tags
+      // go on additively after we have the contact id.
+      const res = await fetch(`${GHL_BASE}/contacts/upsert`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${key}`,
+          Version: "2021-07-28",
+          "Content-Type": "application/json",
+          "User-Agent": UA,
+        },
+        body: JSON.stringify({
+          locationId,
+          firstName,
+          lastName,
+          phone,
+          email,
+          source: "erken.systems pricing card",
+        }),
+      });
+      const d = (await res.json().catch(() => ({}))) as { contact?: { id?: string } };
+      const contactId = d?.contact?.id;
+      if (contactId) {
+        try {
+          await addContactTags({
+            key,
+            locationId,
+            contactId,
+            tags: ["website-pricing-lead", ...(plan ? [`plan-${plan}`] : [])],
+          });
+        } catch {
+          // Tagging hiccup must not fail the redirect.
+        }
+      }
+      ghl = res.status;
+    } catch (e) {
+      ghl = `error: ${String(e)}`;
+    }
   }
 
+  const paymentUrl = await checkoutPaymentLink(plan, email, `${firstName} ${lastName}`);
+  return NextResponse.json({ ok: true, ghl, paymentUrl });
+}
+
+/**
+ * Check the next unused one-time Payoneer link out of the Google Apps Script
+ * ledger (it marks the link provided to this buyer). Returns null on any
+ * failure or when the ledger isn't configured — the frontend then falls back
+ * to the static /pay/{plan} link, so a ledger hiccup never blocks a sale.
+ */
+async function checkoutPaymentLink(
+  plan: string | undefined,
+  email: string,
+  name: string
+): Promise<string | null> {
+  const ledgerUrl = process.env.PAYMENT_LEDGER_URL;
+  if (!ledgerUrl) return null;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 8000);
   try {
-    // Upsert WITHOUT tags in the body — upsert's tags field REPLACES the
-    // contact's whole tag array (2026-07-21 lesson, see ghl-tags.ts). Tags
-    // go on additively after we have the contact id.
-    const res = await fetch(`${GHL_BASE}/contacts/upsert`, {
+    const res = await fetch(ledgerUrl, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${key}`,
-        Version: "2021-07-28",
-        "Content-Type": "application/json",
-        "User-Agent": UA,
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        locationId,
-        firstName,
-        lastName,
-        phone,
+        action: "checkout",
+        secret: process.env.LEDGER_SECRET,
+        plan,
         email,
-        source: "erken.systems pricing card",
+        name,
       }),
+      signal: ctrl.signal,
     });
-    const d = (await res.json().catch(() => ({}))) as { contact?: { id?: string } };
-    const contactId = d?.contact?.id;
-    if (contactId) {
-      try {
-        await addContactTags({
-          key,
-          locationId,
-          contactId,
-          tags: ["website-pricing-lead", ...(plan ? [`plan-${plan}`] : [])],
-        });
-      } catch {
-        // Tagging hiccup must not fail the redirect.
-      }
-    }
-    return NextResponse.json({ ok: true, ghl: res.status });
-  } catch (e) {
-    return NextResponse.json({ ok: true, ghl: `error: ${String(e)}` });
+    const d = (await res.json().catch(() => ({}))) as { ok?: boolean; url?: string };
+    return d.ok && d.url ? d.url : null;
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
   }
 }

@@ -29,8 +29,9 @@ function GetStartedForm() {
     if (submitting) return;
     setSubmitting(true);
     const data = new FormData(e.currentTarget);
+    let paymentUrl: string | null = null;
     try {
-      await fetch("/api/lead", {
+      const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -41,10 +42,13 @@ function GetStartedForm() {
           plan,
         }),
       });
+      const d = (await res.json().catch(() => ({}))) as { paymentUrl?: string | null };
+      paymentUrl = d.paymentUrl ?? null;
     } catch {
       // Never block the payment redirect on a lead-capture failure.
     }
-    window.location.href = PAYMENT_LINKS[plan as keyof typeof PAYMENT_LINKS];
+    // Personal one-time link from the ledger when available, else the static one.
+    window.location.href = paymentUrl ?? PAYMENT_LINKS[plan as keyof typeof PAYMENT_LINKS];
   }
 
   const inputCls =
