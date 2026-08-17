@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { addContactTags } from "@/lib/ghl-tags";
+import { setContactCustomFields } from "@/lib/ghl-custom-fields";
 
 /**
  * POST /api/lead — pricing-card lead capture (Shamil 2026-08-16).
@@ -18,6 +19,8 @@ import { addContactTags } from "@/lib/ghl-tags";
  * Google Apps Script ledger (PAYMENT_LEDGER_URL) and hand it back as
  * paymentUrl. Ledger hiccup → paymentUrl: null and the frontend falls back
  * to the static /pay/{plan} link — the never-hard-fail contract holds.
+ * The issued link is also written to the contact's `payment_link` custom
+ * field in GHL (best-effort, see ghl-custom-fields.ts).
  */
 
 const GHL_BASE = "https://services.leadconnectorhq.com";
@@ -46,6 +49,7 @@ export async function POST(req: Request) {
   const key = process.env.GHL_API_KEY;
   const locationId = process.env.GHL_LOCATION_ID;
   let ghl: number | string = "skipped: env missing";
+  let contactId: string | undefined;
 
   if (key && locationId) {
     try {
@@ -70,7 +74,7 @@ export async function POST(req: Request) {
         }),
       });
       const d = (await res.json().catch(() => ({}))) as { contact?: { id?: string } };
-      const contactId = d?.contact?.id;
+      contactId = d?.contact?.id;
       if (contactId) {
         try {
           await addContactTags({
@@ -90,6 +94,25 @@ export async function POST(req: Request) {
   }
 
   const paymentUrl = await checkoutPaymentLink(plan, email, `${firstName} ${lastName}`);
+
+  // Stamp the issued link on the contact so GHL knows exactly which one-time
+  // Payoneer URL this buyer got (2026-08-17). payment_link_id is NOT written:
+  // the ledger returns only the URL, and a Payoneer link URL
+  // (link.payoneer.com/Token?t=<32-hex-token>&src=tpl) carries no numeric id
+  // to extract — there is nothing to derive it from. Best-effort: a write
+  // failure must never keep the buyer from the payment page.
+  if (paymentUrl && key && contactId) {
+    try {
+      await setContactCustomFields({
+        key,
+        contactId,
+        fields: [{ key: "payment_link", value: paymentUrl }],
+      });
+    } catch {
+      // Custom-field hiccup must not fail the redirect.
+    }
+  }
+
   return NextResponse.json({ ok: true, ghl, paymentUrl });
 }
 
