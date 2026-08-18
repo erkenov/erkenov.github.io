@@ -733,12 +733,6 @@ function PipelineSection() {
                 >
                   Get started →
                 </a>
-                <a
-                  href="#pricing"
-                  className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3.5 text-base font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
-                >
-                  See pricing
-                </a>
                 <button
                   type="button"
                   onClick={() => openErkenChat()}
