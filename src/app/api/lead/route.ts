@@ -9,7 +9,8 @@ import { setContactCustomFields } from "@/lib/ghl-custom-fields";
  * mandatory) BEFORE sending the buyer to the Payoneer link. Phone+email =
  * not losing the lead; first+last name = identifying the payer (Payoneer
  * shows us only the name). This route upserts the contact into the Erken
- * Systems GHL sub-account and tags it with the chosen plan (PLAN_TAGS below).
+ * Systems GHL sub-account and tags it with the chosen plan (PLAN_TAGS below)
+ * plus sms-consent (the form's TCPA checkbox is required — see HomeV8Client).
  *
  * Never hard-fails: if GHL is unreachable we still return ok so the buyer
  * always reaches the payment page (the lead is lost, the sale is not).
@@ -86,14 +87,15 @@ export async function POST(req: Request) {
       contactId = d?.contact?.id;
       if (contactId) {
         try {
-          // Single tag per Shamil 2026-08-18: the plan tag alone (the
-          // website-pricing-lead source tag was dropped — plan tag = pricing
-          // card in the current two-source world).
+          // Tags per Shamil 2026-08-18: the plan tag alone marks the pricing
+          // lead (website-pricing-lead dropped — plan tag = pricing card in
+          // the current two-source world). sms-consent rides along because
+          // the form's TCPA checkbox is REQUIRED — every submitter consented.
           await addContactTags({
             key,
             locationId,
             contactId,
-            tags: [...(plan ? [PLAN_TAGS[plan] ?? `plan-${plan}`] : [])],
+            tags: ["sms-consent", ...(plan ? [PLAN_TAGS[plan] ?? `plan-${plan}`] : [])],
           });
         } catch {
           // Tagging hiccup must not fail the redirect.
