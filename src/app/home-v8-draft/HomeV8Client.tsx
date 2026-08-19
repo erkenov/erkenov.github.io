@@ -855,8 +855,9 @@ function PlatformPeriodCardHome({ period }: { period: BillingPeriod }) {
         <label className="mt-3 flex items-start gap-2.5 text-xs leading-relaxed text-text-dim">
           <input type="checkbox" required className="mt-0.5 shrink-0 accent-[#8D63DA]" />
           <span>
-            I agree to receive SMS, email, and calls from Erken Systems about
-            my order and setup. No spam — only what my account needs.
+            I agree to receive SMS, email, and calls — including automated
+            AI-voice calls — from Erken Systems about my order and setup.
+            No spam — only what my account needs.
           </span>
         </label>
         <button
