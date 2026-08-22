@@ -462,9 +462,7 @@ function PricingSection() {
           <p className="mt-4 text-base text-text-muted md:text-lg">
             No setup fee. No six-month minimums. No retainer. No proposal you
             can&apos;t compare to anything. Pay monthly, or prepay six or
-            twelve months to lock a lower rate. A full marketing system runs
-            $1,000–3,000 a month — and still sends the Friday-night caller to
-            voicemail. Start where the leak is.
+            twelve months to lock a lower rate.
           </p>
         </FadeIn>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
@@ -517,9 +515,12 @@ function ProcessSection() {
           <SectionH2>What working with us looks like</SectionH2>
         </FadeIn>
         <div className="relative mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+          {/* Connecting line behind the step numbers (desktop only) — runs
+              from the FIRST circle's center to the FIFTH's, never past the
+              last step (Shamil 2026-08-22). */}
           <div
             aria-hidden
-            className="absolute top-6 right-0 left-0 hidden border-t border-dashed border-border lg:block"
+            className="absolute top-6 left-6 right-[calc(20%-1.5rem)] hidden border-t border-dashed border-border lg:block"
           />
           {PROCESS_STEPS.map((step, i) => (
             <motion.div
