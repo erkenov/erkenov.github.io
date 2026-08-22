@@ -48,9 +48,6 @@ export function FlyHeader() {
           className="font-mono text-sm font-medium tracking-tight uppercase text-text"
         >
           erken<span className="text-accent"> </span>systems
-          <span className="ml-2 hidden text-xs normal-case text-text-dim sm:inline">
-            · for flight schools
-          </span>
         </Link>
         <nav className="hidden items-center gap-8 md:flex">
           <div className="group relative">
