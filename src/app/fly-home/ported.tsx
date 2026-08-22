@@ -106,16 +106,18 @@ export function FlyHeader() {
             <Phone className="h-4 w-4" />
           </a>
           <a
-            href={`tel:${DEMO_TEL}`}
-            className="hidden rounded-lg px-4 py-2 text-sm font-medium text-text-muted transition-colors hover:text-text lg:block"
-          >
-            Talk to your future AI receptionist
-          </a>
-          <a
             href="#pricing"
             className="rounded-lg bg-[linear-gradient(90deg,#8D63DA,#1C71DF)] px-4 py-2 text-sm font-medium text-white transition-all hover:brightness-110"
           >
             Get started
+          </a>
+          {/* Right of "Get started", outlined like the hero's secondary
+              button (Shamil 2026-08-22). */}
+          <a
+            href={`tel:${DEMO_TEL}`}
+            className="hidden rounded-lg border border-border px-4 py-2 text-sm font-medium text-text transition-all hover:border-border-strong hover:bg-surface lg:block"
+          >
+            Talk to your future AI receptionist
           </a>
         </div>
       </div>

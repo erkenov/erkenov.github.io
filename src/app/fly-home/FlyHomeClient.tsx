@@ -472,8 +472,7 @@ function PricingSection() {
         </div>
         <p className="mt-6 max-w-2xl text-xs font-medium leading-relaxed text-amber-700">
           AI voice minutes are billed separately at cost — roughly 10¢ a
-          minute, so even a busy month of answered calls adds a few dollars,
-          never a surprise bill.
+          minute.
         </p>
       </div>
     </section>
