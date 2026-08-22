@@ -56,7 +56,7 @@ import {
 import Link from "next/link";
 import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
 import ProductSections from "@/components/ProductSections";
-import { PLATFORM_FEATURES, PAYMENT_LINKS } from "@/lib/pricing";
+import { PLATFORM_FEATURES, PLATFORM_BILLING_PERIODS, PAYMENT_LINKS, billingPeriodNote, type BillingPeriod } from "@/lib/pricing";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -373,11 +373,12 @@ function MissingLayerSection() {
 /* 5. PRICING — main-page design (radial wash + lead-capture card),    */
 /* draft copy: $97 flat, no setup fee, no disqualification aside.      */
 /* ================================================================== */
-function PricingCard() {
+function PricingPeriodCard({ period }: { period: BillingPeriod }) {
+  const emphasized = period.id === "6-months";
   const [submitting, setSubmitting] = useState(false);
 
   // Same lead-capture-then-pay mechanic as the live homepage card:
-  // submit → /api/lead (best-effort) → Payoneer link for the monthly plan.
+  // submit → /api/lead (best-effort) → Payoneer link for that period.
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (submitting) return;
@@ -393,7 +394,7 @@ function PricingCard() {
           lastName: data.get("lastName"),
           phone: data.get("phone"),
           email: data.get("email"),
-          plan: "monthly",
+          plan: period.id,
         }),
       });
       const d = (await res.json().catch(() => ({}))) as { paymentUrl?: string | null };
@@ -401,7 +402,7 @@ function PricingCard() {
     } catch {
       // Never block the payment redirect on a lead-capture failure.
     }
-    window.location.href = paymentUrl ?? PAYMENT_LINKS.monthly;
+    window.location.href = paymentUrl ?? PAYMENT_LINKS[period.id];
   }
 
   const inputCls =
@@ -414,20 +415,28 @@ function PricingCard() {
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.5, ease }}
       whileHover={{ y: -2 }}
-      className="relative flex w-full max-w-md flex-col rounded-2xl border-2 border-accent bg-surface p-8 transition-colors duration-200 hover:border-accent-hover"
+      className={`relative flex flex-col rounded-2xl bg-surface p-8 transition-colors duration-200 ${
+        emphasized
+          ? "border-2 border-accent hover:border-accent-hover"
+          : "border border-border hover:border-border-strong"
+      }`}
     >
-      <h3 className="text-lg font-semibold text-text">The Receptionist</h3>
+      {emphasized && (
+        <span className="absolute right-6 top-6 rounded-full bg-accent px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-bg">
+          Most popular
+        </span>
+      )}
+      <h3 className="text-lg font-semibold text-text">{period.label}</h3>
       <div className="mt-4">
         <span
           className="text-3xl font-bold tracking-tight text-text"
           style={{ letterSpacing: "-0.03em" }}
         >
-          $97/mo
+          ${period.perMonth}/mo
         </span>
-        <span className="ml-2 text-xs text-text-dim">
-          billed monthly · no setup fee · cancel anytime
-        </span>
+        <span className="ml-2 text-xs text-text-dim">{billingPeriodNote(period)}</span>
       </div>
+      <p className="mt-1 text-xs text-text-dim">No setup fee · cancel anytime</p>
       <p className="mt-4 font-mono text-xs uppercase tracking-[0.05em] text-text-dim">
         What&apos;s included
       </p>
@@ -488,13 +497,16 @@ function PricingSection() {
           <SectionH2>$97 a month. That&apos;s the whole price.</SectionH2>
           <p className="mt-4 text-base text-text-muted md:text-lg">
             No setup fee. No six-month minimums. No retainer. No proposal you
-            can&apos;t compare to anything. A full marketing system runs
+            can&apos;t compare to anything. Pay monthly, or prepay six or
+            twelve months to lock a lower rate. A full marketing system runs
             $1,000–3,000 a month — and still sends the Friday-night caller to
             voicemail. Start where the leak is.
           </p>
         </FadeIn>
-        <div className="mt-10 flex justify-start md:justify-center">
-          <PricingCard />
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
+          {PLATFORM_BILLING_PERIODS.map((p) => (
+            <PricingPeriodCard key={p.id} period={p} />
+          ))}
         </div>
         <p className="mt-6 max-w-2xl text-xs font-medium leading-relaxed text-amber-700 md:mx-auto md:text-center">
           AI voice minutes are billed separately at cost — roughly 10¢ a
