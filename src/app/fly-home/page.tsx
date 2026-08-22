@@ -3,9 +3,10 @@ import FlyHomeClient from "./FlyHomeClient";
 
 /**
  * /fly-home — LOCAL-ONLY draft homepage repurposed for FLIGHT SCHOOL
- * OWNERS exclusively (2026-08-22). Sells The Receptionist ($97/mo +
- * $197 setup) as the answer to the missed-call leak, per the
- * right-rudder-website-analysis borrow list (vault 03-research).
+ * OWNERS exclusively (2026-08-22). Sells The Receptionist ($97/mo flat,
+ * NO setup fee — Shamil 2026-08-22 revision) as the answer to the
+ * missed-call leak, per the right-rudder-website-analysis borrow list
+ * (vault 03-research).
  *
  * Everything here is intentionally DUPLICATED / local to this folder —
  * no shared homepage component is touched, so the live site cannot
@@ -15,6 +16,9 @@ import FlyHomeClient from "./FlyHomeClient";
  * Pass 2 (2026-08-22): missing-layer section, missed-call cost
  * calculator, FAQ section with FAQPage JSON-LD (served below),
  * public/llms.txt.
+ * Revision 2 (2026-08-22): hero intro video, five-card framework,
+ * process + 5th step, accordion FAQ in sage/amber (merged WhyUs),
+ * stack table at bottom, $197 setup removed everywhere.
  *
  * noindex: review draft, not meant to be crawled or linked publicly yet.
  */
@@ -73,10 +77,18 @@ const FAQ_JSON_LD = {
     },
     {
       "@type": "Question",
+      name: "Why is it only $97 a month?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Because the model is keeping you for ten years, not ten weeks. Each system is built once and refined forever, then run by many schools — you're not buying hours, you're buying a system already built and proven across businesses like yours. A hundred schools at a fair price beats squeezing one with expensive custom work. That's why the price is what it is.",
+      },
+    },
+    {
+      "@type": "Question",
       name: "Is there a contract?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "No. $97/month, $197 one-time setup, cancel anytime. The demo line on this page is the product, live — judge it before you pay anything.",
+        text: "No. $97 a month, cancel anytime — no setup fee, no contract, no hostage-taking. The demo line on this page is the product, live — judge it before you pay anything.",
       },
     },
   ],
