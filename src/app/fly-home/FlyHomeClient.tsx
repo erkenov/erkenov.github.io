@@ -5,39 +5,39 @@
  *
  * Local-only review draft (2026-08-22). Same design system as the live
  * homepage (cream/sage palette, Inter + JetBrains Mono, mono-label
- * kickers, rounded-2xl surface cards, framer-motion fade-ins) but fully
- * self-contained: local header/footer with NO industry links, no
- * 15-industry cards, no generic-SMB framing... with ONE deliberate
- * exception (Shamil 2026-08-22, supersedes the no-vendor-mention rule
- * for THIS page): the "Why is it only $97?" FAQ answer names GoHighLevel
+ * kickers, rounded-2xl surface cards, framer-motion fade-ins).
+ * ONE deliberate exception to the no-vendor-mention rule (Shamil
+ * 2026-08-22): the "Why is it only $97?" FAQ answer names GoHighLevel
  * openly, per Shamil's transparency pitch.
  *
- * Sections (2026-08-22 revision 3 — Shamil's full Obsidian batch applied):
+ * Sections (2026-08-22 revision 4 — Shamil's second Obsidian batch):
+ *   Header — the MAIN-SITE menu (ported in ./ported.tsx: Products mega
+ *     menu, How it works, Pricing, demo-line number) with the
+ *     "· for flight schools" tag kept; "Talk to us" → "Talk to your
+ *     future AI receptionist" (tel:).
  *   1. Hero — "Your next student is calling while you're on the flight
- *      line." Media = founder intro VIDEO, landscape frame. CTA =
- *      "Call your future AI receptionist" (Shamil's rename).
+ *      line." Media = founder intro VIDEO, landscape frame. CTAs =
+ *      main-site pair: "Get started" + "Talk to your future AI
+ *      receptionist".
  *   2. The fifth place — FIVE cards: four muted + the phone (accent).
- *   3. Product — calls / call-back + text / booking incl. NO-SHOW
- *      rebooking (his workflow change: callback first, SMS after 5 min).
+ *   3. Product — calls / call-back + text / booking incl. no-show.
  *   4. Missing layer — "It makes the phone ring. The Receptionist answers it."
- *   5. Pricing — MAIN-PAGE design (radial wash + lead-capture card →
- *      /api/lead → Payoneer), draft copy: $97/mo flat, NO setup fee, NO
- *      front-desk disqualification aside (Shamil removed both 2026-08-22).
+ *   5. Pricing — main-page design: radial wash + THREE billing-period
+ *      cards ($97 / $87 / $77, no setup fee), lead-capture → Payoneer.
  *   6. Process — four live steps + step 5 "Eyes on the gauges".
  *   7. Story — founder, systems guy becoming a pilot.
- *   8. "What you get" — the four product blocks ported from the main page
- *      (shared ProductSections, light theme) under the growth-layer heading.
- *   9. The full platform — Capture/Nurture/Close/Fans/Winback cards ported
- *      from the main page + docs button (Shamil: "see the whole platform
- *      capabilities"; /docs portal builds next).
+ *   8. "What you get" — the four product blocks (shared ProductSections,
+ *      light theme) under the growth heading.
+ *   9. The full platform — phase cards + docs button (/docs builds next).
  *  10. Missed-call cost calculator (#calculator).
  *  11. Audit closer (#audit).
- *  12. FAQ — sage/amber accordion; "Why is it only $97?" = the
- *      GoHighLevel-transparency answer (Shamil's wording direction).
- *  13. Stack table — flight-school version, at the very bottom.
+ *  12. FAQ — sage/amber accordion; GHL-transparency answer.
+ *  13. Stack table — the VERBATIM live-homepage table (14 rows, real
+ *      logos; ./ported.tsx), kept at the bottom per Shamil.
+ *  14. Integrations marquee — VERBATIM port (./ported.tsx).
  */
 
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   BookOpen,
@@ -46,7 +46,6 @@ import {
   ChevronDown,
   ClipboardList,
   Globe,
-  MessageSquare,
   Phone,
   PhoneCall,
   PhoneMissed,
@@ -56,13 +55,23 @@ import {
 import Link from "next/link";
 import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
 import ProductSections from "@/components/ProductSections";
-import { PLATFORM_FEATURES, PLATFORM_BILLING_PERIODS, PAYMENT_LINKS, billingPeriodNote, type BillingPeriod } from "@/lib/pricing";
+import {
+  PLATFORM_FEATURES,
+  PLATFORM_BILLING_PERIODS,
+  PAYMENT_LINKS,
+  billingPeriodNote,
+  type BillingPeriod,
+} from "@/lib/pricing";
+import {
+  FlyHeader,
+  StackComparisonSection,
+  IntegrationsMarquee,
+} from "./ported";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
 const DEMO_TEL = "+13252412460";
 const DEMO_DISPLAY = "(325) 241-2460";
-const CTA_LABEL = "Call your future AI receptionist";
 
 function SectionKicker({ children }: { children: React.ReactNode }) {
   return <div className="mono-label">{children}</div>;
@@ -99,49 +108,26 @@ function SectionH2({ children }: { children: React.ReactNode }) {
   );
 }
 
-function PrimaryCta({ children }: { children: React.ReactNode }) {
+/** The main-site CTA pair (Shamil 2026-08-22): "Get started" like the live
+ *  homepage; "Talk to us" becomes "Talk to your future AI receptionist"
+ *  (tel: to the demo line). */
+function CtaPair() {
   return (
-    <a
-      href={`tel:${DEMO_TEL}`}
-      className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
-    >
-      <PhoneCall className="h-4 w-4" />
-      {children}
-    </a>
-  );
-}
-
-/* ---- Local header — no industry links. ---- */
-function FlyHomeHeader() {
-  return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-bg/85 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-8">
-        <Link
-          href="/fly-home"
-          className="font-mono text-sm font-medium uppercase tracking-tight text-text"
-        >
-          erken<span className="text-accent"> </span>systems
-          <span className="ml-2 hidden text-xs normal-case text-text-dim sm:inline">
-            · for flight schools
-          </span>
-        </Link>
-        <div className="flex items-center gap-3">
-          <a
-            href={`tel:${DEMO_TEL}`}
-            className="hidden items-center gap-1.5 font-mono text-sm text-text-muted transition-colors hover:text-text md:flex"
-          >
-            <Phone className="h-3.5 w-3.5" />
-            {DEMO_DISPLAY}
-          </a>
-          <a
-            href={`tel:${DEMO_TEL}`}
-            className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
-          >
-            Call your AI receptionist
-          </a>
-        </div>
-      </div>
-    </header>
+    <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+      <a
+        href="#pricing"
+        className="inline-flex items-center gap-2 rounded-lg bg-[linear-gradient(90deg,#8D63DA,#1C71DF)] px-6 py-3.5 text-base font-medium text-white transition-all hover:brightness-110 hover:scale-[1.02]"
+      >
+        Get started →
+      </a>
+      <a
+        href={`tel:${DEMO_TEL}`}
+        className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3.5 text-base font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
+      >
+        <PhoneCall className="h-4 w-4" />
+        Talk to your future AI receptionist
+      </a>
+    </div>
   );
 }
 
@@ -169,11 +155,13 @@ function HeroSection() {
             weather cancels happen. $97/month — less than one hour of dual
             instruction.
           </p>
-          <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-            <PrimaryCta>{CTA_LABEL}</PrimaryCta>
+          <div className="mt-7">
+            <CtaPair />
+          </div>
+          <div className="mt-4">
             <a
               href="#calculator"
-              className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-3 text-sm font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
+              className="text-sm font-medium text-text-muted underline decoration-border underline-offset-4 transition-colors hover:text-text"
             >
               See what voicemail costs you
             </a>
@@ -281,7 +269,7 @@ function FifthPlaceSection() {
 }
 
 /* ================================================================== */
-/* 3. PRODUCT — three cards (rev3: callback-first flow, no-show added) */
+/* 3. PRODUCT — three cards (callback-first flow, no-show added)       */
 /* ================================================================== */
 const PRODUCT_CARDS = [
   {
@@ -370,8 +358,7 @@ function MissingLayerSection() {
 }
 
 /* ================================================================== */
-/* 5. PRICING — main-page design (radial wash + lead-capture card),    */
-/* draft copy: $97 flat, no setup fee, no disqualification aside.      */
+/* 5. PRICING — main-page design: radial wash + THREE period cards.    */
 /* ================================================================== */
 function PricingPeriodCard({ period }: { period: BillingPeriod }) {
   const emphasized = period.id === "6-months";
@@ -508,7 +495,7 @@ function PricingSection() {
             <PricingPeriodCard key={p.id} period={p} />
           ))}
         </div>
-        <p className="mt-6 max-w-2xl text-xs font-medium leading-relaxed text-amber-700 md:mx-auto md:text-center">
+        <p className="mt-6 max-w-2xl text-xs font-medium leading-relaxed text-amber-700">
           AI voice minutes are billed separately at cost — roughly 10¢ a
           minute, so even a busy month of answered calls adds a few dollars,
           never a surprise bill.
@@ -844,10 +831,8 @@ function PlatformPhases() {
   );
 }
 
-/** Sticky-left story + always-expanded phase panels (ported from the live
- *  homepage pipeline section), with Shamil's docs button added (2026-08-22:
- *  "a third button — see the whole platform capabilities"). /docs is the
- *  aviation-flavored docs portal — built next, links live then. */
+/** Sticky-left story + always-expanded phase panels + Shamil's docs button
+ *  (2026-08-22). /docs = the aviation docs portal — built next. */
 function PlatformSection() {
   return (
     <section id="platform" className="py-20 md:py-28">
@@ -862,11 +847,13 @@ function PlatformSection() {
                 days. Underneath it sits the full platform — every feature
                 below is already included in your $97, ready when you are.
               </p>
-              <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-                <PrimaryCta>{CTA_LABEL}</PrimaryCta>
+              <div className="mt-8">
+                <CtaPair />
+              </div>
+              <div className="mt-4">
                 <Link
                   href="/docs"
-                  className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 text-sm font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-text-muted underline decoration-border underline-offset-4 transition-colors hover:text-text"
                 >
                   <BookOpen className="h-4 w-4" />
                   Explore the platform docs
@@ -1029,10 +1016,10 @@ function AuditSection() {
             motivated student pilot hears. Then call our demo line — same
             scenario, different outcome.
           </p>
-          <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-            <PrimaryCta>{CTA_LABEL}</PrimaryCta>
-            <span className="font-mono text-sm text-text-muted">{DEMO_DISPLAY}</span>
+          <div className="mt-7">
+            <CtaPair />
           </div>
+          <p className="mt-4 font-mono text-sm text-text-muted">{DEMO_DISPLAY}</p>
         </FadeIn>
       </div>
     </section>
@@ -1040,9 +1027,7 @@ function AuditSection() {
 }
 
 /* ================================================================== */
-/* 12. FAQ — sage/amber accordion (merged WhyUs). "Why is it only $97" */
-/* = Shamil's GoHighLevel-transparency answer (2026-08-22). JSON-LD    */
-/* mirror lives in page.tsx — keep in sync.                            */
+/* 12. FAQ — sage/amber accordion (merged WhyUs). JSON-LD in page.tsx. */
 /* ================================================================== */
 const FAQS = [
   {
@@ -1097,177 +1082,7 @@ function FaqSection() {
   );
 }
 
-/* ================================================================== */
-/* 13. STACK TABLE — flight-school version, at the very bottom.        */
-/* ================================================================== */
-const STACK_ROWS: { cat: string; tools: string[]; price: number }[] = [
-  { cat: "Live answering service", tools: ["Smith.ai", "Ruby"], price: 292 },
-  { cat: "SMS & phone system", tools: ["Twilio", "SimpleTexting"], price: 75 },
-  { cat: "Call tracking", tools: ["CallRail"], price: 75 },
-  { cat: "Website chat", tools: ["Tidio", "LiveChat"], price: 25 },
-  { cat: "Appointment booking", tools: ["Calendly", "Acuity"], price: 25 },
-  { cat: "CRM", tools: ["HubSpot", "Pipedrive"], price: 45 },
-];
-const STACK_TOTAL = STACK_ROWS.reduce((s, r) => s + r.price, 0); // 537
-const PLATFORM_PRICE = 97;
-
-function ToolChip({ name }: { name: string }) {
-  const initial = (name.replace(/[^A-Za-z0-9]/g, "")[0] || "•").toUpperCase();
-  return (
-    <span
-      className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-2 px-2 py-1 text-xs font-medium text-text-muted"
-      title={name}
-    >
-      <span
-        aria-hidden
-        className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[3px] bg-text-dim/20 text-[8px] font-bold text-text-dim"
-      >
-        {initial}
-      </span>
-      {name}
-    </span>
-  );
-}
-
-function StackSection() {
-  return (
-    <section id="replace-your-stack" className="py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-6 md:px-8">
-        <FadeIn className="max-w-2xl">
-          <SectionKicker>Replace your whole stack</SectionKicker>
-          <SectionH2>One receptionist instead of six subscriptions.</SectionH2>
-          <p className="mt-4 text-base text-text-muted md:text-lg">
-            Everything below is something The Receptionist does for your school
-            out of the box — one login, one bill, $97/mo.
-          </p>
-        </FadeIn>
-
-        {/* DESKTOP */}
-        <div className="relative mb-24 mt-10 hidden md:block">
-          <div className="grid grid-cols-[1.15fr_1.6fr_0.65fr_150px] overflow-hidden rounded-t-2xl rounded-bl-2xl shadow-[0_18px_50px_-24px_rgba(42,38,32,0.35)]">
-            <div className="bg-[var(--accent-soft)] px-6 py-3.5 font-mono text-[11px] uppercase tracking-[0.08em] text-text">Category</div>
-            <div className="bg-[var(--accent-soft)] px-3 py-3.5 font-mono text-[11px] uppercase tracking-[0.08em] text-text">The tools you&apos;d buy</div>
-            <div className="bg-[var(--accent-soft)] px-3 py-3.5 font-mono text-[11px] uppercase tracking-[0.08em] text-text">Price on its own</div>
-            <div className="flex items-center justify-center bg-accent px-3 py-3.5 text-center font-mono text-[11px] uppercase tracking-[0.08em] text-white">
-              Receptionist ${PLATFORM_PRICE}
-            </div>
-            {STACK_ROWS.map((row, i) => {
-              const zebra = i % 2 === 1 ? "bg-surface-2/60" : "bg-surface";
-              return (
-                <Fragment key={row.cat}>
-                  <div className={`flex items-center px-6 py-3.5 font-semibold text-text ${zebra} border-t border-border/50`}>{row.cat}</div>
-                  <div className={`flex items-center px-3 py-3.5 ${zebra} border-t border-border/50`}>
-                    <div className="flex flex-wrap gap-1.5">
-                      {row.tools.map((t) => (
-                        <ToolChip key={t} name={t} />
-                      ))}
-                    </div>
-                  </div>
-                  <div className={`flex items-center px-3 py-3.5 text-sm font-semibold text-text-muted ${zebra} border-t border-border/50`}>
-                    ${row.price}/mo
-                  </div>
-                  <div className="flex items-center justify-center border-t border-white/15 bg-accent">
-                    <Check className="h-5 w-5 text-white" strokeWidth={3} />
-                  </div>
-                </Fragment>
-              );
-            })}
-            <div className="flex items-center border-t-2 border-border bg-[var(--accent-soft)] px-6 py-5 text-sm font-semibold text-text">
-              The piecemeal stack
-            </div>
-            <div className="border-t-2 border-border bg-[var(--accent-soft)]" />
-            <div className="flex flex-col justify-center border-t-2 border-border bg-[var(--accent-soft)] px-3 py-5">
-              <div className="flex items-end gap-1">
-                <span className="text-2xl font-bold tracking-tight text-[var(--clay)] line-through decoration-[var(--clay)]/70 decoration-2 md:text-3xl" style={{ letterSpacing: "-0.02em" }}>
-                  ${STACK_TOTAL.toLocaleString()}
-                </span>
-                <span className="mb-0.5 text-sm font-medium text-text-dim">/mo</span>
-              </div>
-              <div className="text-[11px] text-text-dim">billed separately</div>
-            </div>
-            <div className="flex flex-col items-center justify-center border-t-2 border-white/25 bg-accent py-5 text-white">
-              <div className="flex items-end gap-1">
-                <span className="text-2xl font-bold tracking-tight md:text-3xl" style={{ letterSpacing: "-0.02em" }}>
-                  ${PLATFORM_PRICE}
-                </span>
-                <span className="mb-0.5 text-sm font-medium text-white/85">/mo</span>
-              </div>
-              <div className="text-[11px] font-medium text-white/85">all included</div>
-            </div>
-          </div>
-          <div className="absolute right-0 top-full w-[150px] rounded-b-2xl bg-accent px-3 pb-4 pt-3 text-center shadow-[0_18px_40px_-16px_rgba(126,166,135,0.85)]">
-            <a
-              href={`tel:${DEMO_TEL}`}
-              className="inline-flex w-full items-center justify-center gap-1 rounded-lg bg-[linear-gradient(90deg,#8D63DA,#1C71DF)] px-3 py-2.5 text-xs font-semibold text-white shadow-sm transition-all hover:brightness-110 hover:scale-[1.02]"
-            >
-              {CTA_LABEL}
-            </a>
-          </div>
-        </div>
-
-        {/* MOBILE */}
-        <div className="mt-10 md:hidden">
-          <div className="overflow-hidden rounded-2xl border border-border">
-            {STACK_ROWS.map((row, i) => (
-              <div key={row.cat} className={`px-5 py-4 ${i > 0 ? "border-t border-border/50" : ""}`}>
-                <div className="flex items-center justify-between gap-3">
-                  <span className="font-semibold text-text">{row.cat}</span>
-                  <div className="flex shrink-0 items-center gap-2">
-                    <span className="text-sm font-semibold text-text-muted">${row.price}/mo</span>
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent">
-                      <Check className="h-3 w-3 text-white" strokeWidth={3} />
-                    </span>
-                  </div>
-                </div>
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {row.tools.map((t) => (
-                    <ToolChip key={t} name={t} />
-                  ))}
-                </div>
-              </div>
-            ))}
-            <div className="flex items-center justify-between border-t-2 border-border bg-[var(--accent-soft)] px-5 py-4">
-              <span className="text-sm font-semibold text-text">The piecemeal stack</span>
-              <span className="text-2xl font-bold tracking-tight text-[var(--clay)] line-through decoration-[var(--clay)]/70 decoration-2">
-                ${STACK_TOTAL.toLocaleString()}
-                <span className="ml-1 text-sm font-normal">/mo</span>
-              </span>
-            </div>
-          </div>
-          <div
-            className="relative mt-4 overflow-hidden rounded-2xl p-6 text-white shadow-[0_18px_44px_-18px_rgba(126,166,135,0.75)]"
-            style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-hover))" }}
-          >
-            <div className="flex items-end gap-2">
-              <span className="text-4xl font-bold tracking-tight" style={{ letterSpacing: "-0.03em" }}>
-                ${PLATFORM_PRICE}
-              </span>
-              <span className="mb-1 text-base font-medium text-white/85">/mo, everything included</span>
-            </div>
-            <div className="mt-1 text-sm text-white/90">
-              About <b>${(STACK_TOTAL - PLATFORM_PRICE).toLocaleString()} a month</b> back in
-              your pocket.
-            </div>
-            <a
-              href={`tel:${DEMO_TEL}`}
-              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[linear-gradient(90deg,#8D63DA,#1C71DF)] px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:brightness-110 hover:scale-[1.02]"
-            >
-              {CTA_LABEL}
-            </a>
-          </div>
-        </div>
-        <FadeIn className="mt-6 max-w-2xl">
-          <p className="text-xs leading-relaxed text-text-dim">
-            Prices are current published entry points for each category, not
-            premium tiers.
-          </p>
-        </FadeIn>
-      </div>
-    </section>
-  );
-}
-
-/* ---- Local footer — minimal, no industry links. ---- */
+/* ---- Local footer — minimal. ---- */
 function FlyHomeFooter() {
   return (
     <footer className="border-t border-border/60 py-10">
@@ -1293,7 +1108,7 @@ function FlyHomeFooter() {
 export default function FlyHomeClient() {
   return (
     <main className="flex-1">
-      <FlyHomeHeader />
+      <FlyHeader />
       <HeroSection />
       <FifthPlaceSection />
       <ProductSection />
@@ -1309,7 +1124,8 @@ export default function FlyHomeClient() {
       <CalculatorSection />
       <AuditSection />
       <FaqSection />
-      <StackSection />
+      <StackComparisonSection />
+      <IntegrationsMarquee />
       <FlyHomeFooter />
     </main>
   );
