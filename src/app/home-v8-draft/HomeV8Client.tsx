@@ -78,7 +78,7 @@ const SECTIONS = [
   {
     side: "left" as const,
     kicker: "Erken Systems",
-    headline: "Websites & AI receptionists for service businesses",
+    headline: "The AI-powered flight school operating system",
     body: "Here's the truth: most small businesses lose customers to a missed call or a website that doesn't work on a phone. We build you a site that gets found on Google, and an AI receptionist that answers every call, text, and chat — 24/7. No miracles, no fluff. You commit to using it — it never lets a lead slip.",
     cta: "Get started",
     priceTease: "Platform from $77 a month.",
@@ -92,6 +92,9 @@ type SectionProps = typeof SECTIONS[number] & {
    *  section). Compact HTML media (carousel/tabs) should override with a
    *  tighter wrapper that sits within the section bounds. */
   mediaWrapperClassName?: string;
+  /** Optional extra classes for the TEXT column wrapper (2026-08-22,
+   *  Shamil: nudge the hero text right, closer to the math box). */
+  textWrapperClassName?: string;
   /** Whether the media wrapper should mark itself as a Celly-avoid zone.
    *  Default true (compact opaque media like cards/carousels need it).
    *  Set false for sparse 3D scenes (MacBook) where Celly can safely
@@ -113,6 +116,7 @@ function Section({
   priceTease,
   media,
   mediaWrapperClassName,
+  textWrapperClassName,
   mediaAvoidCelly = true,
   isMobile = false,
   stacked = false,
@@ -147,7 +151,7 @@ function Section({
           of overflowing into the media. */}
       <div
         data-celly-avoid
-        className={`relative z-30 w-full md:w-[44%] ${isLeft ? "md:mr-auto" : "md:ml-auto"} max-w-xl`}
+        className={`relative z-30 w-full md:w-[44%] ${isLeft ? "md:mr-auto" : "md:ml-auto"} max-w-xl ${textWrapperClassName ?? ""}`}
       >
         <div className="mono-label">{kicker}</div>
         <h2
@@ -1206,6 +1210,9 @@ export default function HomeV8Client() {
         heroBackground
         {...SECTIONS[0]}
         media={<HeroCalcTest />}
+        // Nudge the text column a little right, closer to the math box
+        // (Shamil 2026-08-22).
+        textWrapperClassName="md:pl-[3vw]"
         // Same right-anchored media wrapper the live hero (scene 0) used, so
         // the block sits opposite the left text column at every md+ width.
         mediaWrapperClassName="absolute inset-y-[8vh] right-[4vw] left-[48vw] 2xl:left-auto 2xl:w-[50%] hidden md:flex items-center justify-center pointer-events-auto"
@@ -1302,8 +1309,11 @@ const MERGED_FAQS = [
     a: "Honestly? It depends on what else you're doing to bring customers in, how long you've been around, and how good the work is — anyone who promises you a date is guessing. What we can promise: every call answered, every lead followed up in seconds, every happy customer asked for a review, every past customer reminded you exist. If you're doing your part, the system multiplies it. If you want to close your eyes and pay someone to make the phone ring by magic — we're not the right fit.",
   },
   {
+    // Shamil's own answer, verbatim direction 2026-08-22 — transparency
+    // pitch naming GoHighLevel. Supersedes the no-vendor-names rule for
+    // the live homepage too (his explicit call this time).
     q: "Why is your pricing so cheap?",
-    a: "Because the whole model is keeping you for ten years, not ten weeks. The systems are built once and refined forever, so we run many businesses on work we've already done — that leverage is why the price is what it is. Stay affordable, do good work, and you never have a reason to leave.",
+    a: "The honest answer: it runs on GoHighLevel — a platform that costs me $297 a month and already has everything built in. You can buy GoHighLevel yourself for $97 a month — exactly what I charge. The difference: buying direct gets you no setup, no one monitoring your account, no one looking for ways to improve it. From me, the same $97 includes all of that. My math is simple — $97 times the months you stay, and you stay because the system keeps improving. Cheap enough never to resent, valuable enough never to leave.",
   },
   {
     q: "Can people find my website on Google?",
