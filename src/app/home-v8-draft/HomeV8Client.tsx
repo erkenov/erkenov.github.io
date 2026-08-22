@@ -1198,20 +1198,18 @@ export default function HomeV8Client() {
     {/* Erkenbot/Celly + particle stage removed 2026-08-16 — plain page now,
         GHL bubble is the chat launcher. */}
     <main>
-      {/* 1. HERO — the LIVE hero Section (kept), with its real founder
-          intro video (Scene1IntroVideo). home-draft addition layered in
-          via the Section component: the price tease line (on SECTIONS[0]).
-          NOTE: the live hero already ships the REAL founder video, so it is
-          kept here instead of downgrading to home-draft's "Founder video —
-          coming" placeholder — see the worker report. */}
+      {/* 1. HERO — the LIVE hero Section (kept). MEDIA SWAP 2026-08-22
+          (Shamil): the founder intro video moves to the new "Who builds
+          it" section; the hero's right side is now the merged math +
+          two-minute-test block (HeroCalcTest). */}
       <Section
         isMobile={isMobile}
         stacked={false}
         heroBackground
         {...SECTIONS[0]}
-        media={<Scene1IntroVideo />}
+        media={<HeroCalcTest />}
         // Same right-anchored media wrapper the live hero (scene 0) used, so
-        // the video sits opposite the left text column at every md+ width.
+        // the block sits opposite the left text column at every md+ width.
         mediaWrapperClassName="absolute inset-y-[8vh] right-[4vw] left-[48vw] 2xl:left-auto 2xl:w-[50%] hidden md:flex items-center justify-center pointer-events-auto"
         mediaAvoidCelly={true}
       />
@@ -1228,10 +1226,14 @@ export default function HomeV8Client() {
           WhyUs green cards AND the old plain FAQ accordion. */}
       <MergedFaq />
 
-      {/* 4. Stack comparison + Process — all BEFORE pricing (Shamil
-          2026-08-16): value math, objection-handling, and the easy 4-step
-          process earn the right to show the price. */}
-      <StackComparisonSection />
+      {/* 4. Founder story ("Who builds it") — added 2026-08-22 (Shamil):
+          text left, his intro video right (same Scene1IntroVideo as the
+          hero; the hero's first section will change separately later). */}
+      <FounderStorySection />
+
+      {/* 5. Process — BEFORE pricing (Shamil 2026-08-16): the easy 5-step
+          process earns the right to show the price. (The stack table moved
+          to the bottom block, 2026-08-22.) */}
       <Process theme="light" />
 
       {/* 5. Pricing — owner-approved 3-card restructure (2026-08-12): three
@@ -1249,8 +1251,12 @@ export default function HomeV8Client() {
           overwhelms the pitch. */}
       <PipelineSection />
 
-      {/* 8. Integrations marquee — moved to the VERY BOTTOM of the page
-          (Shamil 2026-08-22). */}
+      {/* 8. Stack comparison — moved here 2026-08-22 (Shamil): right after
+          the full-platform section, right before the integrations
+          carousel. */}
+      <StackComparisonSection />
+
+      {/* 9. Integrations marquee — at the VERY BOTTOM (Shamil 2026-08-22). */}
       <IntegrationsMarquee />
 
       {/* Get-leads / "you want customers" section REMOVED from the homepage
@@ -1343,17 +1349,213 @@ function MergedFaq() {
         >
           <div className="divide-y divide-white/15 overflow-hidden rounded-2xl border border-white/10 bg-[#8fb496] shadow-[0_18px_44px_-18px_rgba(126,166,135,0.75)]">
             {MERGED_FAQS.map((item) => (
-              <details key={item.q} className="group px-6 py-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-medium text-white [&::-webkit-details-marker]:hidden">
-                  {item.q}
-                  <ChevronDown className="h-5 w-5 shrink-0 text-amber-300 transition group-open:rotate-180" />
-                </summary>
+              // Always expanded, no expand/collapse arrows (Shamil
+              // 2026-08-22: "keep them always expanded").
+              <div key={item.q} className="px-6 py-5">
+                <div className="text-lg font-medium text-white">{item.q}</div>
                 <p className="mt-3 leading-relaxed text-white/85">{item.a}</p>
-              </details>
+              </div>
             ))}
           </div>
         </motion.div>
       </div>
     </section>
+  );
+}
+
+
+/* ================================================================== */
+/* FOUNDER STORY ("Who builds it") — added to the live homepage        */
+/* 2026-08-22 (Shamil): text left, his intro video right (the same     */
+/* Scene1IntroVideo the hero used — the hero's media is now the        */
+/* math + two-minute-test block). Copy ported verbatim from the        */
+/* /fly-home demo per his instruction.                                 */
+/* ================================================================== */
+function FounderStorySection() {
+  return (
+    <section id="founder" className="py-20 md:py-28">
+      <div className="mx-auto max-w-6xl px-6 md:px-8">
+        <div className="grid items-center gap-10 md:grid-cols-2 md:gap-12">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5, ease }}
+          >
+            <SectionKicker>Who builds it</SectionKicker>
+            <h2
+              className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
+              style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
+            >
+              Built by a systems guy who&apos;s becoming a pilot.
+            </h2>
+            <p className="mt-5 text-base leading-relaxed text-text-muted md:text-lg">
+              I&apos;ve spent ten years building systems for businesses —
+              operations, automation, the unglamorous machinery that makes
+              companies run. This year I started ground school. I&apos;m
+              entering aviation from both sides at once: learning to fly, and
+              fixing the part of the industry I can already see is broken —
+              the unanswered phone. You should never have to explain to your
+              receptionist what a discovery flight is.
+            </p>
+            <p className="mt-4 font-mono text-sm text-text-dim">
+              — Shamil, founder.
+            </p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5, ease }}
+            className="flex justify-center md:justify-end"
+          >
+            <Scene1IntroVideo />
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================== */
+/* HERO MATH + TWO-MINUTE TEST — merged block (Shamil 2026-08-22):     */
+/* the missed-call cost calculator and the "call your own business     */
+/* after hours" test as ONE card, mounted as the hero's right-side     */
+/* media in place of the intro video. Calculator wording genericized   */
+/* for the live (still multi-industry) homepage; the CTA calls the     */
+/* live Erken Systems line (888) — the AI receptionist answers it.     */
+/* ================================================================== */
+const heroUsd = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0,
+});
+
+function HeroCalcSlider({
+  label,
+  value,
+  display,
+  min,
+  max,
+  step,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  display: string;
+  min: number;
+  max: number;
+  step: number;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <div>
+      <div className="flex items-baseline justify-between gap-3">
+        <label className="text-xs text-text-muted">{label}</label>
+        <span className="font-mono text-xs font-medium text-text">{display}</span>
+      </div>
+      <input
+        type="range"
+        aria-label={label}
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="mt-1.5 w-full"
+        style={{ accentColor: "var(--accent)" }}
+      />
+    </div>
+  );
+}
+
+function HeroCalcTest() {
+  const [inquiries, setInquiries] = useState(30);
+  const [voicemailPct, setVoicemailPct] = useState(40);
+  const [bookingPct, setBookingPct] = useState(25);
+  const [customerValue, setCustomerValue] = useState(5000);
+
+  const monthlyCost =
+    inquiries * (voicemailPct / 100) * (bookingPct / 100) * customerValue;
+
+  return (
+    <div className="w-full max-w-xl rounded-2xl border border-border bg-surface/95 p-5 shadow-2xl backdrop-blur-sm md:p-6">
+      {/* The math */}
+      <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-accent">
+        The math
+      </p>
+      <p className="mt-2 text-xl font-bold tracking-tight text-text" style={{ letterSpacing: "-0.02em" }}>
+        What voicemail costs you
+      </p>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <HeroCalcSlider
+          label="Inquiries per month"
+          value={inquiries}
+          display={String(inquiries)}
+          min={5}
+          max={100}
+          step={1}
+          onChange={setInquiries}
+        />
+        <HeroCalcSlider
+          label="Share reaching voicemail / after-hours"
+          value={voicemailPct}
+          display={`${voicemailPct}%`}
+          min={10}
+          max={90}
+          step={5}
+          onChange={setVoicemailPct}
+        />
+        <HeroCalcSlider
+          label="Booking rate when answered live"
+          value={bookingPct}
+          display={`${bookingPct}%`}
+          min={5}
+          max={60}
+          step={5}
+          onChange={setBookingPct}
+        />
+        <HeroCalcSlider
+          label="Value of one customer"
+          value={customerValue}
+          display={heroUsd.format(customerValue)}
+          min={500}
+          max={50000}
+          step={500}
+          onChange={setCustomerValue}
+        />
+      </div>
+      <p className="mt-4 border-t border-border pt-4 text-lg font-semibold tracking-tight text-text">
+        Unanswered inquiries cost you ≈{" "}
+        <span className="text-[var(--clay)]">{heroUsd.format(monthlyCost)}</span>{" "}
+        per month
+      </p>
+      <p className="mt-2 text-[11px] leading-relaxed text-text-dim">
+        {inquiries} inquiries × {voicemailPct}% to voicemail × {bookingPct}%
+        booking rate × {heroUsd.format(customerValue)} per customer —
+        conservative on purpose; change the numbers to yours.
+      </p>
+
+      {/* The two-minute test */}
+      <div className="mt-5 border-t border-border pt-5">
+        <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-accent">
+          The two-minute test
+        </p>
+        <p className="mt-2 text-sm leading-relaxed text-text-muted">
+          Tonight, after 8 PM, call your own business. That&apos;s what a
+          motivated customer hears. Then call our line — same scenario,
+          different outcome.
+        </p>
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <a
+            href="tel:+18887996065"
+            className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
+          >
+            <PhoneCall className="h-4 w-4" />
+            Call (888) 799-6065 — hear it work
+          </a>
+        </div>
+      </div>
+    </div>
   );
 }

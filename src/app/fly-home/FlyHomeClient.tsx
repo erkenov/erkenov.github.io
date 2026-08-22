@@ -43,7 +43,6 @@ import {
   BookOpen,
   CalendarCheck,
   Check,
-  ChevronDown,
   ClipboardList,
   Globe,
   Phone,
@@ -1044,13 +1043,11 @@ function FaqSection() {
         <FadeIn className="mt-12">
           <div className="divide-y divide-white/15 overflow-hidden rounded-2xl border border-white/10 bg-[#8fb496] shadow-[0_18px_44px_-18px_rgba(126,166,135,0.75)]">
             {FAQS.map((item) => (
-              <details key={item.q} className="group px-6 py-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-medium text-white [&::-webkit-details-marker]:hidden">
-                  {item.q}
-                  <ChevronDown className="h-5 w-5 shrink-0 text-amber-300 transition group-open:rotate-180" />
-                </summary>
+              // Always expanded, no arrows (Shamil 2026-08-22).
+              <div key={item.q} className="px-6 py-5">
+                <div className="text-lg font-medium text-white">{item.q}</div>
                 <p className="mt-3 leading-relaxed text-white/85">{item.a}</p>
-              </details>
+              </div>
             ))}
           </div>
         </FadeIn>
