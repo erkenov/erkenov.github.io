@@ -1,6 +1,8 @@
 /**
- * /docs content — the Flight School CRM docs portal (LOCAL-ONLY review
- * draft, 2026-08-22, ordered by Shamil after docs.flightschoolcrm.com).
+ * /docs content — the Erken Systems docs portal for flight schools.
+ * PUBLIC since 2026-08-22 (Shamil: "docs.flightschoolcrm.com — this is how
+ * my docs should look like" + "you did only the features I provide, not
+ * the whole platform" → expanded to cover the whole platform).
  *
  * Audience: FLIGHT SCHOOL OWNERS running The Receptionist (the
  * white-labeled platform). Never name the underlying vendor in article
@@ -11,8 +13,8 @@
  * site's guide bot (src/app/api/guide/kb-index-q.json — raw text lives
  * in its `meta` array). Steps we could not ground in the KB carry a
  * `// (verify) ...` code comment directly above the string — re-check
- * them against a live account before this portal goes public. (verify)
- * notes must NEVER appear inside rendered strings.
+ * them against a live account. (verify) notes must NEVER appear inside
+ * rendered strings.
  */
 
 export type DocStep = {
@@ -38,10 +40,15 @@ export type DocCategory = {
   icon:
     | "compass"
     | "phone-call"
+    | "messages"
     | "calendar-check"
     | "phone-missed"
+    | "zap"
+    | "users"
     | "star"
     | "megaphone"
+    | "credit-card"
+    | "bar-chart"
     | "receipt";
 };
 
@@ -59,6 +66,12 @@ export const DOC_CATEGORIES: DocCategory[] = [
     icon: "phone-call",
   },
   {
+    id: "conversations",
+    name: "Conversations",
+    tagline: "One inbox for calls, texts, email, WhatsApp, and social DMs.",
+    icon: "messages",
+  },
+  {
     id: "bookings-calendar",
     name: "Bookings & calendar",
     tagline: "Discovery flights, student lessons, and CFI schedules.",
@@ -69,6 +82,18 @@ export const DOC_CATEGORIES: DocCategory[] = [
     name: "Missed calls & callbacks",
     tagline: "The 1-minute callback and 5-minute text, explained.",
     icon: "phone-missed",
+  },
+  {
+    id: "workflows-automations",
+    name: "Workflows & automations",
+    tagline: "The machine room: reminders, follow-ups, and no-show recovery.",
+    icon: "zap",
+  },
+  {
+    id: "contacts-crm-pipelines",
+    name: "Contacts, CRM & pipelines",
+    tagline: "Every lead and student, from first call to enrolled.",
+    icon: "users",
   },
   {
     id: "reviews-reputation",
@@ -83,8 +108,20 @@ export const DOC_CATEGORIES: DocCategory[] = [
     icon: "megaphone",
   },
   {
-    id: "billing",
-    name: "Billing & your account",
+    id: "payments-invoicing",
+    name: "Payments & invoicing",
+    tagline: "Invoice students, take deposits, sell gift certificates.",
+    icon: "credit-card",
+  },
+  {
+    id: "reporting",
+    name: "Reporting",
+    tagline: "Your school's numbers at a glance.",
+    icon: "bar-chart",
+  },
+  {
+    id: "account-billing",
+    name: "Your account & billing",
     tagline: "$97 flat, voice minutes at cost, no contract. The details.",
     icon: "receipt",
   },
@@ -213,6 +250,130 @@ export const DOC_ARTICLES: DocArticle[] = [
     ],
     outro:
       "Rule of thumb: if a caller asks it twice, we should know about it once. One text to us turns an 'I don't know' into a selling point.",
+  },
+  {
+    slug: "what-the-receptionist-knows",
+    category: "ai-receptionist",
+    title: "What the Receptionist knows about your school",
+    blurb:
+      "Where its answers come from, what it never does, and how its knowledge grows.",
+    videoLabel: "Inside the Receptionist's knowledge",
+    intro:
+      "The Receptionist isn't a generic phone bot reading a script — it's briefed on YOUR school before it answers its first call. Here's what it knows, where that knowledge comes from, and how to keep it current.",
+    steps: [
+      {
+        title: "The setup brief",
+        text: "At onboarding we load everything a good front-desk hire would need: your programs and prices, aircraft fleet, discovery-flight details, hours, location and parking, weather policy, what to bring, and the questions your prospects actually ask. That brief is the only source it answers from.",
+      },
+      {
+        title: "It answers, collects, and books",
+        // Grounded in KB: how-to-set-up-a-conversation-ai-bot (a conversation
+        // AI bot collects lead details, answers common questions, supports
+        // appointment booking, and works across channels).
+        text: "Three jobs, in priority order: answer the caller's questions from the brief, capture their name and number, and offer to book a discovery flight into a real open slot. Everything else — small talk, patience, never rushing — is in service of those three.",
+      },
+      {
+        title: "Same brain on every channel",
+        text: "Phone calls, text messages, and website chat all draw on the same knowledge. A prospect who texts at midnight gets the same answers as one who calls at noon — and the same honest 'let me find out' when something isn't in the brief.",
+      },
+      {
+        title: "What it never does",
+        text: "It doesn't improvise prices, promise availability that isn't on the calendar, argue, or pretend to be human. If a caller asks whether they're talking to a person, it says what it is — and keeps helping.",
+      },
+      {
+        title: "Keeping it current",
+        text: "Prices change, a new aircraft joins the fleet, you start offering spin training — text us the update and it's live in the Receptionist's knowledge, usually the same day. Seasonal changes (summer hours, holiday gift certificates) are worth a message too.",
+      },
+      {
+        title: "Test it whenever you like",
+        text: "Call your own number any time and quiz it. Owners do this after every price change, and it's the fastest way to catch a stale answer before a prospect does.",
+      },
+    ],
+  },
+
+  /* ------------------------------ Conversations ----------------------- */
+  {
+    slug: "unified-inbox",
+    category: "conversations",
+    title: "One inbox for everything: calls, texts, email, and social messages",
+    blurb:
+      "Every channel a prospect can reach you on, in a single thread per person.",
+    videoLabel: "The unified inbox",
+    intro:
+      "Prospects don't care which channel they use — they text, email, DM, and call, sometimes all in the same week. The platform merges all of it into one inbox, organized by person, so you never lose a thread again.",
+    steps: [
+      {
+        title: "What lands here",
+        text: "Phone calls (with recordings and transcripts), SMS threads, emails, website chats, WhatsApp messages, and Facebook/Instagram messages — each conversation attached to the contact it belongs to. One person, one history, no matter how many channels they used.",
+      },
+      {
+        title: "Reply from one place",
+        text: "Open any thread and reply in the same channel the person used — text back a texter, email back an emailer. No switching apps, no copying numbers into your phone.",
+      },
+      {
+        title: "Your email can sync both ways",
+        // Grounded in KB: how-to-set-up-two-way-email-sync-for (Gmail two-way
+        // sync: inbound and outbound emails sync to the CRM, contacts and
+        // conversations are created from Gmail).
+        text: "If we connected your Gmail at onboarding, emails you send from your normal inbox also appear on the contact's record — and replies to platform emails land back in Gmail. Ask us if you'd like this switched on or checked.",
+      },
+      {
+        title: "WhatsApp and social DMs",
+        // Grounded in KB: how-to-set-up-whatsapp-for-a-sub-account (WhatsApp
+        // Business integration) and how-to-use-the-all-in-one-chat-widget
+        // (Live Chat, SMS/Email, WhatsApp, Facebook, Instagram channels).
+        // (verify) which of these channels are enabled varies per school —
+        // confirm what's connected on the account.
+        text: "Schools that use WhatsApp or get Instagram/Facebook inquiries can have those wired into the same inbox. Not every school needs them — tell us where your prospects actually message you and we'll connect what matters.",
+      },
+      {
+        title: "Loop in your team",
+        // Grounded in KB: conversations-how-to-add-internal-comments-mention-users
+        // (internal comments and @mentions inside a conversation).
+        text: "Inside any thread you can add an internal note that the customer never sees, and @mention a team member — 'CFI wanted' — so the right person gets notified without forwarding screenshots around.",
+      },
+      {
+        title: "Your morning ritual",
+        text: "Most owners open Conversations once a day with coffee: scan what the Receptionist handled overnight, flag anything that needs a human, and get on with flying. Everything else can wait — the system already answered.",
+      },
+    ],
+  },
+  {
+    slug: "website-chat",
+    category: "conversations",
+    title: "The website chat widget",
+    blurb:
+      "The little bubble on your site that turns browsers into booked discovery flights.",
+    videoLabel: "Website chat, visitor to inbox",
+    intro:
+      "If we installed the chat widget on your website, visitors see a chat bubble in the corner. Behind it is the same Receptionist and the same inbox as everything else — here's what it does and where the chats go.",
+    steps: [
+      {
+        title: "One widget, several ways to reach you",
+        // Grounded in KB: how-to-use-the-all-in-one-chat-widget (one widget
+        // offering Live Chat, SMS/Email, WhatsApp, Facebook, Instagram in a
+        // single interface).
+        text: "The widget can offer live chat, a text-message option, email, and WhatsApp from a single bubble — the visitor picks whichever they prefer. Which options show on your site is a configuration choice; tell us what you want offered.",
+      },
+      {
+        title: "The Receptionist answers chats too",
+        text: "Website chat isn't a separate system with separate answers — it draws on the same knowledge brief as the phone. A visitor asking 'how much to get a private license?' at 11 PM gets the real answer, and an offer to book a discovery flight.",
+      },
+      {
+        title: "Every chat lands in Conversations",
+        text: "The full chat thread appears in your inbox attached to a contact, exactly like a call or text. If the visitor gave their number, the conversation can continue by text after they leave your site — the lead doesn't evaporate when the tab closes.",
+      },
+      {
+        title: "It captures contact details first",
+        // (verify) exact fields collected before/at chat start depend on the
+        // widget configuration on the account.
+        text: "The widget asks for a name and a way to reach back before or during the chat, so even an abandoned conversation leaves you a lead to follow up — not an anonymous transcript.",
+      },
+      {
+        title: "Not on your site yet?",
+        text: "Adding the widget is a small embed on your website — send us your web person's email (or your site login) and we'll install it. If you'd rather not have chat on the site at all, that's fine too; say the word and it stays off.",
+      },
+    ],
   },
 
   /* --------------------------- Bookings & calendar -------------------- */
@@ -378,6 +539,162 @@ export const DOC_ARTICLES: DocArticle[] = [
       "The math behind it: a prospect comparing three schools books with the first one that responds like a human. This flow makes that you, even at 9 PM on a Sunday.",
   },
 
+  /* ----------------------- Workflows & automations -------------------- */
+  {
+    slug: "workflows-explained",
+    category: "workflows-automations",
+    title: "Workflows: the automations running your school",
+    blurb:
+      "What a workflow is, which ones are already running for you, and why we maintain them.",
+    videoLabel: "Workflows, in plain English",
+    intro:
+      "Everything the platform does automatically — reminders, follow-ups, review requests, the missed-call text — is a workflow. You never have to build one, but you should know what they look like and which ones are working for you.",
+    steps: [
+      {
+        title: "Trigger, then steps",
+        text: "Every workflow reads the same way: a trigger at the top ('appointment booked', 'call missed', 'form submitted'), then the steps that follow — send this text, wait a day, send this email, notify the owner. Open Automation → Workflows and click any of them; they're readable in plain language.",
+      },
+      {
+        title: "What's already running for you",
+        // (verify) the exact set of live workflows depends on the account's
+        // setup — the four listed are the standard build.
+        text: "The standard build includes: appointment confirmations and reminders, the missed-call callback flow, post-flight review requests, and lead-nurture follow-ups. Some schools have more — winback campaigns, seasonal pushes — added on request.",
+      },
+      {
+        title: "Some steps wait for a human",
+        // Grounded in KB: how-to-set-up-a-manual-sms-action and
+        // how-to-add-a-manual-call-action-to-a (workflows can pause for a
+        // manually-sent SMS or a manual call task).
+        text: "Not everything should be automatic. A workflow can pause and create a task for a person — 'call this lead yourself' or approve a text before it sends — when a human touch converts better than a robot. You'll see these as tasks on the contact.",
+      },
+      {
+        title: "Check a workflow before you worry",
+        text: "Wondering 'did the reminder go out?' Open the workflow and you can see which contacts are inside it and which step they're on. Thirty seconds of looking beats an hour of wondering.",
+      },
+      {
+        title: "Don't edit — request",
+        text: "Workflows interlock: the reminder flow assumes the booking flow tagged the contact, and so on. A well-meaning edit can silently break a chain. Text us the change you want — new wording, different timing, another step — and we'll make it safely.",
+      },
+    ],
+  },
+  {
+    slug: "reminders-and-no-shows",
+    category: "workflows-automations",
+    title: "Appointment reminders and no-show recovery",
+    blurb:
+      "The automated cadence that fills your schedule and rescues the ones who don't show.",
+    videoLabel: "Reminders and no-show recovery",
+    intro:
+      "An empty discovery-flight slot costs you twice: the lost intro revenue and the student who never started. Two automations protect you — the reminder cadence before the flight, and the recovery flow after a no-show.",
+    steps: [
+      {
+        title: "Instant confirmation",
+        text: "The moment a discovery flight is booked — by the Receptionist, by you, or through a booking link — the customer gets a confirmation text with the date, time, and where to go. No confirmation ever waits on a human remembering to send it.",
+      },
+      {
+        title: "Reminders before the flight",
+        // (verify) exact send times live in the account's reminder workflow
+        // — commonly 24h and a few hours before; confirm the live cadence.
+        text: "A reminder goes out ahead of the appointment — typically the day before and again a few hours prior, by text. Each one is a chance to reschedule instead of silently not showing, which is exactly what you want: a rescheduled slot can be refilled.",
+      },
+      {
+        title: "The no-show flow",
+        text: "When someone doesn't show, the recovery sequence reaches out with zero guilt-trip: hope everything's OK, weather and nerves happen, here's how to pick a new time. The tone is deliberate — a no-show who rebooks is still a future student.",
+      },
+      {
+        title: "Weather cancels are different",
+        text: "When YOU cancel for weather, say so in the reschedule message — it builds trust and flies the school's safety culture flag. The contact and their full history are already in the system, so rebooking takes one exchange, not a game of phone tag.",
+      },
+      {
+        title: "Watch it work",
+        text: "Every confirmation, reminder, and recovery message is visible in Conversations, and the cadence itself is in Automation → Workflows. If you want different timing or wording, that's a message to us, not an edit for you.",
+      },
+    ],
+  },
+
+  /* --------------------- Contacts, CRM & pipelines -------------------- */
+  {
+    slug: "contacts-smart-lists",
+    category: "contacts-crm-pipelines",
+    title: "Contacts, tags, and smart lists",
+    blurb:
+      "Every caller becomes a contact automatically — here's how to find, group, and clean them.",
+    videoLabel: "Contacts and smart lists",
+    intro:
+      "Your contact list builds itself: every call the Receptionist answers, every text, every booking creates or updates a contact with the full history attached. This article is about finding people in that list and keeping it tidy.",
+    steps: [
+      {
+        title: "What's on a contact",
+        text: "Name, phone, email, every conversation they've had with you, their appointments, their pipeline card, and notes. Open any contact and you know everything the school has ever known about that person — no more 'remind me who this is?'",
+      },
+      {
+        title: "Tags group people",
+        // Grounded in KB: how-to-manage-categories-types-and-tags (tags used
+        // to organize contacts).
+        // (verify) the exact tag set on the account is configured at setup.
+        text: "Tags are labels like 'discovery-flight', 'student', or 'gift-certificate' that mark what someone is to you. Automations apply most of them; you can add one by hand when someone mentions they're a renter or a CFI looking for time-building.",
+      },
+      {
+        title: "Smart lists are saved searches that stay fresh",
+        // Grounded in KB: how-to-create-manage-smart-lists (smart lists are
+        // filter-based, auto-updating contact lists).
+        text: "A smart list is a filter you save — 'everyone tagged discovery-flight who hasn't booked', 'all students' — and it updates itself as contacts change. This is how you answer 'who should get the spring newsletter?' in ten seconds.",
+      },
+      {
+        title: "Merging duplicates",
+        // Grounded in KB: how-to-manage-and-merge-duplicate-contacts (find
+        // potential duplicates by email, phone, or name; choose the master
+        // record; merge safely).
+        text: "The same person sometimes calls from two numbers and ends up as two contacts. The duplicates tool finds likely matches by phone, email, or name; you pick the record to keep and merge — the full history ends up on one card.",
+      },
+      {
+        title: "Respecting stop requests",
+        text: "When someone texts STOP, the platform marks them do-not-disturb automatically and automations leave them alone. Don't clear that flag by hand — it's both rude and illegal to text someone who opted out.",
+      },
+    ],
+  },
+  {
+    slug: "pipeline-stages",
+    category: "contacts-crm-pipelines",
+    title: "The pipeline: from first call to enrolled student",
+    blurb:
+      "A board view of every prospective student — and how cards move through it.",
+    videoLabel: "The pipeline, stage by stage",
+    intro:
+      "Opportunities is your sales board: one card per prospective student, arranged in columns from 'just called' to 'enrolled'. It exists so that no lead ever depends on your memory.",
+    steps: [
+      {
+        title: "Stages mirror how a student actually signs up",
+        // Grounded in KB: step-by-step-guide-creating-pipelines (pipelines
+        // track opportunities through defined stages).
+        // (verify) stage names below are the typical setup; the account's
+        // pipeline may differ.
+        text: "A typical flight-school pipeline runs: New lead → Discovery booked → Flew, following up → Enrolled. We set the stages up with you at onboarding; the names matter less than the rule that every prospect sits in exactly one of them.",
+      },
+      {
+        title: "Cards appear and move automatically",
+        text: "When the Receptionist books a discovery flight, the caller's card slides into 'Discovery booked' without anyone touching it. Automations handle the routine moves; the board is always current because no human has to remember to update it.",
+      },
+      {
+        title: "Drag cards for the human moments",
+        text: "Student signs up at the front desk after their flight? Drag their card to 'Enrolled' — or click into the card and mark it won. Walk-in who's never called? Add a card by hand so they're in the system and get the same follow-up as everyone else.",
+      },
+      {
+        title: "Filter the board",
+        // Grounded in KB: how-to-filter-opportunities.
+        text: "With filters you can slice the board — by stage, by who owns the lead, by when it was last touched. 'Show me everyone in follow-up untouched for a week' is the single most valuable view in the whole platform.",
+      },
+      {
+        title: "Won, lost, and not-now",
+        text: "Mark enrolled students won and genuinely-dead leads lost — but keep 'not right now' people in a follow-up stage instead. A lost card leaves the pipeline; a nurture-stage card keeps getting touched until the season or the budget changes.",
+      },
+      {
+        title: "The Monday habit",
+        text: "Five minutes, once a week: open Opportunities, scan the follow-up column, and personally call anyone who's been sitting too long. The system does the chasing; the owner's voice closes the ones worth closing.",
+      },
+    ],
+  },
+
   /* ------------------------- Reviews & reputation --------------------- */
   {
     slug: "reviews-after-discovery-flight",
@@ -421,6 +738,43 @@ export const DOC_ARTICLES: DocArticle[] = [
       },
     ],
   },
+  {
+    slug: "manage-your-rating",
+    category: "reviews-reputation",
+    title: "Watching and defending your Google rating",
+    blurb:
+      "Replies, disputes for fake reviews, and the front-desk QR code that keeps five stars coming.",
+    videoLabel: "Reputation defense",
+    intro:
+      "Your Google rating is the first thing a prospective student sees — often before your website. The platform watches it for you; this article covers what to do with what it shows you.",
+    steps: [
+      {
+        title: "Every review lands in Reputation",
+        text: "New reviews appear in the Reputation section as Google publishes them — no more checking your profile by hand. Turn on notifications and you'll know within minutes of one landing.",
+      },
+      {
+        title: "Reply to all of them",
+        text: "Five stars: two sentences of thanks, name the experience. Three stars: thank them, own what's fair, invite a direct conversation. Speed matters less than tone — future students are reading how you treat people, not just the score.",
+      },
+      {
+        title: "Fake or rule-breaking review? Dispute it",
+        // Grounded in KB: how-to-dispute-a-google-review-and-check-on
+        // (flag as inappropriate; Google acts when the review violates its
+        // guidelines; dispute status can be checked).
+        text: "Google will remove reviews that break its rules — spam, fake accounts, conflicts of interest — but not reviews you merely disagree with. You can flag a review for policy violation and track the dispute status from the platform. Genuine-but-unfair reviews are answered, not disputed.",
+      },
+      {
+        title: "The QR code at the front desk",
+        // Grounded in KB: how-to-create-a-qr-code-linked-with-review
+        // (QR codes linking directly to the review page, brandable).
+        text: "The platform can generate a QR code that opens your Google review page directly. Print it small, tape it by the dispatch sheet or the checkout counter — when a student says 'that was the best lesson yet', pointing at the code is the whole ask.",
+      },
+      {
+        title: "What never to do",
+        text: "Never buy reviews, never offer discounts for five stars, never have staff review you. Google's filters catch patterns like that, and a flagged profile costs far more than a slow honest climb.",
+      },
+    ],
+  },
 
   /* --------------------------- Campaigns & nurture -------------------- */
   {
@@ -459,11 +813,167 @@ export const DOC_ARTICLES: DocArticle[] = [
       },
     ],
   },
+  {
+    slug: "one-off-announcements",
+    category: "campaigns-nurture",
+    title: "One-off announcements: newsletters, schedule changes, seasonal pushes",
+    blurb:
+      "When you need to say something to a whole list at once — and how to do it right.",
+    videoLabel: "Sending an announcement",
+    intro:
+      "Sequences run on autopilot, but sometimes you have something to say right now: a new aircraft, a ground-school date, a holiday gift-certificate push. That's a one-off send — here's how to think about it.",
+    steps: [
+      {
+        title: "Pick the audience first",
+        text: "A good announcement goes to a slice, not everyone: current students for schedule changes, discovery-flight leads for a seasonal push, past students for a winback. Smart lists make the slice — 'all active students' is already a saved filter away.",
+      },
+      {
+        title: "Text for urgent, email for rich",
+        // (verify) bulk-send entry point label (Campaigns vs Email/SMS
+        // marketing section) varies by account version.
+        text: "Weather closure tomorrow? Text. Monthly newsletter with photos and a student spotlight? Email. Both send from the platform and both are tracked — you'll see opens and replies without guessing.",
+      },
+      {
+        title: "Write like the owner, not a brand",
+        text: "One short paragraph, one ask, your name at the bottom. 'New Champ is on the line — first five discovery flights in June are $99, reply to grab one' beats a designed newsletter every time. If you'd rather we draft it, send us the bullet points.",
+      },
+      {
+        title: "Replies come back to Conversations",
+        text: "Every reply to a blast lands in your inbox as a normal thread — where the Receptionist and your team can pick it up. An announcement isn't the end of a conversation; done right, it's the start of twenty.",
+      },
+      {
+        title: "Mind the rules",
+        text: "Marketing texts only go to people who opted in, and every message honors stop requests automatically. Keep sends occasional — a school that texts weekly gets muted; a school that texts when it matters gets read.",
+      },
+    ],
+  },
 
-  /* ------------------------- Billing & your account ------------------- */
+  /* ------------------------- Payments & invoicing --------------------- */
+  {
+    slug: "invoicing-students",
+    category: "payments-invoicing",
+    title: "Invoicing students and renters",
+    blurb:
+      "Send a proper invoice in two minutes — deposits, payment plans, and monthly programs included.",
+    videoLabel: "Invoices, end to end",
+    intro:
+      "Block time, ground-school packages, a renter's monthly tally — wherever money is owed, the platform can bill it with a real invoice instead of a Venmo request. Here's the flow.",
+    steps: [
+      {
+        title: "Create it from the contact",
+        // Grounded in KB: how-to-create-invoices-in-highlevel (create, edit,
+        // discount, add taxes, send invoices from within the system).
+        text: "Open the student's contact (or the Invoices section) and create an invoice: line items for what they're buying, taxes if applicable, a discount if you're feeling generous. Send it by text and email — they pay by card from the link, no terminal needed.",
+      },
+      {
+        title: "Deposits and partial payments",
+        // Grounded in KB: how-to-use-partial-payment-for-invoices (collect a
+        // minimum percentage of the invoice up front) and
+        // how-to-set-up-flexible-payment-plans-in-invoices.
+        text: "For bigger tickets — a private-pilot package, a block of dual time — you don't have to bill it all at once. Set a deposit amount or split the invoice into scheduled partial payments, and the platform collects each piece on its date.",
+      },
+      {
+        title: "Monthly programs on recurring invoices",
+        // Grounded in KB: how-to-create-and-manage-recurring-invoices-in-highlevel
+        // (invoices generated and sent automatically on a set schedule).
+        text: "Flying clubs, monthly membership programs, financing-style pay-as-you-go — a recurring invoice generates and sends itself on schedule, and you track what's paid and what's outstanding from the invoice list.",
+      },
+      {
+        title: "Everything reconciles in one place",
+        text: "Paid, partial, overdue — the invoice list shows it, and each payment attaches to the contact's record. At tax time or when a student asks 'didn't I already pay that?', the answer is one search away.",
+      },
+      {
+        title: "Getting paid needs a processor",
+        // (verify) which payment processor is connected and its settings
+        // location on the account.
+        text: "Invoices and payment links charge cards through a connected payment processor, which we set up during onboarding. If a payment ever fails to go through, call us before re-sending — it's usually a processor setting, not the customer.",
+      },
+    ],
+  },
+  {
+    slug: "payment-links-deposits",
+    category: "payments-invoicing",
+    title: "Payment links: discovery flights, gift certificates, deposits",
+    blurb:
+      "A link that takes money — in texts, emails, on your website, even on a gift certificate.",
+    videoLabel: "Payment links",
+    intro:
+      "A payment link is a checkout page you can send anywhere: 'reply YES and pay here to lock your slot'. It's the fastest way to turn intent into committed money — and it's how you sell discovery flights and gift certificates while you sleep.",
+    steps: [
+      {
+        title: "What a payment link is",
+        // Grounded in KB: how-to-set-up-a-payment-link-for-multiple
+        // (payment links bundling one-time and recurring products in one
+        // checkout).
+        text: "You create a product once — 'Discovery Flight — $129' — and the platform gives you a link that sells it. Links can bundle one-time and recurring items together (say, a first lesson plus a monthly ground-school membership) in a single checkout.",
+      },
+      {
+        title: "Discovery flights that sell themselves",
+        text: "Put the link in your nurture messages and on your website, and a prospect can buy the flight at 11 PM and book their slot from the confirmation — money before the first phone call. Prepaid discovery flights also no-show far less than free ones.",
+      },
+      {
+        title: "Gift certificates",
+        // (verify) whether gift purchases are handled as products, vouchers,
+        // or manual fulfillment on the account.
+        text: "A 'Gift a discovery flight' link is the easiest holiday revenue you'll ever make: share it in December, and every purchase is a new lead with cash already attached. We can set the link and the follow-up sequence for you before the season.",
+      },
+      {
+        title: "Deposits that stop no-shows",
+        text: "For high-demand slots — weekend discovery flights, checkride prep — ask for a deposit by payment link when booking. The link goes out by text, the slot is theirs when it clears, and 'I forgot my wallet' stops being a cancellation reason.",
+      },
+      {
+        title: "Where the money shows up",
+        text: "Every payment lands on the contact's record and in your payments reporting, alongside invoices — one place to see everything the school collected this month.",
+      },
+    ],
+  },
+
+  /* ------------------------------- Reporting -------------------------- */
+  {
+    slug: "your-dashboard",
+    category: "reporting",
+    title: "Your numbers at a glance: the dashboard",
+    blurb:
+      "Leads, bookings, pipeline value, and where your students actually come from.",
+    videoLabel: "The dashboard",
+    intro:
+      "You shouldn't have to ask 'how are we doing?' — the dashboard answers it. It collects the numbers that matter to a flight school in one screen, and it's yours to arrange.",
+    steps: [
+      {
+        title: "What it shows out of the box",
+        // Grounded in KB: how-to-create-add-dashboard-widgets (dashboards
+        // for tracking leads, appointments, and sales performance).
+        text: "Leads captured, appointments booked, pipeline value, and message activity — the vital signs of the school's front office. Open it and thirty seconds later you know whether this week is beating last week.",
+      },
+      {
+        title: "Widgets are the building blocks",
+        // Grounded in KB: how-to-create-add-dashboard-widgets and
+        // how-to-create-and-use-custom-metrics-for-dashboard.
+        text: "Each chart or number on the dashboard is a widget. You can add, remove, and rearrange them — put 'discovery flights booked this month' big at the top and bury whatever you don't care about. Custom metrics exist for numbers the defaults don't cover.",
+      },
+      {
+        title: "Multiple dashboards for multiple hats",
+        // Grounded in KB: how-to-create-a-custom-dashboard (create and
+        // manage multiple dashboards for different needs).
+        text: "You can keep separate dashboards — one for marketing (leads, sources, campaigns), one for operations (bookings, no-shows). Most owners live in one and check the other monthly.",
+      },
+      {
+        title: "Where students come from",
+        // Grounded in KB: how-to-add-attribution-and-utm-parameters-as-filters
+        // (attribution / UTM data available as dashboard filters).
+        text: "Attribution data tells you which channel produced each lead — Google search, an ad, a referral link. Before you spend another dollar on marketing, filter the dashboard by source and see what actually books discovery flights.",
+      },
+      {
+        title: "The Friday habit",
+        text: "Once a week: open the dashboard, compare leads and bookings to last week, and ask why for any big move — up or down. The platform generates the numbers; reading them is still the owner's job.",
+      },
+    ],
+  },
+
+  /* ------------------------- Your account & billing ------------------- */
   {
     slug: "monthly-bill",
-    category: "billing",
+    category: "account-billing",
     title: "Your monthly bill explained ($97, voice minutes at cost)",
     blurb: "What the $97 covers, what it doesn't, and why there's no surprise line item.",
     videoLabel: "Your bill, line by line",
@@ -497,6 +1007,39 @@ export const DOC_ARTICLES: DocArticle[] = [
     ],
     outro:
       "If the bill ever stops being boring, that's a bug — call us.",
+  },
+  {
+    slug: "team-logins-notifications",
+    category: "account-billing",
+    title: "Team logins and notifications",
+    blurb:
+      "Who gets a login, what they can see, and how to make your phone buzz only for what matters.",
+    videoLabel: "Team and notifications",
+    intro:
+      "The platform isn't just for you — your CFIs, your front desk, and your partner can each have their own login with their own notifications. Here's how to think about access and noise.",
+    steps: [
+      {
+        title: "One login per person",
+        text: "Everyone who touches leads or the schedule should have their own login — shared passwords make the activity history meaningless. Tell us who needs access and we'll set them up; there's no per-seat charge.",
+      },
+      {
+        title: "Tune what reaches your phone",
+        // Grounded in KB: how-to-set-up-custom-notifications-as-a-user
+        // (per-user notification settings across email, desktop, and mobile
+        // app; the point is reducing noise while not missing what matters).
+        text: "Each user controls their own notifications — email, desktop, and mobile-app pushes, event by event. A CFI might want 'my appointment changed' and nothing else; you might want every new lead. Set it once per person and the noise stops.",
+      },
+      {
+        title: "The mobile app",
+        // (verify) the mobile app's display name in the app stores under the
+        // white-label.
+        text: "There's a companion mobile app that puts Conversations, Calendars, and Contacts in your pocket — most owners run the whole school from it between flights. Ask us for the install link if you don't have it yet.",
+      },
+      {
+        title: "When someone leaves",
+        text: "Staff changes happen — tell us and we'll disable the login the same day. Their conversation history and work stays in the account; only their access ends.",
+      },
+    ],
   },
 ];
 

@@ -1,24 +1,29 @@
 /**
- * Docs-local chrome for the /docs portal (LOCAL-ONLY review draft,
- * 2026-08-22). Mirrors the fly-home pattern: self-contained header/footer
- * with NO industry links, cream/sage palette, mono-label kickers,
- * rounded-2xl surface cards. DocVideo replicates the VideoSlot pattern
- * from src/components/ProductSections.tsx — deliberately copied, NOT
- * imported, so the shared component stays untouched.
+ * Docs-local chrome for the /docs portal (public since 2026-08-22).
+ * Mirrors the fly-home pattern: self-contained header/footer with NO
+ * industry links, cream/sage palette, mono-label kickers, rounded-2xl
+ * surface cards. DocVideo replicates the VideoSlot pattern from
+ * src/components/ProductSections.tsx — deliberately copied, NOT imported,
+ * so the shared component stays untouched.
  */
 
 import Link from "next/link";
 import {
   ArrowLeft,
+  BarChart3,
   CalendarCheck,
   Compass,
+  CreditCard,
   Megaphone,
+  MessagesSquare,
   Phone,
   PhoneCall,
   PhoneMissed,
   Play,
   Receipt,
   Star,
+  Users,
+  Zap,
 } from "lucide-react";
 import type { DocCategory } from "./docs-data";
 
@@ -39,14 +44,24 @@ export function CategoryIcon({
       return <Compass className={cls} />;
     case "phone-call":
       return <PhoneCall className={cls} />;
+    case "messages":
+      return <MessagesSquare className={cls} />;
     case "calendar-check":
       return <CalendarCheck className={cls} />;
     case "phone-missed":
       return <PhoneMissed className={cls} />;
+    case "zap":
+      return <Zap className={cls} />;
+    case "users":
+      return <Users className={cls} />;
     case "star":
       return <Star className={cls} />;
     case "megaphone":
       return <Megaphone className={cls} />;
+    case "credit-card":
+      return <CreditCard className={cls} />;
+    case "bar-chart":
+      return <BarChart3 className={cls} />;
     case "receipt":
       return <Receipt className={cls} />;
   }

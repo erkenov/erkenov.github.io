@@ -5,25 +5,26 @@ import { DOC_CATEGORIES, articlesInCategory } from "./docs-data";
 import { CategoryIcon } from "./components";
 
 /**
- * /docs — index of the Flight School CRM docs portal (LOCAL-ONLY review
- * draft, 2026-08-22, ordered by Shamil after docs.flightschoolcrm.com).
- * Category cards, each listing its articles. Search-free simple nav.
- * noindex inherited from ./layout.tsx.
+ * /docs — index of the Erken Systems docs portal for flight schools
+ * (public since 2026-08-22, ordered by Shamil after
+ * docs.flightschoolcrm.com). Category cards, each listing its articles;
+ * the full tree also lives in the left sidebar from ./layout.tsx.
+ * Indexable (robots set in ./layout.tsx).
  */
 export const metadata: Metadata = {
-  title: "Platform Docs for Flight Schools — Erken Systems (Internal Review)",
+  title: "Platform Docs for Flight Schools — Erken Systems",
   description:
-    "Documentation for flight school owners on The Receptionist platform: bookings, missed-call callbacks, reviews, campaigns, and billing. Draft, not public.",
+    "Documentation for flight school owners on The Receptionist platform: bookings, missed-call callbacks, reviews, campaigns, payments, reporting, and billing.",
 };
 
 export default function DocsIndexPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden px-6 py-16 md:px-12 md:py-20">
+      <section className="relative overflow-hidden py-12 lg:py-14">
         <div className="hero-glow pointer-events-none absolute inset-0" aria-hidden />
         <div className="grid-bg pointer-events-none absolute inset-0 opacity-60" aria-hidden />
-        <div className="relative z-10 mx-auto max-w-6xl">
+        <div className="relative z-10">
           <div className="mono-label">Platform docs</div>
           <h1
             className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
@@ -41,8 +42,8 @@ export default function DocsIndexPage() {
       </section>
 
       {/* Category cards */}
-      <section className="px-6 pb-20 md:px-12 md:pb-28">
-        <div className="mx-auto grid max-w-6xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="pb-16 lg:pb-20">
+        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {DOC_CATEGORIES.map((cat) => {
             const articles = articlesInCategory(cat.id);
             return (
