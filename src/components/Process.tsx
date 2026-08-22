@@ -43,6 +43,13 @@ const STEPS = [
     title: "Video handover",
     text: "A short video call: you see the whole system working, and get the keys.",
   },
+  {
+    // Fifth step (Shamil 2026-08-22): the ongoing-improvement loop — the
+    // same step as the /fly-home demo's "Eyes on the gauges", worded for
+    // the generic homepage audience.
+    title: "Eyes on the gauges",
+    text: "After launch, I keep watching: how your business uses the system, where customers still slip through, where the industry is moving. And I keep building — new automations, sharper answers, better follow-ups. The system you start with is not the system you're limited to.",
+  },
 ];
 
 export default function Process({ theme = "dark" }: { theme?: Theme }) {
@@ -62,11 +69,13 @@ export default function Process({ theme = "dark" }: { theme?: Theme }) {
             What working with us looks like
           </h2>
         </div>
-        <div className="relative mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Connecting line behind the step numbers (desktop only). */}
+        <div className="relative mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+          {/* Connecting line behind the step numbers (desktop only) — runs
+              from the FIRST circle's center to the LAST one's, never past
+              the final step (Shamil 2026-08-22). */}
           <div
             aria-hidden
-            className={`absolute top-6 right-0 left-0 hidden border-t border-dashed sm:block ${t.line}`}
+            className={`absolute top-6 left-6 right-[calc(20%-1.5rem)] hidden border-t border-dashed lg:block ${t.line}`}
           />
           {STEPS.map((step, i) => (
             <div key={step.title}>

@@ -289,9 +289,6 @@ function DraftHeader() {
               </div>
             </div>
           </div>
-          <a href="#industries" className="text-sm text-text-muted transition-colors hover:text-text">
-            Industries
-          </a>
           <a href="#process" className="text-sm text-text-muted transition-colors hover:text-text">
             How it works
           </a>
@@ -320,7 +317,7 @@ function DraftHeader() {
           <button
             type="button"
             onClick={() => openErkenChat()}
-            className="rounded-lg px-4 py-2 text-sm font-medium text-text-muted transition-colors hover:text-text"
+            className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-text transition-colors hover:border-border-strong hover:bg-surface"
           >
             Talk to us
           </button>
@@ -336,69 +333,9 @@ function DraftHeader() {
   );
 }
 
-/* ---- Industries (moved up to 2nd — the self-identification hook) ---- */
-function IndustriesSection() {
-  return (
-    <section id="industries" className="py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-6 md:px-8">
-        <motion.div
-          data-celly-avoid
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.5, ease }}
-          className="max-w-2xl"
-        >
-          <SectionKicker>Built for your industry</SectionKicker>
-          <h2
-            className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
-            style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
-          >
-            Find your business below.
-          </h2>
-          <p className="mt-4 text-base text-text-muted md:text-lg">
-            Every card shows the pipeline pre-configured for that industry —
-            voice scripts, intake forms, pipeline stages, automations, already
-            set up before you log in.
-          </p>
-        </motion.div>
-      </div>
-      {/* Carousel + ONE centered control cluster directly under it: the two
-          (heavier) arrows then the CTAs, as a single row (rev-3 live fix —
-          the arrows were easy to miss and the CTA floated like an orphan
-          below). The arrows hide on mobile (finger-scroll); the buttons
-          stay centered at both widths. */}
-      <div data-celly-avoid className="mt-4">
-        <SceneIndustriesCarousel
-          arrowsPosition="center"
-          arrowsTrailing={
-            <>
-              <a
-                href="#pricing"
-                className="inline-flex items-center gap-2 rounded-lg bg-[linear-gradient(90deg,#8D63DA,#1C71DF)] px-6 py-3.5 text-base font-medium text-white transition-all hover:brightness-110 hover:scale-[1.02]"
-              >
-                Get started →
-              </a>
-              <button
-                type="button"
-                onClick={() => openErkenChat()}
-                className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3.5 text-base font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
-              >
-                Talk to us
-              </button>
-              <a
-                href="/trades"
-                className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3.5 text-base font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
-              >
-                All industries
-              </a>
-            </>
-          }
-        />
-      </div>
-    </section>
-  );
-}
+/* ---- Industries section REMOVED from the live homepage 2026-08-22
+   (Shamil) ahead of the flight-school-only repurpose. The
+   SceneIndustriesCarousel component stays — other routes use it. ---- */
 
 /* ---- Pipeline section (HubSpot-style sticky-column, v8 mid-build change,
  * Shamil-approved 2026-07-20). LEFT column pins (CSS sticky) with the story;
@@ -731,13 +668,14 @@ function PipelineSection() {
                 >
                   Get started →
                 </a>
-                <button
-                  type="button"
-                  onClick={() => openErkenChat()}
+                {/* "Talk to us" REPLACED 2026-08-22 (Shamil): "Platform
+                    instructions" → /docs, same outlined style. */}
+                <a
+                  href="/docs"
                   className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3.5 text-base font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
                 >
-                  Talk to us
-                </button>
+                  Platform instructions
+                </a>
               </div>
             </motion.div>
           </div>
@@ -1302,16 +1240,18 @@ export default function HomeV8Client() {
           section (Shamil 2026-08-16). */}
       <PricingSection />
 
-      {/* 6. Industries — right after pricing (Shamil 2026-08-16). */}
-      <IndustriesSection />
+      {/* 6. Industries section REMOVED 2026-08-22 (Shamil, live): the
+          industry cards leave the homepage ahead of the flight-school-only
+          repurpose. */}
 
-      {/* 7. Integrations marquee. */}
-      <IntegrationsMarquee />
-
-      {/* 8. Pipeline — reframed 2026-08-16 as "the full platform" convincer
+      {/* 7. Pipeline — reframed 2026-08-16 as "the full platform" convincer
           ("And that's just the setup."), kept AFTER pricing so it never
           overwhelms the pitch. */}
       <PipelineSection />
+
+      {/* 8. Integrations marquee — moved to the VERY BOTTOM of the page
+          (Shamil 2026-08-22). */}
+      <IntegrationsMarquee />
 
       {/* Get-leads / "you want customers" section REMOVED from the homepage
           (rev-3 addendum: it was a coming-soon dead end here; the real
