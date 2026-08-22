@@ -335,29 +335,6 @@ function ProductSection() {
 }
 
 /* ================================================================== */
-/* 4. MISSING LAYER                                                    */
-/* ================================================================== */
-function MissingLayerSection() {
-  return (
-    <section className="py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-6 md:px-8">
-        <FadeIn className="max-w-3xl">
-          <SectionKicker>Already have a marketing system?</SectionKicker>
-          <SectionH2>
-            It makes the phone ring. The Receptionist answers it.
-          </SectionH2>
-          <p className="mt-5 text-base leading-relaxed text-text-muted md:text-lg">
-            Websites, SEO, and ads are built to make the phone ring — and none
-            of them pick it up. The Receptionist is the layer every system is
-            missing: the moment a student reaches out, someone answers.
-          </p>
-        </FadeIn>
-      </div>
-    </section>
-  );
-}
-
-/* ================================================================== */
 /* 5. PRICING — main-page design: radial wash + THREE period cards.    */
 /* ================================================================== */
 function PricingPeriodCard({ period }: { period: BillingPeriod }) {
@@ -1112,7 +1089,6 @@ export default function FlyHomeClient() {
       <HeroSection />
       <FifthPlaceSection />
       <ProductSection />
-      <MissingLayerSection />
       <PricingSection />
       <ProcessSection />
       <StorySection />
