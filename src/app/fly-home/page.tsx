@@ -80,7 +80,7 @@ const FAQ_JSON_LD = {
       name: "Why is it only $97 a month?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Because the model is keeping you for ten years, not ten weeks. Each system is built once and refined forever, then run by many schools — you're not buying hours, you're buying a system already built and proven across businesses like yours. A hundred schools at a fair price beats squeezing one with expensive custom work. That's why the price is what it is.",
+        text: "The honest answer: it runs on GoHighLevel — a platform that costs me $297 a month and already has everything built in. You can buy GoHighLevel yourself for $97 a month — exactly what I charge. The difference: buying direct gets you no setup, no one monitoring your account, no one looking for ways to improve it. From me, the same $97 includes all of that. My math is simple — $97 times the months you stay, and you stay because the system keeps improving. Cheap enough never to resent, valuable enough never to leave.",
       },
     },
     {

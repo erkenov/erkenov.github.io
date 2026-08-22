@@ -7,39 +7,40 @@
  * homepage (cream/sage palette, Inter + JetBrains Mono, mono-label
  * kickers, rounded-2xl surface cards, framer-motion fade-ins) but fully
  * self-contained: local header/footer with NO industry links, no
- * 15-industry cards, no generic-SMB framing, no platform-vendor mentions.
+ * 15-industry cards, no generic-SMB framing... with ONE deliberate
+ * exception (Shamil 2026-08-22, supersedes the no-vendor-mention rule
+ * for THIS page): the "Why is it only $97?" FAQ answer names GoHighLevel
+ * openly, per Shamil's transparency pitch.
  *
- * Sections (2026-08-22 revision 2 — Shamil's review batch applied):
+ * Sections (2026-08-22 revision 3 — Shamil's full Obsidian batch applied):
  *   1. Hero — "Your next student is calling while you're on the flight
- *      line." + demo-line CTA (tel:+13252412460); secondary CTA → the
- *      missed-call calculator (#calculator). Media = the founder intro
- *      VIDEO (Scene1IntroVideo — same component as the live homepage hero).
- *   2. The fifth place — FIVE cards: the four classic places a school
- *      loses a student (muted) + the fifth, the phone (accent).
- *   3. Product — three cards: calls / texts / booking.
- *   4. Missing layer — "It makes the phone ring. The Receptionist answers
- *      it." (borrow-list item 10).
- *   5. Pricing — $97/mo flat (NO setup fee — Shamil 2026-08-22 revision:
- *      "97 month period, no setup, nothing"), disqualification aside.
- *   6. Process — "What working with us looks like", the four live steps
- *      + step 5 "Eyes on the gauges" (Shamil's continuous-improvement
- *      idea, 2026-08-22).
+ *      line." Media = founder intro VIDEO, landscape frame. CTA =
+ *      "Call your future AI receptionist" (Shamil's rename).
+ *   2. The fifth place — FIVE cards: four muted + the phone (accent).
+ *   3. Product — calls / call-back + text / booking incl. NO-SHOW
+ *      rebooking (his workflow change: callback first, SMS after 5 min).
+ *   4. Missing layer — "It makes the phone ring. The Receptionist answers it."
+ *   5. Pricing — MAIN-PAGE design (radial wash + lead-capture card →
+ *      /api/lead → Payoneer), draft copy: $97/mo flat, NO setup fee, NO
+ *      front-desk disqualification aside (Shamil removed both 2026-08-22).
+ *   6. Process — four live steps + step 5 "Eyes on the gauges".
  *   7. Story — founder, systems guy becoming a pilot.
- *   8. Growth layer — websites/search/ads later; phone first.
- *   9. Missed-call cost calculator (#calculator) — interactive live math.
- *  10. Audit closer (#audit) — "call your own school after 8 PM".
- *  11. FAQ — accordion (details/summary like the live homepage Faq) in
- *      the sage/amber WhyUs palette. Merged per Shamil 2026-08-22: the
- *      standalone WhyUs section is GONE — "Contracts" card dropped,
- *      "Constant improvements" dropped (now process step 5), "Affordable"
- *      became the "Why is it only $97 a month?" answer.
- *  12. Stack table — flight-school "replace your whole stack", placed at
- *      the very bottom per Shamil's review note.
+ *   8. "What you get" — the four product blocks ported from the main page
+ *      (shared ProductSections, light theme) under the growth-layer heading.
+ *   9. The full platform — Capture/Nurture/Close/Fans/Winback cards ported
+ *      from the main page + docs button (Shamil: "see the whole platform
+ *      capabilities"; /docs portal builds next).
+ *  10. Missed-call cost calculator (#calculator).
+ *  11. Audit closer (#audit).
+ *  12. FAQ — sage/amber accordion; "Why is it only $97?" = the
+ *      GoHighLevel-transparency answer (Shamil's wording direction).
+ *  13. Stack table — flight-school version, at the very bottom.
  */
 
 import { Fragment, useState } from "react";
 import { motion } from "framer-motion";
 import {
+  BookOpen,
   CalendarCheck,
   Check,
   ChevronDown,
@@ -54,11 +55,14 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
+import ProductSections from "@/components/ProductSections";
+import { PLATFORM_FEATURES, PAYMENT_LINKS } from "@/lib/pricing";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
 const DEMO_TEL = "+13252412460";
 const DEMO_DISPLAY = "(325) 241-2460";
+const CTA_LABEL = "Call your future AI receptionist";
 
 function SectionKicker({ children }: { children: React.ReactNode }) {
   return <div className="mono-label">{children}</div>;
@@ -107,8 +111,7 @@ function PrimaryCta({ children }: { children: React.ReactNode }) {
   );
 }
 
-/* ---- Local header — same sticky pattern as the homepage DraftHeader, */
-/* but with no industry links. ---- */
+/* ---- Local header — no industry links. ---- */
 function FlyHomeHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-bg/85 backdrop-blur-md">
@@ -134,7 +137,7 @@ function FlyHomeHeader() {
             href={`tel:${DEMO_TEL}`}
             className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
           >
-            Call the demo line
+            Call your AI receptionist
           </a>
         </div>
       </div>
@@ -143,7 +146,7 @@ function FlyHomeHeader() {
 }
 
 /* ================================================================== */
-/* 1. HERO — media = founder intro video (Scene1IntroVideo)            */
+/* 1. HERO — media = founder intro video, LANDSCAPE frame (Shamil).    */
 /* ================================================================== */
 function HeroSection() {
   return (
@@ -167,7 +170,7 @@ function HeroSection() {
             instruction.
           </p>
           <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-            <PrimaryCta>Call the demo line — hear it work</PrimaryCta>
+            <PrimaryCta>{CTA_LABEL}</PrimaryCta>
             <a
               href="#calculator"
               className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-3 text-sm font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
@@ -177,7 +180,7 @@ function HeroSection() {
           </div>
         </FadeIn>
         <FadeIn className="w-full">
-          <Scene1IntroVideo />
+          <Scene1IntroVideo orientation="landscape" />
         </FadeIn>
       </div>
     </section>
@@ -278,7 +281,7 @@ function FifthPlaceSection() {
 }
 
 /* ================================================================== */
-/* 3. PRODUCT — three cards                                            */
+/* 3. PRODUCT — three cards (rev3: callback-first flow, no-show added) */
 /* ================================================================== */
 const PRODUCT_CARDS = [
   {
@@ -287,14 +290,14 @@ const PRODUCT_CARDS = [
     body: "24/7 voice agent; pricing, programs, and discovery-flight booking straight into your calendar.",
   },
   {
-    Icon: MessageSquare,
-    title: "Texts back instantly",
-    body: "Missed-call SMS within seconds; after-hours website chat.",
+    Icon: PhoneCall,
+    title: "Calls back instantly",
+    body: "Missed call? The Receptionist calls back within about a minute. No answer — five minutes later it texts: sorry we missed you — and keeps the conversation alive.",
   },
   {
     Icon: CalendarCheck,
     title: "Books and reminds",
-    body: "Calendar sync, booking reminders, weather-cancellation rebooking.",
+    body: "Calendar sync, booking reminders, weather-cancellation and no-show rebooking.",
   },
 ];
 
@@ -344,7 +347,7 @@ function ProductSection() {
 }
 
 /* ================================================================== */
-/* 4. MISSING LAYER (borrow-list item 10)                              */
+/* 4. MISSING LAYER                                                    */
 /* ================================================================== */
 function MissingLayerSection() {
   return (
@@ -367,31 +370,137 @@ function MissingLayerSection() {
 }
 
 /* ================================================================== */
-/* 5. PRICING — $97 flat, NO setup fee (Shamil, 2026-08-22 revision)   */
+/* 5. PRICING — main-page design (radial wash + lead-capture card),    */
+/* draft copy: $97 flat, no setup fee, no disqualification aside.      */
 /* ================================================================== */
+function PricingCard() {
+  const [submitting, setSubmitting] = useState(false);
+
+  // Same lead-capture-then-pay mechanic as the live homepage card:
+  // submit → /api/lead (best-effort) → Payoneer link for the monthly plan.
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
+    const data = new FormData(e.currentTarget);
+    let paymentUrl: string | null = null;
+    try {
+      const res = await fetch("/api/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: data.get("firstName"),
+          lastName: data.get("lastName"),
+          phone: data.get("phone"),
+          email: data.get("email"),
+          plan: "monthly",
+        }),
+      });
+      const d = (await res.json().catch(() => ({}))) as { paymentUrl?: string | null };
+      paymentUrl = d.paymentUrl ?? null;
+    } catch {
+      // Never block the payment redirect on a lead-capture failure.
+    }
+    window.location.href = paymentUrl ?? PAYMENT_LINKS.monthly;
+  }
+
+  const inputCls =
+    "w-full rounded-lg border border-border bg-bg px-3 py-2.5 text-sm text-text placeholder:text-text-dim focus:border-accent focus:outline-none";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.5, ease }}
+      whileHover={{ y: -2 }}
+      className="relative flex w-full max-w-md flex-col rounded-2xl border-2 border-accent bg-surface p-8 transition-colors duration-200 hover:border-accent-hover"
+    >
+      <h3 className="text-lg font-semibold text-text">The Receptionist</h3>
+      <div className="mt-4">
+        <span
+          className="text-3xl font-bold tracking-tight text-text"
+          style={{ letterSpacing: "-0.03em" }}
+        >
+          $97/mo
+        </span>
+        <span className="ml-2 text-xs text-text-dim">
+          billed monthly · no setup fee · cancel anytime
+        </span>
+      </div>
+      <p className="mt-4 font-mono text-xs uppercase tracking-[0.05em] text-text-dim">
+        What&apos;s included
+      </p>
+      <ul className="mt-2 flex-1 space-y-1.5 text-sm text-text-muted">
+        {PLATFORM_FEATURES.map((f) => (
+          <li key={f} className="flex items-start gap-2">
+            <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" strokeWidth={2.5} />
+            <span>{f}</span>
+          </li>
+        ))}
+      </ul>
+      <form onSubmit={handleSubmit} className="mt-6">
+        <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-2">
+            <input name="firstName" required placeholder="First name" autoComplete="given-name" className={inputCls} />
+            <input name="lastName" required placeholder="Last name" autoComplete="family-name" className={inputCls} />
+          </div>
+          <input name="email" required type="email" placeholder="Email" autoComplete="email" className={inputCls} />
+          <input name="phone" required type="tel" placeholder="Phone" autoComplete="tel" className={inputCls} />
+        </div>
+        <label className="mt-3 flex items-start gap-2.5 text-xs leading-relaxed text-text-dim">
+          <input type="checkbox" required className="mt-0.5 shrink-0 accent-[#8D63DA]" />
+          <span>
+            I agree to receive SMS, email, and calls — including automated
+            AI-voice calls — from Erken Systems about my order and setup.
+            No spam — only what my account needs.
+          </span>
+        </label>
+        <button
+          type="submit"
+          disabled={submitting}
+          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-white transition-transform hover:scale-[1.02] disabled:opacity-60"
+          style={{ background: "linear-gradient(90deg, #8D63DA, #1C71DF)" }}
+        >
+          {submitting ? "One moment…" : "Continue to pay →"}
+        </button>
+      </form>
+    </motion.div>
+  );
+}
+
 function PricingSection() {
   return (
-    <section id="pricing" className="py-20 md:py-28">
+    <section
+      id="pricing"
+      className="relative overflow-hidden py-20 md:py-28"
+      style={{
+        background:
+          "radial-gradient(58% 80% at 14% 8%, rgba(141,99,218,0.18), transparent 60%)," +
+          "radial-gradient(54% 74% at 88% 14%, rgba(28,113,223,0.16), transparent 62%)," +
+          "radial-gradient(52% 62% at 62% 96%, rgba(126,166,135,0.16), transparent 62%)," +
+          "linear-gradient(180deg, #FBF7EF 0%, var(--bg) 100%)",
+      }}
+    >
       <div className="mx-auto max-w-6xl px-6 md:px-8">
-        <FadeIn className="max-w-3xl">
+        <FadeIn className="max-w-2xl">
           <SectionKicker>Pricing</SectionKicker>
           <SectionH2>$97 a month. That&apos;s the whole price.</SectionH2>
-          <p className="mt-5 text-base leading-relaxed text-text-muted md:text-lg">
+          <p className="mt-4 text-base text-text-muted md:text-lg">
             No setup fee. No six-month minimums. No retainer. No proposal you
             can&apos;t compare to anything. A full marketing system runs
             $1,000–3,000 a month — and still sends the Friday-night caller to
             voicemail. Start where the leak is.
           </p>
-          <div className="mt-6 rounded-2xl border border-dashed border-border-strong bg-surface-2 p-5">
-            <p className="text-sm italic leading-relaxed text-text-muted md:text-base">
-              Already have a full-time front desk answering after hours? You
-              honestly don&apos;t need this.
-            </p>
-          </div>
-          <div className="mt-7">
-            <PrimaryCta>Call the demo line — hear it work</PrimaryCta>
-          </div>
         </FadeIn>
+        <div className="mt-10 flex justify-start md:justify-center">
+          <PricingCard />
+        </div>
+        <p className="mt-6 max-w-2xl text-xs font-medium leading-relaxed text-amber-700 md:mx-auto md:text-center">
+          AI voice minutes are billed separately at cost — roughly 10¢ a
+          minute, so even a busy month of answered calls adds a few dollars,
+          never a surprise bill.
+        </p>
       </div>
     </section>
   );
@@ -432,7 +541,6 @@ function ProcessSection() {
           <SectionH2>What working with us looks like</SectionH2>
         </FadeIn>
         <div className="relative mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
-          {/* Connecting line behind the step numbers (desktop only). */}
           <div
             aria-hidden
             className="absolute top-6 right-0 left-0 hidden border-t border-dashed border-border lg:block"
@@ -493,32 +601,278 @@ function StorySection() {
 }
 
 /* ================================================================== */
-/* 8. GROWTH LAYER                                                     */
+/* 9. THE FULL PLATFORM — ported phase cards + docs button             */
 /* ================================================================== */
-function GrowthSection() {
+const ILLO_SAGE = "#7ea687";
+const ILLO_CLAY = "#a8503f";
+const ILLO_CREAM = "#F5F1E8";
+const ILLO_NEUTRAL = "#D4CDB8";
+
+function IllustrationBackdrop({
+  children,
+  className = "h-11 w-11 shrink-0",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <section className="py-20 md:py-28">
+    <svg viewBox="0 0 120 120" className={className} aria-hidden>
+      <rect x="1" y="1" width="118" height="118" rx="28" fill={ILLO_CREAM} stroke={ILLO_NEUTRAL} strokeWidth="1.5" />
+      {children}
+    </svg>
+  );
+}
+
+const STAR_D =
+  "M0 -7 L1.65 -2.26 L6.66 -2.16 L2.66 0.87 L4.11 5.66 L0 2.8 L-4.11 5.66 L-2.66 0.87 L-6.66 -2.16 L-1.65 -2.26 Z";
+
+function IllustrationCapture() {
+  return (
+    <IllustrationBackdrop>
+      <circle cx="46" cy="34" r="4" fill={ILLO_CLAY} />
+      <circle cx="60" cy="28" r="4.5" fill={ILLO_CLAY} />
+      <circle cx="74" cy="34" r="4" fill={ILLO_CLAY} />
+      <path d="M32 48 L88 48 L66 76 L66 90 L54 90 L54 76 Z" fill={ILLO_SAGE} />
+      <rect x="32" y="46" width="56" height="5" rx="2.5" fill={ILLO_NEUTRAL} />
+      <circle cx="60" cy="102" r="4.5" fill={ILLO_CLAY} />
+    </IllustrationBackdrop>
+  );
+}
+
+function IllustrationNurture() {
+  return (
+    <IllustrationBackdrop>
+      <circle cx="48" cy="30" r="3" fill={ILLO_SAGE} opacity="0.65" />
+      <circle cx="60" cy="26" r="3.5" fill={ILLO_SAGE} opacity="0.65" />
+      <circle cx="72" cy="30" r="3" fill={ILLO_SAGE} opacity="0.65" />
+      <path d="M46 78 L74 78 L70 94 L50 94 Z" fill={ILLO_CLAY} />
+      <rect x="45" y="74" width="30" height="6" rx="3" fill={ILLO_NEUTRAL} />
+      <path d="M60 74 V50" stroke={ILLO_SAGE} strokeWidth="4" strokeLinecap="round" />
+      <path d="M60 62 Q46 58 46 44 Q58 46 60 62 Z" fill={ILLO_SAGE} />
+      <path d="M60 56 Q74 52 74 40 Q63 42 60 56 Z" fill={ILLO_SAGE} />
+    </IllustrationBackdrop>
+  );
+}
+
+function IllustrationClose() {
+  return (
+    <IllustrationBackdrop>
+      <rect x="36" y="26" width="44" height="58" rx="6" fill="#FFFFFF" stroke={ILLO_NEUTRAL} strokeWidth="2" />
+      <rect x="44" y="36" width="28" height="4" rx="2" fill={ILLO_NEUTRAL} />
+      <rect x="44" y="46" width="28" height="4" rx="2" fill={ILLO_NEUTRAL} />
+      <rect x="44" y="56" width="18" height="4" rx="2" fill={ILLO_NEUTRAL} />
+      <path d="M44 70 q5 -7 10 0 t10 0" stroke={ILLO_CLAY} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+      <circle cx="82" cy="82" r="16" fill={ILLO_SAGE} />
+      <path d="M74 82 L80 88 L91 75" stroke="#FFFFFF" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </IllustrationBackdrop>
+  );
+}
+
+function IllustrationFans() {
+  return (
+    <IllustrationBackdrop>
+      {[34, 46, 58, 70, 82].map((cx) => (
+        <path key={cx} d={STAR_D} transform={`translate(${cx} 40)`} fill={ILLO_CLAY} />
+      ))}
+      <circle cx="60" cy="78" r="18" fill={ILLO_SAGE} />
+      <circle cx="53" cy="74" r="2.6" fill={ILLO_CREAM} />
+      <circle cx="67" cy="74" r="2.6" fill={ILLO_CREAM} />
+      <path d="M52 82 Q60 90 68 82" stroke={ILLO_CREAM} strokeWidth="3" fill="none" strokeLinecap="round" />
+    </IllustrationBackdrop>
+  );
+}
+
+function IllustrationWinback() {
+  return (
+    <IllustrationBackdrop>
+      <circle cx="58" cy="58" r="8" fill={ILLO_CLAY} />
+      <path d="M45 86 Q45 70 58 70 Q71 70 71 86 Z" fill={ILLO_CLAY} />
+      <path d="M86 70 A29 29 0 1 0 55 30" fill="none" stroke={ILLO_SAGE} strokeWidth="4.5" strokeLinecap="round" />
+      <path d="M55 30 L63 27 M55 30 L58 38" stroke={ILLO_SAGE} strokeWidth="4.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </IllustrationBackdrop>
+  );
+}
+
+const PHASES: {
+  name: string;
+  tagline: string;
+  Illustration: () => React.ReactElement;
+  items: string[];
+}[] = [
+  {
+    name: "Capture",
+    tagline: "Get more leads in the door",
+    Illustration: IllustrationCapture,
+    items: [
+      "Websites & landing pages",
+      "Sales funnels",
+      "Webinar funnels",
+      "Forms & surveys",
+      "Quizzes",
+      "AI voice receptionist",
+      "Web chat widget",
+      "Missed-call text-back",
+      "Call tracking",
+      "Inbound texts & DMs",
+      "Social media planner",
+      "Google & Facebook ads",
+      "QR codes",
+      "Business-card scanner",
+    ],
+  },
+  {
+    name: "Nurture",
+    tagline: "Turn interest into trust",
+    Illustration: IllustrationNurture,
+    items: [
+      "One unified inbox",
+      "Text, Messenger, IG & WhatsApp",
+      "Conversation AI replies",
+      "Sales pipelines",
+      "Workflows & automations",
+      "Booking calendars",
+      "Appointment reminders",
+      "Saved reply snippets",
+      "Ringless voicemail drops",
+      "Automated outbound calls",
+      "Mobile app + video messages",
+    ],
+  },
+  {
+    name: "Close",
+    tagline: "Turn conversations into customers",
+    Illustration: IllustrationClose,
+    items: [
+      "Lead scoring",
+      "Estimates & proposals",
+      "Invoicing",
+      "Card payments built in",
+      "Text-to-pay links",
+      "Tap-to-pay on your phone",
+      "Paid booking calendars",
+      "Order forms",
+      "Upsells & downsells",
+      "One-click upsell funnels",
+      "Memberships & courses",
+      "Gift cards",
+      "Loyalty programs",
+    ],
+  },
+  {
+    name: "Turn customers into fans",
+    tagline: "Reviews that bring the next one in",
+    Illustration: IllustrationFans,
+    items: [
+      "Automated review requests",
+      "Reputation management",
+      "AI review replies",
+      "Website review widgets",
+      "Video review capture",
+      "Referral & affiliate tracking",
+      "Auto-post reviews to social",
+      "Recommendation automations",
+      "Customer communities",
+      "Loyalty rewards",
+    ],
+  },
+  {
+    name: "Win back old customers",
+    tagline: "Get back on their radar",
+    Illustration: IllustrationWinback,
+    items: [
+      "Email, SMS & WhatsApp blasts",
+      "Smart lists & segmenting",
+      "Automated birthday campaigns",
+      "Seasonal campaigns",
+      "Reactivation templates",
+      "Newsletter automation",
+      "Content AI for copy",
+      "Loyalty programs",
+    ],
+  },
+];
+
+function PlatformPhases() {
+  return (
+    <div className="flex flex-col gap-4">
+      {PHASES.map((phase, i) => (
+        <motion.div
+          key={phase.name}
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.45, ease, delay: i * 0.05 }}
+          className="rounded-2xl border border-border bg-surface p-5"
+        >
+          <div className="flex items-center gap-4">
+            <phase.Illustration />
+            <div>
+              <div
+                className="text-base font-semibold text-text"
+                style={{ letterSpacing: "-0.01em" }}
+              >
+                {phase.name}
+              </div>
+              <div className="mt-0.5 text-xs text-text-muted md:text-sm">
+                {phase.tagline}
+              </div>
+            </div>
+          </div>
+          <ul className="mt-4 grid grid-cols-1 gap-x-5 gap-y-2 border-t border-dashed border-border pt-4 min-[420px]:grid-cols-2">
+            {phase.items.map((it) => (
+              <li key={it} className="flex items-start gap-2 text-sm leading-snug text-text-muted">
+                <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" strokeWidth={2.5} />
+                <span>{it}</span>
+              </li>
+            ))}
+          </ul>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+/** Sticky-left story + always-expanded phase panels (ported from the live
+ *  homepage pipeline section), with Shamil's docs button added (2026-08-22:
+ *  "a third button — see the whole platform capabilities"). /docs is the
+ *  aviation-flavored docs portal — built next, links live then. */
+function PlatformSection() {
+  return (
+    <section id="platform" className="py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6 md:px-8">
-        <FadeIn className="max-w-3xl">
-          <SectionKicker>Later, when you&apos;re ready</SectionKicker>
-          <SectionH2>
-            When every call is answered, make the phone ring more.
-          </SectionH2>
-          <p className="mt-5 text-base leading-relaxed text-text-muted md:text-lg">
-            Websites, search visibility — including AI search, where students
-            increasingly ask ChatGPT which school to choose — and ads, built
-            for flight schools and priced for 1–3-aircraft operations.
-            Available when you&apos;re ready. The phone comes first.
-          </p>
-        </FadeIn>
+        <div className="grid gap-10 md:grid-cols-2 md:items-start md:gap-12 lg:gap-16">
+          <div className="md:sticky md:top-24 md:self-start">
+            <FadeIn>
+              <SectionKicker>The full platform</SectionKicker>
+              <SectionH2>And that&apos;s just the setup.</SectionH2>
+              <p className="mt-4 text-base leading-relaxed text-text-muted md:text-lg">
+                Everything above is what we build for you in the first 7–10
+                days. Underneath it sits the full platform — every feature
+                below is already included in your $97, ready when you are.
+              </p>
+              <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+                <PrimaryCta>{CTA_LABEL}</PrimaryCta>
+                <Link
+                  href="/docs"
+                  className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 text-sm font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  Explore the platform docs
+                </Link>
+              </div>
+            </FadeIn>
+          </div>
+          <div className="w-full">
+            <PlatformPhases />
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
 /* ================================================================== */
-/* 9. MISSED-CALL COST CALCULATOR (#calculator)                        */
-/* X = inquiries × voicemail share × live booking rate × student value.*/
+/* 10. MISSED-CALL COST CALCULATOR (#calculator)                       */
 /* ================================================================== */
 const usd = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -649,7 +1003,7 @@ function CalculatorSection() {
 }
 
 /* ================================================================== */
-/* 10. AUDIT CLOSER (#audit)                                           */
+/* 11. AUDIT CLOSER (#audit)                                           */
 /* ================================================================== */
 function AuditSection() {
   return (
@@ -664,7 +1018,7 @@ function AuditSection() {
             scenario, different outcome.
           </p>
           <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-            <PrimaryCta>Call the demo line</PrimaryCta>
+            <PrimaryCta>{CTA_LABEL}</PrimaryCta>
             <span className="font-mono text-sm text-text-muted">{DEMO_DISPLAY}</span>
           </div>
         </FadeIn>
@@ -674,8 +1028,9 @@ function AuditSection() {
 }
 
 /* ================================================================== */
-/* 11. FAQ — accordion in the sage/amber palette (merged WhyUs,        */
-/* Shamil 2026-08-22). JSON-LD mirror lives in page.tsx — keep in sync.*/
+/* 12. FAQ — sage/amber accordion (merged WhyUs). "Why is it only $97" */
+/* = Shamil's GoHighLevel-transparency answer (2026-08-22). JSON-LD    */
+/* mirror lives in page.tsx — keep in sync.                            */
 /* ================================================================== */
 const FAQS = [
   {
@@ -696,7 +1051,7 @@ const FAQS = [
   },
   {
     q: "Why is it only $97 a month?",
-    a: "Because the model is keeping you for ten years, not ten weeks. Each system is built once and refined forever, then run by many schools — you're not buying hours, you're buying a system already built and proven across businesses like yours. A hundred schools at a fair price beats squeezing one with expensive custom work. That's why the price is what it is.",
+    a: "The honest answer: it runs on GoHighLevel — a platform that costs me $297 a month and already has everything built in. You can buy GoHighLevel yourself for $97 a month — exactly what I charge. The difference: buying direct gets you no setup, no one monitoring your account, no one looking for ways to improve it. From me, the same $97 includes all of that. My math is simple — $97 times the months you stay, and you stay because the system keeps improving. Cheap enough never to resent, valuable enough never to leave.",
   },
   {
     q: "Is there a contract?",
@@ -731,10 +1086,7 @@ function FaqSection() {
 }
 
 /* ================================================================== */
-/* 12. STACK TABLE — flight-school version, at the very bottom.        */
-/* Prices reuse the live homepage's defensible entry points where the  */
-/* row exists there; "Live answering service" priced from 2026-08-22   */
-/* research (Smith.ai per-call plans ≈ $292+/mo). Monogram chips only. */
+/* 13. STACK TABLE — flight-school version, at the very bottom.        */
 /* ================================================================== */
 const STACK_ROWS: { cat: string; tools: string[]; price: number }[] = [
   { cat: "Live answering service", tools: ["Smith.ai", "Ruby"], price: 292 },
@@ -747,8 +1099,6 @@ const STACK_ROWS: { cat: string; tools: string[]; price: number }[] = [
 const STACK_TOTAL = STACK_ROWS.reduce((s, r) => s + r.price, 0); // 537
 const PLATFORM_PRICE = 97;
 
-/** Monogram chip (the live table's no-logo fallback) — keeps the draft free
- *  of the shared logo module. */
 function ToolChip({ name }: { name: string }) {
   const initial = (name.replace(/[^A-Za-z0-9]/g, "")[0] || "•").toUpperCase();
   return (
@@ -838,7 +1188,7 @@ function StackSection() {
               href={`tel:${DEMO_TEL}`}
               className="inline-flex w-full items-center justify-center gap-1 rounded-lg bg-[linear-gradient(90deg,#8D63DA,#1C71DF)] px-3 py-2.5 text-xs font-semibold text-white shadow-sm transition-all hover:brightness-110 hover:scale-[1.02]"
             >
-              Call the demo line
+              {CTA_LABEL}
             </a>
           </div>
         </div>
@@ -890,7 +1240,7 @@ function StackSection() {
               href={`tel:${DEMO_TEL}`}
               className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[linear-gradient(90deg,#8D63DA,#1C71DF)] px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:brightness-110 hover:scale-[1.02]"
             >
-              Call the demo line
+              {CTA_LABEL}
             </a>
           </div>
         </div>
@@ -939,7 +1289,11 @@ export default function FlyHomeClient() {
       <PricingSection />
       <ProcessSection />
       <StorySection />
-      <GrowthSection />
+      <ProductSections
+        theme="light"
+        heading="When every call is answered, make the phone ring more."
+      />
+      <PlatformSection />
       <CalculatorSection />
       <AuditSection />
       <FaqSection />
