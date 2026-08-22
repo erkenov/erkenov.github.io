@@ -1347,11 +1347,14 @@ function MergedFaq() {
           transition={{ duration: 0.5, ease }}
           className="mt-12"
         >
-          <div className="divide-y divide-white/15 overflow-hidden rounded-2xl border border-white/10 bg-[#8fb496] shadow-[0_18px_44px_-18px_rgba(126,166,135,0.75)]">
+          {/* Each Q&A = its own sage card with space between, no divider
+              lines (Shamil 2026-08-22); always expanded, no arrows. */}
+          <div className="space-y-4">
             {MERGED_FAQS.map((item) => (
-              // Always expanded, no expand/collapse arrows (Shamil
-              // 2026-08-22: "keep them always expanded").
-              <div key={item.q} className="px-6 py-5">
+              <div
+                key={item.q}
+                className="rounded-2xl border border-white/10 bg-[#8fb496] px-6 py-5 shadow-[0_18px_44px_-18px_rgba(126,166,135,0.75)]"
+              >
                 <div className="text-lg font-medium text-white">{item.q}</div>
                 <p className="mt-3 leading-relaxed text-white/85">{item.a}</p>
               </div>
