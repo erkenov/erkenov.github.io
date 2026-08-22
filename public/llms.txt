@@ -1,0 +1,23 @@
+# Erken Systems — The Receptionist for flight schools
+
+> The Receptionist is a 24/7 AI receptionist for flight schools. It answers every call, text, and website chat, and books discovery flights straight into the school's calendar.
+
+## What it does
+
+- Answers phone calls around the clock with a voice agent that knows flight-school basics: discovery flights, Part 61 and Part 141 training, weather cancellations.
+- Texts back missed calls within seconds and handles after-hours website chat.
+- Books discovery flights into the school's calendar, sends booking reminders, and rebooks after weather cancellations.
+- Forwards a summary to the owner when it cannot answer a question, instead of guessing.
+
+## Pricing
+
+- $97 per month, $197 one-time setup. No contract; cancel anytime.
+
+## Ideal customer
+
+- Owner-operated US flight schools, roughly 1–10 aircraft, where calls go unanswered during flying hours, evenings, and weekends.
+
+## Demo and links
+
+- Demo line (the live product): +1 325-241-2460
+- Homepage: https://erken.systems

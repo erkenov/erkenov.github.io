@@ -11,15 +11,22 @@
  *
  * Sections (copy per the 2026-08-22 brief, verbatim):
  *   1. Hero — "Your next student is calling while you're on the flight
- *      line." + demo-line CTA (tel:+13252412460).
+ *      line." + demo-line CTA (tel:+13252412460); secondary CTA → the
+ *      missed-call calculator (#calculator).
  *   2. The fifth place — the phone as the uncounted leak.
  *   3. Product — three cards: calls / texts / booking.
- *   4. Pricing — $97/mo, $197 setup, disqualification aside.
- *   5. Story — founder, systems guy becoming a pilot.
- *   6. Growth layer — websites/search/ads later; phone first.
- *   7. Audit closer (#audit) — "call your own school after 8 PM".
+ *   4. Missing layer — "It makes the phone ring. The Receptionist answers
+ *      it." (borrow-list item 10, pass 2).
+ *   5. Pricing — $97/mo, $197 setup, disqualification aside.
+ *   6. Story — founder, systems guy becoming a pilot.
+ *   7. Growth layer — websites/search/ads later; phone first.
+ *   8. Missed-call cost calculator (#calculator) — interactive, live math
+ *      (pass 2; §5.4 calculator pattern / borrow-list item 4).
+ *   9. Audit closer (#audit) — "call your own school after 8 PM".
+ *  10. FAQ — five Q&As (JSON-LD FAQPage lives in page.tsx).
  */
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { CalendarCheck, MessageSquare, Phone, PhoneCall } from "lucide-react";
 import Link from "next/link";
@@ -50,6 +57,17 @@ function FadeIn({
     >
       {children}
     </motion.div>
+  );
+}
+
+function SectionH2({ children }: { children: React.ReactNode }) {
+  return (
+    <h2
+      className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
+      style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
+    >
+      {children}
+    </h2>
   );
 }
 
@@ -127,7 +145,7 @@ function HeroSection() {
           <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
             <PrimaryCta>Call the demo line — hear it work</PrimaryCta>
             <a
-              href="#audit"
+              href="#calculator"
               className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-3 text-sm font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
             >
               See what voicemail costs you
@@ -159,12 +177,9 @@ function FifthPlaceSection() {
       <div className="mx-auto max-w-6xl px-6 md:px-8">
         <FadeIn className="max-w-3xl">
           <SectionKicker>The leak nobody counts</SectionKicker>
-          <h2
-            className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
-            style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
-          >
+          <SectionH2>
             Four places lose you a student. The fifth is your phone.
-          </h2>
+          </SectionH2>
           <p className="mt-5 text-base leading-relaxed text-text-muted md:text-lg">
             A student searches, lands on your site, compares you against two
             other schools, and fills out one form. Those are the four places
@@ -207,12 +222,9 @@ function ProductSection() {
       <div className="mx-auto max-w-6xl px-6 md:px-8">
         <FadeIn className="max-w-2xl">
           <SectionKicker>The Receptionist</SectionKicker>
-          <h2
-            className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
-            style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
-          >
+          <SectionH2>
             A receptionist that knows what a discovery flight is.
-          </h2>
+          </SectionH2>
         </FadeIn>
         <div className="mt-10 grid gap-4 md:grid-cols-3 md:gap-6">
           {PRODUCT_CARDS.map((card, i) => (
@@ -250,7 +262,30 @@ function ProductSection() {
 }
 
 /* ================================================================== */
-/* 4. PRICING                                                          */
+/* 4. MISSING LAYER (pass 2 — borrow-list item 10)                     */
+/* ================================================================== */
+function MissingLayerSection() {
+  return (
+    <section className="py-20 md:py-28">
+      <div className="mx-auto max-w-6xl px-6 md:px-8">
+        <FadeIn className="max-w-3xl">
+          <SectionKicker>Already have a marketing system?</SectionKicker>
+          <SectionH2>
+            It makes the phone ring. The Receptionist answers it.
+          </SectionH2>
+          <p className="mt-5 text-base leading-relaxed text-text-muted md:text-lg">
+            Websites, SEO, and ads are built to make the phone ring — and none
+            of them pick it up. The Receptionist is the layer every system is
+            missing: the moment a student reaches out, someone answers.
+          </p>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================== */
+/* 5. PRICING                                                          */
 /* ================================================================== */
 function PricingSection() {
   return (
@@ -258,12 +293,9 @@ function PricingSection() {
       <div className="mx-auto max-w-6xl px-6 md:px-8">
         <FadeIn className="max-w-3xl">
           <SectionKicker>Pricing</SectionKicker>
-          <h2
-            className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
-            style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
-          >
+          <SectionH2>
             $97/month. $197 setup. That&apos;s the whole price.
-          </h2>
+          </SectionH2>
           <p className="mt-5 text-base leading-relaxed text-text-muted md:text-lg">
             No six-month minimums. No retainer. No proposal you can&apos;t
             compare to anything. A full marketing system runs $1,000–3,000 a
@@ -286,7 +318,7 @@ function PricingSection() {
 }
 
 /* ================================================================== */
-/* 5. STORY                                                            */
+/* 6. STORY                                                            */
 /* ================================================================== */
 function StorySection() {
   return (
@@ -294,12 +326,9 @@ function StorySection() {
       <div className="mx-auto max-w-6xl px-6 md:px-8">
         <FadeIn className="max-w-3xl">
           <SectionKicker>Who builds it</SectionKicker>
-          <h2
-            className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
-            style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
-          >
+          <SectionH2>
             Built by a systems guy who&apos;s becoming a pilot.
-          </h2>
+          </SectionH2>
           <p className="mt-5 text-base leading-relaxed text-text-muted md:text-lg">
             I&apos;ve spent ten years building systems for businesses —
             operations, automation, the unglamorous machinery that makes
@@ -319,7 +348,7 @@ function StorySection() {
 }
 
 /* ================================================================== */
-/* 6. GROWTH LAYER                                                     */
+/* 7. GROWTH LAYER                                                     */
 /* ================================================================== */
 function GrowthSection() {
   return (
@@ -327,12 +356,9 @@ function GrowthSection() {
       <div className="mx-auto max-w-6xl px-6 md:px-8">
         <FadeIn className="max-w-3xl">
           <SectionKicker>Later, when you&apos;re ready</SectionKicker>
-          <h2
-            className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
-            style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
-          >
+          <SectionH2>
             When every call is answered, make the phone ring more.
-          </h2>
+          </SectionH2>
           <p className="mt-5 text-base leading-relaxed text-text-muted md:text-lg">
             Websites, search visibility — including AI search, where students
             increasingly ask ChatGPT which school to choose — and ads, built
@@ -346,7 +372,139 @@ function GrowthSection() {
 }
 
 /* ================================================================== */
-/* 7. AUDIT CLOSER (#audit)                                            */
+/* 8. MISSED-CALL COST CALCULATOR (#calculator, pass 2 — §5.4 / item 4)*/
+/* X = inquiries × voicemail share × live booking rate × student value. */
+/* ================================================================== */
+const usd = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0,
+});
+
+function CalcSlider({
+  label,
+  value,
+  display,
+  min,
+  max,
+  step,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  display: string;
+  min: number;
+  max: number;
+  step: number;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <div>
+      <div className="flex items-baseline justify-between gap-4">
+        <label className="text-sm text-text-muted">{label}</label>
+        <span className="font-mono text-sm font-medium text-text">{display}</span>
+      </div>
+      <input
+        type="range"
+        aria-label={label}
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="mt-2 w-full"
+        style={{ accentColor: "var(--accent)" }}
+      />
+    </div>
+  );
+}
+
+function CalculatorSection() {
+  const [inquiries, setInquiries] = useState(30);
+  const [voicemailPct, setVoicemailPct] = useState(40);
+  const [bookingPct, setBookingPct] = useState(25);
+  const [studentValue, setStudentValue] = useState(15000);
+
+  const monthlyCost = inquiries * (voicemailPct / 100) * (bookingPct / 100) * studentValue;
+
+  return (
+    <section id="calculator" className="py-20 md:py-28">
+      <div className="mx-auto max-w-6xl px-6 md:px-8">
+        <FadeIn className="max-w-3xl">
+          <SectionKicker>The math</SectionKicker>
+          <SectionH2>What voicemail costs your school.</SectionH2>
+        </FadeIn>
+        <FadeIn className="mt-10 max-w-3xl rounded-2xl border border-border bg-surface p-6 md:p-8">
+          <div className="grid gap-6 sm:grid-cols-2">
+            <CalcSlider
+              label="Discovery-flight inquiries per month"
+              value={inquiries}
+              display={String(inquiries)}
+              min={5}
+              max={100}
+              step={1}
+              onChange={setInquiries}
+            />
+            <CalcSlider
+              label="Share reaching voicemail / after-hours"
+              value={voicemailPct}
+              display={`${voicemailPct}%`}
+              min={10}
+              max={90}
+              step={5}
+              onChange={setVoicemailPct}
+            />
+            <CalcSlider
+              label="Booking rate when answered live"
+              value={bookingPct}
+              display={`${bookingPct}%`}
+              min={5}
+              max={60}
+              step={5}
+              onChange={setBookingPct}
+            />
+            <CalcSlider
+              label="Value of one enrolled student"
+              value={studentValue}
+              display={usd.format(studentValue)}
+              min={5000}
+              max={40000}
+              step={500}
+              onChange={setStudentValue}
+            />
+          </div>
+          <div className="mt-8 border-t border-border pt-6">
+            <p className="text-xl font-semibold tracking-tight text-text md:text-2xl">
+              Unanswered inquiries cost you ≈{" "}
+              <span className="text-[var(--clay)]">{usd.format(monthlyCost)}</span>{" "}
+              per month
+            </p>
+            <p className="mt-3 text-xs leading-relaxed text-text-dim md:text-sm">
+              {inquiries} inquiries × {voicemailPct}% to voicemail × {bookingPct}%
+              booking rate × {usd.format(studentValue)}{" "}per student —
+              conservative on purpose; change the numbers to your school&apos;s.
+            </p>
+          </div>
+        </FadeIn>
+        <FadeIn className="mt-8 max-w-3xl">
+          <a
+            href="#audit"
+            className="group inline-flex items-center gap-2 text-base text-text-muted transition-colors hover:text-text md:text-lg"
+          >
+            Then tonight, call your own school after hours — and hear it for
+            yourself.
+            <span aria-hidden className="text-accent transition-transform group-hover:translate-y-0.5">
+              ↓
+            </span>
+          </a>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================== */
+/* 9. AUDIT CLOSER (#audit)                                            */
 /* ================================================================== */
 function AuditSection() {
   return (
@@ -354,12 +512,7 @@ function AuditSection() {
       <div className="mx-auto max-w-6xl px-6 md:px-8">
         <FadeIn className="max-w-3xl rounded-2xl border border-border bg-surface p-8 md:p-12">
           <SectionKicker>The two-minute test</SectionKicker>
-          <h2
-            className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
-            style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
-          >
-            Hear what your students hear.
-          </h2>
+          <SectionH2>Hear what your students hear.</SectionH2>
           <p className="mt-5 text-base leading-relaxed text-text-muted md:text-lg">
             Tonight, after 8 PM, call your own school. That&apos;s what a
             motivated student pilot hears. Then call our demo line — same
@@ -370,6 +523,67 @@ function AuditSection() {
             <span className="font-mono text-sm text-text-muted">{DEMO_DISPLAY}</span>
           </div>
         </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================== */
+/* 10. FAQ (pass 2 — FAQPage JSON-LD is served from page.tsx)          */
+/* ================================================================== */
+const FAQS = [
+  {
+    q: "Does it replace my front desk?",
+    a: "It covers what a front desk can't: after-hours, weekends, and the calls that come in while everyone's flying. Your staff keeps the day shift; nothing gets missed around it.",
+  },
+  {
+    q: "What happens when it doesn't know an answer?",
+    a: "It says so honestly, takes the caller's details, and texts you the summary — no invented answers, ever.",
+  },
+  {
+    q: "How does discovery-flight booking work?",
+    a: "It connects to your calendar and books straight into it, with automatic reminders. If you don't use a calendar today, setup includes one.",
+  },
+  {
+    q: "Do I keep my phone number?",
+    a: "Yes. Calls forward to the Receptionist only when you can't answer — after hours, or when the line is busy.",
+  },
+  {
+    q: "Is there a contract?",
+    a: "No. $97/month, $197 one-time setup, cancel anytime. The demo line on this page is the product, live — judge it before you pay anything.",
+  },
+];
+
+function FaqSection() {
+  return (
+    <section id="faq" className="py-20 md:py-28">
+      <div className="mx-auto max-w-6xl px-6 md:px-8">
+        <FadeIn className="max-w-3xl">
+          <SectionKicker>Questions owners ask</SectionKicker>
+          <SectionH2>Fair questions, straight answers.</SectionH2>
+        </FadeIn>
+        <div className="mt-10 grid max-w-3xl gap-4">
+          {FAQS.map((item, i) => (
+            <motion.div
+              key={item.q}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.45, ease, delay: i * 0.05 }}
+              className="rounded-2xl border border-border bg-surface p-5 md:p-6"
+            >
+              <div
+                className="text-base font-semibold text-text"
+                style={{ letterSpacing: "-0.01em" }}
+              >
+                {item.q}
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-text-muted md:text-[15px]">
+                {item.a}
+              </p>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -405,10 +619,13 @@ export default function FlyHomeClient() {
       <HeroSection />
       <FifthPlaceSection />
       <ProductSection />
+      <MissingLayerSection />
       <PricingSection />
       <StorySection />
       <GrowthSection />
+      <CalculatorSection />
       <AuditSection />
+      <FaqSection />
       <FlyHomeFooter />
     </main>
   );
