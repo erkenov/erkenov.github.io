@@ -69,7 +69,7 @@ export function DocsHeader() {
             </span>
           </Link>
           <Link
-            href="/fly-home"
+            href="/"
             className="hidden items-center gap-1.5 font-mono text-xs text-text-muted transition-colors hover:text-text sm:inline-flex"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
@@ -123,7 +123,7 @@ export function DocsFooter() {
           <Link href="/docs" className="transition-colors hover:text-text">
             All articles
           </Link>
-          <Link href="/fly-home" className="transition-colors hover:text-text">
+          <Link href="/" className="transition-colors hover:text-text">
             Home
           </Link>
         </div>

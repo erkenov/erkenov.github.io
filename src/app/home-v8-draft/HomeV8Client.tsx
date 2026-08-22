@@ -55,6 +55,7 @@ import { STACK_LOGOS } from "./stack-logos";
 import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
 import { SceneIndustriesCarousel } from "@/components/SceneIndustriesCarousel";
 import ProductSections from "@/components/ProductSections";
+import WorkflowSections from "@/components/WorkflowSections";
 import Process from "@/components/Process";
 import ErkenChatWidget, { openErkenChat } from "@/components/ErkenChatWidget";
 import {
@@ -1226,15 +1227,28 @@ export default function HomeV8Client() {
           2026-08-16 (founder videos come later). */}
       <ProductSections theme="light" />
 
+      {/* 2b. The workflow blocks (Shamil 2026-08-22): five flight-school
+          automations from the leverage research + his no-show-rescue and
+          reminder ideas — "sell them to me, I'll decide what stays."
+          TINTED background — his alternating-backgrounds rule (same day):
+          hero(glow) → what-you-get(plain) → workflows(tint) → FAQ(plain)
+          → story(tint) → process(plain) → pricing(wash) → pipeline(plain)
+          → stack(tint) → marquee(plain). */}
+      <div className="bg-surface">
+        <WorkflowSections />
+      </div>
+
       {/* 3. Why us + FAQ — MERGED 2026-08-22 (Shamil): one sage/amber
-          accordion ("Fair questions, straight answers") replaces both the
-          WhyUs green cards AND the old plain FAQ accordion. */}
+          always-expanded card list ("Fair questions, straight answers")
+          replaces both the WhyUs green cards AND the old plain FAQ
+          accordion. */}
       <MergedFaq />
 
       {/* 4. Founder story ("Who builds it") — added 2026-08-22 (Shamil):
-          text left, his intro video right (same Scene1IntroVideo as the
-          hero; the hero's first section will change separately later). */}
-      <FounderStorySection />
+          text left, his intro video right. TINTED (alternating rule). */}
+      <div className="bg-surface">
+        <FounderStorySection />
+      </div>
 
       {/* 5. Process — BEFORE pricing (Shamil 2026-08-16): the easy 5-step
           process earns the right to show the price. (The stack table moved
@@ -1258,8 +1272,10 @@ export default function HomeV8Client() {
 
       {/* 8. Stack comparison — moved here 2026-08-22 (Shamil): right after
           the full-platform section, right before the integrations
-          carousel. */}
-      <StackComparisonSection />
+          carousel. TINTED (alternating-backgrounds rule). */}
+      <div className="bg-surface">
+        <StackComparisonSection />
+      </div>
 
       {/* 9. Integrations marquee — at the VERY BOTTOM (Shamil 2026-08-22). */}
       <IntegrationsMarquee />

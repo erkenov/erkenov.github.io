@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import FlyHomeClient from "./FlyHomeClient";
 
 /**
@@ -95,6 +96,10 @@ const FAQ_JSON_LD = {
 };
 
 export default function FlyHomePage() {
+  // HIDDEN 2026-08-22 (Shamil: "fly-home shouldn't be accessible — delete
+  // it or hide it"): the route 404s publicly; the code stays in the repo
+  // (recoverable — remove this call to re-enable the draft).
+  notFound();
   return (
     <>
       <script
