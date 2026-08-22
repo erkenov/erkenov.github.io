@@ -854,13 +854,11 @@ function PricingSection() {
             <PlatformPeriodCardHome key={p.id} period={p} />
           ))}
         </div>
-        {/* Usage-cost disclosure (owner ask, 2026-08-12): voice minutes are
-            pass-through. Amber + approximate per-minute rate (Shamil
-            2026-08-16) so nobody imagines scary metered pricing. */}
+        {/* Usage-cost disclosure (owner ask, 2026-08-12; trimmed to the one
+            sentence 2026-08-22, Shamil). */}
         <p className="mt-6 text-xs font-medium leading-relaxed text-amber-700">
           AI voice minutes are billed separately at cost — roughly 10¢ a
-          minute, so even a busy month of answered calls adds a few dollars,
-          never a surprise bill.
+          minute.
         </p>
       </div>
     </section>
