@@ -1526,15 +1526,10 @@ function HeroCalcTest() {
           onChange={setCustomerValue}
         />
       </div>
-      <p className="mt-4 border-t border-border pt-4 text-lg font-semibold tracking-tight text-text">
+      <p className="mt-4 text-lg font-semibold tracking-tight text-text">
         Unanswered inquiries cost you ≈{" "}
         <span className="text-[var(--clay)]">{heroUsd.format(monthlyCost)}</span>{" "}
         per month
-      </p>
-      <p className="mt-2 text-[11px] leading-relaxed text-text-dim">
-        {inquiries} inquiries × {voicemailPct}% to voicemail × {bookingPct}%
-        booking rate × {heroUsd.format(customerValue)} per customer —
-        conservative on purpose; change the numbers to yours.
       </p>
 
       {/* The two-minute test */}
@@ -1553,7 +1548,13 @@ function HeroCalcTest() {
             className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
           >
             <PhoneCall className="h-4 w-4" />
-            Call (888) 799-6065 — hear it work
+            Call the AI receptionist
+          </a>
+          <a
+            href={`tel:+18887996065`}
+            className="font-mono text-sm text-text-muted transition-colors hover:text-text"
+          >
+            or dial (888) 799-6065
           </a>
         </div>
       </div>
