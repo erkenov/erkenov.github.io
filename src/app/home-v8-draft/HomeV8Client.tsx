@@ -55,9 +55,7 @@ import { STACK_LOGOS } from "./stack-logos";
 import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
 import { SceneIndustriesCarousel } from "@/components/SceneIndustriesCarousel";
 import ProductSections from "@/components/ProductSections";
-import Faq from "@/components/Faq";
 import Process from "@/components/Process";
-import WhyUs from "@/components/WhyUs";
 import ErkenChatWidget, { openErkenChat } from "@/components/ErkenChatWidget";
 import {
   PLATFORM_HEADLINE_MONTHLY,
@@ -1287,15 +1285,15 @@ export default function HomeV8Client() {
           2026-08-16 (founder videos come later). */}
       <ProductSections theme="light" />
 
-      {/* 3. Why us — right after the product block (Shamil 2026-08-13:
-          "fair questions" follows "keep them coming back"). */}
-      <WhyUs theme="light" />
+      {/* 3. Why us + FAQ — MERGED 2026-08-22 (Shamil): one sage/amber
+          accordion ("Fair questions, straight answers") replaces both the
+          WhyUs green cards AND the old plain FAQ accordion. */}
+      <MergedFaq />
 
-      {/* 4. Stack comparison + FAQ + Process — all BEFORE pricing (Shamil
+      {/* 4. Stack comparison + Process — all BEFORE pricing (Shamil
           2026-08-16): value math, objection-handling, and the easy 4-step
           process earn the right to show the price. */}
       <StackComparisonSection />
-      <Faq theme="light" />
       <Process theme="light" />
 
       {/* 5. Pricing — owner-approved 3-card restructure (2026-08-12): three
@@ -1329,5 +1327,93 @@ export default function HomeV8Client() {
 
     <ErkenChatWidget />
     </>
+  );
+}
+
+
+/* ================================================================== */
+/* MERGED FAQ — "Fair questions, straight answers" sage/amber          */
+/* accordion (Shamil 2026-08-22: replaces BOTH the WhyUs green cards   */
+/* and the old plain FAQ accordion — "FAQ and YS, two in one", design  */
+/* from the /fly-home demo). Content = the main-site FAQ set + the     */
+/* demo's three product Q&As. NOTE: the demo's GHL-transparency answer */
+/* and its discovery-flight question stay on /fly-home only — the      */
+/* no-vendor-names rule still stands on the live generic homepage.     */
+/* ================================================================== */
+const MERGED_FAQS = [
+  {
+    q: "Does it replace my front desk?",
+    a: "It covers what a front desk can't: after-hours, weekends, and the calls that come in while everyone's busy. Your staff keeps the day shift; nothing gets missed around it.",
+  },
+  {
+    q: "What happens when it doesn't know an answer?",
+    a: "It says so honestly, takes the caller's details, and texts you the summary — no invented answers, ever.",
+  },
+  {
+    q: "Do I keep my phone number?",
+    a: "Yes. Calls forward to the Receptionist only when you can't answer — after hours, or when the line is busy.",
+  },
+  {
+    q: "When am I going to start seeing results?",
+    a: "Honestly? It depends on what else you're doing to bring customers in, how long you've been around, and how good the work is — anyone who promises you a date is guessing. What we can promise: every call answered, every lead followed up in seconds, every happy customer asked for a review, every past customer reminded you exist. If you're doing your part, the system multiplies it. If you want to close your eyes and pay someone to make the phone ring by magic — we're not the right fit.",
+  },
+  {
+    q: "Why is your pricing so cheap?",
+    a: "Because the whole model is keeping you for ten years, not ten weeks. The systems are built once and refined forever, so we run many businesses on work we've already done — that leverage is why the price is what it is. Stay affordable, do good work, and you never have a reason to leave.",
+  },
+  {
+    q: "Can people find my website on Google?",
+    a: "Every site we ship is built to be found: proper page titles and meta descriptions, image alt tags, SSL, fast loading, mobile-first. The honest part: ranking high is a long game — it depends on your market, your competition, and your reviews. We build the foundation right and keep it maintained. We don't sell \"#1 on Google in a week,\" because nobody honest can deliver that.",
+  },
+  {
+    q: "Word of mouth already brings me business — why spend on a website?",
+    a: "Because word of mouth ends the same way every time: the person Googles you before they call. If nothing comes up — or the site looks abandoned — the referral dies quietly and you never find out. A proper site catches those referrals, makes you easier to recommend, and wins the bigger customers who always check first. A couple of extra customers a year usually pays for the whole thing.",
+  },
+  {
+    q: "What happens if I decide to cancel?",
+    a: "We'll be sad to see you go — then we'll help you leave cleanly. No contracts, no cancellation fees, no hostage-taking. You lose access to the platform and the systems we run for you in it; your business data is yours to export.",
+  },
+];
+
+function MergedFaq() {
+  return (
+    <section id="faq" className="py-20 md:py-28">
+      <div className="mx-auto max-w-3xl px-6 md:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.5, ease }}
+          className="text-center"
+        >
+          <SectionKicker>Questions owners ask</SectionKicker>
+          <h2
+            className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
+            style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
+          >
+            Fair questions, straight answers.
+          </h2>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.5, ease }}
+          className="mt-12"
+        >
+          <div className="divide-y divide-white/15 overflow-hidden rounded-2xl border border-white/10 bg-[#8fb496] shadow-[0_18px_44px_-18px_rgba(126,166,135,0.75)]">
+            {MERGED_FAQS.map((item) => (
+              <details key={item.q} className="group px-6 py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-medium text-white [&::-webkit-details-marker]:hidden">
+                  {item.q}
+                  <ChevronDown className="h-5 w-5 shrink-0 text-amber-300 transition group-open:rotate-180" />
+                </summary>
+                <p className="mt-3 leading-relaxed text-white/85">{item.a}</p>
+              </details>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </section>
   );
 }
