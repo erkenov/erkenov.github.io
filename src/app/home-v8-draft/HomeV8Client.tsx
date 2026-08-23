@@ -296,7 +296,10 @@ function DraftHeader() {
               Products
               <ChevronDown className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" />
             </button>
-            <div className="invisible absolute top-full left-1/2 -translate-x-1/2 pt-3 opacity-0 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+            {/* Anchored left (not centered) 2026-08-23: the widened
+                two-column box overflowed the left viewport edge when
+                centered under the button. */}
+            <div className="invisible absolute top-full left-0 pt-3 opacity-0 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
               {/* Two-column mega menu (Shamil 2026-08-23): nine items made
                   the single column a long strip — grid it so the box reads
                   square. */}
