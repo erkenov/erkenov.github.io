@@ -71,16 +71,24 @@ const ease = [0.16, 1, 0.3, 1] as const;
 
 // v8 restructure: only the HERO stays as an L/R Section. The four
 // full-screen pipeline step scenes that used to follow it are replaced by
-// the compressed illustrated PipelineStepper below. The hero keeps the
-// live founder video (Scene1IntroVideo) and gains a one-line price tease
-// (home-draft additions; the "See your industry" button was removed
-// 2026-08-13).
+// the compressed illustrated PipelineStepper below. Hero body = the compact
+// GHL-style tool list (2026-08-23, Shamil: the old "Here's the truth…"
+// paragraph was too long and said too little). The hero media is the merged
+// math + two-minute-test block (HeroCalcTest, 2026-08-22). The hero keeps a
+// one-line price tease (home-draft additions; the "See your industry" button
+// was removed 2026-08-13).
 const SECTIONS = [
   {
     side: "left" as const,
     kicker: "Erken Systems",
     headline: "The AI-powered flight school operating system",
-    body: "Here's the truth: most small businesses lose customers to a missed call or a website that doesn't work on a phone. We build you a site that gets found on Google, and an AI receptionist that answers every call, text, and chat — 24/7. No miracles, no fluff. You commit to using it — it never lets a lead slip.",
+    body: "All the tools you need to capture, nurture, and close new students — in one system:",
+    bullets: [
+      { lead: "Get found", rest: "a website that Google and AI search recommend" },
+      { lead: "Get answered", rest: "an AI receptionist on every call, text, and chat, 24/7" },
+      { lead: "Get booked", rest: "automatic follow-up that turns inquiries into flights" },
+      { lead: "Get recommended", rest: "reviews and referrals collected on autopilot" },
+    ],
     cta: "Get started",
     priceTease: "Platform from $77 a month.",
   },
@@ -112,6 +120,7 @@ function Section({
   kicker,
   headline,
   body,
+  bullets,
   side,
   cta,
   priceTease,
@@ -164,6 +173,23 @@ function Section({
         <p className="mt-5 text-base xl:text-lg text-text-muted leading-relaxed">
           {body}
         </p>
+        {/* Compact tool list (Shamil 2026-08-23): replaces the old "Here's
+            the truth…" paragraph — GHL-style, short enough to actually be
+            read. Result-first bullets, one per tool. */}
+        {bullets && (
+          <ul className="mt-4 space-y-2 text-base xl:text-lg leading-relaxed">
+            {bullets.map((b) => (
+              <li key={b.lead} className="flex items-start gap-2.5">
+                <Check className="mt-1 h-4 w-4 shrink-0 text-accent" />
+                <span className="text-text-muted">
+                  <strong className="font-semibold text-text">{b.lead}</strong>
+                  {" — "}
+                  {b.rest}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
         {/* One-line price tease (home-draft v2): the only pricing mention
             until the full 3-tier section late in the page. */}
         {priceTease && (
@@ -304,17 +330,17 @@ function DraftHeader() {
               removed with Erkenbot 2026-08-16). Mobile keeps the icon-button
               tel: link just below (native dialer is correct there). */}
           <a
-            href="tel:+18887996065"
+            href="tel:+19016331400"
             className="flex items-center gap-1.5 font-mono text-sm text-text-muted transition-colors hover:text-text"
           >
             <Phone className="h-3.5 w-3.5" />
-            (888) 799-6065
+            (901) 633-1400
           </a>
         </nav>
         <div className="flex items-center gap-3">
           <a
-            href="tel:+18887996065"
-            aria-label="Call (888) 799-6065"
+            href="tel:+19016331400"
+            aria-label="Call (901) 633-1400"
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text-muted transition-colors hover:border-border-strong hover:text-text md:hidden"
           >
             <Phone className="h-4 w-4" />
@@ -1234,7 +1260,7 @@ export default function HomeV8Client() {
           hero(glow) → what-you-get(plain) → workflows(tint) → FAQ(plain)
           → story(tint) → process(plain) → pricing(wash) → pipeline(plain)
           → stack(tint) → marquee(plain). */}
-      <div className="bg-surface">
+      <div className="section-tint">
         <WorkflowSections />
       </div>
 
@@ -1246,7 +1272,7 @@ export default function HomeV8Client() {
 
       {/* 4. Founder story ("Who builds it") — added 2026-08-22 (Shamil):
           text left, his intro video right. TINTED (alternating rule). */}
-      <div className="bg-surface">
+      <div className="section-tint">
         <FounderStorySection />
       </div>
 
@@ -1273,7 +1299,7 @@ export default function HomeV8Client() {
       {/* 8. Stack comparison — moved here 2026-08-22 (Shamil): right after
           the full-platform section, right before the integrations
           carousel. TINTED (alternating-backgrounds rule). */}
-      <div className="bg-surface">
+      <div className="section-tint">
         <StackComparisonSection />
       </div>
 
@@ -1450,7 +1476,8 @@ function FounderStorySection() {
 /* after hours" test as ONE card, mounted as the hero's right-side     */
 /* media in place of the intro video. Calculator wording genericized   */
 /* for the live (still multi-industry) homepage; the CTA calls the     */
-/* live Erken Systems line (888) — the AI receptionist answers it.     */
+/* Retell demo line (901) 633-1400 — the website-attached Retell voice */
+/* agent answers it (Shamil 2026-08-23: replaces the 888 line here).   */
 /* ================================================================== */
 const heroUsd = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -1570,17 +1597,17 @@ function HeroCalcTest() {
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <a
-            href="tel:+18887996065"
+            href="tel:+19016331400"
             className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
           >
             <PhoneCall className="h-4 w-4" />
-            Call the AI receptionist
+            Call your AI receptionist
           </a>
           <a
-            href={`tel:+18887996065`}
+            href={`tel:+19016331400`}
             className="font-mono text-sm text-text-muted transition-colors hover:text-text"
           >
-            or dial (888) 799-6065
+            or dial (901) 633-1400
           </a>
         </div>
       </div>

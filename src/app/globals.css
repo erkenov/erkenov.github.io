@@ -100,6 +100,15 @@ button,
   color: var(--bg);
 }
 
+/* Alternating section tint (Shamil 2026-08-23): homepage sections alternate
+   background / no-background down the page. The previous white `bg-surface`
+   tint read as "no background" next to the cream page bg, so the tinted
+   sections use this clearly-visible sage wash instead; white cards inside
+   them keep their contrast. */
+.section-tint {
+  background: rgba(126, 166, 135, 0.16);
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
