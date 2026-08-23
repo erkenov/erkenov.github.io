@@ -58,7 +58,7 @@ const SECTIONS: Record<SectionId, ProductSection> = {
     bullets: [
       {
         lead: "Every caller gets an answer — in seconds, 24/7.",
-        text: "Phone, SMS, and web chat — one receptionist on all of them, weekends and holidays included. Around 80% of callers who reach voicemail hang up and dial the next business; yours won't.",
+        text: "Phone, SMS, and web chat — one receptionist on all of them, weekends and holidays included. Around 80% of callers who reach voicemail hang up and dial the next business; yours won't. And speed decides who gets the student: 78% of buyers go with whoever responds first, and instant answers book at more than double the rate of same-hour follow-up.",
       },
       {
         lead: "Answers like your best employee.",

@@ -1,19 +1,24 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import PageViewTracker from "@/components/PageViewTracker";
 import PostHogProvider from "@/components/PostHogProvider";
 import GhlWidgetLoader from "@/components/GhlWidgetLoader";
 
-const inter = Inter({
+/* Self-hosted variable fonts (2026-08-23): next/font/google fetches from
+   Google Fonts at BUILD time, and that fetch started hanging on this
+   machine (two builds wedged for 20+ min while curl succeeded). The
+   variable latin woff2 files now live in ./fonts/ — zero build-time
+   network, same CSS variables, same look. */
+const inter = localFont({
+  src: "./fonts/InterVariable.woff2",
   variable: "--font-inter",
-  subsets: ["latin"],
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const jetbrainsMono = localFont({
+  src: "./fonts/JetBrainsMonoVariable.woff2",
   variable: "--font-jetbrains",
-  subsets: ["latin"],
   display: "swap",
 });
 

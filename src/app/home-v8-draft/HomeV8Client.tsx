@@ -48,7 +48,7 @@
 
 import { useEffect, useState, Fragment } from "react";
 import { motion } from "framer-motion";
-import { CalendarCheck, Check, ChevronDown, Globe, GraduationCap, Megaphone, Phone, PhoneCall, RefreshCw, Star, UserPlus, Zap } from "lucide-react";
+import { CalendarCheck, Check, ChevronDown, Globe, GraduationCap, Megaphone, Phone, PhoneCall, RefreshCw, Star, UserPlus } from "lucide-react";
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { INTEGRATION_LOGOS } from "./integration-logos";
 import { STACK_LOGOS } from "./stack-logos";
@@ -316,7 +316,9 @@ function DraftHeader() {
                   { icon: RefreshCw, name: "No-show & weather rescue", desc: "A cancelled flight rebooks itself — by text or a live call.", href: "#workflow-rescue" },
                   { icon: GraduationCap, name: "Enrollment follow-up", desc: "The discovery flight they loved becomes the enrollment.", href: "#workflow-postflight" },
                   { icon: UserPlus, name: "Student win-back", desc: "Lost students come back — a text costs cents, a new student costs $400+.", href: "#workflow-reactivation" },
-                  { icon: Zap, name: "60-second answers", desc: "Every inquiry gets a real reply in seconds, at any hour.", href: "#workflow-speed-to-lead" },
+                  /* "60-second answers" menu item removed 2026-08-23 with
+                     the speed-to-lead workflow (duplicated the AI
+                     receptionist product section — Shamil). */
                 ].map(({ icon: Icon, name, desc, href }) => (
                   <a
                     key={href}
@@ -1244,16 +1246,16 @@ export default function HomeV8Client() {
     {/* Erkenbot/Celly + particle stage removed 2026-08-16 — plain page now,
         GHL bubble is the chat launcher. */}
     <main>
-      {/* 1. HERO — the LIVE hero Section (kept). MEDIA SWAP 2026-08-22
-          (Shamil): the founder intro video moves to the new "Who builds
-          it" section; the hero's right side is now the merged math +
-          two-minute-test block (HeroCalcTest). */}
+      {/* 1. HERO — the LIVE hero Section (kept). MEDIA 2026-08-23
+          (Shamil): the right side is now the without→with comparison
+          panel (HeroComparison) — the whole-system pitch, replacing the
+          receptionist-only slider calculator; two-minute test kept. */}
       <Section
         isMobile={isMobile}
         stacked={false}
         heroBackground
         {...SECTIONS[0]}
-        media={<HeroCalcTest />}
+        media={<HeroComparison />}
         // Nudge the text column a little right, closer to the math box
         // (Shamil 2026-08-22).
         textWrapperClassName="md:pl-[3vw]"
@@ -1489,119 +1491,48 @@ function FounderStorySection() {
 }
 
 /* ================================================================== */
-/* HERO MATH + TWO-MINUTE TEST — merged block (Shamil 2026-08-22):     */
-/* the missed-call cost calculator and the "call your own business     */
-/* after hours" test as ONE card, mounted as the hero's right-side     */
-/* media in place of the intro video. Calculator wording genericized   */
-/* for the live (still multi-industry) homepage; the CTA starts an          */
-/* in-browser Retell web call with the site voice agent (restored            */
-/* 2026-08-23, Shamil) — the "or dial" link beside it rings the same agent   */
-/* on the Retell line (901) 633-1400.                                       */
+/* HERO WITHOUT→WITH PANEL + TWO-MINUTE TEST (Shamil 2026-08-23):      */
+/* replaces the voicemail-cost slider calculator — it only sold the    */
+/* receptionist, while the snapshot is the whole system. His brief:    */
+/* "compare what they get without each feature vs with it, in money    */
+/* and conversion terms… interactive or not, your judgment." Static    */
+/* won: five rows read in five seconds; sliders made visitors work.    */
+/* The numbers below are the stats already proven elsewhere on the     */
+/* page. The CTA starts an in-browser Retell web call with the site    */
+/* voice agent; the "or dial" link rings the same agent on the Retell  */
+/* line (901) 633-1400.                                                */
 /* ================================================================== */
-const heroUsd = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
+const WITHOUT_WITH = [
+  { without: "Voicemail after 6 PM", win: "Every call answered, 24/7" },
+  { without: "Inquiries answered hours later", win: "A real answer in 60 seconds" },
+  { without: "No-shows and cancels eat the schedule", win: "Reminders out; the flight rebooks itself" },
+  { without: "The discovery flight ends in silence", win: "Follow-up until they enroll" },
+  { without: "Reviews and referrals by luck", win: "Collected on autopilot" },
+];
 
-function HeroCalcSlider({
-  label,
-  value,
-  display,
-  min,
-  max,
-  step,
-  onChange,
-}: {
-  label: string;
-  value: number;
-  display: string;
-  min: number;
-  max: number;
-  step: number;
-  onChange: (v: number) => void;
-}) {
-  return (
-    <div>
-      <div className="flex items-baseline justify-between gap-3">
-        <label className="text-xs text-text-muted">{label}</label>
-        <span className="font-mono text-xs font-medium text-text">{display}</span>
-      </div>
-      <input
-        type="range"
-        aria-label={label}
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="mt-1.5 w-full"
-        style={{ accentColor: "var(--accent)" }}
-      />
-    </div>
-  );
-}
-
-function HeroCalcTest() {
-  const [inquiries, setInquiries] = useState(30);
-  const [voicemailPct, setVoicemailPct] = useState(40);
-  const [bookingPct, setBookingPct] = useState(25);
-  const [customerValue, setCustomerValue] = useState(5000);
-
-  const monthlyCost =
-    inquiries * (voicemailPct / 100) * (bookingPct / 100) * customerValue;
-
+function HeroComparison() {
   return (
     <div className="w-full max-w-xl rounded-2xl border border-border bg-surface/95 p-5 shadow-2xl backdrop-blur-sm md:p-6">
-      {/* The math */}
       <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-accent">
-        The math
+        Without it → with it
       </p>
       <p className="mt-2 text-xl font-bold tracking-tight text-text" style={{ letterSpacing: "-0.02em" }}>
-        What voicemail costs you
+        The same school — system off, system on
       </p>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        <HeroCalcSlider
-          label="Inquiries per month"
-          value={inquiries}
-          display={String(inquiries)}
-          min={5}
-          max={100}
-          step={1}
-          onChange={setInquiries}
-        />
-        <HeroCalcSlider
-          label="Share reaching voicemail / after-hours"
-          value={voicemailPct}
-          display={`${voicemailPct}%`}
-          min={10}
-          max={90}
-          step={5}
-          onChange={setVoicemailPct}
-        />
-        <HeroCalcSlider
-          label="Booking rate when answered live"
-          value={bookingPct}
-          display={`${bookingPct}%`}
-          min={5}
-          max={60}
-          step={5}
-          onChange={setBookingPct}
-        />
-        <HeroCalcSlider
-          label="Value of one customer"
-          value={customerValue}
-          display={heroUsd.format(customerValue)}
-          min={500}
-          max={50000}
-          step={500}
-          onChange={setCustomerValue}
-        />
-      </div>
-      <p className="mt-4 text-lg font-semibold tracking-tight text-text">
-        Unanswered inquiries cost you ≈{" "}
-        <span className="text-[var(--clay)]">{heroUsd.format(monthlyCost)}</span>{" "}
-        per month
+      <ul className="mt-4 divide-y divide-border/60">
+        {WITHOUT_WITH.map((r) => (
+          <li key={r.without} className="grid grid-cols-2 items-baseline gap-3 py-2.5">
+            <span className="text-sm text-text-dim line-through decoration-text-dim/40">
+              {r.without}
+            </span>
+            <span className="text-sm font-medium text-text">{r.win}</span>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-4 text-xs leading-relaxed text-text-muted">
+        80% of callers who reach voicemail dial the next school. 78% of buyers go
+        with whoever answers first. Reminders cut no-shows by a third — and only
+        20–40% of discovery flyers ever enroll without follow-up.
       </p>
 
       {/* The two-minute test */}

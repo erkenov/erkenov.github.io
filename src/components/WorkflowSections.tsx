@@ -100,21 +100,11 @@ const WORKFLOWS: Workflow[] = [
     ],
     videoLabel: "Shamil runs a reactivation campaign",
   },
-  {
-    id: "speed-to-lead",
-    title: "Every inquiry gets an answer in sixty seconds",
-    bullets: [
-      {
-        lead: "First responder wins.",
-        text: "78% of buyers go with whoever responds first — and instant answers book meetings at more than double the rate of same-hour follow-up.",
-      },
-      {
-        lead: "Forms, texts, chat — all covered.",
-        text: "The inquiry gets a real reply in seconds, at any hour — not a form confirmation that reads like a receipt.",
-      },
-    ],
-    videoLabel: "Shamil shows the 60-second reply",
-  },
+  /* "Every inquiry gets an answer in sixty seconds" (speed-to-lead)
+     REMOVED 2026-08-23 (Shamil): it duplicated the AI-receptionist
+     product section. Its two proof stats (78% first-responder wins,
+     instant answers book at 2× the same-hour rate) moved into the
+     receptionist bullets in ProductSections.tsx. */
 ];
 
 function VideoSlot({ label }: { label: string }) {
