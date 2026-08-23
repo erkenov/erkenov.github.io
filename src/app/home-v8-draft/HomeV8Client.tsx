@@ -48,7 +48,7 @@
 
 import { useEffect, useState, Fragment } from "react";
 import { motion } from "framer-motion";
-import { CalendarCheck, Check, ChevronDown, Globe, GraduationCap, Megaphone, Phone, PhoneCall, RefreshCw, Star, UserPlus } from "lucide-react";
+import { CalendarCheck, Check, ChevronDown, Globe, GraduationCap, Megaphone, Phone, PhoneCall, Play, RefreshCw, Star, UserPlus } from "lucide-react";
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { INTEGRATION_LOGOS } from "./integration-logos";
 import { STACK_LOGOS } from "./stack-logos";
@@ -1392,45 +1392,63 @@ const MERGED_FAQS = [
 function MergedFaq() {
   return (
     <section id="faq" className="py-20 md:py-28">
-      <div className="mx-auto max-w-3xl px-6 md:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.5, ease }}
-          className="text-center"
-        >
-          <SectionKicker>Questions owners ask</SectionKicker>
-          <h2
-            className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
-            style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
-          >
-            Fair questions, straight answers.
-          </h2>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.5, ease }}
-          className="mt-12"
-        >
-          {/* Each Q&A = its own card with space between, no divider lines
-              (Shamil 2026-08-22); always expanded, no arrows. Card color
-              softened 2026-08-23 (Shamil: the solid sage was too vivid) —
-              now the same light greenish as the section tint, dark text. */}
-          <div className="space-y-4">
-            {MERGED_FAQS.map((item) => (
-              <div
-                key={item.q}
-                className="rounded-2xl border border-border/70 bg-[rgba(126,166,135,0.16)] px-6 py-5 shadow-[0_18px_44px_-18px_rgba(126,166,135,0.45)]"
+      {/* Two-column sticky layout (Shamil 2026-08-23): same pattern as the
+          full-platform section — heading + video placeholder PINNED on the
+          left while the Q&A cards scroll on the right ("move it to the
+          right, video placeholder left, cards scroll, video stays"). */}
+      <div className="mx-auto max-w-6xl px-6 md:px-8">
+        <div className="grid gap-10 md:grid-cols-2 md:gap-14">
+          <div className="self-start md:sticky md:top-28">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.5, ease }}
+            >
+              <SectionKicker>Questions owners ask</SectionKicker>
+              <h2
+                className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
+                style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
               >
-                <div className="text-lg font-medium text-text">{item.q}</div>
-                <p className="mt-3 leading-relaxed text-text-muted">{item.a}</p>
+                Fair questions, straight answers.
+              </h2>
+              {/* House "video coming" placeholder — same amber play pattern
+                  as the product/workflow video slots. */}
+              <div className="group relative mt-8 aspect-video w-full overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-surface to-surface-2">
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 px-6">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full border border-amber-400/40 bg-amber-400/10 transition group-hover:bg-amber-400/20">
+                    <Play className="h-6 w-6 fill-amber-400 text-amber-400" />
+                  </div>
+                  <p className="text-center font-mono text-xs uppercase tracking-[0.18em] text-text-muted">
+                    Video coming — Shamil answers the fair questions
+                  </p>
+                </div>
               </div>
-            ))}
+            </motion.div>
           </div>
-        </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5, ease }}
+          >
+            {/* Each Q&A = its own card with space between, no divider lines
+                (Shamil 2026-08-22); always expanded, no arrows. Card color
+                softened 2026-08-23 (Shamil: the solid sage was too vivid) —
+                now the same light greenish as the section tint, dark text. */}
+            <div className="space-y-4">
+              {MERGED_FAQS.map((item) => (
+                <div
+                  key={item.q}
+                  className="rounded-2xl border border-border/70 bg-[rgba(126,166,135,0.16)] px-6 py-5 shadow-[0_18px_44px_-18px_rgba(126,166,135,0.45)]"
+                >
+                  <div className="text-lg font-medium text-text">{item.q}</div>
+                  <p className="mt-3 leading-relaxed text-text-muted">{item.a}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
