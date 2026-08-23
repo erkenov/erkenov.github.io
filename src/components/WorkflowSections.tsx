@@ -9,10 +9,13 @@ import { motion } from "framer-motion";
  * (03-research/2026-07-28-flightschool-leverage-ranking.md) + his two
  * new ones (no-show rescue with voice option, 24h/morning/2h reminders).
  *
+ * 2026-08-23 (Shamil): the workflows ARE part of "what they get" — the
+ * "Quiet machinery / workflows that guard every student" header is REMOVED
+ * and the block renders on the SAME plain background as ProductSections
+ * above it, so the two read as one continuous section.
+ *
  * Same alternating text/media rhythm as ProductSections; media side =
  * "video coming" slots. Light theme only (live homepage).
- * Mounted on the homepage inside a bg-surface wrapper (his alternating-
- * backgrounds rule, same day).
  */
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -131,23 +134,11 @@ function VideoSlot({ label }: { label: string }) {
 
 export default function WorkflowSections() {
   return (
-    <section id="workflows" className="py-20 md:py-28">
+    <section id="workflows" className="pb-20 pt-2 md:pb-28 md:pt-4">
       <div className="mx-auto max-w-6xl px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.5, ease }}
-          className="text-center"
-        >
-          <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-accent">
-            The quiet machinery
-          </p>
-          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-balance text-text sm:text-4xl md:text-5xl">
-            The workflows that guard every student
-          </h2>
-        </motion.div>
-        <div className="mt-16 space-y-24 md:space-y-32">
+        {/* Header removed 2026-08-23 (Shamil): no "quiet machinery" heading —
+            the workflows continue the What-you-get block as one section. */}
+        <div className="space-y-24 md:space-y-32">
           {WORKFLOWS.map((wf, i) => (
             <motion.div
               key={wf.id}

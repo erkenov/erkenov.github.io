@@ -4,7 +4,7 @@ import { clientIp, originAllowed, rateLimit } from "@/lib/api-guard";
 // Creates a Retell web call server-side so the secret RETELL_API_KEY never
 // reaches the browser. Returns a short-lived access_token the browser SDK
 // uses to start the in-browser voice call with Erken (the site voice agent).
-const AGENT_ID = "agent_cca2ee6a721faf88d9beda90b8"; // Shamil AI Discovery (web) — conversation-flow agent: business AI-automation assessment + leave-a-message, web-helper persona (rewritten phone->web 2026-06-17), 5-min cap, leads -> n8n retell-to-ghl -> GoHighLevel. Swapped 2026-06-17 from the native GHL-pitch bot agent_366d0925268245e195b394ac58 (kept for revert). Phone +19016331400 detached from this agent. Pre-edit Retell snapshots in vault/06-memory/retell-snapshots/.
+const AGENT_ID = "agent_cca2ee6a721faf88d9beda90b8"; // Shamil AI Discovery (web) — conversation-flow agent: business AI-automation assessment + leave-a-message, web-helper persona (rewritten phone->web 2026-06-17), 5-min cap, leads -> n8n retell-to-ghl -> GoHighLevel. Swapped 2026-06-17 from the native GHL-pitch bot agent_366d0925268245e195b394ac58 (kept for revert). Phone +19016331400 is attached inbound to this same agent (verified via API 2026-08-23) — the site's "Call your AI receptionist" starts the WEB call via this route; the number is the dial-in path to the same voice. Pre-edit Retell snapshots in vault/06-memory/retell-snapshots/.
 
 // Hard daily spend cap (USD) for the public bot. Retell only BILLS — it won't
 // auto-stop — so the ceiling lives here (like the old bridge did). We sum the

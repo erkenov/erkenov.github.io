@@ -48,7 +48,7 @@
 
 import { useEffect, useState, Fragment } from "react";
 import { motion } from "framer-motion";
-import { Check, ChevronDown, Globe, Megaphone, Phone, PhoneCall, Star } from "lucide-react";
+import { CalendarCheck, Check, ChevronDown, Globe, GraduationCap, Megaphone, Phone, PhoneCall, RefreshCw, Star, UserPlus, Zap } from "lucide-react";
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { INTEGRATION_LOGOS } from "./integration-logos";
 import { STACK_LOGOS } from "./stack-logos";
@@ -58,6 +58,7 @@ import ProductSections from "@/components/ProductSections";
 import WorkflowSections from "@/components/WorkflowSections";
 import Process from "@/components/Process";
 import ErkenChatWidget, { openErkenChat } from "@/components/ErkenChatWidget";
+import ErkenVoiceWidget from "@/components/ErkenVoiceWidget";
 import {
   PLATFORM_HEADLINE_MONTHLY,
   PLATFORM_BILLING_PERIODS,
@@ -302,6 +303,13 @@ function DraftHeader() {
                   { icon: PhoneCall, name: "AI receptionist", desc: "Answers every call, text, and chat 24/7 — and books the job.", href: "#product-receptionist" },
                   { icon: Star, name: "Review engine", desc: "A flood of fresh 5-star reviews, on autopilot.", href: "#product-reviews" },
                   { icon: Megaphone, name: "Campaigns & referrals", desc: "One-click campaigns that bring past customers back — with friends.", href: "#product-campaigns" },
+                  /* The five workflow blocks (Shamil 2026-08-23): same menu
+                     treatment as the products — icon + one-liner + anchor. */
+                  { icon: CalendarCheck, name: "Flight reminders", desc: "24 hours out, that morning, two hours before — every booked flight happens.", href: "#workflow-reminders" },
+                  { icon: RefreshCw, name: "No-show & weather rescue", desc: "A cancelled flight rebooks itself — by text or a live call.", href: "#workflow-rescue" },
+                  { icon: GraduationCap, name: "Enrollment follow-up", desc: "The discovery flight they loved becomes the enrollment.", href: "#workflow-postflight" },
+                  { icon: UserPlus, name: "Student win-back", desc: "Lost students come back — a text costs cents, a new student costs $400+.", href: "#workflow-reactivation" },
+                  { icon: Zap, name: "60-second answers", desc: "Every inquiry gets a real reply in seconds, at any hour.", href: "#workflow-speed-to-lead" },
                 ].map(({ icon: Icon, name, desc, href }) => (
                   <a
                     key={href}
@@ -326,9 +334,10 @@ function DraftHeader() {
           <a href="#pricing" className="text-sm text-text-muted transition-colors hover:text-text">
             Pricing
           </a>
-          {/* Desktop: plain tel: link (the Retell in-browser voice call was
-              removed with Erkenbot 2026-08-16). Mobile keeps the icon-button
-              tel: link just below (native dialer is correct there). */}
+          {/* Desktop: plain tel: link. The in-browser Retell voice call lives
+              on the hero "Call your AI receptionist" button (restored
+              2026-08-23). Mobile keeps the icon-button tel: link just below
+              (native dialer is correct there). */}
           <a
             href="tel:+19016331400"
             className="flex items-center gap-1.5 font-mono text-sm text-text-muted transition-colors hover:text-text"
@@ -1255,31 +1264,32 @@ export default function HomeV8Client() {
 
       {/* 2b. The workflow blocks (Shamil 2026-08-22): five flight-school
           automations from the leverage research + his no-show-rescue and
-          reminder ideas — "sell them to me, I'll decide what stays."
-          TINTED background — his alternating-backgrounds rule (same day):
-          hero(glow) → what-you-get(plain) → workflows(tint) → FAQ(plain)
-          → story(tint) → process(plain) → pricing(wash) → pipeline(plain)
-          → stack(tint) → marquee(plain). */}
-      <div className="section-tint">
-        <WorkflowSections />
-      </div>
+          reminder ideas. MERGED into the What-you-get run 2026-08-23
+          (Shamil): "all of it is what they get" — same plain background,
+          no separate header. The freed alternation tint moves to FAQ. */}
+      <WorkflowSections />
 
       {/* 3. Why us + FAQ — MERGED 2026-08-22 (Shamil): one sage/amber
           always-expanded card list ("Fair questions, straight answers")
           replaces both the WhyUs green cards AND the old plain FAQ
-          accordion. */}
-      <MergedFaq />
+          accordion. TINTED 2026-08-23 — the alternation tint freed by the
+          workflows merge moves here. */}
+      <div className="section-tint">
+        <MergedFaq />
+      </div>
 
       {/* 4. Founder story ("Who builds it") — added 2026-08-22 (Shamil):
-          text left, his intro video right. TINTED (alternating rule). */}
-      <div className="section-tint">
-        <FounderStorySection />
-      </div>
+          text left, his intro video right. Plain (2026-08-23 — alternation
+          shift after the workflows merge). */}
+      <FounderStorySection />
 
       {/* 5. Process — BEFORE pricing (Shamil 2026-08-16): the easy 5-step
           process earns the right to show the price. (The stack table moved
-          to the bottom block, 2026-08-22.) */}
-      <Process theme="light" />
+          to the bottom block, 2026-08-22.) TINTED 2026-08-23 — alternation
+          shift after the workflows merge. */}
+      <div className="section-tint">
+        <Process theme="light" />
+      </div>
 
       {/* 5. Pricing — owner-approved 3-card restructure (2026-08-12): three
           Platform billing-period cards (Monthly / 6 months / Yearly).
@@ -1319,6 +1329,10 @@ export default function HomeV8Client() {
     </main>
 
     <ErkenChatWidget />
+    {/* In-browser Retell voice call (restored to the homepage 2026-08-23,
+        Shamil): installs window.__startErkenVoiceCall; the hero "Call your
+        AI receptionist" button triggers it. Renders nothing when idle. */}
+    <ErkenVoiceWidget />
     </>
   );
 }
@@ -1475,9 +1489,10 @@ function FounderStorySection() {
 /* the missed-call cost calculator and the "call your own business     */
 /* after hours" test as ONE card, mounted as the hero's right-side     */
 /* media in place of the intro video. Calculator wording genericized   */
-/* for the live (still multi-industry) homepage; the CTA calls the     */
-/* Retell demo line (901) 633-1400 — the website-attached Retell voice */
-/* agent answers it (Shamil 2026-08-23: replaces the 888 line here).   */
+/* for the live (still multi-industry) homepage; the CTA starts an          */
+/* in-browser Retell web call with the site voice agent (restored            */
+/* 2026-08-23, Shamil) — the "or dial" link beside it rings the same agent   */
+/* on the Retell line (901) 633-1400.                                       */
 /* ================================================================== */
 const heroUsd = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -1596,13 +1611,17 @@ function HeroCalcTest() {
           different outcome.
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-3">
-          <a
-            href="tel:+19016331400"
+          {/* In-browser Retell web call (Shamil 2026-08-23): the button
+              opens the live voice call right on the page, not the dialer —
+              the "or dial" tel: link stays for people who prefer the phone. */}
+          <button
+            type="button"
+            onClick={() => window.__startErkenVoiceCall?.()}
             className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
           >
             <PhoneCall className="h-4 w-4" />
             Call your AI receptionist
-          </a>
+          </button>
           <a
             href={`tel:+19016331400`}
             className="font-mono text-sm text-text-muted transition-colors hover:text-text"
