@@ -1255,41 +1255,35 @@ export default function HomeV8Client() {
         mediaAvoidCelly={true}
       />
 
-      {/* 2. Product sections — "What you get" block (website → receptionist
-          → reviews → campaigns) — src/components/ProductSections.tsx;
-          Shamil 2026-08-13: Stone Systems' alternating text/media rhythm,
-          our honest copy. Media side = uniform video slots since
-          2026-08-16 (founder videos come later). */}
-      <ProductSections theme="light" />
-
-      {/* 2b. The workflow blocks (Shamil 2026-08-22): five flight-school
-          automations from the leverage research + his no-show-rescue and
-          reminder ideas. MERGED into the What-you-get run 2026-08-23
-          (Shamil): "all of it is what they get" — same plain background,
-          no separate header. The freed alternation tint moves to FAQ. */}
-      <WorkflowSections />
-
-      {/* 3. Why us + FAQ — MERGED 2026-08-22 (Shamil): one sage/amber
-          always-expanded card list ("Fair questions, straight answers")
-          replaces both the WhyUs green cards AND the old plain FAQ
-          accordion. TINTED 2026-08-23 — the alternation tint freed by the
-          workflows merge moves here. */}
-      <div className="section-tint">
-        <MergedFaq />
+      {/* 2. What-you-get — the WHOLE merged run (product sections + the
+          five workflow blocks, merged 2026-08-23 "all of it is what they
+          get") sits on ONE green background that fades in from the hero
+          and fades out to the FAQ — no hard section lines (Shamil
+          2026-08-23). From here the alternation restarts: FAQ plain →
+          story tinted → process plain → pricing wash → pipeline plain →
+          stack tinted → marquee plain. */}
+      <div className="section-green">
+        <ProductSections theme="light" />
+        <WorkflowSections />
       </div>
+
+      {/* 3. Why us + FAQ — MERGED 2026-08-22 (Shamil): one always-expanded
+          card list ("Fair questions, straight answers"). PLAIN background
+          2026-08-23 (alternation restart); cards softened to the light
+          sage tint the same day. */}
+      <MergedFaq />
 
       {/* 4. Founder story ("Who builds it") — added 2026-08-22 (Shamil):
-          text left, his intro video right. Plain (2026-08-23 — alternation
-          shift after the workflows merge). */}
-      <FounderStorySection />
+          text left, his intro video right. TINTED 2026-08-23 (alternation
+          restart). */}
+      <div className="section-tint">
+        <FounderStorySection />
+      </div>
 
       {/* 5. Process — BEFORE pricing (Shamil 2026-08-16): the easy 5-step
-          process earns the right to show the price. (The stack table moved
-          to the bottom block, 2026-08-22.) TINTED 2026-08-23 — alternation
-          shift after the workflows merge. */}
-      <div className="section-tint">
-        <Process theme="light" />
-      </div>
+          process earns the right to show the price. PLAIN 2026-08-23
+          (alternation restart). */}
+      <Process theme="light" />
 
       {/* 5. Pricing — owner-approved 3-card restructure (2026-08-12): three
           Platform billing-period cards (Monthly / 6 months / Yearly).
@@ -1411,16 +1405,18 @@ function MergedFaq() {
           transition={{ duration: 0.5, ease }}
           className="mt-12"
         >
-          {/* Each Q&A = its own sage card with space between, no divider
-              lines (Shamil 2026-08-22); always expanded, no arrows. */}
+          {/* Each Q&A = its own card with space between, no divider lines
+              (Shamil 2026-08-22); always expanded, no arrows. Card color
+              softened 2026-08-23 (Shamil: the solid sage was too vivid) —
+              now the same light greenish as the section tint, dark text. */}
           <div className="space-y-4">
             {MERGED_FAQS.map((item) => (
               <div
                 key={item.q}
-                className="rounded-2xl border border-white/10 bg-[#8fb496] px-6 py-5 shadow-[0_18px_44px_-18px_rgba(126,166,135,0.75)]"
+                className="rounded-2xl border border-border/70 bg-[rgba(126,166,135,0.16)] px-6 py-5 shadow-[0_18px_44px_-18px_rgba(126,166,135,0.45)]"
               >
-                <div className="text-lg font-medium text-white">{item.q}</div>
-                <p className="mt-3 leading-relaxed text-white/85">{item.a}</p>
+                <div className="text-lg font-medium text-text">{item.q}</div>
+                <p className="mt-3 leading-relaxed text-text-muted">{item.a}</p>
               </div>
             ))}
           </div>
