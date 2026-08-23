@@ -16,7 +16,6 @@ import {
   CreditCard,
   Megaphone,
   MessagesSquare,
-  Phone,
   PhoneCall,
   PhoneMissed,
   Play,
@@ -27,8 +26,8 @@ import {
 } from "lucide-react";
 import type { DocCategory } from "./docs-data";
 
-export const DEMO_TEL = "+13252412460";
-export const DEMO_DISPLAY = "(325) 241-2460";
+/* Phone constants removed 2026-08-23 (Shamil): no public phone numbers in
+   the docs — contact is gated to paying customers via the portal. */
 
 /* ---- Category icon map (ids defined in docs-data.ts). ---- */
 export function CategoryIcon({
@@ -91,21 +90,9 @@ export function DocsHeader() {
             Back to the site
           </Link>
         </div>
-        <div className="flex items-center gap-3">
-          <a
-            href={`tel:${DEMO_TEL}`}
-            className="hidden items-center gap-1.5 font-mono text-sm text-text-muted transition-colors hover:text-text md:flex"
-          >
-            <Phone className="h-3.5 w-3.5" />
-            {DEMO_DISPLAY}
-          </a>
-          <a
-            href={`tel:${DEMO_TEL}`}
-            className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
-          >
-            Stuck? Call us
-          </a>
-        </div>
+        {/* Contact removed from the docs chrome 2026-08-23 (Shamil): no
+            public phone number, no "call us" — reaching him is gated to
+            paying customers via the portal, not open to every visitor. */}
       </div>
     </header>
   );
@@ -124,14 +111,8 @@ export function DocsFooter() {
             </span>
           </p>
           <p className="mt-2 text-sm text-text-muted">
-            Can&apos;t find it in these docs? Call{" "}
-            <a
-              href={`tel:${DEMO_TEL}`}
-              className="font-medium text-accent hover:text-accent-hover"
-            >
-              {DEMO_DISPLAY}
-            </a>{" "}
-            — a human answers.
+            Can&apos;t find it in these docs? If you&apos;re a customer,
+            message us from your portal — we already know your setup.
           </p>
         </div>
         <div className="flex items-center gap-5 font-mono text-xs text-text-dim">
@@ -165,24 +146,17 @@ export function DocVideo({ label }: { label: string }) {
   );
 }
 
-/* ---- "Stuck? Call us" footer line for the end of every article. ---- */
+/* ---- "Stuck?" footer line for the end of every article. 2026-08-23
+        (Shamil): no public phone number — contact is gated to paying
+        customers through the portal. ---- */
 export function StuckCallout() {
   return (
-    <div className="mt-14 flex flex-col items-start gap-4 rounded-2xl border border-border bg-surface p-6 sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <p className="mono-label">Stuck?</p>
-        <p className="mt-2 text-base text-text-muted">
-          Docs cover the platform. For anything about YOUR account, a call is
-          faster — we already know your setup.
-        </p>
-      </div>
-      <a
-        href={`tel:${DEMO_TEL}`}
-        className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
-      >
-        <PhoneCall className="h-4 w-4" />
-        Call {DEMO_DISPLAY}
-      </a>
+    <div className="mt-14 rounded-2xl border border-border bg-surface p-6">
+      <p className="mono-label">Stuck?</p>
+      <p className="mt-2 text-base text-text-muted">
+        Docs cover the platform. For anything about YOUR account, message us
+        from your portal — a person reads it, and we already know your setup.
+      </p>
     </div>
   );
 }

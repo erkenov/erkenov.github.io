@@ -8,7 +8,8 @@ import { DocVideo, StuckCallout } from "../components";
 /**
  * /docs/[slug] — the single article template for the docs portal (public
  * since 2026-08-22). Driven entirely by ../docs-data.ts: title → video
- * placeholder → intro → numbered steps → prev/next → "Stuck? Call us".
+ * placeholder → intro → numbered steps → prev/next → "Stuck?" callout
+ * (portal-gated contact, no public phone — Shamil 2026-08-23).
  * The left sidebar tree comes from ../layout.tsx. Indexable (robots set
  * in ../layout.tsx).
  */

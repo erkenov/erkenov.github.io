@@ -167,7 +167,7 @@ export const DOC_ARTICLES: DocArticle[] = [
       },
       {
         title: "From here — let it run",
-        text: "The system handles the routine from day one. Your job in week one is just to build trust in it: glance at Conversations each morning, and call us if anything an answer gave you pause. Tweaks are ours to make, not yours.",
+        text: "The system handles the routine from day one. Your job in week one is just to build trust in it: glance at Conversations each morning, and message us from your portal if anything an answer gave you pause. Tweaks are ours to make, not yours.",
       },
     ],
     outro:
@@ -207,7 +207,7 @@ export const DOC_ARTICLES: DocArticle[] = [
       },
       {
         title: "Automation (Workflows) — the machine room",
-        text: "The sequences that send reminders, follow-ups, and review requests. These are built and maintained by us. You're welcome to look — everything is readable — but call us before changing one; a paused workflow silently stops reminders.",
+        text: "The sequences that send reminders, follow-ups, and review requests. These are built and maintained by us. You're welcome to look — everything is readable — but message us from your portal before changing one; a paused workflow silently stops reminders.",
       },
       {
         title: "Settings — rarely, and mostly not yours",
@@ -245,7 +245,7 @@ export const DOC_ARTICLES: DocArticle[] = [
       },
       {
         title: "Tell us the answer once — it knows it forever",
-        text: "Text us the real answer ('Yes, tailwheel — $240/hr dual in the Champ') and we add it to the Receptionist's knowledge. Next caller who asks gets the answer on the spot. The system gets smarter every week this way.",
+        text: "Message us the real answer from your portal ('Yes, tailwheel — $240/hr dual in the Champ') and we add it to the Receptionist's knowledge. Next caller who asks gets the answer on the spot. The system gets smarter every week this way.",
       },
     ],
     outro:
@@ -282,7 +282,7 @@ export const DOC_ARTICLES: DocArticle[] = [
       },
       {
         title: "Keeping it current",
-        text: "Prices change, a new aircraft joins the fleet, you start offering spin training — text us the update and it's live in the Receptionist's knowledge, usually the same day. Seasonal changes (summer hours, holiday gift certificates) are worth a message too.",
+        text: "Prices change, a new aircraft joins the fleet, you start offering spin training — message us the update from your portal and it's live in the Receptionist's knowledge, usually the same day. Seasonal changes (summer hours, holiday gift certificates) are worth a message too.",
       },
       {
         title: "Test it whenever you like",
@@ -427,7 +427,7 @@ export const DOC_ARTICLES: DocArticle[] = [
     steps: [
       {
         title: "Check the connection status first",
-        text: "Go to Settings → Integrations → Google. If you see a missing-permissions or reconnect warning, that's why bookings stopped syncing — proceed to step 2. If it shows connected and healthy, the problem is elsewhere; call us before changing anything.",
+        text: "Go to Settings → Integrations → Google. If you see a missing-permissions or reconnect warning, that's why bookings stopped syncing — proceed to step 2. If it shows connected and healthy, the problem is elsewhere; message us from your portal before changing anything.",
       },
       {
         title: "Reconnect Google",
@@ -492,7 +492,7 @@ export const DOC_ARTICLES: DocArticle[] = [
       },
       {
         title: "Test both directions",
-        text: "Call your school number and answer it — normal behavior, nothing forwarded. Then call and don't answer: within a few rings the Receptionist should pick up. If either side misbehaves, call us — it's almost always a carrier code entered with the wrong ring count.",
+        text: "Call your school number and answer it — normal behavior, nothing forwarded. Then call and don't answer: within a few rings the Receptionist should pick up. If either side misbehaves, message us from your portal — it's almost always a carrier code entered with the wrong ring count.",
       },
       {
         title: "Your caller ID stays honest",
@@ -532,7 +532,7 @@ export const DOC_ARTICLES: DocArticle[] = [
       },
       {
         title: "Watch or adjust the timing",
-        text: "The 1-minute / 5-minute timings live in Automation → Workflows (the missed-call flow we built for you). You can look, but call us before editing — and if you want different timings (say, 2 minutes and 10), that's a two-minute change on our side.",
+        text: "The 1-minute / 5-minute timings live in Automation → Workflows (the missed-call flow we built for you). You can look, but message us from your portal before editing — and if you want different timings (say, 2 minutes and 10), that's a two-minute change on our side.",
       },
     ],
     outro:
@@ -573,7 +573,7 @@ export const DOC_ARTICLES: DocArticle[] = [
       },
       {
         title: "Don't edit — request",
-        text: "Workflows interlock: the reminder flow assumes the booking flow tagged the contact, and so on. A well-meaning edit can silently break a chain. Text us the change you want — new wording, different timing, another step — and we'll make it safely.",
+        text: "Workflows interlock: the reminder flow assumes the booking flow tagged the contact, and so on. A well-meaning edit can silently break a chain. Message us from your portal with the change you want — new wording, different timing, another step — and we'll make it safely.",
       },
     ],
   },
@@ -805,7 +805,7 @@ export const DOC_ARTICLES: DocArticle[] = [
       },
       {
         title: "Don't hand-edit — request changes",
-        text: "Workflows are ours to maintain. If a message reads wrong for your school ('we don't do aerobatics, stop offering it'), text us the correction. Pausing or editing a workflow yourself can silently stop reminders across every future booking.",
+        text: "Workflows are ours to maintain. If a message reads wrong for your school ('we don't do aerobatics, stop offering it'), message us the correction from your portal. Pausing or editing a workflow yourself can silently stop reminders across every future booking.",
       },
       {
         title: "Seasonal campaigns on request",
@@ -886,7 +886,7 @@ export const DOC_ARTICLES: DocArticle[] = [
         title: "Getting paid needs a processor",
         // (verify) which payment processor is connected and its settings
         // location on the account.
-        text: "Invoices and payment links charge cards through a connected payment processor, which we set up during onboarding. If a payment ever fails to go through, call us before re-sending — it's usually a processor setting, not the customer.",
+        text: "Invoices and payment links charge cards through a connected payment processor, which we set up during onboarding. If a payment ever fails to go through, message us from your portal before re-sending — it's usually a processor setting, not the customer.",
       },
     ],
   },
@@ -992,7 +992,7 @@ export const DOC_ARTICLES: DocArticle[] = [
       },
       {
         title: "What you will never see",
-        text: "No per-seat fees, no 'premium feature' unlocks, no setup fee if we rebuild something, no charge for the 'text us a fix' support loop, no cancellation fee. The pricing is designed to be cheap enough never to resent.",
+        text: "No per-seat fees, no 'premium feature' unlocks, no setup fee if we rebuild something, no charge for the 'message us a fix' support loop, no cancellation fee. The pricing is designed to be cheap enough never to resent.",
       },
       {
         title: "Where to see usage",
@@ -1006,7 +1006,7 @@ export const DOC_ARTICLES: DocArticle[] = [
       },
     ],
     outro:
-      "If the bill ever stops being boring, that's a bug — call us.",
+      "If the bill ever stops being boring, that's a bug — message us from your portal.",
   },
   {
     slug: "team-logins-notifications",
