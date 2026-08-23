@@ -1509,23 +1509,23 @@ function FounderStorySection() {
 }
 
 /* ================================================================== */
-/* HERO WITHOUT→WITH PANEL + TWO-MINUTE TEST (Shamil 2026-08-23):      */
-/* replaces the voicemail-cost slider calculator — it only sold the    */
-/* receptionist, while the snapshot is the whole system. His brief:    */
-/* "compare what they get without each feature vs with it, in money    */
-/* and conversion terms… interactive or not, your judgment." Static    */
-/* won: five rows read in five seconds; sliders made visitors work.    */
-/* The numbers below are the stats already proven elsewhere on the     */
-/* page. The CTA starts an in-browser Retell web call with the site    */
-/* voice agent; the "or dial" link rings the same agent on the Retell  */
-/* line (901) 633-1400.                                                */
+/* HERO LOSE→GAIN CARD (Shamil 2026-08-23): the hero's right-side      */
+/* media. Style = the "replace your whole stack" table translated to   */
+/* outcomes: RED loss numbers on the left, GREEN gain numbers on the   */
+/* right, one row per What-you-get theme, statistics-forward (his      */
+/* direction: "show what they lose in red, what they gain, in numbers  */
+/* — like the stack table"). This card is the PROTOTYPE — once he      */
+/* approves the look, a section-specific lose/gain card replicates     */
+/* into every What-you-get block. The two-minute test moved OUT to     */
+/* the AI-receptionist product section (same day).                     */
 /* ================================================================== */
-const WITHOUT_WITH = [
-  { without: "Voicemail after 6 PM", win: "Every call answered, 24/7" },
-  { without: "Inquiries answered hours later", win: "A real answer in 60 seconds" },
-  { without: "No-shows and cancels eat the schedule", win: "Reminders out; the flight rebooks itself" },
-  { without: "The discovery flight ends in silence", win: "Follow-up until they enroll" },
-  { without: "Reviews and referrals by luck", win: "Collected on autopilot" },
+const LOSE_GAIN = [
+  { lose: "8 of 10", loseText: "callers who hit voicemail dial the next school", gain: "24/7", gainText: "every call answered — and booked" },
+  { lose: "Hours", loseText: "to answer an inquiry — 78% buy from the first responder", gain: "60 sec", gainText: "every inquiry answered" },
+  { lose: "1 in 3", loseText: "booked slots flies empty", gain: "−⅓", gainText: "no-shows — reminders + self-rebooking" },
+  { lose: "60–80%", loseText: "of discovery flyers never enroll", gain: "100%", gainText: "followed up until they decide" },
+  { lose: "$400–1,000", loseText: "to acquire one new student", gain: "One text", gainText: "brings a lapsed student back" },
+  { lose: "By luck", loseText: "reviews and referrals trickle in", gain: "Autopilot", gainText: "asked every time, answered every time" },
 ];
 
 function HeroComparison() {
@@ -1535,54 +1535,35 @@ function HeroComparison() {
         Without it → with it
       </p>
       <p className="mt-2 text-xl font-bold tracking-tight text-text" style={{ letterSpacing: "-0.02em" }}>
-        The same school — system off, system on
+        What the system changes, in numbers
       </p>
-      <ul className="mt-4 divide-y divide-border/60">
-        {WITHOUT_WITH.map((r) => (
-          <li key={r.without} className="grid grid-cols-2 items-baseline gap-3 py-2.5">
-            <span className="text-sm text-text-dim line-through decoration-text-dim/40">
-              {r.without}
+      <div className="mt-4 grid grid-cols-2 gap-3 border-b border-border/70 pb-2">
+        <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--clay)]">
+          You lose
+        </span>
+        <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-accent">
+          You get
+        </span>
+      </div>
+      <ul className="divide-y divide-border/60">
+        {LOSE_GAIN.map((r) => (
+          <li key={r.lose} className="grid grid-cols-2 items-baseline gap-3 py-2.5">
+            <span className="text-sm leading-snug">
+              <span className="font-mono font-semibold text-[var(--clay)]">{r.lose}</span>{" "}
+              <span className="text-text-dim">{r.loseText}</span>
             </span>
-            <span className="text-sm font-medium text-text">{r.win}</span>
+            <span className="text-sm leading-snug">
+              <span className="font-mono font-semibold text-accent">{r.gain}</span>{" "}
+              <span className="text-text">{r.gainText}</span>
+            </span>
           </li>
         ))}
       </ul>
-      <p className="mt-4 text-xs leading-relaxed text-text-muted">
-        80% of callers who reach voicemail dial the next school. 78% of buyers go
-        with whoever answers first. Reminders cut no-shows by a third — and only
-        20–40% of discovery flyers ever enroll without follow-up.
+      {/* The stack-table "total" row translated: the whole-system payoff. */}
+      <p className="mt-4 border-t-2 border-border pt-3 text-sm font-semibold text-text">
+        One enrolled student — $13–20K — pays for years of the system.{" "}
+        <span className="text-accent">It costs $97 a month.</span>
       </p>
-
-      {/* The two-minute test */}
-      <div className="mt-5 border-t border-border pt-5">
-        <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-accent">
-          The two-minute test
-        </p>
-        <p className="mt-2 text-sm leading-relaxed text-text-muted">
-          Tonight, after 8 PM, call your own business. That&apos;s what a
-          motivated customer hears. Then call our line — same scenario,
-          different outcome.
-        </p>
-        <div className="mt-4 flex flex-wrap items-center gap-3">
-          {/* In-browser Retell web call (Shamil 2026-08-23): the button
-              opens the live voice call right on the page, not the dialer —
-              the "or dial" tel: link stays for people who prefer the phone. */}
-          <button
-            type="button"
-            onClick={() => window.__startErkenVoiceCall?.()}
-            className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
-          >
-            <PhoneCall className="h-4 w-4" />
-            Call your AI receptionist
-          </button>
-          <a
-            href={`tel:+19016331400`}
-            className="font-mono text-sm text-text-muted transition-colors hover:text-text"
-          >
-            or dial (901) 633-1400
-          </a>
-        </div>
-      </div>
     </div>
   );
 }

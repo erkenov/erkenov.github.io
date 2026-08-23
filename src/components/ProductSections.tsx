@@ -1,4 +1,6 @@
-import { Check, Play } from "lucide-react";
+"use client";
+
+import { Check, PhoneCall, Play } from "lucide-react";
 
 /**
  * ProductSections — the "what you get" product block, used on the homepage
@@ -169,6 +171,42 @@ function VideoSlot({ label, theme }: { label: string; theme: Theme }) {
   );
 }
 
+/** The two-minute test — moved from the hero card into the receptionist
+ *  section 2026-08-23 (Shamil): it sells the receptionist specifically, so
+ *  it lives here, under the bullets. The button starts the in-browser
+ *  Retell web call (ErkenVoiceWidget on the homepage installs the global);
+ *  the dial link rings the same agent on the Retell line (901) 633-1400. */
+function TwoMinuteTest() {
+  return (
+    <div className="mt-8 rounded-2xl border border-border bg-surface p-5">
+      <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-accent">
+        The two-minute test
+      </p>
+      <p className="mt-2 text-sm leading-relaxed text-text-muted">
+        Tonight, after 8 PM, call your own business. That&apos;s what a
+        motivated customer hears. Then call our line — same scenario,
+        different outcome.
+      </p>
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          onClick={() => window.__startErkenVoiceCall?.()}
+          className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
+        >
+          <PhoneCall className="h-4 w-4" />
+          Call your AI receptionist
+        </button>
+        <a
+          href="tel:+19016331400"
+          className="font-mono text-sm text-text-muted transition-colors hover:text-text"
+        >
+          or dial (901) 633-1400
+        </a>
+      </div>
+    </div>
+  );
+}
+
 function SectionBlock({
   section,
   flip,
@@ -202,6 +240,9 @@ function SectionBlock({
             </li>
           ))}
         </ul>
+        {/* The two-minute test lives with the receptionist (2026-08-23) —
+            homepage (light theme) only; the web-call global exists there. */}
+        {section.id === "receptionist" && theme === "light" && <TwoMinuteTest />}
       </div>
       {/* Media column — uniform video slots for all sections (Shamil
           2026-08-16): the interactive ReviewDemo animation is OUT for now;
