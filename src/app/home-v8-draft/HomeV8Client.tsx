@@ -297,7 +297,11 @@ function DraftHeader() {
               <ChevronDown className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" />
             </button>
             <div className="invisible absolute top-full left-1/2 -translate-x-1/2 pt-3 opacity-0 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-              <div className="w-96 rounded-2xl border border-border bg-surface p-3 shadow-xl">
+              {/* Two-column mega menu (Shamil 2026-08-23): nine items made
+                  the single column a long strip — grid it so the box reads
+                  square. */}
+              <div className="w-[38rem] rounded-2xl border border-border bg-surface p-3 shadow-xl">
+                <div className="grid grid-cols-2 gap-1">
                 {[
                   { icon: Globe, name: "Website", desc: "Built to be found on Google — and to turn visitors into customers.", href: "#product-website" },
                   { icon: PhoneCall, name: "AI receptionist", desc: "Answers every call, text, and chat 24/7 — and books the job.", href: "#product-receptionist" },
@@ -325,6 +329,7 @@ function DraftHeader() {
                     </span>
                   </a>
                 ))}
+                </div>
               </div>
             </div>
           </div>
