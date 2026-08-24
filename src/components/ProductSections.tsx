@@ -137,8 +137,8 @@ const SECTIONS: Record<SectionId, ProductSection> = {
       },
     ],
     sectionLoss: {
-      num: "By luck",
-      text: "is how reviews and referrals arrive without a system — a few a year, if you're lucky.",
+      num: "Only the unhappy",
+      text: "customer is motivated enough to leave a review on their own — your happy students stay silent unless someone asks at the perfect moment.",
     },
     videoLabel: "Shamil shows the review and referral engine",
   },
