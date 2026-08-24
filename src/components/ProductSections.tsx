@@ -51,7 +51,7 @@ const SECTIONS: Record<SectionId, ProductSection> = {
     bullets: [
       {
         lead: "A website that actually works.",
-        text: "Built by me, with proper SEO and GEO from day one — so when locals search Google or ask an AI, it's your school they find. Already have a site? The system works with it.",
+        text: "Built by me, with proper SEO and GEO from day one — so when locals search Google or ask an AI, it's your school they find. Already have a site? Keep it — the rest of the system works with it; the SEO and GEO come only with a site I build.",
       },
       {
         lead: "Ads that are already built for you.",
