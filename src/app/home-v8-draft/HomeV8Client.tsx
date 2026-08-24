@@ -88,10 +88,10 @@ const SECTIONS = [
     headline: "AI-powered marketing and operating system for flight schools",
     body: "All the tools you need to attract, capture, nurture, and close new students — in one system:",
     bullets: [
-      { lead: "Get found", rest: "a website that Google and AI search recommend" },
-      { lead: "Get answered", rest: "an AI receptionist on every call, text, and chat, 24/7" },
-      { lead: "Get booked", rest: "automatic follow-up that turns inquiries into flights" },
-      { lead: "Get recommended", rest: "reviews and referrals collected on autopilot" },
+      { lead: "Get customers", rest: "a website that works, ads ready to turn on, reviews that sell" },
+      { lead: "Never miss one", rest: "every call, text, and chat answered in seconds, 24/7" },
+      { lead: "Never lose one", rest: "reminders, rebooking, and follow-up until they enroll" },
+      { lead: "They bring friends", rest: "reviews and referrals collected on autopilot" },
       { lead: "And much more", rest: "already in the platform — and more keeps coming once you're in" },
     ],
     cta: "Get started",
@@ -1280,7 +1280,10 @@ export default function HomeV8Client() {
           story tinted → process plain → pricing wash → pipeline plain →
           stack tinted → marquee plain. */}
       <div className="section-green">
-        <ProductSections theme="light" />
+        <ProductSections
+          theme="light"
+          description="Everything below is already built and preinstalled in your account. In onboarding you pick what we switch on — all of it, or just the pieces you want."
+        />
         <WorkflowSections />
       </div>
 

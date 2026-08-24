@@ -20,7 +20,15 @@ import { Check, PhoneCall, Play } from "lucide-react";
  * carry the sage accent color instead.
  */
 
-type SectionId = "website" | "receptionist" | "reviews" | "campaigns";
+type SectionId =
+  | "get-customers"
+  | "never-miss"
+  | "never-lose"
+  | "customers-bring"
+  | "website"
+  | "receptionist"
+  | "reviews"
+  | "campaigns";
 
 type ProductSection = {
   id: SectionId;
@@ -33,6 +41,90 @@ type ProductSection = {
 };
 
 const SECTIONS: Record<SectionId, ProductSection> = {
+  /* The four journey sections (Shamil 2026-08-24): plain-vocabulary stages
+     of the customer journey, added ABOVE the older product sections. The
+     older sections stay for now — Shamil will read through them and decide
+     which of their points get absorbed into the new ones. */
+  "get-customers": {
+    id: "get-customers",
+    title: "Get customers",
+    bullets: [
+      {
+        lead: "A website that actually works.",
+        text: "Built by us, with proper SEO and GEO from day one — so when locals search Google or ask an AI, it's your school they find. Already have a site? The system works with it.",
+      },
+      {
+        lead: "Ads that are already built for you.",
+        text: "Ready-made Google and Meta campaigns, proven for flight schools and localized to your city. You just turn them on and fund them — they're included in your plan, you only pay the ad spend.",
+      },
+      {
+        lead: "Found everywhere people look.",
+        text: "Google Maps, your Business Profile, AI search answers — your presence is set up and kept current wherever a future student might look.",
+      },
+      {
+        lead: "No visitor leaves without a trace.",
+        text: "Forms and chat open a text conversation the moment someone reaches out — you get their number even if they leave the page.",
+      },
+    ],
+    videoLabel: "Shamil walks through a real client acquisition setup",
+  },
+  "never-miss": {
+    id: "never-miss",
+    title: "Never miss a customer",
+    bullets: [
+      {
+        lead: "Every call, text, and chat answered — in seconds, 24/7.",
+        text: "Phone, SMS, and web chat — one receptionist on all of them, weekends and holidays included. Most voicemail callers simply dial the next school; yours won't get the chance.",
+      },
+      {
+        lead: "Booked on the spot.",
+        text: "The moment they want to fly, the AI books the discovery flight straight into your calendar — no back-and-forth, no 'we'll call you back.'",
+      },
+      {
+        lead: "Something always answers.",
+        text: "Missed-call text-back, the website chat widget, after-hours coverage — whatever way they reach out, at whatever hour, they get a real answer.",
+      },
+    ],
+    videoLabel: "Shamil shows the receptionist catching real calls",
+  },
+  "never-lose": {
+    id: "never-lose",
+    title: "Never lose a lead",
+    bullets: [
+      {
+        lead: "Every booked flight actually happens.",
+        text: "A reminder chain before every discovery flight — the day before, that morning, two hours out. If weather or life cancels it, the rebooking text goes out on its own.",
+      },
+      {
+        lead: "The discovery flight becomes the enrollment.",
+        text: "They land buzzing — and that's exactly when the follow-up lands: congratulations, answers to their questions, and the offer to book the next lesson.",
+      },
+      {
+        lead: "Nobody falls through the cracks.",
+        text: "A thirteen-to-twenty-thousand-dollar decision takes time for some. The hesitant ones get a multi-week follow-up until they enroll — or tell you to stop.",
+      },
+    ],
+    videoLabel: "Shamil walks through the follow-up chain",
+  },
+  "customers-bring": {
+    id: "customers-bring",
+    title: "Your customers bring you new customers",
+    bullets: [
+      {
+        lead: "Reviews on autopilot.",
+        text: "After every flight, the happy student gets asked at the perfect moment — your rating climbs while you're up in the air.",
+      },
+      {
+        lead: "Referrals without the awkward ask.",
+        text: "The system invites every happy customer to bring a friend — the highest-trust lead there is — and tracks who came from whom.",
+      },
+      {
+        lead: "Every review gets an answer.",
+        text: "Good or bad, each one gets a thoughtful reply — which is what prospects actually read before they choose.",
+      },
+    ],
+    videoLabel: "Shamil shows the review and referral engine",
+  },
   website: {
     id: "website",
     title: "A website that brings you customers",
@@ -268,12 +360,23 @@ function SectionBlock({
 }
 
 export default function ProductSections({
-  order = ["website", "receptionist", "reviews", "campaigns"],
+  order = [
+    "get-customers",
+    "never-miss",
+    "never-lose",
+    "customers-bring",
+    "website",
+    "receptionist",
+    "reviews",
+    "campaigns",
+  ],
   heading = "What you get",
+  description,
   theme = "dark",
 }: {
   order?: SectionId[];
   heading?: string;
+  description?: string;
   theme?: Theme;
 }) {
   return (
@@ -287,6 +390,13 @@ export default function ProductSections({
           >
             {heading}
           </h2>
+          {description && (
+            <p
+              className={`mx-auto mt-4 max-w-2xl text-base leading-relaxed md:text-lg ${T[theme].body}`}
+            >
+              {description}
+            </p>
+          )}
         </div>
         <div className="mt-16 space-y-24 md:space-y-32">
           {order.map((id, i) => (

@@ -33,7 +33,7 @@ const STEPS = [
   },
   {
     title: "Pay and fill one form",
-    text: "One onboarding form: your services, prices, common questions. Shamil reviews it personally and confirms everything with you.",
+    text: "One onboarding form: your services, prices, common questions — and which parts of the system you want switched on first: everything, or just the pieces you need. Shamil reviews it personally and confirms everything with you.",
   },
   {
     title: "We build it — 7–10 days",
