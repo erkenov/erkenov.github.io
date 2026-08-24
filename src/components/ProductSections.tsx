@@ -374,6 +374,14 @@ function SectionBlock({
             </li>
           ))}
         </ul>
+        {/* The two-minute test lives UNDER the never-miss text (moved from
+            above the video, Shamil 2026-08-24) — homepage light theme only;
+            the web-call global exists there. */}
+        {section.id === "never-miss" && theme === "light" && (
+          <div className="mt-8">
+            <TestCard />
+          </div>
+        )}
         {/* Optional plain-language note (e.g. the website-is-optional
             framing, 2026-08-24) — small muted text under the bullets. */}
         {section.note && (
@@ -387,7 +395,6 @@ function SectionBlock({
           a founder-recorded video goes in later like the other sections. */}
       <div className={flip ? "md:order-1" : ""}>
         <div className="space-y-6">
-          {section.id === "never-miss" && theme === "light" && <TestCard />}
           <VideoSlot label={section.videoLabel!} theme={theme} />
         </div>
       </div>
