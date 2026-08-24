@@ -61,10 +61,6 @@ const SECTIONS: Record<SectionId, ProductSection> = {
         lead: "Found everywhere people look.",
         text: "Google Maps, your Business Profile, AI search answers — your presence is set up and kept current wherever a future student might look.",
       },
-      {
-        lead: "No visitor leaves without a trace.",
-        text: "Forms and chat open a text conversation the moment someone reaches out — you get their number even if they leave the page.",
-      },
     ],
     videoLabel: "Shamil walks through a real client acquisition setup",
   },
