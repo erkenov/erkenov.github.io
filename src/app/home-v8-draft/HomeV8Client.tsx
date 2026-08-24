@@ -1448,7 +1448,7 @@ function MergedFaq() {
               {MERGED_FAQS.map((item) => (
                 <div
                   key={item.q}
-                  className="rounded-2xl border border-border/70 bg-[rgba(126,166,135,0.16)] px-6 py-5 shadow-[0_18px_44px_-18px_rgba(126,166,135,0.45)]"
+                  className="rounded-2xl border border-border/70 bg-[rgba(126,166,135,0.16)] px-6 py-5 shadow-[0_8px_20px_-12px_rgba(126,166,135,0.35)]"
                 >
                   <div className="text-lg font-medium text-text">{item.q}</div>
                   <p className="mt-3 leading-relaxed text-text-muted">{item.a}</p>
