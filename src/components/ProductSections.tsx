@@ -33,23 +33,11 @@ type SectionId =
 type ProductSection = {
   id: SectionId;
   title: string;
-  bullets: {
-    lead: string;
-    text: string;
-    /** PROTOTYPE 2026-08-24 (Shamil): loss argument inlined above the solution
-        bullet — problem, then the fix right under it. lossStyle is the design
-        variant being trialled on get-customers (1 inline / 2 paired card /
-        3 clay strip); one winner gets picked, then this replicates everywhere
-        and the LossCard dies. */
-    loss?: { num: string; text: string };
-    lossStyle?: 1 | 2 | 3;
-  }[];
+  bullets: { lead: string; text: string }[];
   /** Video slot label for sections that get a founder video later. */
   videoLabel?: string;
   /** Optional plain-language note under the bullets. */
   note?: string;
-  /** Argument card above the video: what they lose without this (2026-08-24). */
-  losses?: { num: string; text: string }[];
   /** One section-level loss argument as a clay-edged white strip right under
       the title (Shamil 2026-08-24: variant 3 won; Get-customers' per-bullet
       arguments were too weak, so ONE strong argument per section instead). */
@@ -102,11 +90,10 @@ const SECTIONS: Record<SectionId, ProductSection> = {
         text: "Missed-call text-back, the website chat widget, after-hours coverage — whatever way they reach out, at whatever hour, they get a real answer.",
       },
     ],
-    losses: [
-      { num: "8 of 10", text: "callers who hit voicemail hang up and dial the next school." },
-      { num: "78%", text: "of buyers go with whoever responds first." },
-      { num: "2×", text: "the booking rate of instant answers vs same-hour follow-up." },
-    ],
+    sectionLoss: {
+      num: "8 of 10",
+      text: "callers who hit voicemail hang up and dial the next school.",
+    },
     videoLabel: "Shamil shows the receptionist catching real calls",
   },
   "never-lose": {
@@ -126,11 +113,10 @@ const SECTIONS: Record<SectionId, ProductSection> = {
         text: "A thirteen-to-twenty-thousand-dollar decision takes time for some. The hesitant ones get a multi-week follow-up until they enroll — or tell you to stop.",
       },
     ],
-    losses: [
-      { num: "1 in 3", text: "booked slots flies empty without reminders." },
-      { num: "60–80%", text: "of discovery flyers never enroll without follow-up." },
-      { num: "$13–20K", text: "walks out the door with every student you stop texting." },
-    ],
+    sectionLoss: {
+      num: "60–80%",
+      text: "of discovery flyers never enroll without follow-up.",
+    },
     videoLabel: "Shamil walks through the follow-up chain",
   },
   "customers-bring": {
@@ -150,11 +136,10 @@ const SECTIONS: Record<SectionId, ProductSection> = {
         text: "Good or bad, each one gets a thoughtful reply — which is what prospects actually read before they choose.",
       },
     ],
-    losses: [
-      { num: "By luck", text: "is how reviews arrive without a system — a few a year, if you're lucky." },
-      { num: "Never asked", text: "is why happy students don't refer — nobody invited them at the right moment." },
-      { num: "Unanswered", text: "bad reviews are the first thing the next prospect reads." },
-    ],
+    sectionLoss: {
+      num: "By luck",
+      text: "is how reviews and referrals arrive without a system — a few a year, if you're lucky.",
+    },
     videoLabel: "Shamil shows the review and referral engine",
   },
   website: {
@@ -301,60 +286,36 @@ function VideoSlot({ label, theme }: { label: string; theme: Theme }) {
   );
 }
 
-/* Argument card (Shamil 2026-08-24): sits ABOVE the video in the media
- * column — problems first, then the eye moves right to the solution text
- * or down to the video. Style resurrected from the 23-08 hero lose/gain
- * card (commit e4e7c76): mono clay-red numbers + dim text. */
-function LossCard({
-  rows,
-  test = false,
-}: {
-  rows: { num: string; text: string }[];
-  test?: boolean;
-}) {
+/* The two-minute test as a slim standalone card ABOVE the video in the
+ * never-miss media column (Shamil 2026-08-24: the cost card died with the
+ * section-strip design; the test is an action, not an argument). */
+function TestCard() {
   return (
     <div className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
-      <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-[var(--clay)]">
-        What it costs without this
+      <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-accent">
+        The two-minute test
       </p>
-      <ul className="mt-2 divide-y divide-border/60">
-        {rows.map((r) => (
-          <li key={r.num} className="py-2.5 text-sm leading-snug first:pt-1 last:pb-0">
-            <span className="font-mono font-semibold text-[var(--clay)]">{r.num}</span>{" "}
-            <span className="text-text-dim">{r.text}</span>
-          </li>
-        ))}
-      </ul>
-      {/* The two-minute test lives INSIDE the cost card (Shamil 2026-08-24):
-          the losses above are the claim, this is the proof — one card. */}
-      {test && (
-        <div className="mt-4 border-t border-border/70 pt-4">
-          <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-accent">
-            The two-minute test
-          </p>
-          <p className="mt-2 text-sm leading-relaxed text-text-muted">
-            Tonight, after 8 PM, call your own business. That&apos;s what a
-            motivated customer hears. Then call my line — same scenario,
-            different outcome.
-          </p>
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={() => window.__startErkenVoiceCall?.()}
-              className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
-            >
-              <PhoneCall className="h-4 w-4" />
-              Call your AI receptionist
-            </button>
-            <a
-              href="tel:+19016331400"
-              className="font-mono text-sm text-text-muted transition-colors hover:text-text"
-            >
-              or dial (901) 633-1400
-            </a>
-          </div>
-        </div>
-      )}
+      <p className="mt-2 text-sm leading-relaxed text-text-muted">
+        Tonight, after 8 PM, call your own business. That&apos;s what a
+        motivated customer hears. Then call my line — same scenario,
+        different outcome.
+      </p>
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          onClick={() => window.__startErkenVoiceCall?.()}
+          className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
+        >
+          <PhoneCall className="h-4 w-4" />
+          Call your AI receptionist
+        </button>
+        <a
+          href="tel:+19016331400"
+          className="font-mono text-sm text-text-muted transition-colors hover:text-text"
+        >
+          or dial (901) 633-1400
+        </a>
+      </div>
     </div>
   );
 }
@@ -391,32 +352,9 @@ function SectionBlock({
         )}
         <ul className="mt-8 space-y-6">
           {section.bullets.map((b) => (
-            <li
-              key={b.lead}
-              className={`flex items-start gap-3 ${
-                b.lossStyle === 2
-                  ? "rounded-xl border border-border bg-surface p-4"
-                  : ""
-              }`}
-            >
+            <li key={b.lead} className="flex items-start gap-3">
               <Check className={`mt-1 h-5 w-5 shrink-0 ${t.lead}`} />
               <div className="flex-1">
-                {b.loss &&
-                  (b.lossStyle === 3 ? (
-                    <p className="mb-2 rounded-md border-l-2 border-[var(--clay)] bg-surface px-3 py-1.5 text-sm leading-snug">
-                      <span className="font-mono font-semibold text-[var(--clay)]">
-                        {b.loss.num}
-                      </span>{" "}
-                      <span className="text-text-dim">{b.loss.text}</span>
-                    </p>
-                  ) : (
-                    <p className="mb-1.5 text-sm leading-snug">
-                      <span className="font-mono font-semibold text-[var(--clay)]">
-                        {b.loss.num}
-                      </span>{" "}
-                      <span className="text-text-dim">{b.loss.text}</span>
-                    </p>
-                  ))}
                 <p className={`text-lg font-semibold ${t.lead}`}>{b.lead}</p>
                 <p className={`mt-1.5 leading-relaxed ${t.body}`}>{b.text}</p>
               </div>
@@ -436,12 +374,7 @@ function SectionBlock({
           a founder-recorded video goes in later like the other sections. */}
       <div className={flip ? "md:order-1" : ""}>
         <div className="space-y-6">
-          {section.losses && (
-            <LossCard
-              rows={section.losses}
-              test={section.id === "never-miss" && theme === "light"}
-            />
-          )}
+          {section.id === "never-miss" && theme === "light" && <TestCard />}
           <VideoSlot label={section.videoLabel!} theme={theme} />
         </div>
       </div>
