@@ -349,22 +349,23 @@ function DraftHeader() {
           <a href="#pricing" className="text-sm text-text-muted transition-colors hover:text-text">
             Pricing
           </a>
-          {/* Desktop: plain tel: link. The in-browser Retell voice call lives
-              on the hero "Call your AI receptionist" button (restored
-              2026-08-23). Mobile keeps the icon-button tel: link just below
-              (native dialer is correct there). */}
+          {/* Desktop: plain tel: link — the OWNER'S OWN AI receptionist line
+              (888) 799-6065, restored 2026-08-24 (Shamil): the Retell demo
+              line (901) 633-1400 belongs ONLY in the receptionist section's
+              two-minute test, not in the menu. Mobile keeps the icon-button
+              tel: link just below (native dialer is correct there). */}
           <a
-            href="tel:+19016331400"
+            href="tel:+18887996065"
             className="flex items-center gap-1.5 font-mono text-sm text-text-muted transition-colors hover:text-text"
           >
             <Phone className="h-3.5 w-3.5" />
-            (901) 633-1400
+            (888) 799-6065
           </a>
         </nav>
         <div className="flex items-center gap-3">
           <a
-            href="tel:+19016331400"
-            aria-label="Call (901) 633-1400"
+            href="tel:+18887996065"
+            aria-label="Call (888) 799-6065"
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text-muted transition-colors hover:border-border-strong hover:text-text md:hidden"
           >
             <Phone className="h-4 w-4" />
