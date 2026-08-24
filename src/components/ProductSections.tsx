@@ -51,7 +51,7 @@ const SECTIONS: Record<SectionId, ProductSection> = {
     bullets: [
       {
         lead: "A website that actually works.",
-        text: "Built by us, with proper SEO and GEO from day one — so when locals search Google or ask an AI, it's your school they find. Already have a site? The system works with it.",
+        text: "Built by me, with proper SEO and GEO from day one — so when locals search Google or ask an AI, it's your school they find. Already have a site? The system works with it.",
       },
       {
         lead: "Ads that are already built for you.",
@@ -139,7 +139,7 @@ const SECTIONS: Record<SectionId, ProductSection> = {
       },
       {
         lead: "Looks perfect on the phone they found you on.",
-        text: "That's where most customers come from, so that's what we build for first: big buttons, tap-to-call, fast loading.",
+        text: "That's where most customers come from, so that's what I build for first: big buttons, tap-to-call, fast loading.",
       },
       {
         lead: "You get their number — even if they leave.",
@@ -212,7 +212,7 @@ const SECTIONS: Record<SectionId, ProductSection> = {
       },
       {
         lead: "It runs itself from day one.",
-        text: "Existing customers get their first campaign the moment we switch on; every new customer gets it automatically after that.",
+        text: "Existing customers get their first campaign the moment I switch on; every new customer gets it automatically after that.",
       },
     ],
     videoLabel: "Shamil sends a campaign to a real customer list",
@@ -282,7 +282,7 @@ function TwoMinuteTest() {
       </p>
       <p className="mt-2 text-sm leading-relaxed text-text-muted">
         Tonight, after 8 PM, call your own business. That&apos;s what a
-        motivated customer hears. Then call our line — same scenario,
+        motivated customer hears. Then call my line — same scenario,
         different outcome.
       </p>
       <div className="mt-4 flex flex-wrap items-center gap-3">

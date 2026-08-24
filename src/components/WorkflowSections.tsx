@@ -91,7 +91,7 @@ const WORKFLOWS: Workflow[] = [
     bullets: [
       {
         lead: "One evening, one list, real replies.",
-        text: "We text your inactive students — the industry's own guidance calls it the cheapest win in flight training: an hour of texting a hundred lapsed students brings a handful back to the flight line.",
+        text: "I text your inactive students — the industry's own guidance calls it the cheapest win in flight training: an hour of texting a hundred lapsed students brings a handful back to the flight line.",
       },
       {
         lead: "Cheaper than finding new ones.",

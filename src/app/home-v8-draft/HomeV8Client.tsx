@@ -223,7 +223,7 @@ function Section({
               onClick={() => openErkenChat()}
               className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-3 text-sm font-medium text-text transition-all hover:border-border-strong hover:bg-surface"
             >
-              Talk to us
+              Talk to me
             </button>
           </div>
         )}
@@ -375,7 +375,7 @@ function DraftHeader() {
             onClick={() => openErkenChat()}
             className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-text transition-colors hover:border-border-strong hover:bg-surface"
           >
-            Talk to us
+            Talk to me
           </button>
           <a
             href="#pricing"
@@ -713,7 +713,7 @@ function PipelineSection() {
                 And that&apos;s just the setup.
               </h2>
               <p className="mt-4 text-base leading-relaxed text-text-muted md:text-lg">
-                Everything above is what we build for you in the first 7–10
+                Everything above is what I build for you in the first 7–10
                 days. Underneath it sits the full platform — every feature
                 below is already included in your $97, ready when you are.
               </p>
@@ -1169,7 +1169,7 @@ function IntegrationsMarquee() {
           className="mx-auto mt-3 max-w-2xl text-2xl font-bold tracking-tight md:text-4xl"
           style={{ letterSpacing: "-0.02em", lineHeight: 1.15 }}
         >
-          Works with the tools you already use — plus 1,500+ more through our
+          Works with the tools you already use — plus 1,500+ more through the
           marketplace and Zapier.
         </h2>
       </div>
@@ -1282,7 +1282,7 @@ export default function HomeV8Client() {
       <div className="section-green">
         <ProductSections
           theme="light"
-          description="Everything below is already built and preinstalled in your account. In onboarding you pick what we switch on — all of it, or just the pieces you want."
+          description="Everything below is already built and preinstalled in your account. In onboarding you pick what I switch on — all of it, or just the pieces you want."
         />
         <WorkflowSections />
       </div>
@@ -1374,18 +1374,18 @@ const MERGED_FAQS = [
   },
   {
     q: "When am I going to start seeing results?",
-    a: "Honestly? It depends on what else you're doing to bring customers in, how long you've been around, and how good the work is — anyone who promises you a date is guessing. What we can promise: every call answered, every lead followed up in seconds, every happy customer asked for a review, every past customer reminded you exist. If you're doing your part, the system multiplies it. If you want to close your eyes and pay someone to make the phone ring by magic — we're not the right fit.",
+    a: "Honestly? It depends on what else you're doing to bring customers in, how long you've been around, and how good the work is — anyone who promises you a date is guessing. What I can promise: every call answered, every lead followed up in seconds, every happy customer asked for a review, every past customer reminded you exist. If you're doing your part, the system multiplies it. If you want to close your eyes and pay someone to make the phone ring by magic — I'm not the right fit.",
   },
   {
     // Shamil's own answer, verbatim direction 2026-08-22 — transparency
     // pitch naming GoHighLevel. Supersedes the no-vendor-names rule for
     // the live homepage too (his explicit call this time).
     q: "Why is your pricing so cheap?",
-    a: "The honest answer: it runs on GoHighLevel — a platform that costs me $297 a month and already has everything built in. You can buy GoHighLevel yourself for $97 a month — exactly what I charge. The difference: buying direct gets you no setup, no one monitoring your account, no one looking for ways to improve it. From me, the same $97 includes all of that. My math is simple — $97 times the months you stay, and you stay because the system keeps improving. Cheap enough never to resent, valuable enough never to leave.",
+    a: "The honest answer: it runs on GoHighLevel — a platform that costs me $297 a month and already has everything built in. You can buy GoHighLevel yourself for $97 a month — exactly what I charge. The difference: buying direct gets you no setup, no one monitoring your account, no one looking for ways to improve it. From me, the same $97 includes all of that. My math is simple — $97 times the months you stay, and you stay because the system keeps improving — two frontier AI models, Kimi and Claude, work the data it gathers across all my customers and tell me what to build next. Cheap enough never to resent, valuable enough never to leave.",
   },
   {
     q: "Can people find my website on Google?",
-    a: "Every site we ship is built to be found: proper page titles and meta descriptions, image alt tags, SSL, fast loading, mobile-first. The honest part: ranking high is a long game — it depends on your market, your competition, and your reviews. We build the foundation right and keep it maintained. We don't sell \"#1 on Google in a week,\" because nobody honest can deliver that.",
+    a: "Every site I ship is built to be found: proper page titles and meta descriptions, image alt tags, SSL, fast loading, mobile-first. The honest part: ranking high is a long game — it depends on your market, your competition, and your reviews. I build the foundation right and keep it maintained. I don't sell \"#1 on Google in a week,\" because nobody honest can deliver that.",
   },
   {
     q: "Word of mouth already brings me business — why spend on a website?",
@@ -1393,7 +1393,7 @@ const MERGED_FAQS = [
   },
   {
     q: "What happens if I decide to cancel?",
-    a: "We'll be sad to see you go — then we'll help you leave cleanly. No contracts, no cancellation fees, no hostage-taking. You lose access to the platform and the systems we run for you in it; your business data is yours to export.",
+    a: "I'll be sad to see you go — then I'll help you leave cleanly. No contracts, no cancellation fees, no hostage-taking. You lose access to the platform and the systems I run for you in it; your business data is yours to export.",
   },
 ];
 

@@ -29,15 +29,15 @@ const T = {
 const STEPS = [
   {
     title: "Ask the AI anything",
-    text: "Questions? Our AI receptionist answers instantly — chat, voice, or text. No sales calls. And if the AI can't cover something, ask it to pass your message to Shamil — he'll call you personally.",
+    text: "Questions? My AI receptionist answers instantly — chat, voice, or text. No sales calls. And if the AI can't cover something, ask it to pass your message to Shamil — he'll call you personally.",
   },
   {
     title: "Pay and fill one form",
     text: "One onboarding form: your services, prices, common questions — and which parts of the system you want switched on first: everything, or just the pieces you need. Shamil reviews it personally and confirms everything with you.",
   },
   {
-    title: "We build it — 7–10 days",
-    text: "Most of that is the phone carrier verifying your number. We handle everything else.",
+    title: "I build it — 7–10 days",
+    text: "Most of that is the phone carrier verifying your number. I handle everything else.",
   },
   {
     title: "Video handover",
@@ -48,7 +48,7 @@ const STEPS = [
     // same step as the /fly-home demo's "Eyes on the gauges", worded for
     // the generic homepage audience.
     title: "Eyes on the gauges",
-    text: "After launch, I keep watching: how your business uses the system, where customers still slip through, where the industry is moving. And I keep building — new automations, sharper answers, better follow-ups. The system you start with is not the system you're limited to.",
+    text: "After launch, I keep watching: how your business uses the system, where customers still slip through, where the industry is moving. I work with two of the most powerful frontier AI models — Kimi and Claude: they process everything the system gathers across my customers and turn it into growth suggestions. And I keep building — new automations, sharper answers, better follow-ups. The system you start with is not the system you're limited to.",
   },
 ];
 
@@ -66,7 +66,7 @@ export default function Process({ theme = "dark" }: { theme?: Theme }) {
           <h2
             className={`mt-4 text-3xl font-semibold tracking-tight text-balance sm:text-4xl ${t.title}`}
           >
-            What working with us looks like
+            What working with me looks like
           </h2>
         </div>
         <div className="relative mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
