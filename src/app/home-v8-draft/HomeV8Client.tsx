@@ -91,7 +91,7 @@ const SECTIONS = [
       { lead: "Get customers", rest: "a website that works, ads ready to turn on, reviews that sell" },
       { lead: "Never miss one", rest: "every call, text, and chat answered in seconds, 24/7" },
       { lead: "Never lose one", rest: "reminders, rebooking, and follow-up until they enroll" },
-      { lead: "They bring friends", rest: "reviews and referrals collected on autopilot" },
+      { lead: "Customers bring customers", rest: "reviews and referrals collected on autopilot" },
       { lead: "And much more", rest: "already in the platform — and more keeps coming once you're in" },
     ],
     cta: "Get started",
