@@ -50,6 +50,10 @@ type ProductSection = {
   note?: string;
   /** Argument card above the video: what they lose without this (2026-08-24). */
   losses?: { num: string; text: string }[];
+  /** One section-level loss argument as a clay-edged white strip right under
+      the title (Shamil 2026-08-24: variant 3 won; Get-customers' per-bullet
+      arguments were too weak, so ONE strong argument per section instead). */
+  sectionLoss?: { num: string; text: string };
 };
 
 const SECTIONS: Record<SectionId, ProductSection> = {
@@ -65,22 +69,20 @@ const SECTIONS: Record<SectionId, ProductSection> = {
       {
         lead: "A website that actually works.",
         text: "Built by me, with proper SEO and GEO from day one — so when locals search Google or ask an AI, it's your school they find. Already have a site? Keep it — the rest of the system works with it; the SEO and GEO come only with a site I build.",
-        loss: { num: "$13–20K", text: "one enrolled student is worth — invisible schools never get the call." },
-        lossStyle: 1,
       },
       {
         lead: "Ads that are already built for you.",
         text: "Ready-made Google and Meta campaigns, proven for flight schools and localized to your city. You just turn them on and fund them — they're included in your plan, you only pay the ad spend.",
-        loss: { num: "$400–1,000", text: "what acquiring one student costs the old way." },
-        lossStyle: 2,
       },
       {
         lead: "Found everywhere people look.",
         text: "Google Maps, your Business Profile, AI search answers — your presence is set up and kept current wherever a future student might look.",
-        loss: { num: "#1 in search", text: "gets the inquiry — the rest split what's left." },
-        lossStyle: 3,
       },
     ],
+    sectionLoss: {
+      num: "$13–20K",
+      text: "is what ONE enrolled student is worth — and without an online presence, your business doesn't exist for the people searching.",
+    },
     videoLabel: "Shamil walks through a real client acquisition setup",
   },
   "never-miss": {
@@ -379,6 +381,14 @@ function SectionBlock({
         >
           {section.title}
         </h3>
+        {section.sectionLoss && (
+          <p className="mt-6 rounded-md border-l-2 border-[var(--clay)] bg-surface px-4 py-2.5 text-sm leading-snug md:text-base">
+            <span className="font-mono font-semibold text-[var(--clay)]">
+              {section.sectionLoss.num}
+            </span>{" "}
+            <span className="text-text-dim">{section.sectionLoss.text}</span>
+          </p>
+        )}
         <ul className="mt-8 space-y-6">
           {section.bullets.map((b) => (
             <li
