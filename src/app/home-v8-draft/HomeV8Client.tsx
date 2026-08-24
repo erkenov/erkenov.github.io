@@ -22,9 +22,8 @@
  *     full checklist in a 2-col grid. Flat-SVG phase icons, home-draft style.
  *   - Industries moved UP to 2nd (right after the hero).
  *   - Hero keeps the live founder video (restored 2026-08-24 after the
- *     calculator/lose-gain-panel experiment; the price tease is gone the
- *     same day). (The "See your industry" secondary button was removed
- *     2026-08-13, Shamil.)
+ *     calculator/lose-gain-panel experiment). (The "See your industry"
+ *     secondary button was removed 2026-08-13, Shamil.)
  *   - Meet Erken section removed 2026-07-30 (Erkenbot retired as a
  *     downloadable product; it stays only as this site's assistant).
  *   - 2026-08-13 (owner pre-launch pass): hero headline/body rewritten to
@@ -85,16 +84,18 @@ const ease = [0.16, 1, 0.3, 1] as const;
 const SECTIONS = [
   {
     side: "left" as const,
-    kicker: "Erken Systems",
-    headline: "The ultimate AI-powered marketing and operating system for flight schools",
+    kicker: "The ultimate",
+    headline: "AI-powered marketing and operating system for flight schools",
     body: "All the tools you need to attract, capture, nurture, and close new students — in one system:",
     bullets: [
       { lead: "Get found", rest: "a website that Google and AI search recommend" },
       { lead: "Get answered", rest: "an AI receptionist on every call, text, and chat, 24/7" },
       { lead: "Get booked", rest: "automatic follow-up that turns inquiries into flights" },
       { lead: "Get recommended", rest: "reviews and referrals collected on autopilot" },
+      { lead: "And much more", rest: "already in the platform — and more keeps coming once you're in" },
     ],
     cta: "Get started",
+    priceTease: "All of it for $77 a month.",
   },
 ];
 
@@ -127,6 +128,7 @@ function Section({
   bullets,
   side,
   cta,
+  priceTease,
   media,
   mediaWrapperClassName,
   textWrapperClassName,
@@ -193,8 +195,12 @@ function Section({
             ))}
           </ul>
         )}
-        {/* One-line price tease REMOVED 2026-08-24 (Shamil): hero text is
-            H1 + tools line + the four "Get …" bullets only. */}
+        {/* One-line price tease: the only pricing mention until the full
+            3-tier section late in the page. RESTORED 2026-08-24 (Shamil) —
+            sits right before the CTAs, sage accent as before. */}
+        {priceTease && (
+          <p className="mt-3 font-mono text-sm text-accent">{priceTease}</p>
+        )}
         {cta && (
           <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
             {cta && (
@@ -1283,17 +1289,15 @@ export default function HomeV8Client() {
           sage tint the same day. */}
       <MergedFaq />
 
-      {/* 4. Founder story ("Who builds it") — added 2026-08-22 (Shamil):
-          text left, his intro video right. TINTED 2026-08-23 (alternation
-          restart). */}
-      <div className="section-tint">
-        <FounderStorySection />
-      </div>
+      {/* 4. Founder story ("Who builds it") REMOVED 2026-08-24 (Shamil).
+          Its tint moves to Process below to keep the background rhythm. */}
 
       {/* 5. Process — BEFORE pricing (Shamil 2026-08-16): the easy 5-step
-          process earns the right to show the price. PLAIN 2026-08-23
-          (alternation restart). */}
-      <Process theme="light" />
+          process earns the right to show the price. TINTED 2026-08-24 —
+          inherits the founder section's tint after its removal. */}
+      <div className="section-tint">
+        <Process theme="light" />
+      </div>
 
       {/* 5. Pricing — owner-approved 3-card restructure (2026-08-12): three
           Platform billing-period cards (Monthly / 6 months / Yearly).
@@ -1456,57 +1460,9 @@ function MergedFaq() {
 
 
 /* ================================================================== */
-/* FOUNDER STORY ("Who builds it") — added to the live homepage        */
-/* 2026-08-22 (Shamil): text left, his intro video right (the same     */
-/* Scene1IntroVideo the hero carries again as of 2026-08-24 — the      */
-/* lose/gain panel experiment in between is reverted). Copy ported     */
-/* verbatim from the /fly-home demo per his instruction.               */
+/* FOUNDER STORY ("Who builds it") — REMOVED 2026-08-24 (Shamil).      */
+/* Git history has the section if it ever comes back.                  */
 /* ================================================================== */
-function FounderStorySection() {
-  return (
-    <section id="founder" className="py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-6 md:px-8">
-        <div className="grid items-center gap-10 md:grid-cols-2 md:gap-12">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.5, ease }}
-          >
-            <SectionKicker>Who builds it</SectionKicker>
-            <h2
-              className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
-              style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
-            >
-              Built by a systems guy who&apos;s becoming a pilot.
-            </h2>
-            <p className="mt-5 text-base leading-relaxed text-text-muted md:text-lg">
-              I&apos;ve spent ten years building systems for businesses —
-              operations, automation, the unglamorous machinery that makes
-              companies run. This year I started ground school. I&apos;m
-              entering aviation from both sides at once: learning to fly, and
-              fixing the part of the industry I can already see is broken —
-              the unanswered phone. You should never have to explain to your
-              receptionist what a discovery flight is.
-            </p>
-            <p className="mt-4 font-mono text-sm text-text-dim">
-              — Shamil, founder.
-            </p>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.5, ease }}
-            className="flex justify-center md:justify-end"
-          >
-            <Scene1IntroVideo />
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* ================================================================== */
 /* HERO LOSE→GAIN CARD — REMOVED 2026-08-24 (Shamil): the without/with */
