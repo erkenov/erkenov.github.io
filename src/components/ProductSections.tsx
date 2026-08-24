@@ -94,8 +94,6 @@ const SECTIONS: Record<SectionId, ProductSection> = {
     ],
     sectionLoss: [
       { num: "8 of 10", text: "callers who hit voicemail hang up and dial the next school." },
-      { num: "78%", text: "of buyers go with whoever responds first." },
-      { num: "2×", text: "the booking rate of instant answers vs same-hour follow-up." },
     ],
     videoLabel: "Shamil shows the receptionist catching real calls",
   },
