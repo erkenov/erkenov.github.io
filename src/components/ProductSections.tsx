@@ -55,9 +55,10 @@ const SECTIONS: Record<SectionId, ProductSection> = {
       },
     ],
     videoLabel: "Shamil walks through a real website build",
-    /* The website is OPTIONAL (Shamil 2026-08-24): most flight schools
-       already have one, and the system doesn't depend on ours. */
-    note: "Already have a website? Keep it — the whole system works with or without ours; the website is optional. We don't touch or \"fix\" existing sites — no SEO, no anything — because every foreign platform is built differently and can't be systematized, and that systematization is exactly why the system can deliver this much at this price. When we do build your site, it's built to be found by Google and AI search — but no miracles promised: ranking is a long game.",
+    /* Website-optional note REMOVED 2026-08-24 (Shamil) — the section is
+       being restructured around "Get found" (site / ads / reviews /
+       referrals); the optional message moves to the What-you-get header
+       description. */
   },
   receptionist: {
     id: "receptionist",
