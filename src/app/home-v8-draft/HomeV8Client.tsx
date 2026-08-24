@@ -21,8 +21,10 @@
  *     win-back). All phases are always expanded (rev-3), each showing its
  *     full checklist in a 2-col grid. Flat-SVG phase icons, home-draft style.
  *   - Industries moved UP to 2nd (right after the hero).
- *   - Hero keeps the live founder video + gains the price tease. (The
- *     "See your industry" secondary button was removed 2026-08-13, Shamil.)
+ *   - Hero keeps the live founder video (restored 2026-08-24 after the
+ *     calculator/lose-gain-panel experiment; the price tease is gone the
+ *     same day). (The "See your industry" secondary button was removed
+ *     2026-08-13, Shamil.)
  *   - Meet Erken section removed 2026-07-30 (Erkenbot retired as a
  *     downloadable product; it stays only as this site's assistant).
  *   - 2026-08-13 (owner pre-launch pass): hero headline/body rewritten to
@@ -74,16 +76,18 @@ const ease = [0.16, 1, 0.3, 1] as const;
 // full-screen pipeline step scenes that used to follow it are replaced by
 // the compressed illustrated PipelineStepper below. Hero body = the compact
 // GHL-style tool list (2026-08-23, Shamil: the old "Here's the truth…"
-// paragraph was too long and said too little). The hero media is the merged
-// math + two-minute-test block (HeroCalcTest, 2026-08-22). The hero keeps a
-// one-line price tease (home-draft additions; the "See your industry" button
-// was removed 2026-08-13).
+// paragraph was too long and said too little). Hero media = the intro VIDEO
+// again (2026-08-24, Shamil: the lose/gain comparison panel is OUT — the
+// video slot goes back where it was before the calculator/panel era; a new
+// hero video gets recorded into it). Hero text = H1 + the one tools line +
+// the four "Get …" bullets only (price tease removed same day). The "See
+// your industry" button was removed 2026-08-13.
 const SECTIONS = [
   {
     side: "left" as const,
     kicker: "Erken Systems",
-    headline: "The AI-powered flight school operating system",
-    body: "All the tools you need to capture, nurture, and close new students — in one system:",
+    headline: "The ultimate AI-powered marketing and operating system for flight schools",
+    body: "All the tools you need to attract, capture, nurture, and close new students — in one system:",
     bullets: [
       { lead: "Get found", rest: "a website that Google and AI search recommend" },
       { lead: "Get answered", rest: "an AI receptionist on every call, text, and chat, 24/7" },
@@ -91,7 +95,6 @@ const SECTIONS = [
       { lead: "Get recommended", rest: "reviews and referrals collected on autopilot" },
     ],
     cta: "Get started",
-    priceTease: "Platform from $77 a month.",
   },
 ];
 
@@ -124,7 +127,6 @@ function Section({
   bullets,
   side,
   cta,
-  priceTease,
   media,
   mediaWrapperClassName,
   textWrapperClassName,
@@ -191,11 +193,8 @@ function Section({
             ))}
           </ul>
         )}
-        {/* One-line price tease (home-draft v2): the only pricing mention
-            until the full 3-tier section late in the page. */}
-        {priceTease && (
-          <p className="mt-3 font-mono text-sm text-accent">{priceTease}</p>
-        )}
+        {/* One-line price tease REMOVED 2026-08-24 (Shamil): hero text is
+            H1 + tools line + the four "Get …" bullets only. */}
         {cta && (
           <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
             {cta && (
@@ -1246,21 +1245,22 @@ export default function HomeV8Client() {
     {/* Erkenbot/Celly + particle stage removed 2026-08-16 — plain page now,
         GHL bubble is the chat launcher. */}
     <main>
-      {/* 1. HERO — the LIVE hero Section (kept). MEDIA 2026-08-23
-          (Shamil): the right side is now the without→with comparison
-          panel (HeroComparison) — the whole-system pitch, replacing the
-          receptionist-only slider calculator; two-minute test kept. */}
+      {/* 1. HERO — the LIVE hero Section (kept). MEDIA 2026-08-24
+          (Shamil): the intro VIDEO is back on the right side — the
+          lose/gain comparison panel (HeroComparison) is OUT. Same
+          Scene1IntroVideo the hero carried before the calculator/panel
+          era; a new hero video gets recorded into this slot. */}
       <Section
         isMobile={isMobile}
         stacked={false}
         heroBackground
         {...SECTIONS[0]}
-        media={<HeroComparison />}
-        // Nudge the text column a little right, closer to the math box
+        media={<Scene1IntroVideo />}
+        // Nudge the text column a little right, closer to the media
         // (Shamil 2026-08-22).
         textWrapperClassName="md:pl-[3vw]"
         // Same right-anchored media wrapper the live hero (scene 0) used, so
-        // the block sits opposite the left text column at every md+ width.
+        // the video sits opposite the left text column at every md+ width.
         mediaWrapperClassName="absolute inset-y-[8vh] right-[4vw] left-[48vw] 2xl:left-auto 2xl:w-[50%] hidden md:flex items-center justify-center pointer-events-auto"
         mediaAvoidCelly={true}
       />
@@ -1458,9 +1458,9 @@ function MergedFaq() {
 /* ================================================================== */
 /* FOUNDER STORY ("Who builds it") — added to the live homepage        */
 /* 2026-08-22 (Shamil): text left, his intro video right (the same     */
-/* Scene1IntroVideo the hero used — the hero's media is now the        */
-/* math + two-minute-test block). Copy ported verbatim from the        */
-/* /fly-home demo per his instruction.                                 */
+/* Scene1IntroVideo the hero carries again as of 2026-08-24 — the      */
+/* lose/gain panel experiment in between is reverted). Copy ported     */
+/* verbatim from the /fly-home demo per his instruction.               */
 /* ================================================================== */
 function FounderStorySection() {
   return (
@@ -1509,61 +1509,8 @@ function FounderStorySection() {
 }
 
 /* ================================================================== */
-/* HERO LOSE→GAIN CARD (Shamil 2026-08-23): the hero's right-side      */
-/* media. Style = the "replace your whole stack" table translated to   */
-/* outcomes: RED loss numbers on the left, GREEN gain numbers on the   */
-/* right, one row per What-you-get theme, statistics-forward (his      */
-/* direction: "show what they lose in red, what they gain, in numbers  */
-/* — like the stack table"). This card is the PROTOTYPE — once he      */
-/* approves the look, a section-specific lose/gain card replicates     */
-/* into every What-you-get block. The two-minute test moved OUT to     */
-/* the AI-receptionist product section (same day).                     */
+/* HERO LOSE→GAIN CARD — REMOVED 2026-08-24 (Shamil): the without/with */
+/* comparison panel is OUT of the hero; the intro video is back as the */
+/* hero media. Git history (commit e4e7c76) has the full card if the   */
+/* lose/gain look gets repurposed for the What-you-get blocks later.   */
 /* ================================================================== */
-const LOSE_GAIN = [
-  { lose: "8 of 10", loseText: "callers who hit voicemail dial the next school", gain: "24/7", gainText: "every call answered — and booked" },
-  { lose: "Hours", loseText: "to answer an inquiry — 78% buy from the first responder", gain: "60 sec", gainText: "every inquiry answered" },
-  { lose: "1 in 3", loseText: "booked slots flies empty", gain: "−⅓", gainText: "no-shows — reminders + self-rebooking" },
-  { lose: "60–80%", loseText: "of discovery flyers never enroll", gain: "100%", gainText: "followed up until they decide" },
-  { lose: "$400–1,000", loseText: "to acquire one new student", gain: "One text", gainText: "brings a lapsed student back" },
-  { lose: "By luck", loseText: "reviews and referrals trickle in", gain: "Autopilot", gainText: "asked every time, answered every time" },
-];
-
-function HeroComparison() {
-  return (
-    <div className="w-full max-w-xl rounded-2xl border border-border bg-surface/95 p-5 shadow-2xl backdrop-blur-sm md:p-6">
-      <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-accent">
-        Without it → with it
-      </p>
-      <p className="mt-2 text-xl font-bold tracking-tight text-text" style={{ letterSpacing: "-0.02em" }}>
-        What the system changes, in numbers
-      </p>
-      <div className="mt-4 grid grid-cols-2 gap-3 border-b border-border/70 pb-2">
-        <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--clay)]">
-          You lose
-        </span>
-        <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-accent">
-          You get
-        </span>
-      </div>
-      <ul className="divide-y divide-border/60">
-        {LOSE_GAIN.map((r) => (
-          <li key={r.lose} className="grid grid-cols-2 items-baseline gap-3 py-2.5">
-            <span className="text-sm leading-snug">
-              <span className="font-mono font-semibold text-[var(--clay)]">{r.lose}</span>{" "}
-              <span className="text-text-dim">{r.loseText}</span>
-            </span>
-            <span className="text-sm leading-snug">
-              <span className="font-mono font-semibold text-accent">{r.gain}</span>{" "}
-              <span className="text-text">{r.gainText}</span>
-            </span>
-          </li>
-        ))}
-      </ul>
-      {/* The stack-table "total" row translated: the whole-system payoff. */}
-      <p className="mt-4 border-t-2 border-border pt-3 text-sm font-semibold text-text">
-        One enrolled student — $13–20K — pays for years of the system.{" "}
-        <span className="text-accent">It costs $97 a month.</span>
-      </p>
-    </div>
-  );
-}

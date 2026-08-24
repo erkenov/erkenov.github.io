@@ -28,6 +28,8 @@ type ProductSection = {
   bullets: { lead: string; text: string }[];
   /** Video slot label for sections that get a founder video later. */
   videoLabel?: string;
+  /** Optional plain-language note under the bullets. */
+  note?: string;
 };
 
 const SECTIONS: Record<SectionId, ProductSection> = {
@@ -37,7 +39,7 @@ const SECTIONS: Record<SectionId, ProductSection> = {
     bullets: [
       {
         lead: "Customers find you on Google — not your competitor.",
-        text: "Proper SEO and GEO built in from day one, so you show up when locals search for what you do. The honest part: rankings are a long game — we build the site right, we don't sell miracles.",
+        text: "Proper SEO and GEO built in from day one, so you show up when locals search for what you do.",
       },
       {
         lead: "New customers trust you before they ever call.",
@@ -53,6 +55,9 @@ const SECTIONS: Record<SectionId, ProductSection> = {
       },
     ],
     videoLabel: "Shamil walks through a real website build",
+    /* The website is OPTIONAL (Shamil 2026-08-24): most flight schools
+       already have one, and the system doesn't depend on ours. */
+    note: "Already have a website? Keep it — the whole system works with or without ours; the website is optional. We don't touch or \"fix\" existing sites — no SEO, no anything — because every foreign platform is built differently and can't be systematized, and that systematization is exactly why the system can deliver this much at this price. When we do build your site, it's built to be found by Google and AI search — but no miracles promised: ranking is a long game.",
   },
   receptionist: {
     id: "receptionist",
@@ -240,6 +245,13 @@ function SectionBlock({
             </li>
           ))}
         </ul>
+        {/* Optional plain-language note (e.g. the website-is-optional
+            framing, 2026-08-24) — small muted text under the bullets. */}
+        {section.note && (
+          <p className={`mt-6 max-w-prose text-sm leading-relaxed ${t.note}`}>
+            {section.note}
+          </p>
+        )}
         {/* The two-minute test lives with the receptionist (2026-08-23) —
             homepage (light theme) only; the web-call global exists there. */}
         {section.id === "receptionist" && theme === "light" && <TwoMinuteTest />}
