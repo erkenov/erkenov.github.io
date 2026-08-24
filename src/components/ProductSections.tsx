@@ -38,13 +38,16 @@ type ProductSection = {
   videoLabel?: string;
   /** Optional plain-language note under the bullets. */
   note?: string;
+  /** Argument card above the video: what they lose without this (2026-08-24). */
+  losses?: { num: string; text: string }[];
 };
 
 const SECTIONS: Record<SectionId, ProductSection> = {
   /* The four journey sections (Shamil 2026-08-24): plain-vocabulary stages
-     of the customer journey, added ABOVE the older product sections. The
-     older sections stay for now — Shamil will read through them and decide
-     which of their points get absorbed into the new ones. */
+     of the customer journey. The OLD sections (website/receptionist/
+     reviews/campaigns) were removed from the homepage 2026-08-24 (Shamil);
+     their data stays ONLY for the /fly-home demo, which pins the old
+     order explicitly. */
   "get-customers": {
     id: "get-customers",
     title: "Get customers",
@@ -61,6 +64,11 @@ const SECTIONS: Record<SectionId, ProductSection> = {
         lead: "Found everywhere people look.",
         text: "Google Maps, your Business Profile, AI search answers — your presence is set up and kept current wherever a future student might look.",
       },
+    ],
+    losses: [
+      { num: "$13–20K", text: "one enrolled student is worth — invisible schools never get the call." },
+      { num: "$400–1,000", text: "what acquiring one student costs the old way." },
+      { num: "#1 in search", text: "gets the inquiry — the rest split what's left." },
     ],
     videoLabel: "Shamil walks through a real client acquisition setup",
   },
@@ -81,6 +89,11 @@ const SECTIONS: Record<SectionId, ProductSection> = {
         text: "Missed-call text-back, the website chat widget, after-hours coverage — whatever way they reach out, at whatever hour, they get a real answer.",
       },
     ],
+    losses: [
+      { num: "8 of 10", text: "callers who hit voicemail hang up and dial the next school." },
+      { num: "78%", text: "of buyers go with whoever responds first." },
+      { num: "2×", text: "the booking rate of instant answers vs same-hour follow-up." },
+    ],
     videoLabel: "Shamil shows the receptionist catching real calls",
   },
   "never-lose": {
@@ -100,6 +113,11 @@ const SECTIONS: Record<SectionId, ProductSection> = {
         text: "A thirteen-to-twenty-thousand-dollar decision takes time for some. The hesitant ones get a multi-week follow-up until they enroll — or tell you to stop.",
       },
     ],
+    losses: [
+      { num: "1 in 3", text: "booked slots flies empty without reminders." },
+      { num: "60–80%", text: "of discovery flyers never enroll without follow-up." },
+      { num: "$13–20K", text: "walks out the door with every student you stop texting." },
+    ],
     videoLabel: "Shamil walks through the follow-up chain",
   },
   "customers-bring": {
@@ -118,6 +136,11 @@ const SECTIONS: Record<SectionId, ProductSection> = {
         lead: "Every review gets an answer.",
         text: "Good or bad, each one gets a thoughtful reply — which is what prospects actually read before they choose.",
       },
+    ],
+    losses: [
+      { num: "By luck", text: "is how reviews arrive without a system — a few a year, if you're lucky." },
+      { num: "Never asked", text: "is why happy students don't refer — nobody invited them at the right moment." },
+      { num: "Unanswered", text: "bad reviews are the first thing the next prospect reads." },
     ],
     videoLabel: "Shamil shows the review and referral engine",
   },
@@ -301,6 +324,28 @@ function TwoMinuteTest() {
   );
 }
 
+/* Argument card (Shamil 2026-08-24): sits ABOVE the video in the media
+ * column — problems first, then the eye moves right to the solution text
+ * or down to the video. Style resurrected from the 23-08 hero lose/gain
+ * card (commit e4e7c76): mono clay-red numbers + dim text. */
+function LossCard({ rows }: { rows: { num: string; text: string }[] }) {
+  return (
+    <div className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
+      <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-[var(--clay)]">
+        What it costs without this
+      </p>
+      <ul className="mt-2 divide-y divide-border/60">
+        {rows.map((r) => (
+          <li key={r.num} className="py-2.5 text-sm leading-snug first:pt-1 last:pb-0">
+            <span className="font-mono font-semibold text-[var(--clay)]">{r.num}</span>{" "}
+            <span className="text-text-dim">{r.text}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function SectionBlock({
   section,
   flip,
@@ -341,31 +386,26 @@ function SectionBlock({
             {section.note}
           </p>
         )}
-        {/* The two-minute test lives with the receptionist (2026-08-23) —
-            homepage (light theme) only; the web-call global exists there. */}
-        {section.id === "receptionist" && theme === "light" && <TwoMinuteTest />}
+        {/* The two-minute test lives with the never-miss section (moved
+            2026-08-24 from the removed receptionist section) — homepage
+            (light theme) only; the web-call global exists there. */}
+        {section.id === "never-miss" && theme === "light" && <TwoMinuteTest />}
       </div>
       {/* Media column — uniform video slots for all sections (Shamil
           2026-08-16): the interactive ReviewDemo animation is OUT for now;
           a founder-recorded video goes in later like the other sections. */}
       <div className={flip ? "md:order-1" : ""}>
-        <VideoSlot label={section.videoLabel!} theme={theme} />
+        <div className="space-y-6">
+          {section.losses && <LossCard rows={section.losses} />}
+          <VideoSlot label={section.videoLabel!} theme={theme} />
+        </div>
       </div>
     </div>
   );
 }
 
 export default function ProductSections({
-  order = [
-    "get-customers",
-    "never-miss",
-    "never-lose",
-    "customers-bring",
-    "website",
-    "receptionist",
-    "reviews",
-    "campaigns",
-  ],
+  order = ["get-customers", "never-miss", "never-lose", "customers-bring"],
   heading = "What you get",
   description,
   theme = "dark",

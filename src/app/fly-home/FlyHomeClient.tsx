@@ -1089,9 +1089,12 @@ export default function FlyHomeClient() {
       <PricingSection />
       <ProcessSection />
       <StorySection />
+      {/* Order pinned 2026-08-24: the homepage default switched to the four
+          journey sections; this demo keeps the original four. */}
       <ProductSections
         theme="light"
         heading="When every call is answered, make the phone ring more."
+        order={["website", "receptionist", "reviews", "campaigns"]}
       />
       <PlatformSection />
       <CalculatorSection />

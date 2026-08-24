@@ -49,14 +49,13 @@
 
 import { useEffect, useState, Fragment } from "react";
 import { motion } from "framer-motion";
-import { CalendarCheck, Check, ChevronDown, Globe, GraduationCap, Megaphone, Phone, PhoneCall, Play, RefreshCw, Star, UserPlus } from "lucide-react";
+import { CalendarCheck, Check, ChevronDown, Globe, Phone, PhoneCall, Play, Star } from "lucide-react";
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { INTEGRATION_LOGOS } from "./integration-logos";
 import { STACK_LOGOS } from "./stack-logos";
 import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
 import { SceneIndustriesCarousel } from "@/components/SceneIndustriesCarousel";
 import ProductSections from "@/components/ProductSections";
-import WorkflowSections from "@/components/WorkflowSections";
 import Process from "@/components/Process";
 import ErkenChatWidget, { openErkenChat } from "@/components/ErkenChatWidget";
 import ErkenVoiceWidget from "@/components/ErkenVoiceWidget";
@@ -311,19 +310,12 @@ function DraftHeader() {
               <div className="w-[38rem] rounded-2xl border border-border bg-surface p-3 shadow-xl">
                 <div className="grid grid-cols-2 gap-1">
                 {[
-                  { icon: Globe, name: "Website", desc: "Built to be found on Google — and to turn visitors into customers.", href: "#product-website" },
-                  { icon: PhoneCall, name: "AI receptionist", desc: "Answers every call, text, and chat 24/7 — and books the job.", href: "#product-receptionist" },
-                  { icon: Star, name: "Review engine", desc: "A flood of fresh 5-star reviews, on autopilot.", href: "#product-reviews" },
-                  { icon: Megaphone, name: "Campaigns & referrals", desc: "One-click campaigns that bring past customers back — with friends.", href: "#product-campaigns" },
-                  /* The five workflow blocks (Shamil 2026-08-23): same menu
-                     treatment as the products — icon + one-liner + anchor. */
-                  { icon: CalendarCheck, name: "Flight reminders", desc: "24 hours out, that morning, two hours before — every booked flight happens.", href: "#workflow-reminders" },
-                  { icon: RefreshCw, name: "No-show & weather rescue", desc: "A cancelled flight rebooks itself — by text or a live call.", href: "#workflow-rescue" },
-                  { icon: GraduationCap, name: "Enrollment follow-up", desc: "The discovery flight they loved becomes the enrollment.", href: "#workflow-postflight" },
-                  { icon: UserPlus, name: "Student win-back", desc: "Lost students come back — a text costs cents, a new student costs $400+.", href: "#workflow-reactivation" },
-                  /* "60-second answers" menu item removed 2026-08-23 with
-                     the speed-to-lead workflow (duplicated the AI
-                     receptionist product section — Shamil). */
+                  /* The four journey sections (2026-08-24): the old product
+                     and workflow menu items went away with their sections. */
+                  { icon: Globe, name: "Get customers", desc: "A website that works, ads ready to turn on, found everywhere people look.", href: "#product-get-customers" },
+                  { icon: PhoneCall, name: "Never miss a customer", desc: "Every call, text, and chat answered in seconds, 24/7 — booked on the spot.", href: "#product-never-miss" },
+                  { icon: CalendarCheck, name: "Never lose a lead", desc: "Reminders, rebooking, and follow-up until they enroll.", href: "#product-never-lose" },
+                  { icon: Star, name: "Customers bring customers", desc: "Reviews and referrals on autopilot.", href: "#product-customers-bring" },
                 ].map(({ icon: Icon, name, desc, href }) => (
                   <a
                     key={href}
@@ -1284,7 +1276,6 @@ export default function HomeV8Client() {
           theme="light"
           description="Everything below is already built and preinstalled in your account. In onboarding you pick what I switch on — all of it, or just the pieces you want."
         />
-        <WorkflowSections />
       </div>
 
       {/* 3. Why us + FAQ — MERGED 2026-08-22 (Shamil): one always-expanded
