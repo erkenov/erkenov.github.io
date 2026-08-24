@@ -288,47 +288,17 @@ function VideoSlot({ label, theme }: { label: string; theme: Theme }) {
   );
 }
 
-/** The two-minute test — moved from the hero card into the receptionist
- *  section 2026-08-23 (Shamil): it sells the receptionist specifically, so
- *  it lives here, under the bullets. The button starts the in-browser
- *  Retell web call (ErkenVoiceWidget on the homepage installs the global);
- *  the dial link rings the same agent on the Retell line (901) 633-1400. */
-function TwoMinuteTest() {
-  return (
-    <div className="mt-8 rounded-2xl border border-border bg-surface p-5">
-      <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-accent">
-        The two-minute test
-      </p>
-      <p className="mt-2 text-sm leading-relaxed text-text-muted">
-        Tonight, after 8 PM, call your own business. That&apos;s what a
-        motivated customer hears. Then call my line — same scenario,
-        different outcome.
-      </p>
-      <div className="mt-4 flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={() => window.__startErkenVoiceCall?.()}
-          className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
-        >
-          <PhoneCall className="h-4 w-4" />
-          Call your AI receptionist
-        </button>
-        <a
-          href="tel:+19016331400"
-          className="font-mono text-sm text-text-muted transition-colors hover:text-text"
-        >
-          or dial (901) 633-1400
-        </a>
-      </div>
-    </div>
-  );
-}
-
 /* Argument card (Shamil 2026-08-24): sits ABOVE the video in the media
  * column — problems first, then the eye moves right to the solution text
  * or down to the video. Style resurrected from the 23-08 hero lose/gain
  * card (commit e4e7c76): mono clay-red numbers + dim text. */
-function LossCard({ rows }: { rows: { num: string; text: string }[] }) {
+function LossCard({
+  rows,
+  test = false,
+}: {
+  rows: { num: string; text: string }[];
+  test?: boolean;
+}) {
   return (
     <div className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
       <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-[var(--clay)]">
@@ -342,6 +312,36 @@ function LossCard({ rows }: { rows: { num: string; text: string }[] }) {
           </li>
         ))}
       </ul>
+      {/* The two-minute test lives INSIDE the cost card (Shamil 2026-08-24):
+          the losses above are the claim, this is the proof — one card. */}
+      {test && (
+        <div className="mt-4 border-t border-border/70 pt-4">
+          <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-accent">
+            The two-minute test
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-text-muted">
+            Tonight, after 8 PM, call your own business. That&apos;s what a
+            motivated customer hears. Then call my line — same scenario,
+            different outcome.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => window.__startErkenVoiceCall?.()}
+              className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
+            >
+              <PhoneCall className="h-4 w-4" />
+              Call your AI receptionist
+            </button>
+            <a
+              href="tel:+19016331400"
+              className="font-mono text-sm text-text-muted transition-colors hover:text-text"
+            >
+              or dial (901) 633-1400
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -386,17 +386,18 @@ function SectionBlock({
             {section.note}
           </p>
         )}
-        {/* The two-minute test lives with the never-miss section (moved
-            2026-08-24 from the removed receptionist section) — homepage
-            (light theme) only; the web-call global exists there. */}
-        {section.id === "never-miss" && theme === "light" && <TwoMinuteTest />}
       </div>
       {/* Media column — uniform video slots for all sections (Shamil
           2026-08-16): the interactive ReviewDemo animation is OUT for now;
           a founder-recorded video goes in later like the other sections. */}
       <div className={flip ? "md:order-1" : ""}>
         <div className="space-y-6">
-          {section.losses && <LossCard rows={section.losses} />}
+          {section.losses && (
+            <LossCard
+              rows={section.losses}
+              test={section.id === "never-miss" && theme === "light"}
+            />
+          )}
           <VideoSlot label={section.videoLabel!} theme={theme} />
         </div>
       </div>
