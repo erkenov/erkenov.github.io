@@ -41,7 +41,7 @@ type ProductSection = {
   /** One section-level loss argument as a clay-edged white strip right under
       the title (Shamil 2026-08-24: variant 3 won; Get-customers' per-bullet
       arguments were too weak, so ONE strong argument per section instead). */
-  sectionLoss?: { num: string; text: string };
+  sectionLoss?: { num: string; text: string }[];
 };
 
 const SECTIONS: Record<SectionId, ProductSection> = {
@@ -67,10 +67,12 @@ const SECTIONS: Record<SectionId, ProductSection> = {
         text: "Google Maps, your Business Profile, AI search answers — your presence is set up and kept current wherever a future student might look.",
       },
     ],
-    sectionLoss: {
-      num: "$13–20K",
-      text: "is what ONE enrolled student is worth — and without an online presence, your business doesn't exist for the people searching.",
-    },
+    sectionLoss: [
+      {
+        num: "$13–20K",
+        text: "is what ONE enrolled student is worth — and without an online presence, your business doesn't exist for the people searching.",
+      },
+    ],
     videoLabel: "Shamil walks through a real client acquisition setup",
   },
   "never-miss": {
@@ -90,10 +92,11 @@ const SECTIONS: Record<SectionId, ProductSection> = {
         text: "Missed-call text-back, the website chat widget, after-hours coverage — whatever way they reach out, at whatever hour, they get a real answer.",
       },
     ],
-    sectionLoss: {
-      num: "8 of 10",
-      text: "callers who hit voicemail hang up and dial the next school.",
-    },
+    sectionLoss: [
+      { num: "8 of 10", text: "callers who hit voicemail hang up and dial the next school." },
+      { num: "78%", text: "of buyers go with whoever responds first." },
+      { num: "2×", text: "the booking rate of instant answers vs same-hour follow-up." },
+    ],
     videoLabel: "Shamil shows the receptionist catching real calls",
   },
   "never-lose": {
@@ -113,10 +116,11 @@ const SECTIONS: Record<SectionId, ProductSection> = {
         text: "A thirteen-to-twenty-thousand-dollar decision takes time for some. The hesitant ones get a multi-week follow-up until they enroll — or tell you to stop.",
       },
     ],
-    sectionLoss: {
-      num: "60–80%",
-      text: "of discovery flyers never enroll without follow-up.",
-    },
+    sectionLoss: [
+      { num: "1 in 3", text: "booked slots flies empty without reminders." },
+      { num: "60–80%", text: "of discovery flyers never enroll without follow-up." },
+      { num: "$13–20K", text: "walks out the door with every student you stop texting." },
+    ],
     videoLabel: "Shamil walks through the follow-up chain",
   },
   "customers-bring": {
@@ -136,10 +140,12 @@ const SECTIONS: Record<SectionId, ProductSection> = {
         text: "Good or bad, each one gets a thoughtful reply — which is what prospects actually read before they choose.",
       },
     ],
-    sectionLoss: {
-      num: "Only the unhappy",
-      text: "customer is motivated enough to review on their own — happy students stay silent unless asked. And every review needs an answer: it shows the company is alive, and a solved negative review shows the next prospect you never leave an unhappy customer hanging. And the cheapest new customer is the one a happy customer brings you.",
-    },
+    sectionLoss: [
+      {
+        num: "Only the unhappy",
+              text: "customer is motivated enough to review on their own — happy students stay silent unless asked. And every review needs an answer: it shows the company is alive, and a solved negative review shows the next prospect you never leave an unhappy customer hanging. And the cheapest new customer is the one a happy customer brings you.",
+      },
+    ],
     videoLabel: "Shamil shows the review and referral engine",
   },
   website: {
@@ -343,12 +349,21 @@ function SectionBlock({
           {section.title}
         </h3>
         {section.sectionLoss && (
-          <p className="mt-6 rounded-md border-l-2 border-[var(--clay)] bg-surface px-4 py-2.5 text-sm leading-snug md:text-base">
-            <span className="font-mono font-semibold text-[var(--clay)]">
-              {section.sectionLoss.num}
-            </span>{" "}
-            <span className="text-text-dim">{section.sectionLoss.text}</span>
-          </p>
+          <div className="mt-6 rounded-md border-l-2 border-[var(--clay)] bg-surface px-4 py-2.5">
+            <ul className="divide-y divide-border/60">
+              {section.sectionLoss.map((r) => (
+                <li
+                  key={r.num}
+                  className="py-2 text-sm leading-snug first:pt-0 last:pb-0 md:text-base"
+                >
+                  <span className="font-mono font-semibold text-[var(--clay)]">
+                    {r.num}
+                  </span>{" "}
+                  <span className="text-text-dim">{r.text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
         <ul className="mt-8 space-y-6">
           {section.bullets.map((b) => (
