@@ -33,7 +33,17 @@ type SectionId =
 type ProductSection = {
   id: SectionId;
   title: string;
-  bullets: { lead: string; text: string }[];
+  bullets: {
+    lead: string;
+    text: string;
+    /** PROTOTYPE 2026-08-24 (Shamil): loss argument inlined above the solution
+        bullet — problem, then the fix right under it. lossStyle is the design
+        variant being trialled on get-customers (1 inline / 2 paired card /
+        3 clay strip); one winner gets picked, then this replicates everywhere
+        and the LossCard dies. */
+    loss?: { num: string; text: string };
+    lossStyle?: 1 | 2 | 3;
+  }[];
   /** Video slot label for sections that get a founder video later. */
   videoLabel?: string;
   /** Optional plain-language note under the bullets. */
@@ -55,20 +65,21 @@ const SECTIONS: Record<SectionId, ProductSection> = {
       {
         lead: "A website that actually works.",
         text: "Built by me, with proper SEO and GEO from day one — so when locals search Google or ask an AI, it's your school they find. Already have a site? Keep it — the rest of the system works with it; the SEO and GEO come only with a site I build.",
+        loss: { num: "$13–20K", text: "one enrolled student is worth — invisible schools never get the call." },
+        lossStyle: 1,
       },
       {
         lead: "Ads that are already built for you.",
         text: "Ready-made Google and Meta campaigns, proven for flight schools and localized to your city. You just turn them on and fund them — they're included in your plan, you only pay the ad spend.",
+        loss: { num: "$400–1,000", text: "what acquiring one student costs the old way." },
+        lossStyle: 2,
       },
       {
         lead: "Found everywhere people look.",
         text: "Google Maps, your Business Profile, AI search answers — your presence is set up and kept current wherever a future student might look.",
+        loss: { num: "#1 in search", text: "gets the inquiry — the rest split what's left." },
+        lossStyle: 3,
       },
-    ],
-    losses: [
-      { num: "$13–20K", text: "one enrolled student is worth — invisible schools never get the call." },
-      { num: "$400–1,000", text: "what acquiring one student costs the old way." },
-      { num: "#1 in search", text: "gets the inquiry — the rest split what's left." },
     ],
     videoLabel: "Shamil walks through a real client acquisition setup",
   },
@@ -370,9 +381,32 @@ function SectionBlock({
         </h3>
         <ul className="mt-8 space-y-6">
           {section.bullets.map((b) => (
-            <li key={b.lead} className="flex items-start gap-3">
+            <li
+              key={b.lead}
+              className={`flex items-start gap-3 ${
+                b.lossStyle === 2
+                  ? "rounded-xl border border-border bg-surface p-4"
+                  : ""
+              }`}
+            >
               <Check className={`mt-1 h-5 w-5 shrink-0 ${t.lead}`} />
-              <div>
+              <div className="flex-1">
+                {b.loss &&
+                  (b.lossStyle === 3 ? (
+                    <p className="mb-2 rounded-md border-l-2 border-[var(--clay)] bg-surface px-3 py-1.5 text-sm leading-snug">
+                      <span className="font-mono font-semibold text-[var(--clay)]">
+                        {b.loss.num}
+                      </span>{" "}
+                      <span className="text-text-dim">{b.loss.text}</span>
+                    </p>
+                  ) : (
+                    <p className="mb-1.5 text-sm leading-snug">
+                      <span className="font-mono font-semibold text-[var(--clay)]">
+                        {b.loss.num}
+                      </span>{" "}
+                      <span className="text-text-dim">{b.loss.text}</span>
+                    </p>
+                  ))}
                 <p className={`text-lg font-semibold ${t.lead}`}>{b.lead}</p>
                 <p className={`mt-1.5 leading-relaxed ${t.body}`}>{b.text}</p>
               </div>
