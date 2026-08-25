@@ -142,7 +142,7 @@ const SECTIONS: Record<SectionId, ProductSection> = {
     sectionLoss: [
       {
         num: "Only the unhappy",
-              text: "customer is motivated enough to review on their own — happy students stay silent unless asked.",
+              text: "customer is motivated enough to leave a review — a happy customer stays silent unless asked.",
       },
     ],
     videoLabel: "Shamil shows the review and referral engine",
