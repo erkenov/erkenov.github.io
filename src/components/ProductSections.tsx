@@ -114,9 +114,10 @@ const SECTIONS: Record<SectionId, ProductSection> = {
         text: "A thirteen-to-twenty-thousand-dollar decision takes time for some. The hesitant ones get a multi-week follow-up until they enroll — or tell you to stop.",
       },
     ],
+    /* No-show/enrollment stats REMOVED 2026-08-25 (Shamil): he can't vouch
+       for the "1 in 3" and "60–80%" figures — only the student-value anchor
+       and the certain logic (no messaging = more walk-outs leave) stay. */
     sectionLoss: [
-      { num: "1 in 3", text: "booked slots flies empty without reminders." },
-      { num: "60–80%", text: "of discovery flyers never enroll without follow-up." },
       { num: "$13–20K", text: "walks out the door with every student you stop texting." },
     ],
     videoLabel: "Shamil walks through the follow-up chain",
