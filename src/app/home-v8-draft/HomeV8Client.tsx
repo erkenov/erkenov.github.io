@@ -1361,7 +1361,7 @@ const MERGED_FAQS = [
   },
   {
     q: "Do I keep my phone number?",
-    a: "Yes. Calls forward to the Receptionist only when you can't answer — after hours, or when the line is busy.",
+    a: "Your choice. Keep your own number — calls forward to the Receptionist only when you can't answer: after hours, busy line, up in the air. Or we give the AI its own dedicated number, and you publish that one on your website and Google profile. Most schools keep theirs.",
   },
   {
     q: "When am I going to start seeing results?",
