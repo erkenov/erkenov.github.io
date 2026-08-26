@@ -905,7 +905,7 @@ function PricingSection() {
         {/* Usage-cost disclosure (owner ask, 2026-08-12; trimmed to the one
             sentence 2026-08-22, Shamil). */}
         <p className="mt-6 text-xs font-medium leading-relaxed text-amber-700">
-          AI voice minutes are billed separately at cost — roughly 10¢ a
+          AI voice minutes are billed separately at cost — $0.135–$0.162 a
           minute.
         </p>
       </div>
