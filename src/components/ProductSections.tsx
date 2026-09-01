@@ -291,40 +291,6 @@ function VideoSlot({ label, theme }: { label: string; theme: Theme }) {
   );
 }
 
-/* The two-minute test as a slim standalone card ABOVE the video in the
- * never-miss media column (Shamil 2026-08-24: the cost card died with the
- * section-strip design; the test is an action, not an argument). */
-function TestCard() {
-  return (
-    <div className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
-      <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-accent">
-        The two-minute test
-      </p>
-      <p className="mt-2 text-sm leading-relaxed text-text-muted">
-        Tonight, after 8 PM, call your own business. That&apos;s what a
-        motivated customer hears. Then call my line — same scenario,
-        different outcome.
-      </p>
-      <div className="mt-4 flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={() => window.__startErkenVoiceCall?.()}
-          className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
-        >
-          <PhoneCall className="h-4 w-4" />
-          Call your AI receptionist
-        </button>
-        <a
-          href="tel:+19016331400"
-          className="font-mono text-sm text-text-muted transition-colors hover:text-text"
-        >
-          or dial (901) 633-1400
-        </a>
-      </div>
-    </div>
-  );
-}
-
 function SectionBlock({
   section,
   flip,
@@ -362,6 +328,36 @@ function SectionBlock({
                 </li>
               ))}
             </ul>
+            {/* The two-minute test, merged INTO the 8-of-10 loss card as its
+                logical continuation (Shamil 2026-09-01): voicemail callers
+                hang up → hear it yourself tonight → then hear my line. No
+                "two-minute test" header. Homepage light theme only — the
+                web-call global exists there. */}
+            {section.id === "never-miss" && theme === "light" && (
+              <div className="mt-3 border-t border-border/60 pt-3">
+                <p className="text-sm leading-relaxed text-text-muted">
+                  Tonight, after 8 PM, call your own business. That&apos;s what
+                  a motivated customer hears. Then call my line — same
+                  scenario, different outcome.
+                </p>
+                <div className="mt-3 flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => window.__startErkenVoiceCall?.()}
+                    className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
+                  >
+                    <PhoneCall className="h-4 w-4" />
+                    Call your AI receptionist
+                  </button>
+                  <a
+                    href="tel:+19016331400"
+                    className="font-mono text-sm text-text-muted transition-colors hover:text-text"
+                  >
+                    or dial (901) 633-1400
+                  </a>
+                </div>
+              </div>
+            )}
           </div>
         )}
         <ul className="mt-8 space-y-6">
@@ -375,14 +371,6 @@ function SectionBlock({
             </li>
           ))}
         </ul>
-        {/* The two-minute test lives UNDER the never-miss text (moved from
-            above the video, Shamil 2026-08-24) — homepage light theme only;
-            the web-call global exists there. */}
-        {section.id === "never-miss" && theme === "light" && (
-          <div className="mt-8">
-            <TestCard />
-          </div>
-        )}
         {/* Optional plain-language note (e.g. the website-is-optional
             framing, 2026-08-24) — small muted text under the bullets. */}
         {section.note && (
