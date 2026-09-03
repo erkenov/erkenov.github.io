@@ -55,7 +55,7 @@ import { INTEGRATION_LOGOS } from "./integration-logos";
 import { STACK_LOGOS } from "./stack-logos";
 import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
 import { SceneIndustriesCarousel } from "@/components/SceneIndustriesCarousel";
-import ProductSections from "@/components/ProductSections";
+import ProductSections from "./ProductSections";
 import Process from "@/components/Process";
 import ErkenChatWidget, { openErkenChat } from "@/components/ErkenChatWidget";
 import ErkenVoiceWidget from "@/components/ErkenVoiceWidget";

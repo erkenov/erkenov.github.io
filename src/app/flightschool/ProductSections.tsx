@@ -56,21 +56,21 @@ const SECTIONS: Record<SectionId, ProductSection> = {
     bullets: [
       {
         lead: "A website that actually works.",
-        text: "Built by me, with proper SEO and GEO from day one — so when locals search Google or ask an AI, it's your business they find. Already have a site? Keep it — the rest of the system works with it; the SEO and GEO come only with a site I build.",
+        text: "Built by me, with proper SEO and GEO from day one — so when locals search Google or ask an AI, it's your school they find. Already have a site? Keep it — the rest of the system works with it; the SEO and GEO come only with a site I build.",
       },
       {
         lead: "Ads that are already built for you.",
-        text: "Ready-made Google and Meta campaigns, proven for local service businesses and localized to your city. You just turn them on and fund them — they're included in your plan, you only pay the ad spend.",
+        text: "Ready-made Google and Meta campaigns, proven for flight schools and localized to your city. You just turn them on and fund them — they're included in your plan, you only pay the ad spend.",
       },
       {
         lead: "Found everywhere people look.",
-        text: "Google Maps, your Business Profile, AI search answers — your presence is set up and kept current wherever a future customer might look.",
+        text: "Google Maps, your Business Profile, AI search answers — your presence is set up and kept current wherever a future student might look.",
       },
     ],
     sectionLoss: [
       {
-        num: "Every day",
-        text: "people search for what you do — without an online presence, your business doesn't exist for them.",
+        num: "$13–20K",
+        text: "is what ONE enrolled student is worth — and without an online presence, your business doesn't exist for the people searching.",
       },
     ],
     videoLabel: "Shamil walks through a real client acquisition setup",
@@ -81,11 +81,11 @@ const SECTIONS: Record<SectionId, ProductSection> = {
     bullets: [
       {
         lead: "Every call, text, and chat answered — in seconds, 24/7.",
-        text: "Phone, SMS, and web chat — one receptionist on all of them, weekends and holidays included. Most voicemail callers simply dial the next business; yours won't get the chance.",
+        text: "Phone, SMS, and web chat — one receptionist on all of them, weekends and holidays included. Most voicemail callers simply dial the next school; yours won't get the chance.",
       },
       {
         lead: "Booked on the spot.",
-        text: "The moment they're ready, the AI books the appointment straight into your calendar — no back-and-forth, no 'we'll call you back.'",
+        text: "The moment they want to fly, the AI books the discovery flight straight into your calendar — no back-and-forth, no 'we'll call you back.'",
       },
       {
         lead: "Something always answers.",
@@ -93,7 +93,7 @@ const SECTIONS: Record<SectionId, ProductSection> = {
       },
     ],
     sectionLoss: [
-      { num: "8 of 10", text: "callers who hit voicemail hang up and dial the next business." },
+      { num: "8 of 10", text: "callers who hit voicemail hang up and dial the next school." },
     ],
     videoLabel: "Shamil shows the receptionist catching real calls",
   },
@@ -102,20 +102,23 @@ const SECTIONS: Record<SectionId, ProductSection> = {
     title: "Never lose a lead",
     bullets: [
       {
-        lead: "Every booked appointment actually happens.",
-        text: "A reminder chain before every booking — the day before, that morning, two hours out. If life cancels it, the rebooking text goes out on its own.",
+        lead: "Every booked flight actually happens.",
+        text: "A reminder chain before every discovery flight — the day before, that morning, two hours out. If weather or life cancels it, the rebooking text goes out on its own.",
       },
       {
-        lead: "The first visit becomes the customer.",
-        text: "They leave happy — and that's exactly when the follow-up lands: congratulations, answers to their questions, and the offer to book the next one.",
+        lead: "The discovery flight becomes the enrollment.",
+        text: "They land buzzing — and that's exactly when the follow-up lands: congratulations, answers to their questions, and the offer to book the next lesson.",
       },
       {
         lead: "Nobody falls through the cracks.",
-        text: "A big decision takes time for some. The hesitant ones get a multi-week follow-up until they buy — or tell you to stop.",
+        text: "A thirteen-to-twenty-thousand-dollar decision takes time for some. The hesitant ones get a multi-week follow-up until they enroll — or tell you to stop.",
       },
     ],
+    /* No-show/enrollment stats REMOVED 2026-08-25 (Shamil): he can't vouch
+       for the "1 in 3" and "60–80%" figures — only the student-value anchor
+       and the certain logic (no messaging = more walk-outs leave) stay. */
     sectionLoss: [
-      { num: "Out of touch", text: "is out of mind — every lead you stop following up with eventually buys from someone else." },
+      { num: "$13–20K", text: "walks out the door with every student you stop texting." },
     ],
     videoLabel: "Shamil walks through the follow-up chain",
   },
@@ -125,7 +128,7 @@ const SECTIONS: Record<SectionId, ProductSection> = {
     bullets: [
       {
         lead: "Reviews on autopilot.",
-        text: "After every job, the happy customer gets asked at the perfect moment — your rating climbs while you're on the next one.",
+        text: "After every flight, the happy student gets asked at the perfect moment — your rating climbs while you're up in the air.",
       },
       {
         lead: "Referrals without the awkward ask.",
@@ -177,7 +180,7 @@ const SECTIONS: Record<SectionId, ProductSection> = {
     bullets: [
       {
         lead: "Every caller gets an answer — in seconds, 24/7.",
-        text: "Phone, SMS, and web chat — one receptionist on all of them, weekends and holidays included. Around 80% of callers who reach voicemail hang up and dial the next business; yours won't. And speed decides who gets the customer: 78% of buyers go with whoever responds first, and instant answers book at more than double the rate of same-hour follow-up.",
+        text: "Phone, SMS, and web chat — one receptionist on all of them, weekends and holidays included. Around 80% of callers who reach voicemail hang up and dial the next business; yours won't. And speed decides who gets the student: 78% of buyers go with whoever responds first, and instant answers book at more than double the rate of same-hour follow-up.",
       },
       {
         lead: "Answers like your best employee.",
@@ -430,58 +433,5 @@ export default function ProductSections({
         </div>
       </div>
     </section>
-  );
-}
-
-/** Compact single-column "What you get" for the opened industry cards
- *  (Shamil 2026-09-03: the what-you-get listing pasted into every card's
- *  details). Same SECTIONS data as the homepage run — defined once here so
- *  the details can never drift from the homepage. Stacked mobile-style per
- *  block: title → bullets → video slot (the details card is narrower than
- *  the page, so the desktop left/right alternation doesn't apply). */
-export function WhatYouGetCompact({ theme = "light" }: { theme?: Theme }) {
-  const order: SectionId[] = [
-    "get-customers",
-    "never-miss",
-    "never-lose",
-    "customers-bring",
-  ];
-  const t = T[theme];
-  return (
-    <div className="mt-8 border-t border-text-muted/15 pt-8">
-      <div className="mono-label mb-1 text-xs text-text-dim">What you get</div>
-      <p className={`mt-1 mb-6 text-[15px] leading-relaxed md:text-base ${t.body}`}>
-        Everything below is already built and preinstalled in your account —
-        in onboarding you pick what gets switched on.
-      </p>
-      <div className="space-y-10">
-        {order.map((id) => {
-          const s = SECTIONS[id];
-          return (
-            <div key={id}>
-              <h4 className={`text-xl font-semibold tracking-tight ${t.title}`}>
-                {s.title}
-              </h4>
-              <ul className="mt-3 space-y-3">
-                {s.bullets.map((b) => (
-                  <li key={b.lead} className="flex items-start gap-2.5">
-                    <Check className={`mt-1 h-4 w-4 shrink-0 ${t.lead}`} />
-                    <span className={`text-[15px] leading-relaxed ${t.body}`}>
-                      <strong className={`font-semibold ${t.lead}`}>{b.lead}</strong>{" "}
-                      {b.text}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              {s.videoLabel && (
-                <div className="mt-4">
-                  <VideoSlot label={s.videoLabel} theme={theme} />
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
   );
 }

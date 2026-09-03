@@ -84,12 +84,12 @@ const SECTIONS = [
   {
     side: "left" as const,
     kicker: "The ultimate",
-    headline: "AI-powered marketing and operating system for flight schools",
-    body: "All the tools you need to attract, capture, nurture, and close new students — in one system:",
+    headline: "AI-powered marketing and operating system for businesses",
+    body: "All the tools you need to attract, capture, nurture, and close new customers — in one system:",
     bullets: [
       { lead: "Get customers", rest: "a website that works, ads ready to turn on, reviews that sell" },
       { lead: "Never miss one", rest: "every call, text, and chat answered in seconds, 24/7" },
-      { lead: "Never lose one", rest: "reminders, rebooking, and follow-up until they enroll" },
+      { lead: "Never lose one", rest: "reminders, rebooking, and follow-up until they buy" },
       { lead: "Customers bring customers", rest: "reviews and referrals collected on autopilot" },
       { lead: "And much more", rest: "already in the platform — and more keeps coming once you're in" },
     ],
@@ -314,7 +314,7 @@ function DraftHeader() {
                      and workflow menu items went away with their sections. */
                   { icon: Globe, name: "Get customers", desc: "A website that works, ads ready to turn on, found everywhere people look.", href: "#product-get-customers" },
                   { icon: PhoneCall, name: "Never miss a customer", desc: "Every call, text, and chat answered in seconds, 24/7 — booked on the spot.", href: "#product-never-miss" },
-                  { icon: CalendarCheck, name: "Never lose a lead", desc: "Reminders, rebooking, and follow-up until they enroll.", href: "#product-never-lose" },
+                  { icon: CalendarCheck, name: "Never lose a lead", desc: "Reminders, rebooking, and follow-up until they buy.", href: "#product-never-lose" },
                   { icon: Star, name: "Customers bring customers", desc: "Reviews and referrals on autopilot.", href: "#product-customers-bring" },
                 ].map(({ icon: Icon, name, desc, href }) => (
                   <a
@@ -381,9 +381,9 @@ function DraftHeader() {
   );
 }
 
-/* ---- Industries section REMOVED from the live homepage 2026-08-22
-   (Shamil) ahead of the flight-school-only repurpose. The
-   SceneIndustriesCarousel component stays — other routes use it. ---- */
+/* ---- Industries section: removed from the homepage 2026-08-22, RESTORED
+   2026-09-03 (Shamil) — now rendered after pricing (see the render block
+   below); the carousel also serves other routes. ---- */
 
 /* ---- Pipeline section (HubSpot-style sticky-column, v8 mid-build change,
  * Shamil-approved 2026-07-20). LEFT column pins (CSS sticky) with the story;
@@ -1300,9 +1300,44 @@ export default function HomeV8Client() {
           section (Shamil 2026-08-16). */}
       <PricingSection />
 
-      {/* 6. Industries section REMOVED 2026-08-22 (Shamil, live): the
-          industry cards leave the homepage ahead of the flight-school-only
-          repurpose. */}
+      {/* 6. Industries — RESTORED 2026-09-03 (Shamil): the full card set
+          (12 passion + 15 generic = 27) back on the homepage, now sitting
+          after pricing, before the full-platform section. Opened cards
+          carry the what-you-get listing with stacked video slots. TINTED
+          to keep the background rhythm: pricing wash → tint → pipeline
+          plain → stack tinted. */}
+      <div className="section-tint">
+        <section id="industries" className="py-20 md:py-28">
+          <div className="mx-auto max-w-6xl px-6 md:px-8">
+            <motion.div
+              data-celly-avoid
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.5, ease }}
+              className="max-w-2xl"
+            >
+              <SectionKicker>Industries</SectionKicker>
+              <h2
+                className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
+                style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
+              >
+                Pre-configured for what you actually do.
+              </h2>
+              <p className="mt-4 text-base text-text-muted md:text-lg">
+                From roofers to riding schools — the pipeline is already
+                wired for your operation. Voice scripts in your language,
+                intake forms with the questions that matter, pipeline stages
+                that match your sales cycle — click yours to see what comes
+                pre-built.
+              </p>
+            </motion.div>
+            <div className="mt-10">
+              <SceneIndustriesCarousel />
+            </div>
+          </div>
+        </section>
+      </div>
 
       {/* 7. Pipeline — reframed 2026-08-16 as "the full platform" convincer
           ("And that's just the setup."), kept AFTER pricing so it never
@@ -1361,7 +1396,7 @@ const MERGED_FAQS = [
   },
   {
     q: "Do I keep my phone number?",
-    a: "Your choice. Keep your own number — calls forward to the Receptionist only when you can't answer: after hours, busy line, up in the air. Or we give the AI its own dedicated number, and you publish that one on your website and Google profile. Most schools keep theirs.",
+    a: "Your choice. Keep your own number — calls forward to the Receptionist only when you can't answer: after hours, busy line, mid-job with a customer. Or we give the AI its own dedicated number, and you publish that one on your website and Google profile. Most owners keep theirs.",
   },
   {
     q: "When am I going to start seeing results?",
