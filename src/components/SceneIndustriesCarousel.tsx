@@ -29,11 +29,9 @@
 
 import { Carousel, Card } from "@/components/ui/apple-cards-carousel";
 import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
-import { EverythingIncluded } from "@/components/EverythingIncluded";
 import { WhatYouGetCompact } from "@/components/ProductSections";
 import DemoVoiceWidget from "@/app/demo/components/DemoVoiceWidget";
 import { getDemoConfig, type DemoConfig } from "@/app/demo/config";
-import { openErkenChat } from "@/components/ErkenChatWidget";
 
 declare global {
   interface Window {
@@ -1495,8 +1493,8 @@ function IndustryDemoShowcase({
             site widget. Get started → #pricing (2026-08-16: /start trial
             funnel retired — buyers go through the pricing cards). */}
         <p className="mt-4 text-sm font-medium text-text">
-          Try it right here — talk to the AI receptionist or chat with it, no
-          need to leave this page:
+          Try it right here — talk to the AI receptionist, no need to leave
+          this page:
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <a
@@ -1513,13 +1511,20 @@ function IndustryDemoShowcase({
           >
             Talk to the AI receptionist
           </button>
-          <button
-            type="button"
-            onClick={() => openErkenChat()}
-            className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 font-medium text-text transition-colors hover:border-border-strong hover:bg-surface"
-          >
-            Chat with it
-          </button>
+          {/* "Chat with it" REMOVED 2026-09-03 (Shamil). Added instead: a
+              link out to the industry's own live demo site — only on cards
+              that have one (his "see more on the…" button). */}
+          {demoUrl && (
+            <a
+              href={demoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 font-medium text-text transition-colors hover:border-border-strong hover:bg-surface"
+            >
+              See more on the live demo site
+              <span aria-hidden>→</span>
+            </a>
+          )}
         </div>
       </div>
       {/* Mounted inside the popup content, so exactly ONE instance exists
@@ -1642,13 +1647,12 @@ export function SceneIndustriesCarousel({
               `The same platform, pre-configured for ${c.title.toLowerCase()} — AI receptionist, online booking, automated follow-ups, and a pipeline you can actually read.`
             }
           />
-          {c.content}
-          {/* What-you-get listing + stacked video slots inside every opened
-              card (Shamil 2026-09-03) — shared data from ProductSections,
-              so it can't drift from the homepage run. */}
-          <WhatYouGetCompact />
-          <EverythingIncluded />
-        </>
+          {/* Slim modal (Shamil 2026-09-03): only the demo showcase above
+              and this what-you-get listing remain — the per-industry
+              how-it-works story, the real-world outcome, and the
+              EverythingIncluded block are OUT of the card details (the
+              per-card data stays in the array/git history if wanted back). */}
+          <WhatYouGetCompact />        </>
       ),
     };
     return <Card key={c.title} card={card} index={i} />;
