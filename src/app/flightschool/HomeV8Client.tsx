@@ -283,7 +283,7 @@ function DraftHeader() {
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-8">
         <a
-          href="/"
+          href="https://erken.systems"
           className="font-mono text-sm font-medium tracking-tight uppercase text-text"
         >
           erken<span className="text-accent"> </span>systems
