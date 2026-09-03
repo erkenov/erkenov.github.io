@@ -406,14 +406,12 @@ export const Card = ({
   useOutsideClick(containerRef, () => handleClose());
 
   const handleOpen = () => {
-    // Card click = GO TO THE INDUSTRY'S OWN SITE in a new tab (Shamil
-    // 2026-09-03: "don't open details when you click the industry card —
-    // open the website dedicated to that industry"). This supersedes both
-    // his 2026-08-13 click-kill and the same-day details re-enable: the
-    // details duplicated what the dedicated industry sites already carry.
-    // Cards without a dedicated site stay inert. The modal code below
+    // Card click = GO TO THE INDUSTRY'S OWN SITE — plain same-tab
+    // navigation, exactly like a menu link (Shamil 2026-09-03: "it should
+    // just go straight to that page", NOT a popup/new window). Cards
+    // without a dedicated site stay inert. The details modal code below
     // stays in place but is unreachable.
-    if (card.href) window.open(card.href, "_blank", "noopener,noreferrer");
+    if (card.href) window.location.assign(card.href);
   };
 
   const handleClose = () => {
