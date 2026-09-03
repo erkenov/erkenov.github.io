@@ -401,10 +401,10 @@ export const Card = ({
   useOutsideClick(containerRef, () => handleClose());
 
   const handleOpen = () => {
-    // Cards are NOT clickable (Shamil 2026-08-13: "when you click on it,
-    // nothing should happen — they should not open the detail"). The modal
-    // code below stays but is unreachable.
-    return;
+    // Details RE-ENABLED 2026-09-03 (Shamil: industries cards are back and
+    // "when you click on it you see details" — reverses his 2026-08-13
+    // kill below, which left this modal unreachable).
+    setOpen(true);
   };
 
   const handleClose = () => {
