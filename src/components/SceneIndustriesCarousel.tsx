@@ -107,8 +107,8 @@ type IndustryCard = {
  *  2026-07-28: the demo sub-account was converted roofing → flight school
  *  (Sonoran Skyline Flight Academy), so the card and URL moved with it.
  *  fly.erken.systems serves the same funnel; roofing.erken.systems stays
- *  attached so previously shared links keep working. */
-const FLIGHT_DEMO_URL = "https://fly.erken.systems";
+ *  attached so previously shared links keep working. 2026-09-03: the card
+ *  now points at flightschool.erken.systems (Shamil). */
 
 const ph = (label: string, bg: string, fg = "F5F1E8") =>
   `https://placehold.co/640x800/${bg}/${fg}?text=${encodeURIComponent(label)}&font=inter`;
@@ -135,7 +135,10 @@ const INDUSTRIES: IndustryCard[] = [
     title: "Flight schools",
     src: ph("Flight school", "5E7E9B"),
     visual: <CardStyle2Photo src="/industries/card-flightschool-photo.jpg" />,
-    demoUrl: FLIGHT_DEMO_URL,
+    // 2026-09-03 (Shamil): the flight-school card points at the Erken
+    // Systems FOR-flight-schools page (flightschool.erken.systems), not the
+    // fictional Fly Erken demo academy — flight-school traffic goes there.
+    demoUrl: "https://flightschool.erken.systems",
     demoHeadline: "A real flight-school setup, running live right now",
     demoSub:
       "This isn't a mockup. It's a complete flight school system — website, online booking, AI receptionist, automated follow-ups — built on our platform and open for you to click through. Book a test discovery flight and watch what your students would experience.",
@@ -1632,11 +1635,13 @@ export function SceneIndustriesCarousel({
   // Every popup opens with the video showcase (2026-07-14: "every piece of
   // info on the site has a video twin"). The demo is INLINE (2026-08-12):
   // each popup mounts a DemoVoiceWidget whose DemoConfig comes from the
-  // card's demoUrl hostname (flight-school config as fallback), and "Chat
-  // with it" opens the shared site chat widget — no navigation away.
+  // Card click opens the industry's own site in a new tab (Shamil
+  // 2026-09-03) — href carries the card's demoUrl to the Card button; the
+  // details modal below is now unreachable but kept intact.
   const items = INDUSTRIES.map((c, i) => {
-    const card: IndustryCard = {
+    const card: IndustryCard & { href?: string } = {
       ...c,
+      href: c.demoUrl,
       content: (
         <>
           <IndustryDemoShowcase

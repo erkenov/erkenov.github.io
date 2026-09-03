@@ -51,6 +51,11 @@ type Card = {
    *  overlay. (Shamil 2026-05-25: Erken AI agent badge was getting
    *  trapped inside the visual's stacking context.) */
   topRightOverlay?: React.ReactNode;
+  /** Dedicated site for this industry (e.g. https://flightschool.erken.systems).
+   *  When set, clicking the card opens it in a new tab INSTEAD of opening
+   *  the details modal (Shamil 2026-09-03: card click = go to the industry's
+   *  own website; details modal retired). When unset, the click is inert. */
+  href?: string;
 };
 
 export const CarouselContext = createContext<{
@@ -401,10 +406,14 @@ export const Card = ({
   useOutsideClick(containerRef, () => handleClose());
 
   const handleOpen = () => {
-    // Details RE-ENABLED 2026-09-03 (Shamil: industries cards are back and
-    // "when you click on it you see details" — reverses his 2026-08-13
-    // kill below, which left this modal unreachable).
-    setOpen(true);
+    // Card click = GO TO THE INDUSTRY'S OWN SITE in a new tab (Shamil
+    // 2026-09-03: "don't open details when you click the industry card —
+    // open the website dedicated to that industry"). This supersedes both
+    // his 2026-08-13 click-kill and the same-day details re-enable: the
+    // details duplicated what the dedicated industry sites already carry.
+    // Cards without a dedicated site stay inert. The modal code below
+    // stays in place but is unreachable.
+    if (card.href) window.open(card.href, "_blank", "noopener,noreferrer");
   };
 
   const handleClose = () => {
@@ -497,18 +506,18 @@ export const Card = ({
             {card.topRightOverlay}
           </div>
         )}
-        {/* "View details" affordance — purely decorative pill that
-            communicates the card is clickable. The parent <motion.button>
-            handles the actual click anywhere on the card, so this stays
-            pointer-events-none. (Shamil 2026-05-27: most non-technical
-            visitors won't realize the card opens on click without this
-            visible cue.) */}
-        <div className="absolute bottom-4 right-4 z-50 pointer-events-none">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 shadow-md backdrop-blur-sm">
-            <span className="text-xs font-semibold text-[#2a2722]">View details</span>
-            <span className="text-xs font-semibold text-[#C76B58]" aria-hidden>→</span>
+        {/* Click-through affordance — shown only when the card has a
+            dedicated site to open (Shamil 2026-09-03: click = visit the
+            industry's site, details modal retired). Decorative pill; the
+            parent <motion.button> handles the actual click. */}
+        {card.href && (
+          <div className="absolute bottom-4 right-4 z-50 pointer-events-none">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 shadow-md backdrop-blur-sm">
+              <span className="text-xs font-semibold text-[#2a2722]">Visit the site</span>
+              <span className="text-xs font-semibold text-[#C76B58]" aria-hidden>→</span>
+            </div>
           </div>
-        </div>
+        )}
       </motion.button>
     </>
   );
