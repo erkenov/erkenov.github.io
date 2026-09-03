@@ -25,6 +25,14 @@ const DEMO_HOST_ROOTS: Record<string, string> = {
   // directly at /demo/flight-schools.
   "fly.erken.systems": "/fly-erken",
 
+  // 2026-09-03: flightschool.erken.systems root serves /flightschool — a
+  // frozen SNAPSHOT of the flight-school homepage (Shamil task 2026-09-03:
+  // "move main page to flightschool.erken.systems; all flight-school
+  // traffic goes there"). The live homepage is being reworked to universal
+  // separately; the snapshot keeps this subdomain on flight-school copy.
+  // Also reachable directly at erken.systems/flightschool.
+  "flightschool.erken.systems": "/flightschool",
+
   // 2026-08-03: 17 additional passion-industry demo subdomains, each
   // rewritten straight to its /demo/[industry] config-driven page (see
   // src/app/demo/config.ts + src/app/demo/configs/*.ts). Wildcard DNS on
