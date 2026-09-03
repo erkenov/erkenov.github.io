@@ -274,11 +274,8 @@ const T = {
 
 function VideoSlot({ label, theme }: { label: string; theme: Theme }) {
   return (
-    /* Vertical 9:16 slot (Shamil 2026-09-01): the coming videos are
-       phone-shot verticals, so the placeholders go vertical too — was
-       aspect-video (16:9). max-w matches Scene1IntroVideo's portrait box. */
     <div
-      className={`group relative mx-auto aspect-[9/16] w-full max-w-[22rem] overflow-hidden rounded-2xl border ${T[theme].videoBox}`}
+      className={`group relative aspect-video w-full overflow-hidden rounded-2xl border ${T[theme].videoBox}`}
     >
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 px-6">
         <div className="flex h-16 w-16 items-center justify-center rounded-full border border-amber-400/40 bg-amber-400/10 transition group-hover:bg-amber-400/20">

@@ -109,9 +109,7 @@ const WORKFLOWS: Workflow[] = [
 
 function VideoSlot({ label }: { label: string }) {
   return (
-    /* Vertical 9:16 slot (Shamil 2026-09-01) — same change as
-       ProductSections' VideoSlot: the coming videos are vertical. */
-    <div className="group relative mx-auto aspect-[9/16] w-full max-w-[22rem] overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-surface to-surface-2">
+    <div className="group relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-surface to-surface-2">
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 px-6">
         <div className="flex h-16 w-16 items-center justify-center rounded-full border border-amber-400/40 bg-amber-400/10 transition group-hover:bg-amber-400/20">
           <Play className="h-6 w-6 fill-amber-400 text-amber-400" />
