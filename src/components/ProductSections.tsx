@@ -4,7 +4,8 @@ import { Check, PhoneCall, Play } from "lucide-react";
 
 /**
  * ProductSections — the "what you get" product block, used on the homepage
- * (website → receptionist → reviews → campaigns). The /receptionist funnel
+ * (lead generation → lead capture → lead management → reviews & referrals
+ * → see it working). The /receptionist funnel
  * (which used the receptionist-first order) was retired 2026-08-16 — the
  * main page is the selling page now; the `order` prop stays for reuse.
  *
@@ -21,6 +22,11 @@ import { Check, PhoneCall, Play } from "lucide-react";
  */
 
 type SectionId =
+  | "lead-generation"
+  | "lead-capture"
+  | "lead-management"
+  | "advocacy"
+  | "reporting"
   | "get-customers"
   | "never-miss"
   | "never-lose"
@@ -45,6 +51,194 @@ type ProductSection = {
 };
 
 const SECTIONS: Record<SectionId, ProductSection> = {
+  /* The five universal solutions sections (Shamil 2026-09-29): generate →
+     capture → manage → advocacy → reporting. Public-facing and universal —
+     industry examples stay generic, no internal pricing or feature notes.
+     The four journey sections below stay in the record for the /fly-home
+     demo and older references; they no longer render on the homepage. */
+  "lead-generation": {
+    id: "lead-generation",
+    title: "Lead generation",
+    bullets: [
+      {
+        lead: "Google Business Profile, set up and managed.",
+        text: "The map pack at the top of local search is the biggest free lead channel a local business has — yours is claimed, filled out, and kept active.",
+      },
+      {
+        lead: "Your details correct everywhere.",
+        text: "Name, address, phone, and hours pushed to 40+ directories like Yelp, Bing, and Apple Maps — and kept correct, so no customer ever calls a dead old number.",
+      },
+      {
+        lead: "First position on Google.",
+        text: "When someone searches exactly what you do, your ad is the first thing they see.",
+      },
+      {
+        lead: "Facebook & Instagram ads.",
+        text: "Lead forms that send every inquiry straight into your CRM the moment it's filled out.",
+      },
+      {
+        lead: "A free course as a magnet.",
+        text: "Example: a flight school offers a free ground school — visitors start learning in the browser, and starting with you makes continuing with you the natural choice.",
+      },
+      {
+        lead: "QR codes in the physical world.",
+        text: "Trucks, cards, flyers, posters — one scan takes a stranger straight into your funnel.",
+      },
+    ],
+    sectionLoss: [
+      {
+        num: "Most people",
+        text: "choose from the first few names they see — if you're not on that shortlist, the search never reaches you.",
+      },
+    ],
+    videoLabel: "Shamil walks through a real lead-generation setup",
+  },
+  "lead-capture": {
+    id: "lead-capture",
+    title: "Lead capture",
+    bullets: [
+      {
+        lead: "A website and funnels built to convert.",
+        text: "Every page and every form exists for one thing: turning a visitor into a name and a phone number.",
+      },
+      {
+        lead: "Web chat on your site.",
+        text: "Visitors get answers the moment they ask — before they bounce to the next tab.",
+      },
+      {
+        lead: "Missed-call text-back.",
+        text: "Busy when they call? They instantly get a text, and the conversation starts before they dial a competitor.",
+      },
+      {
+        lead: "An AI voice receptionist, 24/7.",
+        text: "Every call answered at any hour — and booked straight into your calendar.",
+      },
+      {
+        lead: "Social DMs in one inbox.",
+        text: "Facebook and Instagram messages land in one place with automatic replies, so no DM goes cold.",
+      },
+    ],
+    sectionLoss: [
+      { num: "8 of 10", text: "callers who hit voicemail hang up and dial the next business." },
+    ],
+    videoLabel: "Shamil shows a real lead getting captured",
+  },
+  "lead-management": {
+    id: "lead-management",
+    title: "Lead management",
+    bullets: [
+      {
+        lead: "Speed to lead, every time.",
+        text: "Any inquiry gets an instant text back — you answer in seconds even when your hands are full.",
+      },
+      {
+        lead: "Open quotes chased to an answer.",
+        text: "Every estimate gets followed up until it's a yes or a no — no quote dies of silence.",
+      },
+      {
+        lead: "The not-yet-ready stay warm.",
+        text: "Nurture sequences keep in touch for weeks or months, so when they're ready, you're the one they call.",
+      },
+      {
+        lead: "Appointments actually happen.",
+        text: "Reminders go out before every booking — and a no-show gets a rebooking text automatically.",
+      },
+      {
+        lead: "Checked in on after the job.",
+        text: "Timed, personal-feeling messages after the service show customers you didn't disappear once they paid.",
+      },
+      {
+        lead: "Loyalty that grows.",
+        text: "Bonuses build up the more they use your business — a reason to come back, baked in.",
+      },
+      {
+        lead: "Quiet customers get a nudge.",
+        text: "Someone gone silent for a while gets a friendly win-back text before they forget you.",
+      },
+      {
+        lead: "Canceled slots get refilled.",
+        text: "A freed-up slot is offered to your list — first reply takes it.",
+      },
+      {
+        lead: "Bad-weather days, fixed in one message.",
+        text: "One mass reschedule moves everyone when weather or a sick day blows up the calendar.",
+      },
+      {
+        lead: "A private community for your customers.",
+        text: "A space of their own where customers and students stay connected to you and to each other.",
+      },
+      {
+        lead: "The dates that matter, remembered.",
+        text: "Birthdays, anniversaries, and milestones get a personal touch without you tracking a thing.",
+      },
+      {
+        lead: "Recurring revenue, built in.",
+        text: "Memberships and paid courses keep customers paying and served month after month.",
+      },
+      {
+        lead: "Paid by text.",
+        text: "Invoices go out as a link — customers tap, pay, done.",
+      },
+    ],
+    sectionLoss: [
+      { num: "Out of touch", text: "is out of mind — a lead you stop following up with eventually buys from someone else." },
+    ],
+    videoLabel: "Shamil walks through the follow-up engine",
+  },
+  advocacy: {
+    id: "advocacy",
+    title: "Reviews & referrals",
+    bullets: [
+      {
+        lead: "Reviews asked at the right moment.",
+        text: "The request goes out right after the job, while the good feeling is fresh — every new review feeds your Google ranking and brings the next stranger to you.",
+      },
+      {
+        lead: "You answer, not a robot.",
+        text: "You get an alert the instant a review lands and reply personally — your own answer is the marketing.",
+      },
+      {
+        lead: "Referrals asked at the happy moment.",
+        text: "Right after a great experience, the customer is invited to bring a friend — the highest-trust lead there is.",
+      },
+      {
+        lead: "Referral rewards, tracked.",
+        text: "Who brought whom is tracked automatically, and rewards tie into the loyalty system.",
+      },
+    ],
+    sectionLoss: [
+      {
+        num: "Only the unhappy",
+        text: "customer is motivated enough to leave a review — a happy one stays silent unless asked.",
+      },
+    ],
+    videoLabel: "Shamil shows the review and referral engine",
+  },
+  reporting: {
+    id: "reporting",
+    title: "See it working",
+    bullets: [
+      {
+        lead: "One dashboard for everything.",
+        text: "Calls answered, leads captured, reviews growing, pipeline moving — the whole picture on one screen.",
+      },
+      {
+        lead: "Every call on record.",
+        text: "Full call logs and recordings, so you can hear exactly what your customers are being told.",
+      },
+      {
+        lead: "Know which channel pays.",
+        text: "A monthly picture of which channel actually produces customers — so money goes where it works.",
+      },
+    ],
+    sectionLoss: [
+      {
+        num: "Guessing",
+        text: "is the default in most local businesses — without numbers, you can't tell a working channel from a money pit.",
+      },
+    ],
+    videoLabel: "Shamil walks through a real client dashboard",
+  },
   /* The four journey sections (Shamil 2026-08-24): plain-vocabulary stages
      of the customer journey. The OLD sections (website/receptionist/
      reviews/campaigns) were removed from the homepage 2026-08-24 (Shamil);
@@ -329,8 +523,9 @@ function SectionBlock({
                 logical continuation (Shamil 2026-09-01): voicemail callers
                 hang up → hear it yourself tonight → then hear my line. No
                 "two-minute test" header. Homepage light theme only — the
-                web-call global exists there. */}
-            {section.id === "never-miss" && theme === "light" && (
+                web-call global exists there. (Moved from never-miss to
+                lead-capture with the 2026-09-29 section swap.) */}
+            {section.id === "lead-capture" && theme === "light" && (
               <div className="mt-3 border-t border-border/60 pt-3">
                 <p className="text-sm leading-relaxed text-text-muted">
                   Tonight, after 8 PM, call your own business. That&apos;s what
@@ -389,7 +584,7 @@ function SectionBlock({
 }
 
 export default function ProductSections({
-  order = ["get-customers", "never-miss", "never-lose", "customers-bring"],
+  order = ["lead-generation", "lead-capture", "lead-management", "advocacy", "reporting"],
   heading = "What you get",
   description,
   theme = "dark",
@@ -441,10 +636,11 @@ export default function ProductSections({
  *  the page, so the desktop left/right alternation doesn't apply). */
 export function WhatYouGetCompact({ theme = "light" }: { theme?: Theme }) {
   const order: SectionId[] = [
-    "get-customers",
-    "never-miss",
-    "never-lose",
-    "customers-bring",
+    "lead-generation",
+    "lead-capture",
+    "lead-management",
+    "advocacy",
+    "reporting",
   ];
   const t = T[theme];
   return (

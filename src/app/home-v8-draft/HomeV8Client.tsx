@@ -49,7 +49,7 @@
 
 import { useEffect, useState, Fragment } from "react";
 import { motion } from "framer-motion";
-import { CalendarCheck, Check, ChevronDown, Globe, Phone, PhoneCall, Play, Star } from "lucide-react";
+import { BarChart3, CalendarCheck, Check, ChevronDown, Globe, Phone, PhoneCall, Play, Star } from "lucide-react";
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { INTEGRATION_LOGOS } from "./integration-logos";
 import { STACK_LOGOS } from "./stack-logos";
@@ -310,12 +310,13 @@ function DraftHeader() {
               <div className="w-[38rem] rounded-2xl border border-border bg-surface p-3 shadow-xl">
                 <div className="grid grid-cols-2 gap-1">
                 {[
-                  /* The four journey sections (2026-08-24): the old product
-                     and workflow menu items went away with their sections. */
-                  { icon: Globe, name: "Get customers", desc: "A website that works, ads ready to turn on, found everywhere people look.", href: "#product-get-customers" },
-                  { icon: PhoneCall, name: "Never miss a customer", desc: "Every call, text, and chat answered in seconds, 24/7 — booked on the spot.", href: "#product-never-miss" },
-                  { icon: CalendarCheck, name: "Never lose a lead", desc: "Reminders, rebooking, and follow-up until they buy.", href: "#product-never-lose" },
-                  { icon: Star, name: "Customers bring customers", desc: "Reviews and referrals on autopilot.", href: "#product-customers-bring" },
+                  /* The five solutions sections (2026-09-29): generate →
+                     capture → manage → advocacy → reporting. */
+                  { icon: Globe, name: "Lead generation", desc: "Google profile, ads, directories, and magnets that make strangers raise a hand.", href: "#product-lead-generation" },
+                  { icon: PhoneCall, name: "Lead capture", desc: "Calls, texts, chat, and DMs answered in seconds — turned into contacts.", href: "#product-lead-capture" },
+                  { icon: CalendarCheck, name: "Lead management", desc: "Follow-up, reminders, loyalty, and win-backs that never let a lead go cold.", href: "#product-lead-management" },
+                  { icon: Star, name: "Reviews & referrals", desc: "Happy customers produce the next ones — reviews and referrals on autopilot.", href: "#product-advocacy" },
+                  { icon: BarChart3, name: "See it working", desc: "Calls, leads, reviews, and revenue on one screen.", href: "#product-reporting" },
                 ].map(({ icon: Icon, name, desc, href }) => (
                   <a
                     key={href}
