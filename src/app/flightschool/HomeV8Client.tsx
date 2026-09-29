@@ -1427,15 +1427,16 @@ function MergedFaq() {
             transition={{ duration: 0.5, ease }}
           >
             {/* Each Q&A = its own card with space between, no divider lines
-                (Shamil 2026-08-22); always expanded, no arrows. Card
-                backgrounds + green shadows REMOVED 2026-09-29 (Shamil's
-                alternation): the section now carries the green tint, so
-                the cards go flat — border only. */}
+                (Shamil 2026-08-22); always expanded, no arrows. Cards flat
+                (no shadow) since the section carries the green tint
+                (2026-09-29), but filled with the PAGE base background
+                (--bg cream, Shamil same day): green section, bright cards,
+                clearly distinct — not transparent/same-green. */}
             <div className="space-y-4">
               {MERGED_FAQS.map((item) => (
                 <div
                   key={item.q}
-                  className="rounded-2xl border border-border/70 px-6 py-5"
+                  className="rounded-2xl border border-border/70 bg-bg px-6 py-5"
                 >
                   <div className="text-lg font-medium text-text">{item.q}</div>
                   <p className="mt-3 leading-relaxed text-text-muted">{item.a}</p>
