@@ -39,7 +39,10 @@ type LabSection = {
   title: string;
   framing: string;
   stats: { big: string; label: string }[];
-  solutions: { lead: string; text: string }[];
+  solutions?: { lead: string; text: string }[];
+  /** Two quiet sub-groups with tiny muted uppercase labels (Lead
+      management's 14 items — Shamil 2026-09-29). */
+  solutionGroups?: { label: string; items: { lead: string; text: string }[] }[];
 };
 
 const LAB_SECTIONS: LabSection[] = [
@@ -61,12 +64,24 @@ const LAB_SECTIONS: LabSection[] = [
         text: "Name, address, phone, hours — synced everywhere and kept correct. No more dead old numbers.",
       },
       {
-        lead: "Google & Meta ads",
-        text: "You show up first when someone nearby searches for exactly what you do.",
+        lead: "Google Ads",
+        text: "First position when someone nearby searches for exactly what you do.",
+      },
+      {
+        lead: "Facebook & Instagram ads",
+        text: "Lead forms that sync straight into your CRM — nothing gets lost.",
       },
       {
         lead: "A free online course as a magnet",
         text: "Visitors start learning in the browser — and starting with you makes continuing with you the natural choice.",
+      },
+      {
+        lead: "QR codes on every surface",
+        text: "Trucks, business cards, flyers, posters — every physical thing becomes a lead channel.",
+      },
+      {
+        lead: "SEO foundations",
+        text: "The slow, long game — we set it up right from day one so it compounds.",
       },
     ],
   },
@@ -84,6 +99,10 @@ const LAB_SECTIONS: LabSection[] = [
         text: "Every page turns visitors into contacts, not just a pretty brochure.",
       },
       {
+        lead: "Web chat on your site",
+        text: "Visitors ask, you answer — or the auto-reply does.",
+      },
+      {
         lead: "Missed-call text-back, instant",
         text: "Can't pick up — the caller gets a text in seconds, before they dial a competitor.",
       },
@@ -92,8 +111,12 @@ const LAB_SECTIONS: LabSection[] = [
         text: "Every call answered, day and night, booked straight into your calendar.",
       },
       {
-        lead: "Web chat and social DMs in one inbox",
-        text: "Site chat, Facebook and Instagram messages — one place, with auto-replies.",
+        lead: "Social DMs in one inbox",
+        text: "Facebook and Instagram messages land in one place, with auto-replies.",
+      },
+      {
+        lead: "Free course sign-up",
+        text: "They register for the free course — and you have the contact.",
       },
     ],
   },
@@ -105,22 +128,72 @@ const LAB_SECTIONS: LabSection[] = [
       { big: "No-shows", label: "paid hours left empty" },
       { big: "2 weeks", label: "of silence and a customer drifts away" },
     ],
-    solutions: [
+    solutionGroups: [
       {
-        lead: "Every inquiry answered in under a minute",
-        text: "Speed wins — the first business to respond usually gets the customer.",
+        label: "Win them over",
+        items: [
+          {
+            lead: "Every inquiry answered in under a minute",
+            text: "Speed wins — the first business to respond usually gets the customer.",
+          },
+          {
+            lead: "Quotes followed up until a yes or no",
+            text: "No estimate dies forgotten — the system chases it politely to an answer.",
+          },
+          {
+            lead: "Nurture sequences",
+            text: "The not-yet-ready get convincing follow-up until they are.",
+          },
+          {
+            lead: "Appointment reminders",
+            text: "No-shows drop hard with two timed texts.",
+          },
+          {
+            lead: "No-show rebooking",
+            text: "They miss it — a new slot is offered automatically.",
+          },
+        ],
       },
       {
-        lead: "Quotes followed up until a yes or no",
-        text: "No estimate dies forgotten — the system chases it politely to an answer.",
-      },
-      {
-        lead: "Reminders, rebooking, and open-slot alerts",
-        text: "Fewer no-shows; canceled slots get refilled — first reply takes it.",
-      },
-      {
-        lead: "Loyalty, win-backs, and memberships",
-        text: "Quiet customers get a nudge at the right moment; regulars get reasons to stay.",
+        label: "Keep them",
+        items: [
+          {
+            lead: "Post-service check-ins",
+            text: "A timed, personal-feeling touch after the job.",
+          },
+          {
+            lead: "Loyalty system",
+            text: "Bonuses and benefits that grow the more they use you.",
+          },
+          {
+            lead: "Win-back texts",
+            text: "Customers who go quiet get the right nudge at the right moment.",
+          },
+          {
+            lead: "Open-slot alerts",
+            text: "A canceled slot goes out to the list — first reply takes it.",
+          },
+          {
+            lead: "Mass reschedule",
+            text: "Weather or sick days — new slots offered in one blast.",
+          },
+          {
+            lead: "A private community",
+            text: "Your customers keep each other engaged between visits.",
+          },
+          {
+            lead: "Milestone touches",
+            text: "Birthdays, anniversaries, key dates — remembered automatically.",
+          },
+          {
+            lead: "Memberships & paid courses",
+            text: "Continuous service, recurring revenue.",
+          },
+          {
+            lead: "Text-to-pay",
+            text: "The invoice arrives by SMS; paying takes a minute.",
+          },
+        ],
       },
     ],
   },
@@ -238,20 +311,35 @@ function LabSectionBlock({
           </div>
           {/* Solutions — the {lead, text} pattern back (Shamil 2026-09-29),
               but kept QUIET: small semibold lead + a tiny muted one-sentence
-              explanation under it, generous gaps. No heading. */}
-          <ul className="space-y-7 md:pt-2">
-            {section.solutions.map((s) => (
-              <li key={s.lead} className="flex items-start gap-2.5">
-                <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-text">{s.lead}</p>
-                  <p className="mt-1 text-xs leading-relaxed text-text-muted">
-                    {s.text}
+              explanation under it, generous gaps. No heading. Long lists
+              (Lead management's 14) split into sub-groups under tiny muted
+              uppercase labels, slightly tighter gaps inside a group. */}
+          <div className="space-y-8 md:pt-2">
+            {(section.solutionGroups ?? [
+              { label: null, items: section.solutions ?? [] },
+            ]).map((g) => (
+              <div key={g.label ?? "all"}>
+                {g.label && (
+                  <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-text-dim">
+                    {g.label}
                   </p>
-                </div>
-              </li>
+                )}
+                <ul className={`space-y-6 ${g.label ? "mt-4" : ""}`}>
+                  {g.items.map((s) => (
+                    <li key={s.lead} className="flex items-start gap-2.5">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-text">{s.lead}</p>
+                        <p className="mt-1 text-xs leading-relaxed text-text-muted">
+                          {s.text}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
     </section>
