@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, PhoneCall, Play } from "lucide-react";
+import { Check, Play } from "lucide-react";
 
 /**
  * ProductSections — the "what you get" product block, used on the homepage
@@ -521,10 +521,12 @@ function SectionBlock({
             </ul>
             {/* The two-minute test, merged INTO the 8-of-10 loss card as its
                 logical continuation (Shamil 2026-09-01): voicemail callers
-                hang up → hear it yourself tonight → then hear my line. No
-                "two-minute test" header. Homepage light theme only — the
-                web-call global exists there. (Moved from never-miss to
-                lead-capture with the 2026-09-29 section swap.) */}
+                hang up → hear it yourself tonight → then hear my line.
+                Text-only 2026-09-29 (Shamil): the embedded call button +
+                dial number are OUT — prospects call his number on the
+                site and hear the live voice AI; the demo button is
+                unnecessary. (Moved from never-miss to lead-capture with
+                the 2026-09-29 section swap.) */}
             {section.id === "lead-capture" && theme === "light" && (
               <div className="mt-3 border-t border-border/60 pt-3">
                 <p className="text-sm leading-relaxed text-text-muted">
@@ -532,22 +534,6 @@ function SectionBlock({
                   a motivated customer hears. Then call my line — same
                   scenario, different outcome.
                 </p>
-                <div className="mt-3 flex flex-wrap items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => window.__startErkenVoiceCall?.()}
-                    className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-bg transition-all hover:bg-accent-hover"
-                  >
-                    <PhoneCall className="h-4 w-4" />
-                    Call your AI receptionist
-                  </button>
-                  <a
-                    href="tel:+19016331400"
-                    className="font-mono text-sm text-text-muted transition-colors hover:text-text"
-                  >
-                    or dial (901) 633-1400
-                  </a>
-                </div>
               </div>
             )}
           </div>
