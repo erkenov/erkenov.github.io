@@ -39,7 +39,7 @@ type LabSection = {
   title: string;
   framing: string;
   stats: { big: string; label: string }[];
-  solutions: string[];
+  solutions: { lead: string; text: string }[];
 };
 
 const LAB_SECTIONS: LabSection[] = [
@@ -52,10 +52,22 @@ const LAB_SECTIONS: LabSection[] = [
       { big: "0", label: "warnings when a customer hits your dead line" },
     ],
     solutions: [
-      "Google Business Profile, set up and managed",
-      "Your info correct on 40+ directories, always",
-      "Google & Meta ads bringing searchers to you",
-      "A free online course that turns visitors into leads",
+      {
+        lead: "Google Business Profile, set up and managed",
+        text: "The map pack is the biggest free source of local customers — we claim it, optimize it, keep it alive.",
+      },
+      {
+        lead: "Your info correct on 40+ directories",
+        text: "Name, address, phone, hours — synced everywhere and kept correct. No more dead old numbers.",
+      },
+      {
+        lead: "Google & Meta ads",
+        text: "You show up first when someone nearby searches for exactly what you do.",
+      },
+      {
+        lead: "A free online course as a magnet",
+        text: "Visitors start learning in the browser — and starting with you makes continuing with you the natural choice.",
+      },
     ],
   },
   {
@@ -67,10 +79,22 @@ const LAB_SECTIONS: LabSection[] = [
       { big: "24/7", label: "customers call on their schedule, not yours" },
     ],
     solutions: [
-      "A website and funnels built to capture",
-      "Missed-call text-back, instant",
-      "AI receptionist answering 24/7",
-      "Web chat and social DMs in one inbox",
+      {
+        lead: "A website and funnels built to capture",
+        text: "Every page turns visitors into contacts, not just a pretty brochure.",
+      },
+      {
+        lead: "Missed-call text-back, instant",
+        text: "Can't pick up — the caller gets a text in seconds, before they dial a competitor.",
+      },
+      {
+        lead: "AI receptionist answering 24/7",
+        text: "Every call answered, day and night, booked straight into your calendar.",
+      },
+      {
+        lead: "Web chat and social DMs in one inbox",
+        text: "Site chat, Facebook and Instagram messages — one place, with auto-replies.",
+      },
     ],
   },
   {
@@ -82,10 +106,22 @@ const LAB_SECTIONS: LabSection[] = [
       { big: "2 weeks", label: "of silence and a customer drifts away" },
     ],
     solutions: [
-      "Every inquiry answered in under a minute",
-      "Quotes followed up until a yes or no",
-      "Reminders, rebooking, and open-slot alerts",
-      "Loyalty, win-backs, and memberships",
+      {
+        lead: "Every inquiry answered in under a minute",
+        text: "Speed wins — the first business to respond usually gets the customer.",
+      },
+      {
+        lead: "Quotes followed up until a yes or no",
+        text: "No estimate dies forgotten — the system chases it politely to an answer.",
+      },
+      {
+        lead: "Reminders, rebooking, and open-slot alerts",
+        text: "Fewer no-shows; canceled slots get refilled — first reply takes it.",
+      },
+      {
+        lead: "Loyalty, win-backs, and memberships",
+        text: "Quiet customers get a nudge at the right moment; regulars get reasons to stay.",
+      },
     ],
   },
   {
@@ -97,10 +133,22 @@ const LAB_SECTIONS: LabSection[] = [
       { big: "No system", label: "happy customers, no new leads" },
     ],
     solutions: [
-      "Review requests timed to the happy moment",
-      "You get pinged, you reply personally",
-      "Referral asks, automatic",
-      "Referral rewards tied to loyalty",
+      {
+        lead: "Review requests timed to the happy moment",
+        text: "Asked right after the win — feeding your Google ranking.",
+      },
+      {
+        lead: "You get pinged, you reply personally",
+        text: "The moment a review lands, you know. Your personal reply is the marketing.",
+      },
+      {
+        lead: "Referral asks, automatic",
+        text: "Sent at the high moment, without you remembering.",
+      },
+      {
+        lead: "Referral rewards tied to loyalty",
+        text: "The referrer gets a bonus automatically — and a referral is a ready-made new lead.",
+      },
     ],
   },
   {
@@ -112,10 +160,22 @@ const LAB_SECTIONS: LabSection[] = [
       { big: "1 screen", label: "is all it takes to know" },
     ],
     solutions: [
-      "One dashboard — calls, leads, reviews",
-      "Call logs and recordings",
-      "Which channel produces customers",
-      "A monthly picture of what's working",
+      {
+        lead: "One dashboard — calls, leads, reviews",
+        text: "Everything the system did, visible at a glance.",
+      },
+      {
+        lead: "Call logs and recordings",
+        text: "Every call saved — hear what your customers actually ask for.",
+      },
+      {
+        lead: "Which channel produces customers",
+        text: "See what actually pays; stop funding what doesn't.",
+      },
+      {
+        lead: "A monthly picture of what's working",
+        text: "Numbers you can act on, not vanity charts.",
+      },
     ],
   },
 ];
@@ -176,15 +236,19 @@ function LabSectionBlock({
           <div className="mx-auto w-full max-w-[330px]">
             <PortraitVideoSlot />
           </div>
-          {/* Solutions — quieter still: small check + ONE muted line
-              per item, nothing else. */}
-          <ul className="space-y-5 md:pt-2">
+          {/* Solutions — the {lead, text} pattern back (Shamil 2026-09-29),
+              but kept QUIET: small semibold lead + a tiny muted one-sentence
+              explanation under it, generous gaps. No heading. */}
+          <ul className="space-y-7 md:pt-2">
             {section.solutions.map((s) => (
-              <li key={s} className="flex items-start gap-2.5">
+              <li key={s.lead} className="flex items-start gap-2.5">
                 <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                <span className="text-sm leading-relaxed text-text-muted">
-                  {s}
-                </span>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-text">{s.lead}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-text-muted">
+                    {s.text}
+                  </p>
+                </div>
               </li>
             ))}
           </ul>
