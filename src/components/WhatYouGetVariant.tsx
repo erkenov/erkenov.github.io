@@ -1,34 +1,19 @@
-import type { Metadata } from "next";
 import { Check, Play } from "lucide-react";
 
 /**
- * /layout-lab — HIDDEN draft (Shamil 2026-09-29): a visual comparison page
- * for a proposed What-you-get section layout — three columns on desktop
- * (problems | portrait video | solutions), stacking left → video → right
- * on mobile. Two stacked variants with IDENTICAL Lead-generation content,
- * differing only in which side the problems column sits on.
+ * WhatYouGetVariant — a What-you-get section layout under evaluation
+ * (Shamil 2026-09-29): three columns on desktop — a problems column, a
+ * PORTRAIT (3:4) video slot, and a solutions column — stacking left →
+ * video → right on mobile. The `problemsFirst` prop picks which side the
+ * problems column sits on; the homepage renders BOTH orders back-to-back
+ * (problems-left first, solutions-left second) so Shamil can compare them
+ * in place. They carry no draft/variant labels — they read as native
+ * sections; the order IS the identification.
  *
- * Purely additive: no existing page/component/section is touched or
- * imported — the VideoSlot look and the {lead, text} bullet style are
- * re-created here from the same design tokens (globals.css) so this lab
- * can never break the live sections.
- *
- * noindex: review draft, not linked anywhere, not meant to be crawled.
+ * The VideoSlot look and the {lead, text} bullet style mirror
+ * ProductSections' light theme, re-created here from the same design
+ * tokens so this evaluation block can never break the live sections.
  */
-export const metadata: Metadata = {
-  title: "Erken Systems — Layout Lab (Internal Draft)",
-  description:
-    "Draft layout comparison for the What-you-get sections. Not the live site.",
-  robots: {
-    index: false,
-    follow: false,
-    nocache: true,
-    googleBot: {
-      index: false,
-      follow: false,
-    },
-  },
-};
 
 const PROBLEMS = [
   {
@@ -135,11 +120,9 @@ function SolutionsColumn() {
   );
 }
 
-function MockSection({
-  label,
+export function WhatYouGetVariant({
   problemsFirst,
 }: {
-  label: string;
   problemsFirst: boolean;
 }) {
   /* Column order is the ONLY difference between the two variants. The DOM
@@ -150,8 +133,7 @@ function MockSection({
   return (
     <section className="py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6">
-        <p className="mono-label text-xs">{label}</p>
-        <div className="mt-6 text-center">
+        <div className="text-center">
           <p className="mono-label">What you get — 1</p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight text-balance text-accent sm:text-4xl md:text-5xl">
             Lead generation
@@ -170,26 +152,5 @@ function MockSection({
         </div>
       </div>
     </section>
-  );
-}
-
-export default function LayoutLabPage() {
-  return (
-    <main>
-      <p className="pt-8 text-center font-mono text-xs uppercase tracking-[0.18em] text-text-dim">
-        Layout lab — draft, not linked anywhere
-      </p>
-      <MockSection
-        label="Variant 1 — Problems left · Solutions right"
-        problemsFirst={true}
-      />
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="border-t border-border/60" />
-      </div>
-      <MockSection
-        label="Variant 2 — Solutions left · Problems right"
-        problemsFirst={false}
-      />
-    </main>
   );
 }

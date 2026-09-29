@@ -56,6 +56,7 @@ import { STACK_LOGOS } from "./stack-logos";
 import { Scene1IntroVideo } from "@/components/Scene1IntroVideo";
 import { SceneIndustriesCarousel } from "@/components/SceneIndustriesCarousel";
 import ProductSections from "@/components/ProductSections";
+import { WhatYouGetVariant } from "@/components/WhatYouGetVariant";
 import Process from "@/components/Process";
 import ErkenChatWidget, { openErkenChat } from "@/components/ErkenChatWidget";
 import ErkenVoiceWidget from "@/components/ErkenVoiceWidget";
@@ -1277,6 +1278,16 @@ export default function HomeV8Client() {
         theme="light"
         description="Everything below is already built and preinstalled in your account. In onboarding you pick what I switch on — all of it, or just the pieces you want."
       />
+
+      {/* 2b. Layout comparison (Shamil 2026-09-29): TWO candidate
+          three-column What-you-get layouts rendered back-to-back right
+          after the live run — first problems-left/solutions-right, then
+          solutions-left/problems-right. Same Lead-generation content in
+          both; no labels, they read as native sections and the ORDER is
+          the identification. Both PLAIN to keep the alternation (FAQ
+          below carries the green tint). */}
+      <WhatYouGetVariant problemsFirst={true} />
+      <WhatYouGetVariant problemsFirst={false} />
 
       {/* 3. Why us + FAQ — MERGED 2026-08-22 (Shamil): one always-expanded
           card list ("Fair questions, straight answers"). GREEN-TINTED
