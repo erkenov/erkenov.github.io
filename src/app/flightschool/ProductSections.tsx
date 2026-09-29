@@ -3,8 +3,11 @@
 import { Check, PhoneCall, Play } from "lucide-react";
 
 /**
- * ProductSections — the "what you get" product block, used on the homepage
- * (website → receptionist → reviews → campaigns). The /receptionist funnel
+ * ProductSections — the "what you get" product block, used on this
+ * flight-school page (lead generation → lead capture → lead management →
+ * reviews & referrals → see it working; same 5-step framework as the main
+ * site, flight-school tailored — Shamil 2026-09-29). The /receptionist
+ * funnel
  * (which used the receptionist-first order) was retired 2026-08-16 — the
  * main page is the selling page now; the `order` prop stays for reuse.
  *
@@ -21,6 +24,11 @@ import { Check, PhoneCall, Play } from "lucide-react";
  */
 
 type SectionId =
+  | "lead-generation"
+  | "lead-capture"
+  | "lead-management"
+  | "advocacy"
+  | "reporting"
   | "get-customers"
   | "never-miss"
   | "never-lose"
@@ -45,6 +53,199 @@ type ProductSection = {
 };
 
 const SECTIONS: Record<SectionId, ProductSection> = {
+  /* The five solutions sections, flight-school tailored (Shamil 2026-09-29):
+     generate → capture → manage → advocacy → reporting. Same framework as
+     the main site, but flight-school specifics explicit — this subdomain is
+     the tailored pitch surface he sends to flight schools. The ~80% dropout
+     stat and the $150K/two-students anchor are approved for public use on
+     THIS subdomain only. The four journey sections below stay in the
+     record; they no longer render on the page. */
+  "lead-generation": {
+    id: "lead-generation",
+    title: "Lead generation",
+    bullets: [
+      {
+        lead: "Google Business Profile, set up and managed.",
+        text: "When someone searches \"discovery flight near me,\" the map pack is where they choose from — yours is claimed, filled out, and kept active.",
+      },
+      {
+        lead: "Your details correct everywhere.",
+        text: "Name, address, phone, and hours pushed to 40+ directories like Yelp, Bing, and Apple Maps — and kept correct, so no future student ever calls a dead old number.",
+      },
+      {
+        lead: "First position on Google.",
+        text: "When someone searches exactly what you offer, your ad is the first thing they see.",
+      },
+      {
+        lead: "Facebook & Instagram ads.",
+        text: "Lead forms that send every inquiry straight into your CRM the moment it's filled out.",
+      },
+      {
+        lead: "A free ground school as your magnet.",
+        text: "Visitors start learning in the browser, free — and starting at your school makes continuing at your school the natural choice.",
+      },
+      {
+        lead: "QR codes where pilots walk.",
+        text: "Airport flyers, FBO counter cards — one scan takes a stranger straight into your funnel.",
+      },
+    ],
+    sectionLoss: [
+      {
+        num: "$13–20K",
+        text: "is what ONE enrolled student is worth — and without an online presence, your school doesn't exist for the people searching.",
+      },
+    ],
+    videoLabel: "Shamil walks through a real student-acquisition setup",
+  },
+  "lead-capture": {
+    id: "lead-capture",
+    title: "Lead capture",
+    bullets: [
+      {
+        lead: "A website built to book discovery flights.",
+        text: "Every page and every form exists for one thing: turning a visitor into a booked seat.",
+      },
+      {
+        lead: "Web chat on your site.",
+        text: "Visitors get answers the moment they ask — before they bounce to the next school's tab.",
+      },
+      {
+        lead: "Missed-call text-back.",
+        text: "You're out flying — the caller instantly gets a text, and the conversation starts before they dial the next school.",
+      },
+      {
+        lead: "An AI receptionist, 24/7.",
+        text: "Every call answered at any hour — discovery flights booked straight into your calendar.",
+      },
+      {
+        lead: "Social DMs in one inbox.",
+        text: "Facebook and Instagram messages land in one place with automatic replies, so no DM goes cold.",
+      },
+    ],
+    sectionLoss: [
+      { num: "8 of 10", text: "callers who hit voicemail hang up and dial the next school." },
+    ],
+    videoLabel: "Shamil shows a real inquiry getting captured",
+  },
+  "lead-management": {
+    id: "lead-management",
+    title: "Lead management",
+    bullets: [
+      {
+        lead: "Every inquiry answered instantly.",
+        text: "A discovery-flight inquiry gets a text back in seconds — even when you're in the air.",
+      },
+      {
+        lead: "Intro-flight quotes chased to an answer.",
+        text: "Every quote gets followed up until it's a yes or a no — no quote dies of silence.",
+      },
+      {
+        lead: "The not-yet-ready stay warm.",
+        text: "A thirteen-to-twenty-thousand-dollar decision takes time — nurture sequences keep in touch until they enroll, or tell you to stop.",
+      },
+      {
+        lead: "Lessons actually happen.",
+        text: "Reminders go out before every flight — and a no-show gets a rebooking text automatically.",
+      },
+      {
+        lead: "Checked in on after the lesson.",
+        text: "\"How was your first solo?\" — timed, personal-feeling messages show students you didn't disappear once they paid.",
+      },
+      {
+        lead: "The dropout save.",
+        text: "When a student goes quiet for a couple of weeks — the 15-hour cliff, pre-solo anxiety — they get an automatic \"we miss you — your instructor has Tuesday open\" text.",
+      },
+      {
+        lead: "Canceled slots get refilled.",
+        text: "A Cessna opens Saturday 9 AM — your list gets the alert, first reply takes it.",
+      },
+      {
+        lead: "Weather days, fixed in one message.",
+        text: "Tomorrow 8 AM scrubbed? Every affected student gets new slots to claim with a reply.",
+      },
+      {
+        lead: "A private community for your students.",
+        text: "A space of their own where students stay connected to you and to each other.",
+      },
+      {
+        lead: "The milestones that matter, celebrated.",
+        text: "First solo, checkride pass — the personal touch lands without you tracking a thing.",
+      },
+      {
+        lead: "Recurring revenue, built in.",
+        text: "Memberships and a paid ground school course keep students paying and learning month after month.",
+      },
+      {
+        lead: "Paid by text.",
+        text: "Invoices go out as a link — students tap, pay, done.",
+      },
+    ],
+    sectionLoss: [
+      {
+        num: "~80%",
+        text: "of student pilots quit before finishing — most simply drift away when life gets loud.",
+      },
+      {
+        num: "$150K",
+        text: "is what saving just two students a year is worth to your school.",
+      },
+    ],
+    videoLabel: "Shamil walks through the student follow-up engine",
+  },
+  advocacy: {
+    id: "advocacy",
+    title: "Reviews & referrals",
+    bullets: [
+      {
+        lead: "Reviews asked at the high moments.",
+        text: "The request goes out after the first solo, after the checkride pass — every new review feeds your Google ranking and brings the next student to you.",
+      },
+      {
+        lead: "You answer, not a robot.",
+        text: "You get an alert the instant a review lands and reply personally — your own answer is the marketing.",
+      },
+      {
+        lead: "Referrals asked at the happy moment.",
+        text: "Right after a great flight, the student is invited to bring a friend — the highest-trust lead there is.",
+      },
+      {
+        lead: "Referral rewards, tracked.",
+        text: "Who brought whom is tracked automatically, so every reward goes to the right student.",
+      },
+    ],
+    sectionLoss: [
+      {
+        num: "Only the unhappy",
+        text: "customer is motivated enough to leave a review — a happy student stays silent unless asked.",
+      },
+    ],
+    videoLabel: "Shamil shows the review and referral engine",
+  },
+  reporting: {
+    id: "reporting",
+    title: "See it working",
+    bullets: [
+      {
+        lead: "One dashboard for everything.",
+        text: "Discovery flights booked, active students, dropout saves, reviews growing — the whole picture on one screen.",
+      },
+      {
+        lead: "Every call on record.",
+        text: "Full call logs and recordings, so you can hear exactly what your future students are being told.",
+      },
+      {
+        lead: "Know which channel pays.",
+        text: "A monthly picture of which channel actually produces students — so money goes where it works.",
+      },
+    ],
+    sectionLoss: [
+      {
+        num: "Guessing",
+        text: "is the default in most flight schools — without numbers, you can't tell a working channel from a money pit.",
+      },
+    ],
+    videoLabel: "Shamil walks through a real school dashboard",
+  },
   /* The four journey sections (Shamil 2026-08-24): plain-vocabulary stages
      of the customer journey. The OLD sections (website/receptionist/
      reviews/campaigns) were removed from the homepage 2026-08-24 (Shamil);
@@ -332,12 +533,13 @@ function SectionBlock({
                 logical continuation (Shamil 2026-09-01): voicemail callers
                 hang up → hear it yourself tonight → then hear my line. No
                 "two-minute test" header. Homepage light theme only — the
-                web-call global exists there. */}
-            {section.id === "never-miss" && theme === "light" && (
+                web-call global exists there. (Moved from never-miss to
+                lead-capture with the 2026-09-29 section swap.) */}
+            {section.id === "lead-capture" && theme === "light" && (
               <div className="mt-3 border-t border-border/60 pt-3">
                 <p className="text-sm leading-relaxed text-text-muted">
-                  Tonight, after 8 PM, call your own business. That&apos;s what
-                  a motivated customer hears. Then call my line — same
+                  Tonight, after 8 PM, call your own school. That&apos;s what
+                  a motivated student hears. Then call my line — same
                   scenario, different outcome.
                 </p>
                 <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -392,7 +594,7 @@ function SectionBlock({
 }
 
 export default function ProductSections({
-  order = ["get-customers", "never-miss", "never-lose", "customers-bring"],
+  order = ["lead-generation", "lead-capture", "lead-management", "advocacy", "reporting"],
   heading = "What you get",
   description,
   theme = "dark",

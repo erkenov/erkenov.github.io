@@ -1265,95 +1265,89 @@ export default function HomeV8Client() {
         mediaAvoidCelly={true}
       />
 
-      {/* 2. What-you-get — the WHOLE merged run (product sections + the
-          five workflow blocks, merged 2026-08-23 "all of it is what they
-          get") sits on ONE green background that fades in from the hero
-          and fades out to the FAQ — no hard section lines (Shamil
-          2026-08-23). From here the alternation restarts: FAQ plain →
-          story tinted → process plain → pricing wash → pipeline plain →
-          stack tinted → marquee plain. */}
-      <div className="section-green">
-        <ProductSections
-          theme="light"
-          description="Everything below is already built and preinstalled in your account. In onboarding you pick what I switch on — all of it, or just the pieces you want."
-        />
-      </div>
+      {/* Background rhythm (Shamil 2026-09-29, strict alternation): hero
+          green → what-you-get PLAIN → FAQ GREEN → process PLAIN → pricing
+          (untouched, own warm wash) → industries PLAIN → full-platform
+          GREEN → stack PLAIN → marquee GREEN. One treatment for every
+          "green" section: .section-tint (the sage wash matching the
+          hero's glow hue). */}
+      {/* 2. What-you-get — PLAIN: the old section-green wrapper removed,
+          the run blends with the page. */}
+      <ProductSections
+        theme="light"
+        description="Everything below is already built and preinstalled in your account. In onboarding you pick what I switch on — all of it, or just the pieces you want."
+      />
 
       {/* 3. Why us + FAQ — MERGED 2026-08-22 (Shamil): one always-expanded
-          card list ("Fair questions, straight answers"). PLAIN background
-          2026-08-23 (alternation restart); cards softened to the light
-          sage tint the same day. */}
-      <MergedFaq />
-
-      {/* 4. Founder story ("Who builds it") REMOVED 2026-08-24 (Shamil).
-          Its tint moves to Process below to keep the background rhythm. */}
-
-      {/* 5. Process — BEFORE pricing (Shamil 2026-08-16): the easy 5-step
-          process earns the right to show the price. TINTED 2026-08-24 —
-          inherits the founder section's tint after its removal. */}
+          card list ("Fair questions, straight answers"). GREEN-TINTED
+          2026-09-29; the per-question cards inside went flat/transparent
+          now that the section itself carries the background. */}
       <div className="section-tint">
-        <Process theme="light" />
+        <MergedFaq />
       </div>
 
-      {/* 5. Pricing — owner-approved 3-card restructure (2026-08-12): three
-          Platform billing-period cards (Monthly / 6 months / Yearly).
-          Background = the colorful warm wash rescued from the removed AI
-          section (Shamil 2026-08-16). */}
+      {/* 4. Process — PLAIN (2026-09-29 alternation): the tint wrapper it
+          inherited from the removed founder section (2026-08-24) is gone. */}
+      <Process theme="light" />
+
+      {/* 5. Pricing — UNTOUCHED (2026-09-29): owner-approved 3-card
+          restructure (2026-08-12) on its own colorful warm wash, outside
+          the green-tint alternation by Shamil's long-standing call. */}
       <PricingSection />
 
       {/* 6. Industries — RESTORED 2026-09-03 (Shamil): the full card set
           (12 passion + 15 generic = 27) back on the homepage, now sitting
           after pricing, before the full-platform section. Opened cards
-          carry the what-you-get listing with stacked video slots. TINTED
-          to keep the background rhythm: pricing wash → tint → pipeline
-          plain → stack tinted. */}
-      <div className="section-tint">
-        <section id="industries" className="py-20 md:py-28">
-          <div className="mx-auto max-w-6xl px-6 md:px-8">
-            <motion.div
-              data-celly-avoid
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.5, ease }}
-              className="max-w-2xl"
+          carry the what-you-get listing with stacked video slots. PLAIN
+          2026-09-29 (alternation): tint wrapper removed. */}
+      <section id="industries" className="py-20 md:py-28">
+        <div className="mx-auto max-w-6xl px-6 md:px-8">
+          <motion.div
+            data-celly-avoid
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5, ease }}
+            className="max-w-2xl"
+          >
+            <SectionKicker>Industries</SectionKicker>
+            <h2
+              className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
+              style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
             >
-              <SectionKicker>Industries</SectionKicker>
-              <h2
-                className="mt-3 text-3xl font-bold tracking-tight md:text-5xl"
-                style={{ letterSpacing: "-0.025em", lineHeight: 1.1 }}
-              >
-                Pre-configured for what you actually do.
-              </h2>
-              <p className="mt-4 text-base text-text-muted md:text-lg">
-                From roofers to riding schools — the pipeline is already
-                wired for your operation. Voice scripts in your language,
-                intake forms with the questions that matter, pipeline stages
-                that match your sales cycle — click yours to see what comes
-                pre-built.
-              </p>
-            </motion.div>
-            <div className="mt-10">
-              <SceneIndustriesCarousel />
-            </div>
+              Pre-configured for what you actually do.
+            </h2>
+            <p className="mt-4 text-base text-text-muted md:text-lg">
+              From roofers to riding schools — the pipeline is already
+              wired for your operation. Voice scripts in your language,
+              intake forms with the questions that matter, pipeline stages
+              that match your sales cycle — click yours to see what comes
+              pre-built.
+            </p>
+          </motion.div>
+          <div className="mt-10">
+            <SceneIndustriesCarousel />
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
 
       {/* 7. Pipeline — reframed 2026-08-16 as "the full platform" convincer
           ("And that's just the setup."), kept AFTER pricing so it never
-          overwhelms the pitch. */}
-      <PipelineSection />
+          overwhelms the pitch. GREEN-TINTED 2026-09-29 (alternation). */}
+      <div className="section-tint">
+        <PipelineSection />
+      </div>
 
       {/* 8. Stack comparison — moved here 2026-08-22 (Shamil): right after
           the full-platform section, right before the integrations
-          carousel. TINTED (alternating-backgrounds rule). */}
-      <div className="section-tint">
-        <StackComparisonSection />
-      </div>
+          carousel. PLAIN 2026-09-29 (alternation): tint wrapper removed. */}
+      <StackComparisonSection />
 
-      {/* 9. Integrations marquee — at the VERY BOTTOM (Shamil 2026-08-22). */}
-      <IntegrationsMarquee />
+      {/* 9. Integrations marquee — at the VERY BOTTOM (Shamil 2026-08-22).
+          GREEN-TINTED 2026-09-29 (alternation). */}
+      <div className="section-tint">
+        <IntegrationsMarquee />
+      </div>
 
       {/* Get-leads / "you want customers" section REMOVED from the homepage
           (rev-3 addendum: it was a coming-soon dead end here; the real
@@ -1468,14 +1462,15 @@ function MergedFaq() {
             transition={{ duration: 0.5, ease }}
           >
             {/* Each Q&A = its own card with space between, no divider lines
-                (Shamil 2026-08-22); always expanded, no arrows. Card color
-                softened 2026-08-23 (Shamil: the solid sage was too vivid) —
-                now the same light greenish as the section tint, dark text. */}
+                (Shamil 2026-08-22); always expanded, no arrows. Card
+                backgrounds + green shadows REMOVED 2026-09-29 (Shamil's
+                alternation): the section now carries the green tint, so
+                the cards go flat — border only. */}
             <div className="space-y-4">
               {MERGED_FAQS.map((item) => (
                 <div
                   key={item.q}
-                  className="rounded-2xl border border-border/70 bg-[rgba(126,166,135,0.16)] px-6 py-5 shadow-[0_8px_20px_-12px_rgba(126,166,135,0.35)]"
+                  className="rounded-2xl border border-border/70 px-6 py-5"
                 >
                   <div className="text-lg font-medium text-text">{item.q}</div>
                   <p className="mt-3 leading-relaxed text-text-muted">{item.a}</p>

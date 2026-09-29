@@ -49,7 +49,7 @@
 
 import { useEffect, useState, Fragment } from "react";
 import { motion } from "framer-motion";
-import { CalendarCheck, Check, ChevronDown, Globe, Phone, PhoneCall, Play, Star } from "lucide-react";
+import { BarChart3, CalendarCheck, Check, ChevronDown, Globe, Phone, PhoneCall, Play, Star } from "lucide-react";
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { INTEGRATION_LOGOS } from "./integration-logos";
 import { STACK_LOGOS } from "./stack-logos";
@@ -310,12 +310,13 @@ function DraftHeader() {
               <div className="w-[38rem] rounded-2xl border border-border bg-surface p-3 shadow-xl">
                 <div className="grid grid-cols-2 gap-1">
                 {[
-                  /* The four journey sections (2026-08-24): the old product
-                     and workflow menu items went away with their sections. */
-                  { icon: Globe, name: "Get customers", desc: "A website that works, ads ready to turn on, found everywhere people look.", href: "#product-get-customers" },
-                  { icon: PhoneCall, name: "Never miss a customer", desc: "Every call, text, and chat answered in seconds, 24/7 — booked on the spot.", href: "#product-never-miss" },
-                  { icon: CalendarCheck, name: "Never lose a lead", desc: "Reminders, rebooking, and follow-up until they enroll.", href: "#product-never-lose" },
-                  { icon: Star, name: "Customers bring customers", desc: "Reviews and referrals on autopilot.", href: "#product-customers-bring" },
+                  /* The five solutions sections (2026-09-29): generate →
+                     capture → manage → advocacy → reporting. */
+                  { icon: Globe, name: "Lead generation", desc: "Google profile, ads, directories, and a free ground school that makes strangers raise a hand.", href: "#product-lead-generation" },
+                  { icon: PhoneCall, name: "Lead capture", desc: "Calls, texts, chat, and DMs answered in seconds — discovery flights booked on the spot.", href: "#product-lead-capture" },
+                  { icon: CalendarCheck, name: "Lead management", desc: "Reminders, weather reschedules, and dropout saves that never let a student go cold.", href: "#product-lead-management" },
+                  { icon: Star, name: "Reviews & referrals", desc: "Happy students produce the next ones — reviews and referrals on autopilot.", href: "#product-advocacy" },
+                  { icon: BarChart3, name: "See it working", desc: "Discovery flights, active students, and dropout saves on one screen.", href: "#product-reporting" },
                 ].map(({ icon: Icon, name, desc, href }) => (
                   <a
                     key={href}
@@ -1264,40 +1265,33 @@ export default function HomeV8Client() {
         mediaAvoidCelly={true}
       />
 
-      {/* 2. What-you-get — the WHOLE merged run (product sections + the
-          five workflow blocks, merged 2026-08-23 "all of it is what they
-          get") sits on ONE green background that fades in from the hero
-          and fades out to the FAQ — no hard section lines (Shamil
-          2026-08-23). From here the alternation restarts: FAQ plain →
-          story tinted → process plain → pricing wash → pipeline plain →
-          stack tinted → marquee plain. */}
-      <div className="section-green">
-        <ProductSections
-          theme="light"
-          description="Everything below is already built and preinstalled in your account. In onboarding you pick what I switch on — all of it, or just the pieces you want."
-        />
-      </div>
+      {/* Background rhythm (Shamil 2026-09-29, strict alternation): hero
+          green → what-you-get PLAIN → FAQ GREEN → process PLAIN → pricing
+          (untouched, own warm wash) → full-platform PLAIN → stack GREEN →
+          marquee PLAIN. One treatment for every "green" section:
+          .section-tint (the sage wash matching the hero's glow hue). */}
+      {/* 2. What-you-get — PLAIN: the old section-green wrapper removed,
+          the run blends with the page. */}
+      <ProductSections
+        theme="light"
+        description="Everything below is already built and preinstalled in your account. In onboarding you pick what I switch on — all of it, or just the pieces you want."
+      />
 
       {/* 3. Why us + FAQ — MERGED 2026-08-22 (Shamil): one always-expanded
-          card list ("Fair questions, straight answers"). PLAIN background
-          2026-08-23 (alternation restart); cards softened to the light
-          sage tint the same day. */}
-      <MergedFaq />
-
-      {/* 4. Founder story ("Who builds it") REMOVED 2026-08-24 (Shamil).
-          Its tint moves to Process below to keep the background rhythm. */}
-
-      {/* 5. Process — BEFORE pricing (Shamil 2026-08-16): the easy 5-step
-          process earns the right to show the price. TINTED 2026-08-24 —
-          inherits the founder section's tint after its removal. */}
+          card list ("Fair questions, straight answers"). GREEN-TINTED
+          2026-09-29; the per-question cards inside went flat/transparent
+          now that the section itself carries the background. */}
       <div className="section-tint">
-        <Process theme="light" />
+        <MergedFaq />
       </div>
 
-      {/* 5. Pricing — owner-approved 3-card restructure (2026-08-12): three
-          Platform billing-period cards (Monthly / 6 months / Yearly).
-          Background = the colorful warm wash rescued from the removed AI
-          section (Shamil 2026-08-16). */}
+      {/* 4. Process — PLAIN (2026-09-29 alternation): the tint wrapper it
+          inherited from the removed founder section (2026-08-24) is gone. */}
+      <Process theme="light" />
+
+      {/* 5. Pricing — UNTOUCHED (2026-09-29): owner-approved 3-card
+          restructure (2026-08-12) on its own colorful warm wash, outside
+          the green-tint alternation by Shamil's long-standing call. */}
       <PricingSection />
 
       {/* 6. Industries section REMOVED 2026-08-22 (Shamil, live): the
@@ -1306,17 +1300,18 @@ export default function HomeV8Client() {
 
       {/* 7. Pipeline — reframed 2026-08-16 as "the full platform" convincer
           ("And that's just the setup."), kept AFTER pricing so it never
-          overwhelms the pitch. */}
+          overwhelms the pitch. PLAIN (2026-09-29 alternation). */}
       <PipelineSection />
 
       {/* 8. Stack comparison — moved here 2026-08-22 (Shamil): right after
           the full-platform section, right before the integrations
-          carousel. TINTED (alternating-backgrounds rule). */}
+          carousel. GREEN-TINTED (2026-09-29 alternation — tint kept). */}
       <div className="section-tint">
         <StackComparisonSection />
       </div>
 
-      {/* 9. Integrations marquee — at the VERY BOTTOM (Shamil 2026-08-22). */}
+      {/* 9. Integrations marquee — at the VERY BOTTOM (Shamil 2026-08-22).
+          PLAIN (2026-09-29 alternation). */}
       <IntegrationsMarquee />
 
       {/* Get-leads / "you want customers" section REMOVED from the homepage
@@ -1432,14 +1427,15 @@ function MergedFaq() {
             transition={{ duration: 0.5, ease }}
           >
             {/* Each Q&A = its own card with space between, no divider lines
-                (Shamil 2026-08-22); always expanded, no arrows. Card color
-                softened 2026-08-23 (Shamil: the solid sage was too vivid) —
-                now the same light greenish as the section tint, dark text. */}
+                (Shamil 2026-08-22); always expanded, no arrows. Card
+                backgrounds + green shadows REMOVED 2026-09-29 (Shamil's
+                alternation): the section now carries the green tint, so
+                the cards go flat — border only. */}
             <div className="space-y-4">
               {MERGED_FAQS.map((item) => (
                 <div
                   key={item.q}
-                  className="rounded-2xl border border-border/70 bg-[rgba(126,166,135,0.16)] px-6 py-5 shadow-[0_8px_20px_-12px_rgba(126,166,135,0.35)]"
+                  className="rounded-2xl border border-border/70 px-6 py-5"
                 >
                   <div className="text-lg font-medium text-text">{item.q}</div>
                   <p className="mt-3 leading-relaxed text-text-muted">{item.a}</p>
