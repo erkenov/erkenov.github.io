@@ -32,22 +32,13 @@ export const metadata: Metadata = {
   },
 };
 
-const PROBLEMS = [
-  {
-    phrase: "The first few names",
-    caption:
-      "Most people pick from the first few results they see — if you're not on that shortlist, the search never reaches you.",
-  },
-  {
-    phrase: "A dead phone number",
-    caption:
-      "Directories show your old number; customers call it, think you're closed, and you never find out.",
-  },
-  {
-    phrase: "Competitors on top",
-    caption:
-      "When locals search for what you do, someone else's ad sits above your name.",
-  },
+/* Problems column = the reference's stat pattern (Shamil 2026-09-29):
+   a BIG standout token in the title typeface + a 2–5-word muted label,
+   big vertical gaps — no sentences. */
+const PROBLEM_STATS = [
+  { big: "First 3", label: "names on Google get the call" },
+  { big: "40+", label: "directories show your old number" },
+  { big: "0", label: "warnings when a customer hits your dead line" },
 ];
 
 const SOLUTIONS = [
@@ -93,16 +84,16 @@ export default function LayoutLabPage() {
             </p>
           </div>
           <div className="mt-20 grid items-start gap-16 md:mt-24 md:grid-cols-[1fr_minmax(0,330px)_1fr] md:gap-14">
-            {/* Problems — quiet: small semibold phrase + one muted
-                caption, generous air between items. No heading. */}
-            <ul className="space-y-10 md:pt-2">
-              {PROBLEMS.map((p) => (
-                <li key={p.phrase}>
-                  <p className="text-[15px] font-semibold text-text">
-                    {p.phrase}
+            {/* Problems — the reference stat pattern: BIG token in the
+                title typeface + tiny muted label, huge gaps. No heading. */}
+            <ul className="space-y-14 md:pt-4">
+              {PROBLEM_STATS.map((p) => (
+                <li key={p.big}>
+                  <p className="text-4xl font-semibold tracking-tight text-text md:text-5xl">
+                    {p.big}
                   </p>
-                  <p className="mt-1.5 text-sm leading-relaxed text-text-muted">
-                    {p.caption}
+                  <p className="mt-2 text-xs leading-relaxed text-text-muted">
+                    {p.label}
                   </p>
                 </li>
               ))}
